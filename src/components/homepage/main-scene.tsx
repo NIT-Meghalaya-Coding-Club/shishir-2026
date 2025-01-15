@@ -9,6 +9,7 @@ export default function MainScene() {
           alt="Main Scene GIF"
           fill
           priority
+          unoptimized
         />
       </div>
       <div className="absolute bottom-0 right-8">
