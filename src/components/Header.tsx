@@ -1,10 +1,10 @@
 import React from 'react';
 import NavBarItem from './NavBarItem';
 
-const Header: React.FC = () => {
+const NavBar: React.FC = () => {
     return (
-        <nav>
-            <ul className='fixed flex w-screen justify-center'>
+        <nav className="fixed z-50 w-full px-4 py-6">
+            <ul className='flex flex-wrap justify-center gap-4 md:gap-6'>
                 <NavBarItem to="/" text='Home' />
                 <NavBarItem to="/events" text='Events' />
                 <NavBarItem to="/competitions" text='Competitions' />
@@ -16,4 +16,4 @@ const Header: React.FC = () => {
     );
 };
 
-export default Header;
+export default NavBar;
