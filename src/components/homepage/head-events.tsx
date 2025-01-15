@@ -1,7 +1,8 @@
 import Image from 'next/image'
+import Eventlist from './event-list'
 
 export default function HeadliningEvents() {
-  const events = [
+  const eventsData = [
     {
       title: "Sonu Nigam",
       subtitle: "HEADLINER LAUNCH",
@@ -22,8 +23,7 @@ export default function HeadliningEvents() {
       subtitle: "HEADLINER LAUNCH",
       image: "/img/event/poster.jpg"
     }
-  ]
-
+  ];
   return (
     <div 
         className="relative flex flex-col items-center justify-center w-[100vw] h-auto" 
@@ -51,38 +51,8 @@ export default function HeadliningEvents() {
         HEADLINING EVENTS
       </p>
     
-      <div className='head_content relative w-[90vw] z-10 items-center place-content-evenly flex flex-wrap h-auto mb-[5%] m-0 p-0'>
-        {events.map((event, index) => (
-          <div key={index} className='head_details bg-[#6a000e] h-[40vh] relative overflow-hidden w-[40vh] m-0 p-0 border-4 border-black border-solid'>
-            <Image
-              src={event.image}
-              alt={`Event Poster for ${event.title}`}
-              width={500}
-              height={500}
-            />
-            <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-2">
-              <h3 className="text-lg font-bold">{event.title}</h3>
-              <p className="text-sm">{event.subtitle}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-      <div className='head_content relative w-[90vw] z-10 items-center place-content-evenly flex flex-wrap h-auto mb-[5%] m-0 p-0'>
-        {events.map((event, index) => (
-          <div key={index} className='head_details bg-[#6a000e] h-[40vh] relative overflow-hidden w-[40vh] m-0 p-0 border-4 border-black border-solid'>
-            <Image
-              src={event.image}
-              alt={`Event Poster for ${event.title}`}
-              width={500}
-              height={500}
-            />
-            <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-2">
-              <h3 className="text-lg font-bold">{event.title}</h3>
-              <p className="text-sm">{event.subtitle}</p>
-            </div>
-          </div>
-        ))}
-      </div>
+      <Eventlist events={eventsData} />
+      <Eventlist events={eventsData} />
       <div className='bg-[#030716] w-[100%] h-[50vh] z-30 flex' >
       <Image
           src="/img/wallend.png"
