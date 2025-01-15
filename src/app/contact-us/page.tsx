@@ -14,9 +14,9 @@ export default function Contact() {
     }
 
     return (
-      <div className="flex h-screen w-screen overflow-hidden">
+      <div className="flex flex-col sm:flex-row h-fit sm:h-screen w-screen pt-20">
         <div 
-            className="sticky top-0 basis-1/2 h-full grid place-content-center"
+            className="pb-20 sm:pb-0 sm:sticky sm:top-0 basis-1/3 grid place-content-center"
         >
             <h1 className="text-4xl">Contact Us</h1>
             <div className=" flex flex-col gap-3 mt-5">
@@ -31,7 +31,7 @@ export default function Contact() {
                 ))}
             </div>
         </div>
-        <div className="basis-1/2 h-full grid gap-10 justify-center mt-20 overflow-y-scroll">
+        <div className=" basis-2/3 h-full grid gap-10 justify-center sm:overflow-y-scroll">
             {teamNames.map((team) => (
                 <div 
                     className="flex flex-col items-center gap-4" 
@@ -39,7 +39,7 @@ export default function Contact() {
                     ref={(el) => {teamRefs.current[team] = el}}
                 >
                     <h1>{team}</h1>
-                    <ul className="grid grid-cols-2 gap-6 w-[70%]">
+                    <ul className="flex flex-wrap justify-center">
                         {Teams[team].map((member, index) => (
                             <div
                                 className="flex flex-col items-center gap-3" 
@@ -50,7 +50,7 @@ export default function Contact() {
                                     alt={`${member.name}'s photo`} 
                                     width={100}
                                     height={100}
-                                    className="w-96 h-auto object-cover rounded-xl" 
+                                    className="w-64 h-auto object-cover rounded-xl" 
                                 />
                                 <div className="text-center flex flex-col gap-2">
                                     <li>{member.name}</li>
