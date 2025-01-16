@@ -23,7 +23,10 @@ const SchedulePage: React.FC = () => {
         {days.map((day) => (
           <button
             key={day}
-            onClick={() => setActiveDay(day)}
+            onClick={() => {
+                setActiveDay(day);
+                setActiveCategory(Object.keys(Schedule[day])[0]);
+            }}
             className={`py-2 rounded capitalize ${
               day === activeDay ? "bg-orange-500 text-white" : "bg-gray-200"
             }`}
@@ -49,8 +52,7 @@ const SchedulePage: React.FC = () => {
           ))}
         </div>
 
-        {Schedule[activeDay][activeCategory]?
-            <div className="w-3/4 p-7 rounded-xl border border-black">
+        <div className="w-3/4 p-7 rounded-xl border border-black">
             <h2 className="text-lg font-semibold mb-4 capitalize">{activeCategory}</h2>
             <ul className="space-y-2">
                 {Schedule[activeDay][activeCategory].map((item: EventType , index:number) => (
@@ -61,10 +63,7 @@ const SchedulePage: React.FC = () => {
                 </li>
                 ))}
             </ul>
-            </div>
-        : 
-            <></>
-        }
+        </div>
       </div>
     </div>
   );
