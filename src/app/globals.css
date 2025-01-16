@@ -2,3 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+*{
+    margin: 0;
+    padding: 0;
+}
+
+.wrapper {
+    min-height: 100vh;
+    min-width:100%;
+    height:fit-content;
+    width:fit-content;
+    
+    overflow: hidden;
+    background: radial-gradient(ellipse at bottom, #603e94 0%, #090a0f 100%);
+}
