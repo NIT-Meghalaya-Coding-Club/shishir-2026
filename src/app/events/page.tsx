@@ -1,6 +1,5 @@
 'use client';
 import React from 'react';
-import Navigation from '@/components/homepage/navigation'; 
 import Inav from '@/components/events/internal-nav'; 
 import Eventlist from '@/components/homepage/event-list'; 
 import eventsData from '@/data/eventsData'; 
@@ -12,7 +11,6 @@ export default function HomePage() {
       className="relative flex flex-col items-center w-[100vw] h-auto"
       style={{ backgroundImage: `url('/img/brickwall.png')` }}
     >
-      <Navigation />
       <Inav />
 
       {/* Dynamically generate sections for each category */}

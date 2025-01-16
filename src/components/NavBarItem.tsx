@@ -16,7 +16,7 @@ const NavBarItem:React.FC<Props> = ({to, text}) => {
 
     return (
         <li 
-            className="relative px-8 py-3 text-sm font-bold transition-transform hover:scale-105"
+            className="relative cursor-pointer px-8 py-3 text-sm font-bold transition-transform hover:scale-105"
             onClick={navigateTo}
         >
             <div className="absolute inset-0 bg-[#ffc278] transform skew-x-[-12deg] rounded-md" />
