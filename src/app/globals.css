@@ -2,17 +2,86 @@
 @tailwind components;
 @tailwind utilities;
 
-*{
-    margin: 0;
-    padding: 0;
+* {
+  margin: 0;
+  padding: 0;
 }
 
 .wrapper {
-    min-height: 100vh;
-    min-width:100%;
-    height:fit-content;
-    width:fit-content;
-    
-    overflow: hidden;
-    background: radial-gradient(ellipse at bottom, #603e94 0%, #090a0f 100%);
+  min-height: 100vh;
+  min-width: 100%;
+  height: fit-content;
+  width: fit-content;
+
+  overflow: hidden;
+  background: radial-gradient(ellipse at bottom, #603e94 0%, #090a0f 100%);
+}
+
+@layer base {
+  :root {
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .border-hsla {
+    @apply border border-white/20;
+  }
+
+  .special-font b {
+    font-family: "Zentry";
+    font-feature-settings: "ss01" on;
+  }
+
+  .bento-tilt_1 {
+    @apply relative border-hsla col-span-2 overflow-hidden rounded-md transition-transform duration-300 ease-out;
+  }
+
+  .bento-tilt_2 {
+    @apply relative col-span-1 row-span-1 overflow-hidden rounded-md transition-transform duration-300 ease-out;
+  }
+
+  .bento-title {
+    @apply uppercase md:text-6xl text-4xl font-black font-zentry;
+  }
+
+ 
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes infinite-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-infinite-scroll {
+  display: flex;
+  gap: 1rem; /* Adjust gap between items */
+  animation: infinite-scroll 20s linear infinite;
+}
+
+.animate-infinite-scroll:hover {
+  animation-play-state: paused;
+}
+
+.frame-background {
+  background-image: url('/img/frame.png');
+  background-size: contain;
+  background-repeat: no-repeat;
 }

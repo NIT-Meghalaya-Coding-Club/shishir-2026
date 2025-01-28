@@ -1,107 +1,99 @@
-'use client'
-import Link from "next/link"
+"use client";
+import Link from "next/link";
+import { Instagram, Facebook, Youtube } from "lucide-react";
+import { IoMail, IoCall } from "react-icons/io5";
+import { IoLocationSharp } from "react-icons/io5";
 
 export default function Footer() {
   return (
-    <footer className="bg-[#030716] text-gray-700 pt-4 pb-4 ">
-      <div className="container mx-auto px-4 pt-8 border-dashed border-t-2 border-teal-700">
-        {/* Social Media Section */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-[#c84c47] mb-4">FOLLOW US ON</h2>
-          <div className="flex gap-6">
-            <Link href="#" className="text-[#f2da73] hover:opacity-80">
-              Facebook
-            </Link>
-            <Link href="#" className="text-[#f2da73] hover:opacity-80">
-              Linkedin
-            </Link>
-            <Link href="#" className="text-[#f2da73] hover:opacity-80">
-              Instagram
-            </Link>
-            <Link href="#" className="text-[#f2da73] hover:opacity-80">
-              Whatsapp
-            </Link>
+    <footer className="bg-gray-900 text-gray-300 pt-16 relative overflow-hidden">
+      {/* Semi-circle Background with Logo */}
+      <div className="absolute top-10 left-1/2 transform -translate-x-1/2">
+        <div className="w-[400px] h-[200px] bg-gradient-to-b from-gray-800/30 via-gray-800/10 to-transparent rounded-t-full relative">
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-36 h-36 flex items-center justify-center">
+            <img
+              src="/assets/logo.png"
+              alt="Logo"
+              className="w-full h-full object-contain"
+            />
           </div>
         </div>
+      </div>
 
-        {/* Quick Links and Legals Grid */}
-        <div className="grid md:grid-cols-2 gap-8 mb-8">
+      <div className="container mx-auto px-4">
+        <div className="flex justify-between items-start mb-16">
+          {/* Contact Information */}
           <div>
-            <h2 className="text-2xl font-bold text-[#c84c47] mb-4">QUICK LINKS</h2>
-            <ul className="space-y-2">
-              <li><Link href="#" className="text-[#f2da73] hover:underline">Home</Link></li>
-              <li><Link href="#" className="text-[#f2da73] hover:underline">Events</Link></li>
-              <li><Link href="#" className="text-[#f2da73] hover:underline">Sponsors</Link></li>
-              <li><Link href="#" className="text-[#f2da73] hover:underline">Teams</Link></li>
-              <li><Link href="#" className="text-[#f2da73] hover:underline">NITM-MUN</Link></li>
-            </ul>
+            <p className="text-gray-400 font-bold">Contact:</p>
+            <div className="flex items-center gap-2 mt-2">
+              <IoMail className="text-gray-400" />
+              <a
+                href="mailto:shishir@nitm.ac.in"
+                className="text-gray-200 font-bold hover:text-white hover:underline"
+              >
+                shishir@nitm.ac.in
+              </a>
+            </div>
+            <div className="flex items-center gap-2 mt-2">
+              <IoCall className="text-gray-400" />
+              <p className="text-gray-200 font-bold">+91-8765432190</p>
+            </div>
           </div>
-          <div>
-            <h2 className="text-2xl font-bold text-[#c84c47] mb-4">LEGALS</h2>
-            <ul className="space-y-2">
-              <li><Link href="#" className="text-[#f2da73] hover:underline">Terms and Conditions</Link></li>
-              <li><Link href="#" className="text-[#f2da73] hover:underline">Copyright</Link></li>
-              <li><Link href="#" className="text-[#f2da73] hover:underline">Disclaimer</Link></li>
-              <li><Link href="#" className="text-[#f2da73] hover:underline">Privacy Policy</Link></li>
-            </ul>
+
+          {/* Address */}
+          <div className="text-right">
+            <div className="flex items-center justify-end gap-2">
+              <IoLocationSharp className="text-gray-400" />
+              <p className="text-gray-400 font-bold">Address:</p>
+            </div>
+            <p className="text-gray-200 font-bold">
+              Saitsohpen, Sohra (Cherrapunji),
+              <br />
+              East Khasi Hills District,
+              <br />
+              Meghalaya (India) 793108
+            </p>
           </div>
         </div>
 
-        {/* Contact and Support */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-[#c84c47] mb-4">CONTACT AND SUPPORT</h2>
-          <p className="text-[#446885]">
-            National Institute of Technology Meghalaya, Bijni Complex, Laitumkhrah Shillong-793003, Meghalaya, India
-            <br />
-            Phone: 0364-2501294 | Fax: 0364-2501113
-          </p>
-        </div>
-
-        {/* Find Us At */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-[#c84c47] mb-4">FIND US AT</h2>
-          <p className="text-[#446885]">
-            National Institute of Technology Meghalaya Bijni Complex, Laitumkhrah, Shillong 793003
-          </p>
-        </div>
-
-        {/* End Section */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-[#c84c47] mb-4">YOU&apos;VE REACHED THE END ~</h2>
-          <div className="flex flex-wrap gap-4">
+        {/* Social Links */}
+        <div className="flex justify-center gap-8 mb-8">
+          {[
+            { Icon: Instagram, url: "https://www.instagram.com/shishir_nitm/" },
+            {
+              Icon: Facebook,
+              url: "https://www.facebook.com/shishirnitmeghalaya",
+            },
+            { Icon: Youtube, url: "https://www.youtube.com/@shishir_nitm" },
+          ].map(({ Icon, url }, index) => (
             <Link
-              href="#"
-              className="inline-flex items-center px-6 py-2 border-2 border-[#c84c47] text-[#c84c47] rounded-md hover:bg-[#c84c47] hover:text-white transition-colors"
+              key={index}
+              href={url}
+              className="text-gray-400 hover:text-white transition-transform transform hover:scale-110"
             >
-              Leave a message for the Devs
+              <Icon size={24} />
             </Link>
-            <Link
-              href="#"
-              className="inline-flex items-center px-6 py-2 border-2 border-[#c84c47] text-[#c84c47] rounded-md hover:bg-[#c84c47] hover:text-white transition-colors"
-            >
-              Donate
-            </Link>
-            <button
-              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="inline-flex items-center px-6 py-2 border-2 border-[#c84c47] text-[#c84c47] rounded-md hover:bg-[#c84c47] hover:text-white transition-colors ml-auto"
-            >
-              Go Back To TOP
-            </button>
-          </div>
+          ))}
         </div>
 
-        {/* Credits */}
-        <div className="text-sm text-[#446885]">
-          <p>Designed and developed by <Link href="#" className="text-[#c84c47] italic hover:underline">NITM Web Dev Creatives</Link></p>
-        </div>
+        {/* Divider */}
+        <div className="border-t border-gray-700 my-8"></div>
 
         {/* Copyright */}
-        <div className="relative overflow-hidden text-white bg-[#446885] mt-8 py-2 -mx-4">
-            <div className="animate-marquee whitespace-nowrap">
-                ©copyright 2024 nitm/shishir | All Rights Reserved
-            </div>
+        <div className="text-center mb-8">
+          <p className="text-sm text-gray-400">
+            © Copyright 2025 | National Institute of Technology Meghalaya |
+            Shishir 2025
+          </p>
+        </div>
+
+        {/* Large Text */}
+        <div className="flex justify-center items-center w-full mb-16">
+          <h1 className="text-[12vw] font-extrabold leading-none text-gray-800 uppercase tracking-tight">
+            SHISHIR 2K25
+          </h1>
         </div>
       </div>
     </footer>
-  )
+  );
 }

@@ -6,125 +6,111 @@ export const Teams: {
     [key: string]: {
         name: string;
         contactNo: string;
-        instaLink: string | undefined;
-        whatsappLink: string | undefined;
+        email: string;
         linkedinLink: string | undefined;
         imageLink?: string | undefined;
     }[];
 } = {
-    team1: [
+    Core: [
         {
-            name: "name1",
+            name: "Himanshu Kashyap",
             contactNo: "+91 1234567890",
-            instaLink: undefined,
-            whatsappLink: undefined,
+            email: "name1@example.com",
             linkedinLink: undefined,
             imageLink: undefined,
         },
         {
             name: "name2",
             contactNo: "+91 1234567890",
-            instaLink: undefined,
-            whatsappLink: undefined,
+            email: "name2@example.com",
             linkedinLink: undefined,
             imageLink: undefined,
         },
         {
-            name: "name2",
+            name: "name3",
             contactNo: "+91 1234567890",
-            instaLink: undefined,
-            whatsappLink: undefined,
+            email: "name3@example.com",
             linkedinLink: undefined,
             imageLink: undefined,
         },
     ],
     team2: [
         {
-            name: "name3",
+            name: "name4",
             contactNo: "+91 1234567890",
-            instaLink: undefined,
-            whatsappLink: undefined,
+            email: "name4@example.com",
             linkedinLink: undefined,
             imageLink: undefined,
         },
         {
-            name: "name4",
+            name: "name5",
             contactNo: "+91 1234567890",
-            instaLink: undefined,
-            whatsappLink: undefined,
+            email: "name5@example.com",
             linkedinLink: undefined,
             imageLink: undefined,
         },
     ],
     team3: [
         {
-            name: "name5",
+            name: "name6",
             contactNo: "+91 1234567890",
-            instaLink: undefined,
-            whatsappLink: undefined,
+            email: "name6@example.com",
             linkedinLink: undefined,
             imageLink: undefined,
         },
         {
-            name: "name6",
+            name: "name7",
             contactNo: "+91 1234567890",
-            instaLink: undefined,
-            whatsappLink: undefined,
+            email: "name7@example.com",
             linkedinLink: undefined,
             imageLink: undefined,
         },
     ],
     team4: [
         {
-            name: "name7",
+            name: "name8",
             contactNo: "+91 1234567890",
-            instaLink: undefined,
-            whatsappLink: undefined,
+            email: "name8@example.com",
             linkedinLink: undefined,
             imageLink: undefined,
         },
         {
-            name: "name8",
+            name: "name9",
             contactNo: "+91 1234567890",
-            instaLink: undefined,
-            whatsappLink: undefined,
+            email: "name9@example.com",
             linkedinLink: undefined,
             imageLink: undefined,
         },
     ],
     team5: [
         {
-            name: "name9",
+            name: "name10",
             contactNo: "+91 1234567890",
-            instaLink: undefined,
-            whatsappLink: undefined,
+            email: "name10@example.com",
             linkedinLink: undefined,
             imageLink: undefined,
         },
         {
-            name: "name10",
+            name: "name11",
             contactNo: "+91 1234567890",
-            instaLink: undefined,
-            whatsappLink: undefined,
+            email: "name11@example.com",
             linkedinLink: undefined,
             imageLink: undefined,
         },
     ],
     team6: [
         {
-            name: "name11",
+            name: "name12",
             contactNo: "+91 1234567890",
-            instaLink: undefined,
-            whatsappLink: undefined,
+            email: "name12@example.com",
             linkedinLink: undefined,
             imageLink: undefined,
         },
         {
-            name: "name12",
+            name: "name13",
             contactNo: "+91 1234567890",
-            instaLink: undefined,
-            whatsappLink: undefined,
-            linkedinLink: undefined,
+            email: "name13@example.com",
+            linkedinLink: "undefined",
             imageLink: undefined,
         },
     ],

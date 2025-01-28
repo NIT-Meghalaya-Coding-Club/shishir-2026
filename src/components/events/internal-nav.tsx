@@ -1,31 +1,43 @@
 'use client';
 import React from 'react';
-import { motion } from 'framer-motion'; // Correct import for Framer Motion
+import { motion } from 'framer-motion';
 import event_categories from '@/data/categoryData';
 
 export default function Inav() {
   const handleScroll = (category: string) => {
-    const element = document.getElementById(category);
+    const element = document.getElementById(category.toLowerCase().replace(/ /g, '-'));
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const offset = 100; // Adjust this value based on the height of your navbar
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - offset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
     }
   };
 
+  // Duplicate the categories to create a seamless loop
+  const duplicatedCategories = [...event_categories, ...event_categories];
+
   return (
-    <div className="mt-[14vh] p-2 m-5 left-0 right-0 z-50 shadow-4xl rounded-xl">
-      <nav className="container mx-auto flex flex-wrap justify-center gap-4 py-4">
-        {event_categories.map((category, index) => (
-          <motion.div
-            key={index}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            transition={{ type: 'spring', stiffness: 300 }}
-            onClick={() => handleScroll(category)}
-            className="cursor-pointer px-4 py-2 text-lg font-medium text-gray-700 hover:text-yellow-950 transition-colors duration-300 bg-white rounded-lg shadow-md"
-          >
-            {category.replace('_', ' ')}
-          </motion.div>
-        ))}
+    <div className="w-full mt-10 px-4 overflow-hidden">
+      <nav className="flex gap-4 py-4">
+        <div className="flex animate-infinite-scroll">
+          {duplicatedCategories.map((category, index) => (
+            <motion.div
+              key={index}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              transition={{ type: 'spring', stiffness: 300 }}
+              onClick={() => handleScroll(category)}
+              className="flex-shrink-0 cursor-pointer px-6 py-3 text-lg font-medium text-gold-500 hover:text-gold-600 transition-colors duration-300 bg-black bg-opacity-50 rounded-lg shadow-lg border border-gold-500 hover:border-gold-600"
+            >
+              {category.replace('_', ' ')}
+            </motion.div>
+          ))}
+        </div>
       </nav>
     </div>
   );
