@@ -3,8 +3,7 @@ import { defaultImageUrl, Teams } from "@/data/Teams";
 import { useRef } from "react";
 import Image from "next/image";
 import { FaPhone, FaEnvelope, FaLinkedin } from "react-icons/fa6";
-
-
+import { Crown, Sparkles } from "lucide-react";
 
 export default function Contact() {
   const teamRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
@@ -15,89 +14,151 @@ export default function Contact() {
     if (teamElement) {
       teamElement.scrollIntoView({
         behavior: "smooth",
-        block: "start", // Changed to 'start' for better alignment
+        block: "start",
       });
     }
   }
 
   return (
-    <div className="flex flex-col sm:flex-row h-fit sm:h-screen w-screen pt-20"
-    style={{ backgroundImage: 'url("/img/brickwall.png")' }}>
-      <div className="pb-20 sm:pb-0 sm:sticky sm:top-0 basis-1/3 grid place-content-center">
-        <h1 className="text-4xl">Contact Us</h1>
-        <div className="flex flex-col gap-3 mt-5">
-          {teamNames.map((team) => (
-            <div
-              className="cursor-pointer hover:text-blue-500 transition-colors"
-              key={team}
-              onClick={() => scrollToTeam(team)}
-            >
-              <li className="list-disc">{team}</li>
+    <div
+      className="flex flex-col sm:flex-row min-h-screen w-full relative"
+      style={{ backgroundImage: 'url("/img/brickwall.png")' }}
+    >
+      {/* Gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 to-black-900/80" />
+
+      {/* Sidebar Navigation */}
+      <div className="relative z-10 pb-20 sm:pb-0 sm:sticky sm:top-0 sm:h-screen basis-1/3 p-8">
+        <div className="h-full flex flex-col items-center justify-center">
+          {/* Header */}
+          <div className="text-center mb-12 pt-16">
+            <div className="flex items-center gap-4 mb-6">
+              <Crown className="w-8 h-8 text-yellow-400 animate-pulse" />
+              <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600">
+                Team
+              </h1>
+              <Crown className="w-8 h-8 text-yellow-400 animate-pulse" />
             </div>
-          ))}
+            <div className="h-1 w-32 mx-auto bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full" />
+          </div>
+
+          {/* Navigation Links */}
+          <div className="flex flex-col w-full max-w-xs">
+            {teamNames.map((team) => (
+              <button
+                key={team}
+                onClick={() => scrollToTeam(team)}
+                className="group relative px-6 py-3 rounded-lg transition-all duration-300 hover:scale-105"
+              >
+                {/* Button gradient border */}
+                <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="relative bg-gray-900 rounded-lg px-6 py-3 m-[1px] group-hover:bg-gray-800">
+                  <span className="text-lg font-medium text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
+                    {team}
+                  </span>
+                </div>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
-      <div className="basis-2/3 h-full grid gap-10 justify-center sm:overflow-y-auto">
+
+      {/* Main Content */}
+      <div className="relative z-10 basis-2/3 sm:overflow-y-auto px-4 sm:px-8 pt-20">
         {teamNames.map((team) => (
           <div
-            className="flex flex-col items-center gap-4 py-10" // Added padding for better spacing
             key={team}
             ref={(el) => {
               teamRefs.current[team] = el;
             }}
+            className="py-16"
           >
-            <h1 className="text-2xl font-bold">{team}</h1>
-            <ul className="flex flex-wrap justify-center gap-8">
+            {/* Team Header */}
+            <div className="text-center mb-16 relative">
+              {/* Spotlight effect */}
+              <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-40 h-40 bg-yellow-400/20 blur-3xl rounded-full" />
+
+              <div className="relative">
+                <div className="flex justify-center items-center gap-4 mb-4">
+                  <Sparkles className="w-6 h-6 text-yellow-400" />
+                  <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
+                    {team}
+                  </h2>
+                  <Sparkles className="w-6 h-6 text-yellow-400" />
+                </div>
+                <div className="h-1 w-24 mx-auto bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full" />
+              </div>
+            </div>
+
+            {/* Team Members Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 justify-items-center">
               {Teams[team].map((member, index) => (
-                <div
-                  className="relative w-[300px] h-[400px] p-8"
-                  key={index}
-                  style={{
-                    backgroundImage: 'url("/img/frame.png")',
-                    backgroundSize: 'contain',
-                    backgroundPosition: 'center',
-                    backgroundRepeat: 'no-repeat',
-                  }}
-                >
-                  <div className="flex flex-col items-center gap-3 h-full justify-center">
-                    <Image
-                      src={member.imageLink ?? defaultImageUrl}
-                      alt={`${member.name}'s photo`}
-                      width={120}
-                      height={120}
-                      className="rounded-full object-cover"
-                    />
-                    <div className="text-center flex flex-col gap-2">
-                      <h2 className="text-xl font-semibold">{member.name}</h2>
-                      <div className="flex gap-4 justify-center">
-                        <a
-                          href={`tel:${member.contactNo}`}
-                          className="cursor-pointer hover:text-blue-500 transition-colors"
-                        >
-                          <FaPhone size={20} />
-                        </a>
-                        <a
-                          href={`mailto:${member.email}`}
-                          className="cursor-pointer hover:text-blue-500 transition-colors"
-                        >
-                          <FaEnvelope size={20} />
-                        </a>
-                        {member.linkedinLink && (
-                          <a
-                            href={member.linkedinLink}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="cursor-pointer hover:text-blue-700 transition-colors"
-                          >
-                            <FaLinkedin size={20} />
-                          </a>
-                        )}
+                <div key={index} className="group relative w-[300px]">
+                  {/* Member Card */}
+                  <div className="relative">
+                    {/* Card gradient border */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 rounded-2xl animate-gradient-x" />
+
+                    {/* Card Content */}
+                    <div className="relative m-0.5 bg-gradient-to-br from-gray-900 to-black rounded-2xl p-8 backdrop-blur-xl transform hover:scale-105 transition-all duration-500">
+                      {/* Spotlight effect */}
+                      <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-32 h-32 bg-yellow-400/10 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                      <div className="flex flex-col items-center gap-6">
+                        {/* Profile Image */}
+                        <div className="relative w-32 h-32">
+                          <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 rounded-full animate-gradient-x" />
+                          <div className="absolute inset-0.5 bg-gray-900 rounded-full overflow-hidden">
+                            <Image
+                              src={member.imageLink ?? defaultImageUrl}
+                              alt={`${member.name}'s photo`}
+                              fill
+                              className="object-cover transition-transform duration-500 group-hover:scale-110"
+                            />
+                          </div>
+                        </div>
+
+                        {/* Member Info */}
+                        <div className="text-center">
+                          <h3 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600 ">
+                            {member.name}
+                          </h3>
+                          <span className="text-sm text-transparent bg-clip-text text-white ">
+                            {member.position}
+                          </span>
+
+                          {/* Contact Links */}
+                          <div className="flex gap-6 justify-center pt-3">
+                            <a
+                              href={`tel:${member.contactNo}`}
+                              className="text-gray-400 hover:text-yellow-400 transition-colors duration-300"
+                            >
+                              <FaPhone size={24} />
+                            </a>
+                            <a
+                              href={`mailto:${member.email}`}
+                              className="text-gray-400 hover:text-yellow-400 transition-colors duration-300"
+                            >
+                              <FaEnvelope size={24} />
+                            </a>
+                            {member.linkedinLink && (
+                              <a
+                                href={member.linkedinLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-gray-400 hover:text-yellow-400 transition-colors duration-300"
+                              >
+                                <FaLinkedin size={24} />
+                              </a>
+                            )}
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               ))}
-            </ul>
+            </div>
           </div>
         ))}
       </div>

@@ -120,7 +120,7 @@ export const BentoCard = ({
 
   return (
     <div className="relative size-full">
-      {src.endsWith('.mp4') ? (
+      {src.endsWith(".mp4") ? (
         <video
           src={src}
           loop

@@ -9,110 +9,130 @@ export interface EventType {
 
 export const Schedule: { [key: string]: { [key: string]: EventType[] } } = {
   "day 1": {
-    "keynotes": [
+    "inaugural": [
       {
-        name: "Future of Technology",
+        name: "Opening Ceremony & SPIC MACAY",
         time: "09:00 - 10:30",
-        place: "Grand Ballroom",
-        description: "Opening keynote discussing emerging tech trends",
-        category: "keynotes",
-        speakers: ["Dr. Sarah Chen", "Mark Thompson"]
-      },
-      {
-        name: "Innovation in AI",
-        time: "11:00 - 12:30",
-        place: "Grand Ballroom",
-        description: "Exploring breakthrough AI applications",
-        category: "keynotes",
-        speakers: ["Prof. James Wilson"]
+        place: "Main Auditorium",
+        description: "Traditional cultural performance and inaugural ceremony",
+        category: "cultural",
+        speakers: ["Dr. Rajesh Kumar", "Pandit Birju Maharaj"]
       }
     ],
-    "workshops": [
+    "cultural": [
       {
-        name: "Hands-on Machine Learning",
-        time: "14:00 - 16:00",
-        place: "Workshop Room A",
-        description: "Interactive ML workshop for beginners",
-        category: "workshops",
-        speakers: ["Dr. Emily Martinez"]
+        name: "Cultural Exhibition",
+        time: "11:00 - 17:00",
+        place: "Exhibition Hall",
+        description: "Showcasing diverse cultural heritage through art and artifacts",
+        category: "exhibition"
       },
       {
-        name: "Cloud Architecture",
-        time: "16:30 - 18:30",
-        place: "Workshop Room B",
-        description: "Building scalable cloud solutions",
-        category: "workshops"
+        name: "Symphony",
+        time: "14:00 - 16:00",
+        place: "Concert Hall",
+        description: "Musical performances featuring classical and modern fusion",
+        category: "music",
+        speakers: ["Music Club Coordinators"]
+      }
+    ],
+    "evening": [
+      {
+        name: "Battle of Bands",
+        time: "17:00 - 19:30",
+        place: "Open Air Theatre",
+        description: "Inter-college band competition",
+        category: "music"
       }
     ]
   },
   "day 2": {
-    "technical": [
+    "morning": [
       {
-        name: "Quantum Computing",
-        time: "09:00 - 10:30",
-        place: "Tech Hall 1",
-        description: "Deep dive into quantum algorithms",
-        category: "technical",
-        speakers: ["Dr. Robert Chang"]
+        name: "MUN Conference",
+        time: "09:00 - 13:00",
+        place: "Conference Hall",
+        description: "Model United Nations debate and discussion",
+        category: "academic",
+        speakers: ["Prof. Sarah Mitchell", "Dr. James Cooper"]
       },
       {
-        name: "Blockchain Development",
-        time: "11:00 - 12:30",
-        place: "Tech Hall 2",
-        description: "Advanced blockchain concepts",
-        category: "technical"
+        name: "Literary Quiz",
+        time: "10:00 - 12:00",
+        place: "Seminar Hall",
+        description: "Competitive quiz on literature and arts",
+        category: "literary"
       }
     ],
-    "networking": [
+    "afternoon": [
       {
-        name: "Startup Meetup",
-        time: "14:00 - 16:00",
-        place: "Networking Lounge",
-        description: "Connect with founders and investors",
-        category: "networking"
+        name: "Drama Competition",
+        time: "14:00 - 17:00",
+        place: "Main Auditorium",
+        description: "Inter-NIT theatrical performances",
+        category: "drama"
       },
       {
-        name: "Career Fair",
-        time: "16:30 - 18:30",
-        place: "Exhibition Hall",
-        description: "Meet top tech companies",
-        category: "networking"
+        name: "Gaming Tournament",
+        time: "15:00 - 18:00",
+        place: "Tech Hub",
+        description: "Competitive gaming championships",
+        category: "gaming"
+      }
+    ],
+    "evening": [
+      {
+        name: "Classical Dance Showcase",
+        time: "18:30 - 20:30",
+        place: "Main Stage",
+        description: "Traditional dance performances",
+        category: "dance",
+        speakers: ["Ms. Anjali Mehta"]
       }
     ]
   },
   "day 3": {
-    "panels": [
+    "competitions": [
       {
-        name: "Future of Work",
-        time: "09:00 - 10:30",
-        place: "Panel Room 1",
-        description: "Expert discussion on remote work trends",
-        category: "panels",
-        speakers: ["Lisa Johnson", "Michael Brown", "David Lee"]
+        name: "Short Film Festival",
+        time: "09:00 - 12:00",
+        place: "Media Center",
+        description: "Screening of student-made short films",
+        category: "film",
+        speakers: ["Prof. Robert Adams"]
       },
       {
-        name: "Sustainability in Tech",
-        time: "11:00 - 12:30",
-        place: "Panel Room 2",
-        description: "Green technology initiatives",
-        category: "panels",
-        speakers: ["Emma Wilson", "Tom Clark"]
+        name: "Art Battle",
+        time: "10:00 - 13:00",
+        place: "Creative Studio",
+        description: "Live competitive art creation",
+        category: "arts"
       }
     ],
-    "closing": [
+    "performances": [
       {
-        name: "Awards Ceremony",
-        time: "14:00 - 15:30",
-        place: "Grand Ballroom",
-        description: "Recognizing outstanding contributions",
-        category: "closing"
+        name: "Stand-Up Comedy Show",
+        time: "14:00 - 16:00",
+        place: "College Auditorium",
+        description: "Humor and entertainment by student performers",
+        category: "entertainment"
+      }
+    ],
+    "finale": [
+      {
+        name: "Shimmer & Panache",
+        time: "17:00 - 19:00",
+        place: "Grand Arena",
+        description: "Fashion show and cultural extravaganza",
+        category: "flagship"
       },
       {
-        name: "Closing Party",
-        time: "16:00 - 18:00",
-        place: "Rooftop Garden",
-        description: "Networking and celebrations",
-        category: "closing"
+        name: "Closing Ceremony",
+        time: "19:30 - 21:00",
+        place: "Main Ground",
+        description: "Award distribution and closing celebrations",
+        category: "closing",
+        speakers: ["College Director", "Cultural Secretary"]
       }
     ]
   }

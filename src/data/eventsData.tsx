@@ -13,49 +13,43 @@ const eventsData: EventsData = {
   "DANCE AND DRAMA CLUB": [
     {
       name: "Flash Mob",
-      image: "/images/events/flash-mob.jpg",
+      image: "/img/event/flash-mob.png",
       registrationLink: "",
       rulebook: "",
     },
     {
       name: "Dance Competitions",
-      image: "/images/events/dance-competition.jpg",
+      image: "/img/event/dance-competition.png",
       registrationLink: "",
       rulebook: "",
     },
     {
       name: "Team Dance",
-      image: "/images/events/group-dance.jpg",
+      image: "/img/event/group-dance.png",
       registrationLink: "",
       rulebook: "",
     },
     {
       name: "Prom Night (Open For All)",
-      image: "/images/events/prom-night.jpg",
+      image: "/img/event/prom-night.png",
       registrationLink: "",
       rulebook: "",
     },
     {
       name: "Classical Song",
-      image: "/images/events/class-song.jpg",
+      image: "/img/event/class-song.png",
       registrationLink: "",
       rulebook: "",
     },
     {
-      name: "Multi Fusion Traditional Dance on opening day",
-      image: "/images/events/fusion-dance.jpg",
+      name: "Drama Performance",
+      image: "/img/event/drama-performance.png",
       registrationLink: "",
       rulebook: "",
     },
     {
-      name: "Drama Performance by NITM Students",
-      image: "/images/events/drama-performance.jpg",
-      registrationLink: "",
-      rulebook: "",
-    },
-    {
-      name: "Drama competition(inter NIT)",
-      image: "/images/events/drama-competition.jpg",
+      name: "Drama Competition",
+      image: "/img/event/drama-competition.png",
       registrationLink: "",
       rulebook: "",
     },
@@ -63,13 +57,13 @@ const eventsData: EventsData = {
   "EBSB CLUB": [
     {
       name: "Cultural Exhibition",
-      image: "/images/events/cultural-exhibition.jpg",
+      image: "/img/event/cultural-exhibition.png",
       registrationLink: "",
       rulebook: "",
     },
     {
       name: "Food Fest",
-      image: "/images/events/food-fest.jpg",
+      image: "/img/event/food-fest.png",
       registrationLink: "",
       rulebook: "",
     },
@@ -77,19 +71,19 @@ const eventsData: EventsData = {
   "FUN EVENTS": [
     {
       name: "Buzz wire",
-      image: "/images/events/buzz-wire.jpg",
+      image: "/img/event/buzz-wire.png",
       registrationLink: "",
       rulebook: "",
     },
     {
       name: "Gun shooting",
-      image: "/images/events/gun-shooting.jpg",
+      image: "/img/event/gun-shooting.png",
       registrationLink: "",
       rulebook: "",
     },
     {
-      name: "Dart Shooting",
-      image: "/images/events/dart-shooting.jpg",
+      name: "Dart Throwing",
+      image: "/img/event/dart-throwing.png",
       registrationLink: "",
       rulebook: "",
     },
@@ -97,13 +91,13 @@ const eventsData: EventsData = {
   "GAMING ": [
     {
       name: "Game 1",
-      image: "/images/events/game-1.jpg",
+      image: "/img/event/game-1.png",
       registrationLink: "",
       rulebook: "",
     },
     {
       name: "Game 2 (Inter)",
-      image: "/images/events/game-2.jpg",
+      image: "/img/event/game-2.png",
       registrationLink: "",
       rulebook: "",
     },
@@ -111,37 +105,37 @@ const eventsData: EventsData = {
   "KRIGG ": [
     {
       name: "Dumb Charades",
-      image: "/images/events/dumb-charades.jpg",
+      image: "/img/event/dumb-charades.png",
       registrationLink: "",
       rulebook: "",
     },
     {
       name: "Snake & Ladder",
-      image: "/images/events/snake-ladder.jpg",
+      image: "/img/event/snake-ladder.png",
       registrationLink: "",
       rulebook: "",
     },
     {
       name: "Musical Chair",
-      image: "/images/events/musical-chair.jpg",
+      image: "/img/event/musical-chair.png",
       registrationLink: "",
       rulebook: "",
     },
     {
       name: "Rangoli",
-      image: "/images/events/rangoli.jpg",
+      image: "/img/event/rangoli.png",
       registrationLink: "",
       rulebook: "",
     },
     {
       name: "Tug of War",
-      image: "/images/events/tug-of-war.jpg",
+      image: "/img/event/tug-of-war.png",
       registrationLink: "",
       rulebook: "",
     },
     {
       name: "Box Cricket",
-      image: "/images/events/box-cricket.jpg",
+      image: "/img/event/box-cricket.png",
       registrationLink: "",
       rulebook: "",
     },
@@ -149,31 +143,31 @@ const eventsData: EventsData = {
   "LITERARY CLUB": [
     {
       name: "Treasure Hunt",
-      image: "/images/events/treasure-hunt.jpg",
+      image: "/img/event/treasure-hunt.png",
       registrationLink: "",
       rulebook: "",
     },
     {
       name: "Open Mic",
-      image: "/images/events/open-mic.jpg",
+      image: "/img/event/open-mic.png",
       registrationLink: "",
       rulebook: "",
     },
     {
       name: "Literary Quiz",
-      image: "/images/events/literary-quiz.jpg",
+      image: "/img/event/literary-quiz.png",
       registrationLink: "",
       rulebook: "",
     },
     {
       name: "Doodle Art",
-      image: "/images/events/doodle-art.jpg",
+      image: "/img/event/doodle-art.png",
       registrationLink: "",
       rulebook: "",
     },
     {
       name: "Jam Chat",
-      image: "/images/events/jam-chat.jpg",
+      image: "/img/event/jam-chat.png",
       registrationLink: "",
       rulebook: "",
     },
@@ -181,13 +175,13 @@ const eventsData: EventsData = {
   MAINS: [
     {
       name: "Shimmer",
-      image: "/images/events/shimmer.jpg",
+      image: "/img/event/shimmer.png",
       registrationLink: "",
       rulebook: "",
     },
     {
       name: "Panache",
-      image: "/images/events/panache.jpg",
+      image: "/img/event/panache.png",
       registrationLink: "",
       rulebook: "",
     },
@@ -195,7 +189,7 @@ const eventsData: EventsData = {
   "MODEL UNITED NATIONS": [
     {
       name: "MUN",
-      image: "/images/events/mun.jpg",
+      image: "/img/event/mun.png",
       registrationLink: "",
       rulebook: "",
     },
@@ -203,19 +197,19 @@ const eventsData: EventsData = {
   "MUSIC CLUB": [
     {
       name: "Symphony",
-      image: "/images/events/symphony.jpg",
+      image: "/img/event/symphony.png",
       registrationLink: "",
       rulebook: "",
     },
     {
       name: "Instrumental",
-      image: "/images/events/instrumental.jpg",
+      image: "/img/event/instrumental.png",
       registrationLink: "",
       rulebook: "",
     },
     {
       name: "Battle of the Bands (Inter)",
-      image: "/images/events/battle-of-bands.jpg",
+      image: "/img/event/battle-of-bands.png",
       registrationLink: "",
       rulebook: "",
     },
@@ -223,19 +217,19 @@ const eventsData: EventsData = {
   "PHOTOGRAPHY & FINE ARTS CLUB": [
     {
       name: "Photo Walk",
-      image: "/images/events/photo-walk.jpg",
+      image: "/img/event/photo-walk.png",
       registrationLink: "",
       rulebook: "",
     },
     {
       name: "Art Battle",
-      image: "/images/events/art-battle.jpg",
+      image: "/img/event/art-battle.png",
       registrationLink: "",
       rulebook: "",
     },
     {
       name: "Short Film making competition",
-      image: "/images/events/short-film.jpg",
+      image: "/img/event/short-film.png",
       registrationLink: "",
       rulebook: "",
     },
@@ -243,7 +237,7 @@ const eventsData: EventsData = {
   "SPIC MACAY": [
     {
       name: "SPIC MACAY",
-      image: "/images/events/spicmacay.jpg",
+      image: "/img/event/spicmacay.png",
       registrationLink: "",
       rulebook: "",
     },
@@ -251,7 +245,7 @@ const eventsData: EventsData = {
   "TASKFORCE CLUB": [
     {
       name: "Stand-Up Comedy",
-      image: "/images/events/stand-up-comedy.jpg",
+      image: "/img/event/stand-up-comedy.png",
       registrationLink: "",
       rulebook: "",
     },

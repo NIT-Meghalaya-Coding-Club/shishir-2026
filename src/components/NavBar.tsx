@@ -4,12 +4,12 @@ import React, { useState, useRef, useEffect } from "react";
 import { LuMenu } from "react-icons/lu";
 import { motion, AnimatePresence } from "framer-motion";
 import NavBarItem from "./NavBarItem";
-import { useRouter } from "next/navigation"; // Import useRouter
+import { useRouter } from "next/navigation"; 
 
 const NavBar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const router = useRouter(); // Initialize useRouter
+  const router = useRouter();
 
   const toggleMenu = () => {
     setIsOpen((prev) => !prev);

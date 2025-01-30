@@ -1,8 +1,10 @@
 "use client";
 import React from "react";
+import Image from "next/image";
 import Inav from "@/components/events/internal-nav";
 import eventsData from "@/data/eventsData";
 import event_categories from "@/data/categoryData";
+import { Crown, Sparkles } from "lucide-react";
 
 export default function Events() {
   return (
@@ -10,74 +12,118 @@ export default function Events() {
       className="relative flex flex-col items-center w-full h-auto min-h-screen overflow-x-hidden pb-16"
       style={{ backgroundImage: `url('/img/brickwall.png')` }}
     >
-      <h1 className="text-5xl font-bold mt-28 text-center text-gold-500">
-        Events
-      </h1>
-      <Inav />
-      {event_categories.map((category) => (
-        <React.Fragment key={category}>
-          <div
-            id={category.toLowerCase().replace(/ /g, "-")}
-            className="h-auto m-10 p-4 bg-gold-500 rounded-xl flex items-center justify-center"
-          >
-            <h2 className="text-4xl font-bold text-black">
-              {category.replace("_", " ")}
-            </h2>
-          </div>
-          <div className="w-[90vw] mx-auto">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center">
-              {eventsData[category]?.map((event, index) => (
-                <div
-                  key={index}
-                  className="w-full h-[300px] rounded-lg shadow-lg relative overflow-hidden group border-2 border-gold-500"
-                  style={{
-                    backgroundImage: `url(${event.image})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                  }}
-                >
-                  {/* Event Name (Visible by Default) */}
-                  <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-70 text-white p-2 text-center transition-transform duration-300 group-hover:translate-y-full">
-                    <p className="font-bold text-xl">{event.name}</p>
-                  </div>
+      {/* Gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 to-black-900/80 pointer-events-none" />
 
-                  {/* Hover Overlay with Links */}
-                  <div className="absolute inset-0 bg-black bg-opacity-80 flex flex-col items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                    {event.registrationLink ? (
-                      <a
-                        href={event.registrationLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-gold-500 text-xl font-bold mb-3 hover:text-white transition-colors duration-300 transform hover:scale-110"
-                      >
-                        Register
-                      </a>
-                    ) : (
-                      <p className="text-gold-500 text-xl font-bold mb-3">
-                        Register (Coming Soon)
-                      </p>
-                    )}
-                    {event.rulebook ? (
-                      <a
-                        href={event.rulebook}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-gold-500 text-xl font-bold hover:text-white transition-colors duration-300 transform hover:scale-110"
-                      >
-                        Rulebook
-                      </a>
-                    ) : (
-                      <p className="text-gold-500 text-xl font-bold">
-                        Rulebook (Coming Soon)
-                      </p>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
+      {/* Content container */}
+      <div className="relative w-full">
+        {/* Header Section */}
+        <div className="text-center mt-20 mb-12">
+          <div className="flex justify-center items-center gap-4 mb-6">
+            <Crown className="w-12 h-12 text-yellow-400 animate-pulse" />
+            <h1 className="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 pt-10">
+              EVENTS
+            </h1>
+            <Crown className="w-12 h-12 text-yellow-400 animate-pulse" />
           </div>
-        </React.Fragment>
-      ))}
+          <div className="h-1 w-48 mx-auto bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full" />
+        </div>
+
+        <Inav />
+
+        {event_categories.map((category) => (
+          <React.Fragment key={category}>
+            {/* Category Header */}
+            <div
+              id={category.toLowerCase().replace(/ /g, "-")}
+              className="relative m-10 overflow-hidden"
+            >
+              {/* Outer rounded design */}
+              <div className="absolute inset-0 bg-gradient-to-r from-yellow-500 via-yellow-400 to-yellow-500 animate-gradient-x rounded-tl-[40px] rounded-br-[40px]" />
+              <div className="relative bg-gradient-to-r from-gray-900 to-black m-0.5 p-6 rounded-tl-[38px] rounded-br-[38px]">
+                <div className="flex items-center justify-center gap-4">
+                  <Sparkles className="w-8 h-8 text-yellow-400" />
+                  <h2 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
+                    {category.replace("_", " ")}
+                  </h2>
+                  <Sparkles className="w-8 h-8 text-yellow-400" />
+                </div>
+              </div>
+            </div>
+
+            {/* Events Grid */}
+            <div className="w-[90vw] mx-auto">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 justify-items-center">
+                {eventsData[category]?.map((event, index) => (
+                  <div
+                    key={index}
+                    className="w-full aspect-square rounded-xl shadow-2xl relative overflow-hidden group transform transition-all duration-500 hover:scale-105"
+                  >
+                    {/* Decorative border */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 animate-gradient-x rounded-tl-[20px] rounded-br-[20px]" />
+                    
+                    {/* Content container */}
+                    <div className="absolute inset-0.5 rounded-xl overflow-hidden bg-gradient-to-br from-gray-900 to-black rounded-tl-[18px] rounded-br-[18px]">
+                      {/* Image */}
+                      <Image
+                        src={event.image}
+                        alt={event.name}
+                        fill
+                        style={{ objectFit: "cover" }}
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        quality={75}
+                        priority={index < 4}
+                        className="transition-transform duration-500 group-hover:scale-110"
+                      />
+
+                      {/* Event Name Overlay */}
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/90 to-transparent text-white p-4 transform transition-transform duration-500 translate-y-full group-hover:translate-y-0 rounded-b-xl">
+                        <p className="font-bold text-2xl text-yellow-400 mb-2">{event.name}</p>
+                        
+                        {/* Links */}
+                        <div className="flex flex-col gap-3">
+                          {event.registrationLink ? (
+                            <a
+                              href={event.registrationLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-block bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-bold py-2 px-4 rounded-lg text-center transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-yellow-500/25"
+                            >
+                              Register Now
+                            </a>
+                          ) : (
+                            <p className="text-yellow-400/80 text-lg font-bold">
+                              Registration Coming Soon
+                            </p>
+                          )}
+                          
+                          {event.rulebook ? (
+                            <a
+                              href={event.rulebook}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-block bg-gradient-to-r from-gray-800 to-gray-900 text-yellow-400 border border-yellow-400/30 font-bold py-2 px-4 rounded-lg text-center transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-yellow-500/10"
+                            >
+                              View Rulebook
+                            </a>
+                          ) : (
+                            <p className="text-gray-400/80 text-lg font-bold">
+                              Rulebook Coming Soon
+                            </p>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Hover Overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-gray-900/40 to-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-tl-[18px] rounded-br-[18px]" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </React.Fragment>
+        ))}
+      </div>
     </div>
   );
 }

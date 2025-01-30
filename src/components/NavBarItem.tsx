@@ -24,18 +24,20 @@ const NavBarItem: React.FC<Props> = ({ to, text, onClick }) => {
       className="cursor-pointer mb-2 last:mb-0" // Added margin between items
       onClick={navigateTo}
     >
-      <div 
+      <div
         className="relative h-12 flex items-center justify-center"
         style={{
           backgroundImage: "url('/assets/scroll-banner.png')", // Make sure to add the image to your public/assets folder
           backgroundSize: "100% 100%",
           backgroundRepeat: "no-repeat",
-          backgroundPosition: "center"
+          backgroundPosition: "center",
         }}
       >
-        <span className="text-sm font-medium text-black"> {/* Changed text color to black for better visibility on gold background */}
+        <h1 className="text-lg font-medium text-black special-font">
+          {" "}
+          {/* Changed text color to black for better visibility on gold background */}
           {text}
-        </span>
+        </h1>
       </div>
     </motion.li>
   );
