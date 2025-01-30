@@ -8,7 +8,7 @@ interface AdditionalInfoProps {
 
   export default function AdditionalInfo({ student }: AdditionalInfoProps) {
     return (
-      <div className="bg-pink-50 shadow rounded-lg p-6">
+      <div className="bg-teal-50 shadow rounded-lg p-6">
         <h2 className="text-xl font-semibold text-teal-950 mb-4">Additional Information</h2>
         <div className="grid grid-cols-1 gap-4">
           <div>
