@@ -3,6 +3,8 @@ import { useState, useRef, useEffect } from "react";
 import { TiLocationArrow } from "react-icons/ti";
 import { ReactNode } from "react";
 
+// Keeping the NumberCounter component the same as it works well
+
 const NumberCounter = ({
   end,
   duration = 2000,
@@ -18,7 +20,7 @@ const NumberCounter = ({
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && !hasAnimated.current) {
-          hasAnimated.current = true; // Mark as animated
+          hasAnimated.current = true;
           let start = 0;
           const step = end / (duration / 16);
           const timer = setInterval(() => {
@@ -42,9 +44,14 @@ const NumberCounter = ({
     return () => observer.disconnect();
   }, [end, duration]);
 
-  return <span ref={countRef}>{count}+</span>;
+  return (
+    <span ref={countRef} className="text-amber-400">
+      {count}+
+    </span>
+  );
 };
 
+// Enhanced BentoTilt with more dramatic effects
 export const BentoTilt = ({
   children,
   className = "",
@@ -53,6 +60,7 @@ export const BentoTilt = ({
   className?: string;
 }) => {
   const [transformStyle, setTransformStyle] = useState("");
+  const [glowPosition, setGlowPosition] = useState({ x: 0, y: 0 });
   const itemRef = useRef<HTMLDivElement>(null);
 
   const handleMouseMove = (event: { clientX: number; clientY: number }) => {
@@ -64,10 +72,11 @@ export const BentoTilt = ({
     const relativeX = (event.clientX - left) / width;
     const relativeY = (event.clientY - top) / height;
 
-    const tiltX = (relativeY - 0.5) * 5;
-    const tiltY = (relativeX - 0.5) * -5;
+    const tiltX = (relativeY - 0.5) * 7; // Increased tilt effect
+    const tiltY = (relativeX - 0.5) * -7;
 
-    const newTransform = `perspective(700px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale3d(.95, .95, .95)`;
+    setGlowPosition({ x: relativeX * 100, y: relativeY * 100 });
+    const newTransform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale3d(0.98, 0.98, 0.98)`;
     setTransformStyle(newTransform);
   };
 
@@ -78,29 +87,31 @@ export const BentoTilt = ({
   return (
     <div
       ref={itemRef}
-      className={className}
+      className={`relative ${className} transition-transform duration-300 ease-out`}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      style={{ transform: transformStyle }}
+      style={{
+        transform: transformStyle,
+        background: `radial-gradient(circle at ${glowPosition.x}% ${glowPosition.y}%, rgba(234, 179, 8, 0.15), transparent 25%)`,
+      }}
     >
       {children}
     </div>
   );
 };
 
-interface BentoCardProps {
-  src: string;
-  title: ReactNode;
-  description?: string;
-  isComingSoon?: boolean;
-}
-
+// Enhanced BentoCard with royal styling
 export const BentoCard = ({
   src,
   title,
   description,
   isComingSoon,
-}: BentoCardProps) => {
+}: {
+  src: string;
+  title: ReactNode;
+  description?: string;
+  isComingSoon?: boolean;
+}) => {
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
   const [hoverOpacity, setHoverOpacity] = useState(0);
   const hoverButtonRef = useRef<HTMLDivElement | null>(null);
@@ -119,7 +130,7 @@ export const BentoCard = ({
   const handleMouseLeave = () => setHoverOpacity(0);
 
   return (
-    <div className="relative size-full">
+    <div className="relative size-full overflow-hidden rounded-lg border border-amber-500/30">
       {src.endsWith(".mp4") ? (
         <video
           src={src}
@@ -135,11 +146,16 @@ export const BentoCard = ({
           className="absolute left-0 top-0 size-full object-cover object-center"
         />
       )}
-      <div className="relative z-10 flex size-full flex-col justify-between p-5 text-blue-50">
-        <div>
-          <h1 className="bento-title special-font">{title}</h1>
+      <div className="absolute inset-0 bg-gradient-to-b from-blue-900/50 to-black/70" />
+      <div className="relative z-10 flex size-full flex-col justify-between p-6 text-blue-50">
+        <div className="transform transition-transform duration-300 hover:scale-105">
+          <h1 className="bento-title special-font bg-gradient-to-r from-amber-200 to-amber-500 bg-clip-text text-transparent">
+            {title}
+          </h1>
           {description && (
-            <p className="mt-3 max-w-64 text-xs md:text-base">{description}</p>
+            <p className="mt-4 max-w-64 text-sm font-light tracking-wide text-blue-100 md:text-base">
+              {description}
+            </p>
           )}
         </div>
 
@@ -149,13 +165,13 @@ export const BentoCard = ({
             onMouseMove={handleMouseMove}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
-            className="border-hsla relative flex w-fit cursor-pointer items-center gap-1 overflow-hidden rounded-full bg-black px-5 py-2 text-xs uppercase text-white/20"
+            className="relative flex w-fit cursor-pointer items-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-amber-500 to-amber-700 px-6 py-3 text-sm uppercase text-white shadow-lg transition-all duration-300 hover:shadow-amber-500/20"
           >
             <div
               className="pointer-events-none absolute -inset-px opacity-0 transition duration-300"
               style={{
                 opacity: hoverOpacity,
-                background: `radial-gradient(100px circle at ${cursorPosition.x}px ${cursorPosition.y}px, #656fe288, #00000026)`,
+                background: `radial-gradient(100px circle at ${cursorPosition.x}px ${cursorPosition.y}px, rgba(251, 191, 36, 0.4), transparent)`,
               }}
             />
             <TiLocationArrow className="relative z-20" />
@@ -168,20 +184,24 @@ export const BentoCard = ({
 };
 
 const Events = () => (
-  <section className="bg-black pb-52">
-    <div className="container mx-auto px-3 md:px-10">
-      {/* Updated header section with more prominent styling */}
-      <div className="px-5 py-32 text-center">
-        <p className="max-w-3xl mx-auto font-circular-web text-xl md:text-2xl text-blue-50 leading-relaxed">
+  <section className="min-h-screen bg-gradient-to-b from-blue-950 via-black to-blue-950 pb-20 sm:pb-32 lg:pb-52">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-10">
+      {/* Hero Text Section */}
+      <div className="relative px-4 py-16 sm:py-24 lg:py-32 text-center">
+        <div className="absolute inset-0 bg-[url('/pattern.png')] opacity-10" />
+        <p className="relative mx-auto max-w-3xl font-circular-web text-base sm:text-lg lg:text-2xl text-blue-50 leading-relaxed">
           Experience the cultural extravaganza with{" "}
-          <span className="text-blue-400">30+ events</span> across clubs,
-          featuring national and international artists, bringing together
-          thousands of participants in a celebration of creativity and talent.
+          <span className="bg-gradient-to-r from-amber-300 to-amber-500 bg-clip-text font-bold text-transparent">
+            30+ events
+          </span>{" "}
+          across clubs, featuring national and international artists, bringing
+          together thousands of participants in a celebration of creativity and
+          talent.
         </p>
       </div>
 
-      {/* Rest of the component remains the same */}
-      <BentoTilt className="border-hsla relative mb-7 h-96 w-full overflow-hidden rounded-md md:h-[65vh]">
+      {/* Feature Video Card */}
+      <BentoTilt className="mb-4 sm:mb-7 h-[300px] sm:h-[400px] lg:h-[65vh] overflow-hidden rounded-lg border border-amber-500/30 shadow-lg shadow-amber-500/10">
         <BentoCard
           src="videos/feature-1.mp4"
           title={
@@ -189,24 +209,29 @@ const Events = () => (
               <NumberCounter end={30} /> Events
             </>
           }
-          description="Diverse range of events spanning across multiple clubs, showcasing talent in music, dance, art, and more."
+          description="Dive into a diverse range of events spanning across multiple clubs, showcasing extraordinary talent in music, dance, art, and more."
         />
       </BentoTilt>
 
-      <div className="grid h-[135vh] w-full grid-cols-2 grid-rows-3 gap-7">
-        <BentoTilt className="bento-tilt_1 row-span-1 md:col-span-1 md:row-span-2">
-          <BentoCard
-            src="videos/artists.mp4"
-            title={
-              <>
-                <NumberCounter end={15} /> Artists
-              </>
-            }
-            description="National and International artists performing live at SHISHIR 2025."
-          />
-        </BentoTilt>
+      {/* Grid Layout */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-7">
+        {/* Artists Card */}
+        <div className="sm:row-span-2">
+          <BentoTilt className="h-[300px] sm:h-full overflow-hidden rounded-lg border border-amber-500/30 shadow-lg shadow-amber-500/10">
+            <BentoCard
+              src="videos/artists.mp4"
+              title={
+                <>
+                  <NumberCounter end={15} /> Artists
+                </>
+              }
+              description="Witness spectacular performances by national and international artists live at SHISHIR 2025."
+            />
+          </BentoTilt>
+        </div>
 
-        <BentoTilt className="bento-tilt_1 row-span-1 ms-32 md:col-span-1 md:ms-0">
+        {/* Ambassadors Card */}
+        <BentoTilt className="h-[250px] sm:h-[300px] overflow-hidden rounded-lg border border-amber-500/30 shadow-lg shadow-amber-500/10">
           <BentoCard
             src="videos/footfall.jpg"
             title={
@@ -214,11 +239,12 @@ const Events = () => (
                 <NumberCounter end={150} /> Ambassadors
               </>
             }
-            description="College ambassadors from across the country representing SHISHIR."
+            description="Join our elite network of college ambassadors representing SHISHIR across the nation."
           />
         </BentoTilt>
 
-        <BentoTilt className="bento-tilt_1 me-14 md:col-span-1 md:me-0">
+        {/* Footfall Card */}
+        <BentoTilt className="h-[250px] sm:h-[300px] overflow-hidden rounded-lg border border-amber-500/30 shadow-lg shadow-amber-500/10">
           <BentoCard
             src="videos/crowd.jpg"
             title={
@@ -226,32 +252,35 @@ const Events = () => (
                 <NumberCounter end={2000} /> Footfall
               </>
             }
-            description="Record-breaking attendance at SHISHIR 2024, with even more expected in 2025."
+            description="Be part of our biggest gathering yet, surpassing last year's record-breaking attendance."
           />
         </BentoTilt>
 
-        <BentoTilt className="bento-tilt_2">
-          <div className="flex size-full flex-col justify-between bg-blue-950 p-5">
-            <h1 className="bento-title special-font max-w-64 text-white">
+        {/* Expected Card */}
+        <BentoTilt className="h-[250px] sm:h-[300px] overflow-hidden rounded-lg border border-amber-500/30 shadow-lg shadow-amber-500/10">
+          <div className="flex h-full flex-col justify-between bg-gradient-to-br from-blue-900 to-blue-950 p-4 sm:p-6">
+            <h1 className="bento-title  w-full bg-gradient-to-r from-amber-200 to-amber-500 bg-clip-text text-3xl sm:text-4xl lg:text-6xl text-transparent">
               <NumberCounter end={2500} /> Expected
             </h1>
-
-            <TiLocationArrow className="m-5 scale-[5] self-end" />
+            <TiLocationArrow className="m-3 sm:m-5 scale-[3] sm:scale-[5] self-end text-amber-400" />
           </div>
         </BentoTilt>
 
-        <BentoTilt className="bento-tilt_2">
+        {/* Video Card */}
+        <BentoTilt className="h-[250px] sm:h-[300px] overflow-hidden rounded-lg border border-amber-500/30 shadow-lg shadow-amber-500/10">
           <video
             src="videos/feature-5.mp4"
             loop
             muted
             autoPlay
-            className="size-full object-cover object-center"
+            playsInline
+            className="h-full w-full object-cover object-center"
           />
         </BentoTilt>
       </div>
     </div>
   </section>
 );
+
 
 export default Events;
