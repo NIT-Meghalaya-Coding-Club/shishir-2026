@@ -5,7 +5,7 @@ export default function MainScene() {
     <div className="relative w-full flex items-center justify-center">
       <div className="relative w-full  h-[calc(100vh)]">
         <Image
-          src="/img/img.jpg"
+          src="/img/img.png"
           alt="Main Scene GIF"
           fill
           priority
