@@ -1,20 +1,26 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import { Instagram, Facebook, Youtube } from "lucide-react";
 import { IoMail, IoCall, IoLocationSharp } from "react-icons/io5";
-import { footer } from "framer-motion/client";
 
 export default function Footer() {
   return (
     <footer className="relative overflow-hidden bg-gradient-to-b from-blue-950 via-black to-blue-950 pt-16 text-amber-100">
       {/* Animated background particles - Adjusted for better visibility on all screens */}
       <div className="absolute inset-0 opacity-10">
-        <div className="absolute h-1.5 w-1.5 sm:h-2 sm:w-2 animate-ping rounded-full bg-amber-400" 
-          style={{ left: '10%', top: '20%' }} />
-        <div className="absolute h-1.5 w-1.5 sm:h-2 sm:w-2 animate-ping rounded-full bg-amber-400" 
-          style={{ left: '80%', top: '50%', animationDelay: '1s' }} />
-        <div className="absolute h-1.5 w-1.5 sm:h-2 sm:w-2 animate-ping rounded-full bg-amber-400" 
-          style={{ left: '30%', top: '70%', animationDelay: '2s' }} />
+        <div
+          className="absolute h-1.5 w-1.5 sm:h-2 sm:w-2 animate-ping rounded-full bg-amber-400"
+          style={{ left: "10%", top: "20%" }}
+        />
+        <div
+          className="absolute h-1.5 w-1.5 sm:h-2 sm:w-2 animate-ping rounded-full bg-amber-400"
+          style={{ left: "80%", top: "50%", animationDelay: "1s" }}
+        />
+        <div
+          className="absolute h-1.5 w-1.5 sm:h-2 sm:w-2 animate-ping rounded-full bg-amber-400"
+          style={{ left: "30%", top: "70%", animationDelay: "2s" }}
+        />
       </div>
 
       {/* Semi-circle Background with Logo - Improved scaling */}
@@ -22,9 +28,12 @@ export default function Footer() {
         <div className="relative h-[80px] w-[160px] sm:h-[100px] sm:w-[200px] md:h-[200px] md:w-[400px]">
           <div className="absolute h-full w-full rounded-t-full bg-gradient-to-b from-amber-500/20 via-amber-500/5 to-transparent" />
           <div className="absolute left-1/2 top-1/2 flex h-16 w-16 sm:h-24 sm:w-24 md:h-36 md:w-36 -translate-x-1/2 -translate-y-1/2 transform items-center justify-center">
-            <img
+            <Image
               src="/assets/logo.png"
-              alt="Logo"
+              alt="Shishir Logo"
+              width={144}
+              height={144}
+              priority
               className="h-full w-full object-contain drop-shadow-[0_0_15px_rgba(251,191,36,0.3)]"
             />
           </div>
@@ -71,24 +80,27 @@ export default function Footer() {
 
         {/* Social Links - Improved spacing and hover effects */}
         <div className="mb-8 flex justify-center gap-6 sm:gap-8">
-  {[
-    { Icon: Instagram, url: "https://www.instagram.com/shishir_nitm/" },
-    { Icon: Facebook, url: "https://www.facebook.com/shishirnitmeghalaya" },
-    { Icon: Youtube, url: "https://www.youtube.com/@shishir_nitm" },
-  ].map(({ Icon, url }, index) => (
-    <Link
-      key={index}
-      href={url}
-      className="group relative transform transition-all duration-300 hover:scale-125"
-    >
-      <div className="absolute -inset-2 animate-pulse rounded-full bg-amber-400/20 opacity-0 transition-opacity group-hover:opacity-100" />
-      <Icon 
-        size={20} 
-        className="text-amber-400 transition-colors group-hover:text-amber-300 sm:h-6 sm:w-6 md:h-7 md:w-7" 
-      />
-    </Link>
-  ))}
-</div>
+          {[
+            { Icon: Instagram, url: "https://www.instagram.com/shishir_nitm/" },
+            {
+              Icon: Facebook,
+              url: "https://www.facebook.com/shishirnitmeghalaya",
+            },
+            { Icon: Youtube, url: "https://www.youtube.com/@shishir_nitm" },
+          ].map(({ Icon, url }, index) => (
+            <Link
+              key={index}
+              href={url}
+              className="group relative transform transition-all duration-300 hover:scale-125"
+            >
+              <div className="absolute -inset-2 animate-pulse rounded-full bg-amber-400/20 opacity-0 transition-opacity group-hover:opacity-100" />
+              <Icon
+                size={20}
+                className="text-amber-400 transition-colors group-hover:text-amber-300 sm:h-6 sm:w-6 md:h-7 md:w-7"
+              />
+            </Link>
+          ))}
+        </div>
 
         {/* Divider */}
         <div className="my-6 sm:my-8 border-t border-amber-500/30" />

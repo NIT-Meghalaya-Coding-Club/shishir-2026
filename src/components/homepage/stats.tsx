@@ -3,8 +3,6 @@ import { useState, useRef, useEffect } from "react";
 import { TiLocationArrow } from "react-icons/ti";
 import { ReactNode } from "react";
 
-// Keeping the NumberCounter component the same as it works well
-
 const NumberCounter = ({
   end,
   duration = 2000,
@@ -281,6 +279,5 @@ const Events = () => (
     </div>
   </section>
 );
-
 
 export default Events;

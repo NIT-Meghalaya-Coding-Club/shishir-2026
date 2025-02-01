@@ -4,7 +4,8 @@ import React, { useState, useRef, useEffect } from "react";
 import { LuMenu } from "react-icons/lu";
 import { motion, AnimatePresence } from "framer-motion";
 import NavBarItem from "./NavBarItem";
-import { useRouter } from "next/navigation"; 
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 const NavBar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -53,10 +54,13 @@ const NavBar: React.FC = () => {
           className="flex items-center cursor-pointer"
           onClick={navigateToHome} // Redirect to home page on click
         >
-          <img
-            src="/assets/logo.png" // Replace with the actual path to your logo image
+          <Image
+            src="/assets/logo.png"
             alt="Logo"
-            className="h-12 w-12" // Adjust the size as needed
+            width={48} 
+            height={48} 
+            priority
+            className="h-12 w-12"
           />
         </motion.div>
 
@@ -83,7 +87,11 @@ const NavBar: React.FC = () => {
             {/* <NavBarItem to="/competitions" text="Competitions" onClick={closeMenu} /> */}
             <NavBarItem to="/schedule" text="Schedule" onClick={closeMenu} />
             <NavBarItem to="/sponsors" text="Sponsors" onClick={closeMenu} />
-            <NavBarItem to="/contact-us" text="Contact Us" onClick={closeMenu} />
+            <NavBarItem
+              to="/contact-us"
+              text="Contact Us"
+              onClick={closeMenu}
+            />
           </motion.ul>
         )}
       </AnimatePresence>
