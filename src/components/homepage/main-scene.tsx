@@ -17,12 +17,7 @@ export default function MainScene() {
       </div>
       <div className="absolute bottom-0 right-8">
         <div className=" rounded-full cursor-pointer hover:scale-105 transition-transform">
-          <Image
-            src="/img/ml_stone.png"
-            alt="Arrow Down"
-            width={100}
-            height={100} 
-          />
+          <Rbutton/>
         </div>
       </div>
     </div>
