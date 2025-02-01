@@ -40,10 +40,14 @@ const ProfileCard = () => {
   return (
     <div>
       <div className="min-h-screen bg-teal-500 relative">
-        <div className="bg-pink-600 h-[50vh]"></div>
-        <div className="bg-white h-[50vh]"></div>
+        <div className="bg-pink-600 h-[50vh]" style={{ backgroundImage: 'url("/background2.jpg")' }}></div>
+        
 
-        <div className="box absolute h-auto w-[90%] md:w-[55vw] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-pink-50 text-[#696969] p-6 rounded-lg shadow-lg">
+        <div className="bg-white h-[50vh]" style={{ backgroundImage: 'url("/background2.jpg")'}} >
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 to-black-900/80" />
+        </div>
+
+        <div className="box absolute h-auto w-[90%] md:w-[55vw] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 backdrop-blur-md border border-white/10 text-white p-6 rounded-lg shadow-lg">
           <div className="Name mt-32 text-center text-2xl md:text-4xl font-mono font-bold">
             {student.name}
           </div>
