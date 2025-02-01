@@ -9,7 +9,7 @@ export default function EditButton() {
   return (
     <button
       onClick={() => router.push("/register")}
-      className="fixed bottom-8 right-8 bg-pink-500 text-white p-4 rounded-full shadow-lg hover:bg-pink-600 transition-colors"
+      className="fixed bottom-8 right-8 bg-[#ffffff] text-[#1b1313] p-4 rounded-full shadow-lg hover:bg-[#1b1313] hover:text-white hover:scale-125 transition-all"
       aria-label="Edit Profile"
     >
       <Pencil className="w-6 h-6" />
