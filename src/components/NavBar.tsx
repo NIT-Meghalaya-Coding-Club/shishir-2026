@@ -80,7 +80,7 @@ const NavBar: React.FC = () => {
           >
             <NavBarItem to="/" text="Home" onClick={closeMenu} />
             <NavBarItem to="/events" text="Events" onClick={closeMenu} />
-            <NavBarItem to="/competitions" text="Competitions" onClick={closeMenu} />
+            {/* <NavBarItem to="/competitions" text="Competitions" onClick={closeMenu} /> */}
             <NavBarItem to="/schedule" text="Schedule" onClick={closeMenu} />
             <NavBarItem to="/sponsors" text="Sponsors" onClick={closeMenu} />
             <NavBarItem to="/contact-us" text="Contact Us" onClick={closeMenu} />

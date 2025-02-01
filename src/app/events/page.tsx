@@ -36,17 +36,37 @@ export default function Events() {
             {/* Category Header */}
             <div
               id={category.toLowerCase().replace(/ /g, "-")}
-              className="relative m-10 overflow-hidden"
+              className="relative mx-4 sm:mx-6 md:mx-8 lg:mx-10 my-4 sm:my-6 md:my-8 lg:my-10 overflow-hidden"
             >
-              {/* Outer rounded design */}
-              <div className="absolute inset-0 bg-gradient-to-r from-yellow-500 via-yellow-400 to-yellow-500 animate-gradient-x rounded-tl-[40px] rounded-br-[40px]" />
-              <div className="relative bg-gradient-to-r from-gray-900 to-black m-0.5 p-6 rounded-tl-[38px] rounded-br-[38px]">
-                <div className="flex items-center justify-center gap-4">
-                  <Sparkles className="w-8 h-8 text-yellow-400" />
-                  <h2 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
+              {/* Outer rounded design with responsive border radius */}
+              <div
+                className="absolute inset-0 bg-gradient-to-r from-yellow-500 via-yellow-400 to-yellow-500 animate-gradient-x 
+    rounded-tl-[20px] rounded-br-[20px] 
+    sm:rounded-tl-[25px] sm:rounded-br-[25px]
+    md:rounded-tl-[30px] md:rounded-br-[30px]
+    lg:rounded-tl-[40px] lg:rounded-br-[40px]"
+              />
+
+              <div
+                className="relative bg-gradient-to-r from-gray-900 to-black m-0.5 
+    p-3 sm:p-4 md:p-5 lg:p-6
+    rounded-tl-[18px] rounded-br-[18px]
+    sm:rounded-tl-[23px] sm:rounded-br-[23px]
+    md:rounded-tl-[28px] md:rounded-br-[28px]
+    lg:rounded-tl-[38px] lg:rounded-br-[38px]"
+              >
+                <div className="flex items-center justify-center gap-2 sm:gap-3 md:gap-4">
+                  <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 lg:w-8 lg:h-8 text-yellow-400" />
+
+                  <h2
+                    className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold 
+        text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600
+        whitespace-nowrap"
+                  >
                     {category.replace("_", " ")}
                   </h2>
-                  <Sparkles className="w-8 h-8 text-yellow-400" />
+
+                  <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 lg:w-8 lg:h-8 text-yellow-400" />
                 </div>
               </div>
             </div>
@@ -61,7 +81,7 @@ export default function Events() {
                   >
                     {/* Decorative border */}
                     <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 animate-gradient-x rounded-tl-[20px] rounded-br-[20px]" />
-                    
+
                     {/* Content container */}
                     <div className="absolute inset-0.5 rounded-xl overflow-hidden bg-gradient-to-br from-gray-900 to-black rounded-tl-[18px] rounded-br-[18px]">
                       {/* Image */}
@@ -78,8 +98,10 @@ export default function Events() {
 
                       {/* Event Name Overlay */}
                       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/90 to-transparent text-white p-4 transform transition-transform duration-500 translate-y-full group-hover:translate-y-0 rounded-b-xl">
-                        <p className="font-bold text-2xl text-yellow-400 mb-2">{event.name}</p>
-                        
+                        <p className="font-bold text-2xl text-yellow-400 mb-2">
+                          {event.name}
+                        </p>
+
                         {/* Links */}
                         <div className="flex flex-col gap-3">
                           {event.registrationLink ? (
@@ -96,7 +118,7 @@ export default function Events() {
                               Registration Coming Soon
                             </p>
                           )}
-                          
+
                           {event.rulebook ? (
                             <a
                               href={event.rulebook}

@@ -64,7 +64,7 @@ h3 {
   }
 
   .bento-title {
-    @apply uppercase md:text-6xl text-4xl font-black font-zentry;
+    @apply uppercase md:text-6xl text-4xl font-black ;
   }
 }
 
