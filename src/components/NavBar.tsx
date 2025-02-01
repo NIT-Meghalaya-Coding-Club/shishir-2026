@@ -89,7 +89,7 @@ const NavBar: React.FC = () => {
             <NavBarItem to="/sponsors" text="Sponsors" onClick={closeMenu} />
             <NavBarItem
               to="/contact-us"
-              text="Contact Us"
+              text="Team"
               onClick={closeMenu}
             />
           </motion.ul>
