@@ -35,6 +35,19 @@ h3 {
   background: radial-gradient(ellipse at bottom, #603e94 0%, #090a0f 100%);
 }
 
+@keyframes spin-slow {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  .animate-spin-slow {
+    animation: spin-slow 18s linear infinite;
+  }
+
 @layer base {
   :root {
     --radius: 0.5rem;
