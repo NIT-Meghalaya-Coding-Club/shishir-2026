@@ -86,15 +86,15 @@ const ProfileCard = () => {
       </div>
       <div
         id="more-info-section"
-        className="w-full bg-gray-200 p-6 md:p-10 mt-20 text-center"
-      >
-        <h2 className="text-2xl md:text-3xl font-bold mt-8 md:mt-20">
+        className="w-full border-t-2 border-double border-white bg-gradient-to-b from-[#331e12] to-[#141826]  p-6 md:p-10 text-center"
+      > 
+        <h2 className=" text-amber-50  md:text-3xl font-bold mt-8 md:mt-20">
           More Information
         </h2>
-        <div className="mt-4 text-base flex-col p-10 space-y-10 md:text-lg text-gray-700">
+        <div className=" text-base flex-col p-10 space-y-10 md:text-lg text-amber-50">
           <ContactInfo student={student} />
           <AdditionalInfo student={student} />
-        </div>
+        </div>  
         <div className="flex justify-center mt-4">
           <EditButton />
         </div>
