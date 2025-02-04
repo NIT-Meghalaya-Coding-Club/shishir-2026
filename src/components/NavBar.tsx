@@ -88,7 +88,7 @@ const NavBar: React.FC = () => {
             <NavBarItem to="/schedule" text="Schedule" onClick={closeMenu} />
             <NavBarItem to="/sponsors" text="Sponsors" onClick={closeMenu} />
             <NavBarItem
-              to="/contact-us"
+              to="/team"
               text="Team"
               onClick={closeMenu}
             />
