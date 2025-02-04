@@ -36,7 +36,7 @@ const Popup: React.FC<PopupProps> = ({ isOpen, onClose, event }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="popup-content backdrop-blur-md border-[0.1px] border-[#debc40] shadow-xl p-6 rounded-xl w-1/2 h-fit overflow-auto">
+      <div className="popup-content backdrop-blur-md border-[0.1px] border-[#debc40] shadow-xl p-6 rounded-xl w-[90vw] xl:w-1/2 h-fit overflow-auto">
         <button
           onClick={onClose}
           className="absolute w-4 h-4  top-2 right-2 rounded-full text-yellow-700 hover:text-yellow-200"
