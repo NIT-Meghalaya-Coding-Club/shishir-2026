@@ -76,8 +76,8 @@ const eventsData: EventsData = {
       rulebook: "",
     },
     {
-      name: "Gun shooting",
-      image: "/img/event/gun-shooting.png",
+      name: "Shooting Contest",
+      image: "/img/event/shooting-contest.png",
       registrationLink: "",
       rulebook: "",
     },

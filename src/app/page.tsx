@@ -1,5 +1,5 @@
 import MainScene from '@/components/homepage/main-scene'
-import HeadliningEvents from '@/components/homepage/head-events'
+
 import About from '@/components/homepage/about'
 import Events from '@/components/homepage/stats'
 
