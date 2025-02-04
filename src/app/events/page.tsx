@@ -1,12 +1,37 @@
 "use client";
-import React from "react";
+import React, {useState} from "react";
 import Image from "next/image";
 import Inav from "@/components/events/internal-nav";
 import eventsData from "@/data/eventsData";
 import event_categories from "@/data/categoryData";
 import { Crown, Sparkles } from "lucide-react";
+import Popup from "@/components/events/popup";
 
 export default function Events() {
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+        const [selectedEvent, setSelectedEvent] = useState<{
+          name: string;
+          description?: string;
+          image: string;
+          registrationLink?: string;
+          rulebook?: string;
+        } | null>(null);
+      
+        const openPopup = (event: {
+          name: string;
+          description?: string;
+          image: string;
+          registrationLink?: string;
+          rulebook?: string;
+        }) => {
+          setSelectedEvent(event);
+          setIsPopupOpen(true);
+        };
+      
+        const closePopup = () => {
+          setIsPopupOpen(false);
+          setSelectedEvent(null);
+        };
   return (
     <div
       className="relative flex flex-col items-center w-full h-auto min-h-screen overflow-x-hidden pb-16"
@@ -57,7 +82,8 @@ export default function Events() {
                 {eventsData[category]?.map((event, index) => (
                   <div
                     key={index}
-                    className="w-full aspect-square rounded-xl shadow-2xl relative overflow-hidden group transform transition-all duration-500 hover:scale-105"
+                    className="w-full cursor-pointer aspect-square rounded-xl shadow-2xl relative overflow-hidden group transform transition-all duration-500 hover:scale-105"
+                    onClick={() => openPopup(event)}
                   >
                     {/* Decorative border */}
                     <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 animate-gradient-x rounded-tl-[20px] rounded-br-[20px]" />
@@ -124,6 +150,10 @@ export default function Events() {
           </React.Fragment>
         ))}
       </div>
+      {/* Popup */}
+      {selectedEvent && (
+        <Popup isOpen={isPopupOpen} onClose={closePopup} event={selectedEvent} />
+      )}
     </div>
   );
 }
