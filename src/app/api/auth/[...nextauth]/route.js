@@ -119,7 +119,7 @@ const authOptions = {
     strategy: "jwt",
   },
   callbacks: {
-    async signIn({ user, account, profile }) {
+    async signIn({ user, account }) {
       // When using Google, check if user exists in database, create if not
       if (account.provider === 'google') {
         await connectMongo();

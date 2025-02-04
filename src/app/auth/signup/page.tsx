@@ -121,8 +121,12 @@ export default function SignUp() {
                 return;
             }
 
-        } catch (error: any) {
-            toast.error(error)
+        } catch (error) {
+            if (error instanceof Error) {
+                toast.error(error.message);
+            } else {
+                toast.error("An unexpected error occurred");
+            }
         } finally {
             isLoading(false);
         }

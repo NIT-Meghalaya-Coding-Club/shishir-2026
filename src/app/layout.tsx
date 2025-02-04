@@ -20,10 +20,8 @@ export const metadata: Metadata = {
 };
 
 
-import { SessionProvider } from "next-auth/react";
+// import { SessionProvider } from "next-auth/react";
 
-
-//Components
 import { ClientProviders } from "@/app/components/ClientProviders";
 
 
