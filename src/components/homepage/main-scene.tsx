@@ -1,5 +1,6 @@
 'use client'
-import Image from 'next/image';
+import Image from 'next/image'
+import Rbutton from './register-button' 
 import { useState, useEffect } from 'react';
 
 const ResponsiveScene = () => {
@@ -25,7 +26,7 @@ const ResponsiveScene = () => {
   }, []);
 
   return (
-    <div className="relative w-full min-h-screen">
+    <div className="relative w-full min-h-screen bg-[#0b101d]">
       {/* Main Scene Image */}
       <div className="relative w-full h-screen">
         <Image
@@ -33,8 +34,8 @@ const ResponsiveScene = () => {
           alt="Festival Scene"
           fill
           priority
+          className="object-cover shadow-xl rounded-b-2xl"
           sizes="100vw"
-          className="object-cover"
           quality={90}
           unoptimized
         />
@@ -56,14 +57,8 @@ const ResponsiveScene = () => {
 
       {/* Bottom Right Image */}
       <div className="absolute bottom-0 right-8">
-        <div className="rounded-full cursor-pointer hover:scale-105 transition-transform">
-          <Image
-            src="/img/ml_stone.png"
-            alt="Arrow Down"
-            width={100}
-            height={100}
-            priority
-          />
+        <div className=" rounded-full cursor-pointer hover:scale-105 transition-transform">
+          <Rbutton/>
         </div>
       </div>
     </div>

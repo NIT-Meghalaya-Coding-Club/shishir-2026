@@ -1,13 +1,39 @@
 "use client";
-import React from "react";
+import React, {useState} from "react";
 import Image from "next/image";
 import Inav from "@/components/events/internal-nav";
 import eventsData from "@/data/eventsData";
 import event_categories from "@/data/categoryData";
 import { Crown, Sparkles } from "lucide-react";
+import Popup from "@/components/events/popup";
 import Head from "next/head";
 
+
 export default function Events() {
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+        const [selectedEvent, setSelectedEvent] = useState<{
+          name: string;
+          description?: string;
+          image: string;
+          registrationLink?: string;
+          rulebook?: string;
+        } | null>(null);
+      
+        const openPopup = (event: {
+          name: string;
+          description?: string;
+          image: string;
+          registrationLink?: string;
+          rulebook?: string;
+        }) => {
+          setSelectedEvent(event);
+          setIsPopupOpen(true);
+        };
+      
+        const closePopup = () => {
+          setIsPopupOpen(false);
+          setSelectedEvent(null);
+        };
   return (
     <>
       <Head>
@@ -76,30 +102,31 @@ export default function Events() {
                 </div>
               </div>
 
-              {/* Events Grid */}
-              <div className="w-[90vw] mx-auto">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 justify-items-center">
-                  {eventsData[category]?.map((event, index) => (
-                    <div
-                      key={index}
-                      className="w-full aspect-square rounded-xl shadow-2xl relative overflow-hidden group transform transition-all duration-500 hover:scale-105"
-                    >
-                      {/* Decorative border */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 animate-gradient-x rounded-tl-[20px] rounded-br-[20px]" />
-
-                      {/* Content container */}
-                      <div className="absolute inset-0.5 rounded-xl overflow-hidden bg-gradient-to-br from-gray-900 to-black rounded-tl-[18px] rounded-br-[18px]">
-                        {/* Image */}
-                        <Image
-                          src={event.image}
-                          alt={event.name}
-                          fill
-                          style={{ objectFit: "cover" }}
-                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                          quality={75}
-                          priority={index < 4}
-                          className="transition-transform duration-500 group-hover:scale-110"
-                        />
+            {/* Events Grid */}
+            <div className="w-[90vw] mx-auto">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 justify-items-center">
+                {eventsData[category]?.map((event, index) => (
+                  <div
+                    key={index}
+                    className="w-full cursor-pointer aspect-square rounded-xl shadow-2xl relative overflow-hidden group transform transition-all duration-500 hover:scale-105"
+                    onClick={() => openPopup(event)}
+                  >
+                    {/* Decorative border */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 animate-gradient-x rounded-tl-[20px] rounded-br-[20px]" />
+                    
+                    {/* Content container */}
+                    <div className="absolute inset-0.5 rounded-xl overflow-hidden bg-gradient-to-br from-gray-900 to-black rounded-tl-[18px] rounded-br-[18px]">
+                      {/* Image */}
+                      <Image
+                        src={event.image}
+                        alt={event.name}
+                        fill
+                        style={{ objectFit: "cover" }}
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        quality={75}
+                        priority={index < 4}
+                        className="transition-transform duration-500 group-hover:scale-110"
+                      />
 
                         {/* Event Name Overlay */}
                         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/90 to-transparent text-white p-4 transform transition-transform duration-500 translate-y-full group-hover:translate-y-0 rounded-b-xl">
@@ -152,6 +179,11 @@ export default function Events() {
           ))}
         </div>
       </div>
+      {/* Popup */}
+      {selectedEvent && (
+        <Popup isOpen={isPopupOpen} onClose={closePopup} event={selectedEvent} />
+      )}
+    </div>
     </>
   );
 }
