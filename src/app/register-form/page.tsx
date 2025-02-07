@@ -79,13 +79,22 @@ const RegisterForm: React.FC = () => {
                     title="College ID/Enrollment Number"
                     type="text"
                   />
-                  <InputBox
+                  <Dropdown
                     onChange={(e) =>
                       setFormDetails({ ...formDetails, collegeName: e.target.value })
                     }
                     title="College Name"
-                    type="text"
+                    options={["--SELECT--", "NIT Meghalaya", "St. Anthony's College, Shillong","St. Edmund's College, Shillong", "Other"]}
                   />
+                  {formDetails.collegeName === "Other" && (
+                    <InputBox
+                      onChange={(e) =>
+                        setFormDetails({ ...formDetails, collegeName: e.target.value })
+                      }
+                      title="Enter College Name"
+                      type="text"
+                    />
+                  )}
                   <Dropdown
                     onChange={(e) =>
                       setFormDetails({ ...formDetails, yearOfStudy: e.target.value })
@@ -95,13 +104,22 @@ const RegisterForm: React.FC = () => {
                       "--SELECT--","1st Year","2nd Year","3rd Year","4th Year","5th Year",
                     ]}
                   />
-                  <InputBox
+                  <Dropdown
                     onChange={(e) =>
                       setFormDetails({ ...formDetails, department: e.target.value })
                     }
                     title="Department/Branch"
-                    type="text"
+                    options={["--SELECT--","Mechanical","Computer Sc", "Electrical", "Electronics and Comm.", "Civil", "Other"]}
                   />
+                  {formDetails.department === 'Other' && (
+                    <InputBox 
+                      onChange={(e) => {
+                        setFormDetails({...formDetails, department: e.target.value})
+                      }}
+                      title="Department/Branch"
+                      type="text"
+                    />
+                  )}
                   <InputBox
                     onChange={(e) =>
                       setFormDetails({ ...formDetails, email: e.target.value })
