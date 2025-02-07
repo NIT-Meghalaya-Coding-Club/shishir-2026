@@ -4,7 +4,7 @@ import Dropdown from "@/components/register-form/Dropdown";
 import InputBox from "@/components/register-form/InputBox";
 import { useState } from "react";
 import NeonCursorBackground from '@/components/NeonCursorBackground';
-import { Crown, Sparkles } from "lucide-react";
+import { Crown } from "lucide-react";
 
 interface FormDetailsType {
   fullName: string;
@@ -68,8 +68,8 @@ const RegisterForm: React.FC = () => {
                     type="text"
                   />
                   <Dropdown
-                    onChange={(e) =>
-                      setFormDetails({ ...formDetails, gender: e.target.value })
+                    onChange={(value) =>
+                      setFormDetails({ ...formDetails, gender: value })
                     }
                     title="Gender"
                     options={["--SELECT--", "Male", "Female"]}
@@ -89,28 +89,30 @@ const RegisterForm: React.FC = () => {
                     title="College ID/Enrollment Number"
                     type="text"
                   />
-                  <InputBox
-                    onChange={(e) =>
-                      setFormDetails({ ...formDetails, collegeName: e.target.value })
+                  <Dropdown
+                    onChange={(value) =>
+                      setFormDetails({ ...formDetails, collegeName: value })
                     }
                     title="College Name"
-                    type="text"
+                    options={["--SELECT--","NIT Meghalaya"]}
                   />
                   <Dropdown
-                    onChange={(e) =>
-                      setFormDetails({ ...formDetails, yearOfStudy: e.target.value })
+                    onChange={(value) =>
+                      setFormDetails({ ...formDetails, yearOfStudy: value })
                     }
                     title="Year of Study"
                     options={[
                       "--SELECT--","1st Year","2nd Year","3rd Year","4th Year",
                     ]}
                   />
-                  <InputBox
-                    onChange={(e) =>
-                      setFormDetails({ ...formDetails, department: e.target.value })
+                  <Dropdown
+                    onChange={(value) =>
+                      setFormDetails({ ...formDetails, department: value })
                     }
                     title="Department/Branch"
-                    type="text"
+                    options={[
+                      "--SELECT--","CSE","ECE","EE","ME","CE"
+                    ]}
                   />
                   <InputBox
                     onChange={(e) =>
