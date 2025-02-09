@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { LuMenu } from "react-icons/lu";
 import { motion, AnimatePresence } from "framer-motion";
 import NavBarItem from "./NavBarItem";
@@ -40,10 +40,6 @@ const NavBar: React.FC = () => {
   // Navigate to home page when logo is clicked
   const navigateToHome = () => {
     router.push("/");
-  };
-
-  const handleLogout = () => {
-    signOut();
   };
 
   return (
@@ -99,7 +95,7 @@ const NavBar: React.FC = () => {
               <NavBarItem to="/register" text="Login" onClick={closeMenu} />
             )}
             {status === "authenticated" && (
-              <NavBarItem to="/" text="Logout" onClick={handleLogout} />
+              <NavBarItem to="/dashboard" text="Dashboard" onClick={closeMenu} />
             )}
           </motion.ul>
         )}

@@ -67,7 +67,6 @@
 // export const GET = handler;
 // export const POST = handler;
 
-
 //<---------- Using MongoDB ---------->
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
@@ -101,7 +100,10 @@ const authOptions = {
           throw new Error("Invalid email or password");
         }
 
-        const isValidPassword = await bcrypt.compare(credentials.password, user.password);
+        const isValidPassword = await bcrypt.compare(
+          credentials.password,
+          user.password
+        );
 
         if (!isValidPassword) {
           throw new Error("Invalid email or password");
@@ -121,9 +123,9 @@ const authOptions = {
   callbacks: {
     async signIn({ user, account }) {
       // When using Google, check if user exists in database, create if not
-      if (account.provider === 'google') {
+      if (account.provider === "google") {
         await connectMongo();
-        
+
         let existingUser = await User.findOne({ email: user.email });
 
         if (!existingUser) {
@@ -132,9 +134,9 @@ const authOptions = {
             email: user.email,
             name: user.name,
             image: user.image,
-            password: '',
+            password: "",
           });
-          
+
           await newUser.save();
         }
       }
@@ -151,6 +153,14 @@ const authOptions = {
         session.user.id = token.id;
       }
       return session;
+    },
+    async redirect({ url, baseUrl }) {
+
+      if (url.startsWith(baseUrl)) {
+        return url;
+      }
+      
+      return baseUrl;
     },
   },
 };

@@ -22,9 +22,12 @@ function Register() {
     }
   }, [status, router]);
 
-  const handleClick = () => {
-    signIn("google");
+  const handleClick = async () => {
+    signIn("google", {
+      callbackUrl: "/fill-details"
+    });
   };
+  
   
   return (
     <div className="wrapper">
