@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
+import { signOut, useSession } from "next-auth/react";
 import { LuMenu } from "react-icons/lu";
 import { motion, AnimatePresence } from "framer-motion";
 import NavBarItem from "./NavBarItem";
@@ -11,6 +12,8 @@ const NavBar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+
+  const { status } = useSession();
 
   const toggleMenu = () => {
     setIsOpen((prev) => !prev);
@@ -39,6 +42,10 @@ const NavBar: React.FC = () => {
     router.push("/");
   };
 
+  const handleLogout = () => {
+    signOut();
+  };
+
   return (
     <motion.nav
       initial={{ opacity: 0, y: -50 }}
@@ -57,8 +64,8 @@ const NavBar: React.FC = () => {
           <Image
             src="/assets/logo.png"
             alt="Logo"
-            width={48} 
-            height={48} 
+            width={48}
+            height={48}
             priority
             className="h-12 w-12"
           />
@@ -87,11 +94,13 @@ const NavBar: React.FC = () => {
             {/* <NavBarItem to="/competitions" text="Competitions" onClick={closeMenu} /> */}
             <NavBarItem to="/schedule" text="Schedule" onClick={closeMenu} />
             <NavBarItem to="/sponsors" text="Sponsors" onClick={closeMenu} />
-            <NavBarItem
-              to="/team"
-              text="Team"
-              onClick={closeMenu}
-            />
+            <NavBarItem to="/team" text="Team" onClick={closeMenu} />
+            {status === "unauthenticated" && (
+              <NavBarItem to="/register" text="Login" onClick={closeMenu} />
+            )}
+            {status === "authenticated" && (
+              <NavBarItem to="/" text="Logout" onClick={handleLogout} />
+            )}
           </motion.ul>
         )}
       </AnimatePresence>
