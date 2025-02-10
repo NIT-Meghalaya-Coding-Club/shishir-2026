@@ -42,9 +42,19 @@ const NumberCounter = ({
     return () => observer.disconnect();
   }, [end, duration]);
 
+  // Calculate the maximum width needed
+  const maxDigits = end.toString().length + 1; // +1 for the '+' sign
+
   return (
-    <span ref={countRef} className="text-amber-400">
-      {count}+
+    <span
+      ref={countRef}
+      className="text-amber-400 inline-block"
+      style={{
+        minWidth: `${maxDigits}ch`,
+        textAlign: 'left',
+      }}
+    >
+      {count}<span className="font-bold"> +</span>
     </span>
   );
 };
