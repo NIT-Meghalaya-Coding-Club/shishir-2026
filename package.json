@@ -30,7 +30,8 @@
     "tailwind-merge": "^2.6.0",
     "tailwind-scrollbar-hide": "^2.0.0",
     "tailwindcss-animate": "^1.0.7",
-    "three": "^0.172.0"
+    "three": "^0.172.0",
+    "threejs-toys": "^0.0.8"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

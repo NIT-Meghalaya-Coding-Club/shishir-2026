@@ -1,8 +1,10 @@
 "use client"
 
-import Dropdown from "@/components/register-form/Dropdown";
 import InputBox from "@/components/register-form/InputBox";
 import { useState } from "react";
+import NeonCursorBackground from '@/components/NeonCursorBackground';
+import { Crown } from "lucide-react";
+import Dropdown from "@/components/register-form/Dropdown";
 
 interface FormDetailsType {
   fullName: string;
@@ -44,11 +46,20 @@ const RegisterForm: React.FC = () => {
     // foodPreferences: '',
     // emergencyContactDetails: ''
   });
+
     return (
-        <div className="h-full pt-20 py-10 grid place-content-center bg-gray-800 text-white">
-            <form className="w-full p-10 bg-gray-900 rounded-lg shadow-lg flex flex-col space-y-5">
-                <h1 className="text-5xl font-bold text-center mb-5">Register</h1>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div className="bg-[#202551] flex justify-center relative min-h-screen w-full h-fit">
+      <NeonCursorBackground/>
+            <form className="relative w-4/5 xl:w-1/2 p-10 mt-10 backdrop-blur-md rounded-lg shadow-2xl flex flex-col space-y-5">
+                <div className="relative flex justify-center items-center gap-4 mb-6">
+                <Crown className="w-12 h-12 text-yellow-400 animate-pulse" />
+                <h1 className="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 pt-10">
+                  REGISTER
+                </h1>
+                <Crown className="w-12 h-12 text-yellow-400 animate-pulse" />
+              <div className="absolute -bottom-2 h-1 w-48 mx-auto bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full" />
+            </div>
+                <div className="grid text-whitegrid-cols-1 sm:grid-cols-2 gap-6">
                   {/* Basic Details */}
                   <InputBox
                     onChange={(e) =>
@@ -58,11 +69,11 @@ const RegisterForm: React.FC = () => {
                     type="text"
                   />
                   <Dropdown
-                    onChange={(e) =>
-                      setFormDetails({ ...formDetails, gender: e.target.value })
+                    onChange={(value) =>
+                      setFormDetails({ ...formDetails, gender: value })
                     }
                     title="Gender"
-                    options={["--SELECT--", "Male", "Female", "Other"]}
+                    options={["Male", "Female"]}
                   />
                   <InputBox
                     onChange={(e) =>
@@ -80,36 +91,29 @@ const RegisterForm: React.FC = () => {
                     type="text"
                   />
                   <Dropdown
-                    onChange={(e) =>
-                      setFormDetails({ ...formDetails, collegeName: e.target.value })
+                    onChange={(value) =>
+                      setFormDetails({ ...formDetails, collegeName: value })
                     }
                     title="College Name"
-                    options={["--SELECT--", "NIT Meghalaya", "St. Anthony's College, Shillong","St. Edmund's College, Shillong", "Other"]}
+                    options={["NIT Meghalaya"]}
                   />
-                  {formDetails.collegeName === "Other" && (
-                    <InputBox
-                      onChange={(e) =>
-                        setFormDetails({ ...formDetails, collegeName: e.target.value })
-                      }
-                      title="Enter College Name"
-                      type="text"
-                    />
-                  )}
                   <Dropdown
-                    onChange={(e) =>
-                      setFormDetails({ ...formDetails, yearOfStudy: e.target.value })
+                    onChange={(value) =>
+                      setFormDetails({ ...formDetails, yearOfStudy: value })
                     }
                     title="Year of Study"
                     options={[
-                      "--SELECT--","1st Year","2nd Year","3rd Year","4th Year","5th Year",
+                      "1st Year","2nd Year","3rd Year","4th Year",
                     ]}
                   />
                   <Dropdown
-                    onChange={(e) =>
-                      setFormDetails({ ...formDetails, department: e.target.value })
+                    onChange={(value) =>
+                      setFormDetails({ ...formDetails, department: value })
                     }
                     title="Department/Branch"
-                    options={["--SELECT--","Mechanical","Computer Sc", "Electrical", "Electronics and Comm.", "Civil", "Other"]}
+                    options={[
+                      "CSE","ECE","EE","ME","CE"
+                    ]}
                   />
                   {formDetails.department === 'Other' && (
                     <InputBox 
@@ -168,10 +172,12 @@ const RegisterForm: React.FC = () => {
                             (e) => setFormDetails({ ...formDetails, emergencyContactDetails: e.target.value })
                           } title="Emergency Contact Details" type="text" /> */}
                 </div>
-                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" type="submit">Register</button>
+                <div className="flex justify-center">
+                    <button className="p-3 w-1/2 xl:w-1/4 text-lg font-mono font-semibold text-gray-700 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 rounded-md shadow-2xl transition-all duration-200
+                      hover:shadow-lg hover:-translate-y-1 active:translate-y-1 active:shadow-inner focus:outline-none" type="submit">Register</button>
+                </div>
             </form>
-            
-        </div>
+    </div>
     );
 }
 

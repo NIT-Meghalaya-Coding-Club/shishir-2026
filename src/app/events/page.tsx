@@ -49,13 +49,13 @@ export default function Events() {
         <div className="relative w-full">
           {/* Header Section */}
           <div className="text-center mt-20 mb-12">
-            <div className="flex justify-center items-center gap-4 mb-6">
+            <div className="relative flex justify-center items-center gap-4 mb-6">
               <Crown className="w-12 h-12 text-yellow-400 animate-pulse" />
               <h1 className="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 pt-10">
                 EVENTS
               </h1>
               <Crown className="w-12 h-12 text-yellow-400 animate-pulse" />
-              <div className="h-1 w-48 mx-auto bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full" />
+              <div className="absolute -bottom-2 h-1 w-48 mx-auto bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full" />
             </div>
 
             <Inav />
