@@ -9,7 +9,7 @@ interface DropdownProps {
 }
 
 const Dropdown:React.FC<DropdownProps> = ({title, options, onChange, required=true}) => {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState<boolean>(false);
   const [finalOptions, setFinalOptions] = useState<string[]>(options);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [inputValue, setInputValue] = useState<string | null>(null);
@@ -20,6 +20,7 @@ const Dropdown:React.FC<DropdownProps> = ({title, options, onChange, required=tr
 
   useEffect(() => {
     if (inputValue === '') {
+      setSelectedOption(null);
       setFinalOptions(options);
     }
   },[inputValue])
@@ -28,8 +29,8 @@ const Dropdown:React.FC<DropdownProps> = ({title, options, onChange, required=tr
       <div className="space-y-2">
         <p className="text-yellow-500">{title}</p>
         <div 
-          className="backdrop-blur-lg bg-white/10 p-2.5 
-          rounded-lg border-b-2 border-orange-800
+          className="backdrop-blur-lg bg-white/10 p-[8px]
+          rounded-lg border-b-[1.1px] border-yellow-500
           flex justify-between items-center"
           onClick={() => setMenuOpen(!menuOpen)}
         > 
