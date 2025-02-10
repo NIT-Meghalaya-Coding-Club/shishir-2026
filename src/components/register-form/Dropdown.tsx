@@ -5,9 +5,10 @@ interface DropdownProps {
   title: string;
   options: string[];
   onChange?: (selectedValue: string) => void;
+  required?: boolean;
 }
 
-const Dropdown:React.FC<DropdownProps> = ({title, options, onChange}) => {
+const Dropdown:React.FC<DropdownProps> = ({title, options, onChange, required=true}) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [finalOptions, setFinalOptions] = useState<string[]>(options);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
@@ -35,6 +36,7 @@ const Dropdown:React.FC<DropdownProps> = ({title, options, onChange}) => {
           <input 
             type="text" 
             placeholder="Select or type..." 
+            required={required}
             onChange={
               (e) => {
                 setInputValue(e.currentTarget.value);
