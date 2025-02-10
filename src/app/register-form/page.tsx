@@ -115,15 +115,7 @@ const RegisterForm: React.FC = () => {
                       "CSE","ECE","EE","ME","CE"
                     ]}
                   />
-                  {formDetails.department === 'Other' && (
-                    <InputBox 
-                      onChange={(e) => {
-                        setFormDetails({...formDetails, department: e.target.value})
-                      }}
-                      title="Department/Branch"
-                      type="text"
-                    />
-                  )}
+                  
                   <InputBox
                     onChange={(e) =>
                       setFormDetails({ ...formDetails, email: e.target.value })

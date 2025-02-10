@@ -6,7 +6,7 @@ import { IoMail, IoCall, IoLocationSharp } from "react-icons/io5";
 
 export default function Footer() {
   return (
-    <footer className="relative overflow-hidden bg-gradient-to-b from-blue-950 via-black to-blue-950 pt-16 text-amber-100">
+    <footer className="-z-10 relative overflow-hidden bg-gradient-to-b from-blue-950 via-black to-blue-950 pt-16 text-amber-100">
       {/* Animated background particles - Adjusted for better visibility on all screens */}
       <div className="absolute inset-0 opacity-10">
         <div

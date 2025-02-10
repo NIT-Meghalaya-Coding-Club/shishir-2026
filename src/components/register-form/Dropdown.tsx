@@ -50,7 +50,7 @@ const Dropdown:React.FC<DropdownProps> = ({title, options, onChange}) => {
           
         </div>
         {menuOpen && (
-            <div className="z-50 w-44 absolute max-h-60
+            <div className="z-50 w-44 absolute max-h-60 overflow-hidden
              bg-white border border-gray-300 rounded-md shadow-lg h-fit"
             >
               {finalOptions.map((option, index) => (
@@ -66,7 +66,7 @@ const Dropdown:React.FC<DropdownProps> = ({title, options, onChange}) => {
               <input
                 type="text"
                 placeholder="Please specify"
-                className="p-2 w-full text-black"
+                className="p-2 w-full text-black focus:outline-none"
                 onChange={(e) => setSelectedOption(e.currentTarget.value)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
