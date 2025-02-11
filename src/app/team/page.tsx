@@ -12,9 +12,14 @@ export default function Contact() {
   function scrollToTeam(team: string) {
     const teamElement = teamRefs.current[team];
     if (teamElement) {
-      teamElement.scrollIntoView({
+      const navbarOffset = 40;
+
+      const elementPosition = teamElement.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.scrollY - navbarOffset;
+
+      window.scrollTo({
+        top: offsetPosition,
         behavior: "smooth",
-        block: "start",
       });
     }
   }
@@ -28,37 +33,51 @@ export default function Contact() {
       <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 to-black-900/80" />
 
       {/* Sidebar Navigation */}
-      <div className="relative z-10 pb-20 sm:pb-0 sm:sticky sm:top-0 sm:h-screen basis-1/3 p-8">
+      <div className="relative z-10 pb-20 sm:pb-0 sm:sticky sm:top-0 sm:h-screen basis-1/3 p-8 ">
         <div className="h-full flex flex-col items-center justify-center">
-          {/* Header */}
+          {/* Updated Header */}
           <div className="text-center mb-12 pt-16">
             <div className="flex items-center gap-4 mb-6">
-              <Crown className="w-8 h-8 text-yellow-400 animate-pulse" />
+              <Crown className="w-8 h-8 text-yellow-400 animate-bounce" />
               <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600">
                 Team
               </h1>
-              <Crown className="w-8 h-8 text-yellow-400 animate-pulse" />
+              <Crown className="w-8 h-8 text-yellow-400 animate-bounce" />
             </div>
-            <div className="h-1 w-32 mx-auto bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full" />
+            <div className="h-1 w-32 mx-auto bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 rounded-full" />
           </div>
 
-          {/* Navigation Links */}
-          <div className="flex flex-col w-full max-w-xs">
-            {teamNames.map((team) => (
-              <button
-                key={team}
-                onClick={() => scrollToTeam(team)}
-                className="group relative px-6 py-3 rounded-lg transition-all duration-300 hover:scale-105"
-              >
-                {/* Button gradient border */}
-                <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity" />
-                <div className="relative bg-gray-900 rounded-lg px-6 py-3 m-[1px] group-hover:bg-gray-800">
-                  <span className="text-lg font-medium text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
-                    {team}
-                  </span>
+          {/* Updated Navigation Links */}
+          <div className="flex flex-col w-full max-w-xs overflow-hidden relative h-64">
+            <div className="absolute inset-0 overflow-y-hidden hover:overflow-y-auto hide-scrollbar">
+              <div className="animate-scroll hover:animation-pause">
+                <div className="flex flex-col gap-8">
+                  {" "}
+                  {/* Increased gap between groups */}
+                  {[...Array(3)].map((_, i) => (
+                    <div key={`group-${i}`} className="space-y-4">
+                      {" "}
+                      {/* Added space between buttons */}
+                      {teamNames.map((team) => (
+                        <button
+                          key={`${team}-${i}`}
+                          onClick={() => scrollToTeam(team)}
+                          className="group relative px-6 py-3 rounded-lg transition-all duration-300 hover:scale-105 w-full hover:transform hover:-rotate-1"
+                        >
+                          {/* Updated button styling */}
+                          <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 rounded-lg opacity-30 group-hover:opacity-100 transition-opacity blur-sm group-hover:blur-none" />
+                          <div className="relative bg-black/50 backdrop-blur-lg rounded-lg px-6 py-3 border border-yellow-500/10 group-hover:border-transparent transition-all duration-300">
+                            <h1 className="text-lg font-medium text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 group-hover:from-yellow-200 group-hover:to-yellow-400">
+                              {team}
+                            </h1>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  ))}
                 </div>
-              </button>
-            ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>

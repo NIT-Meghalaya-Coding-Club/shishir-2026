@@ -191,3 +191,31 @@ h3 {
   .animate-spin-slow {
     animation: spin-slow 18s linear infinite;
   }
+
+
+
+  @keyframes scroll {
+    0% {
+      transform: translateY(0);
+    }
+    100% {
+      transform: translateY(-33.33%);
+    }
+  }
+  
+  .animate-scroll {
+    animation: scroll 20s linear infinite;
+  }
+  
+  .hover\:animation-pause:hover {
+    animation-play-state: paused;
+  }
+  
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
