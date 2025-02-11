@@ -129,6 +129,46 @@ export const Teams: {
             linkedinLink: undefined,
             imageLink: undefined,
         },
+        {
+            name: "Angshuman Dey",
+            contactNo: "+91 1234567890",
+            email: "angshuman@example.com",
+            position: "Coordinator",
+            linkedinLink: undefined,
+            imageLink: undefined,
+        },
+        {
+            name: "F Emend Grace Aroma Marwein",
+            contactNo: "+91 1234567890",
+            email: "emend@example.com",
+            position: "Co-Coordinator",
+            linkedinLink: undefined,
+            imageLink: undefined,
+        },
+        {
+            name: "Apratim Chatterjee",
+            contactNo: "+91 1234567890",
+            email: "apratim@example.com",
+            position: "Co-Coordinator",
+            linkedinLink: undefined,
+            imageLink: undefined,
+        },
+        {
+            name: "Subarata Das",
+            contactNo: "+91 1234567890",
+            email: "subarata@example.com",
+            position: "Co-Coordinator",
+            linkedinLink: undefined,
+            imageLink: undefined,
+        },
+        {
+            name: "Syed Ashraf Rafi",
+            contactNo: "+91 1234567890",
+            email: "syed@example.com",
+            position: "Co-Coordinator",
+            linkedinLink: undefined,
+            imageLink: undefined,
+        }
     ],
     "Publicity & Social Media": [
         {
@@ -155,6 +195,46 @@ export const Teams: {
             linkedinLink: undefined,
             imageLink: undefined,
         },
+        {
+            name: "Prem Kumar Gupta",
+            contactNo: "+91 1234567890",
+            email: "prem@example.com",
+            position: "Co-Coordinator",
+            linkedinLink: undefined,
+            imageLink: undefined,
+        },
+        {
+            name: "Dip Kundu",
+            contactNo: "+91 1234567890",
+            email: "dip@example.com",
+            position: "Co-Coordinator",
+            linkedinLink: undefined,
+            imageLink: undefined,
+        },
+        {
+            name: "Saksham",
+            contactNo: "+91 1234567890",
+            email: "saksham@example.com",
+            position: "Co-Coordinator",
+            linkedinLink: undefined,
+            imageLink: undefined,
+        },
+        {
+            name: "Bekkam Manohar Sai",
+            contactNo: "+91 1234567890",
+            email: "bekkam@example.com",
+            position: "Co-Coordinator",
+            linkedinLink: undefined,
+            imageLink: undefined,
+        },
+        {
+            name: "Arunoday Tiwari",
+            contactNo: "+91 1234567890",
+            email: "arunoday@example.com",
+            position: "Co-Coordinator",
+            linkedinLink: undefined,
+            imageLink: undefined,
+        }
     ],
     "Designing": [
         {
@@ -173,6 +253,38 @@ export const Teams: {
             linkedinLink: undefined,
             imageLink: undefined,
         },
+        {
+            name: "Botu Varun Kumar",
+            contactNo: "+91 1234567890",
+            email: "botu@example.com",
+            position: "Co-Coordinator",
+            linkedinLink: undefined,
+            imageLink: undefined,
+        },
+        {
+            name: "Pankaj Saraswat",
+            contactNo: "+91 1234567890",
+            email: "pankaj@example.com",
+            position: "Co-Coordinator",
+            linkedinLink: undefined,
+            imageLink: undefined,
+        },
+        {
+            name: "Mewantei S. Marbaniang",
+            contactNo: "+91 1234567890",
+            email: "mewantei@example.com",
+            position: "Co-Coordinator",
+            linkedinLink: undefined,
+            imageLink: undefined,
+        },
+        {
+            name: "Satyam Singh",
+            contactNo: "+91 1234567890",
+            email: "satyam@example.com",
+            position: "Co-Coordinator",
+            linkedinLink: undefined,
+            imageLink: undefined,
+        }
     ],
     "Stage Management": [
         {
@@ -199,6 +311,46 @@ export const Teams: {
             linkedinLink: undefined,
             imageLink: undefined,
         },
+        {
+            name: "Rahul Kumar",
+            contactNo: "+91 1234567890",
+            email: "rahul@example.com",
+            position: "Co-Coordinator",
+            linkedinLink: undefined,
+            imageLink: undefined,
+        },
+        {
+            name: "Avinash Kumar Singh",
+            contactNo: "+91 1234567890",
+            email: "avinash@example.com",
+            position: "Co-Coordinator",
+            linkedinLink: undefined,
+            imageLink: undefined,
+        },
+        {
+            name: "Shivam Dawar",
+            contactNo: "+91 1234567890",
+            email: "shivam@example.com",
+            position: "Co-Coordinator",
+            linkedinLink: undefined,
+            imageLink: undefined,
+        },
+        {
+            name: "Nazia Hasan Sheikh",
+            contactNo: "+91 1234567890",
+            email: "nazia@example.com",
+            position: "Co-Coordinator",
+            linkedinLink: undefined,
+            imageLink: undefined,
+        },
+        {
+            name: "Amiya Ratan Roy",
+            contactNo: "+91 1234567890",
+            email: "amiya@example.com",
+            position: "Co-Coordinator",
+            linkedinLink: undefined,
+            imageLink: undefined,
+        }
     ],
     "Hospitality": [
         {
@@ -225,6 +377,38 @@ export const Teams: {
             linkedinLink: undefined,
             imageLink: undefined,
         },
+        {
+            name: "Freddy Kharkylliang",
+            contactNo: "+91 1234567890",
+            email: "freddy@example.com",
+            position: "Co-Coordinator",
+            linkedinLink: undefined,
+            imageLink: undefined,
+        },
+        {
+            name: "Ebarnes Kharwar",
+            contactNo: "+91 1234567890",
+            email: "ebarnes@example.com",
+            position: "Co-Coordinator",
+            linkedinLink: undefined,
+            imageLink: undefined,
+        },
+        {
+            name: "IBANRISHA MADUR",
+            contactNo: "+91 1234567890",
+            email: "ibanrisha@example.com",
+            position: "Co-Coordinator",
+            linkedinLink: undefined,
+            imageLink: undefined,
+        },
+        {
+            name: "Ibanylla M Maring",
+            contactNo: "+91 1234567890",
+            email: "ibanylla@example.com",
+            position: "Co-Coordinator",
+            linkedinLink: undefined,
+            imageLink: undefined,
+        }
     ],
     "Event Management": [
         {
@@ -251,6 +435,38 @@ export const Teams: {
             linkedinLink: undefined,
             imageLink: undefined,
         },
+        {
+            name: "Manish Kumar Prashad",
+            contactNo: "+91 1234567890",
+            email: "manishp@example.com",
+            position: "Co-Coordinator",
+            linkedinLink: undefined,
+            imageLink: undefined,
+        },
+        {
+            name: "Balajee Kanhaiya",
+            contactNo: "+91 1234567890",
+            email: "balajee@example.com",
+            position: "Co-Coordinator",
+            linkedinLink: undefined,
+            imageLink: undefined,
+        },
+        {
+            name: "Adharsh Barman",
+            contactNo: "+91 1234567890",
+            email: "adharsh@example.com",
+            position: "Co-Coordinator",
+            linkedinLink: undefined,
+            imageLink: undefined,
+        },
+        {
+            name: "Ankit Raj",
+            contactNo: "+91 1234567890",
+            email: "ankitraj@example.com",
+            position: "Co-Coordinator",
+            linkedinLink: undefined,
+            imageLink: undefined,
+        }
     ],
     "Web Development": [
         {
@@ -285,6 +501,31 @@ export const Teams: {
             linkedinLink: undefined,
             imageLink: "/Teams/Roshan.jpg",
         },
+        {
+            name: "Gaurav Joshi",
+            contactNo: "+91 1234567890",
+            email: "gauravj@example.com",
+            position: "Co-Coordinator",
+            linkedinLink: undefined,
+            imageLink: undefined,
+        },
+        {
+            name: "Jishnu Duhan",
+            contactNo: "+91 1234567890",
+            email: "jishnu@example.com",
+            position: "Co-Coordinator",
+            linkedinLink: undefined,
+            imageLink: undefined,
+        },
+        {
+            name: "Charity Rymbai",
+            contactNo: "+91 1234567890",
+            email: "charity@example.com",
+            position: "Co-Coordinator",
+            linkedinLink: undefined,
+            imageLink: undefined,
+        }
+
     ],
 
     "Food Committee": [
@@ -304,6 +545,30 @@ export const Teams: {
             linkedinLink: undefined,
             imageLink: undefined,
         },
+        {
+            name: "Shubham Kumar",
+            contactNo: "+91 1234567890",
+            email: "shubham@example.com",
+            position: "Co-Coordinator",
+            linkedinLink: undefined,
+            imageLink: undefined,
+        },
+        {
+            name: "Saurav Kumar",
+            contactNo: "+91 1234567890",
+            email: "saurav@example.com",
+            position: "Co-Coordinator",
+            linkedinLink: undefined,
+            imageLink: undefined,
+        },
+        {
+            name: "Manish Kumar",
+            contactNo: "+91 1234567890",
+            email: "manishk@example.com",
+            position: "Co-Coordinator",
+            linkedinLink: undefined,
+            imageLink: undefined,
+        }
     ],
     "Public Relations": [
         {
@@ -322,6 +587,38 @@ export const Teams: {
             linkedinLink: undefined,
             imageLink: undefined,
         },
+        {
+            name: "Chandrani Dalui",
+            contactNo: "+91 1234567890",
+            email: "chandrani@example.com",
+            position: "Co-Coordinator",
+            linkedinLink: undefined,
+            imageLink: undefined,
+        },
+        {
+            name: "Gurjala Meghana",
+            contactNo: "+91 1234567890",
+            email: "gurjala@example.com",
+            position: "Co-Coordinator",
+            linkedinLink: undefined,
+            imageLink: undefined,
+        },
+        {
+            name: "Biandik Biachisa D Sangma",
+            contactNo: "+91 1234567890",
+            email: "biandik@example.com",
+            position: "Co-Coordinator",
+            linkedinLink: undefined,
+            imageLink: undefined,
+        },
+        {
+            name: "Dean Chisam T Sangma",
+            contactNo: "+91 1234567890",
+            email: "dean@example.com",
+            position: "Co-Coordinator",
+            linkedinLink: undefined,
+            imageLink: undefined,
+        }
     ],
     "Security Team": [
         {
@@ -340,5 +637,37 @@ export const Teams: {
             linkedinLink: undefined,
             imageLink: undefined,
         },
+        {
+            name: "Pyndapmain Marngar",
+            contactNo: "+91 1234567890",
+            email: "pyndapmain@example.com",
+            position: "Co-Coordinator",
+            linkedinLink: undefined,
+            imageLink: undefined,
+        },
+        {
+            name: "Sumit Kumar",
+            contactNo: "+91 1234567890",
+            email: "sumit@example.com",
+            position: "Co-Coordinator",
+            linkedinLink: undefined,
+            imageLink: undefined,
+        },
+        {
+            name: "Uttam Kumar",
+            contactNo: "+91 1234567890",
+            email: "uttam@example.com",
+            position: "Co-Coordinator",
+            linkedinLink: undefined,
+            imageLink: undefined,
+        },
+        {
+            name: "Aman Mina",
+            contactNo: "+91 1234567890",
+            email: "aman@example.com",
+            position: "Co-Coordinator",
+            linkedinLink: undefined,
+            imageLink: undefined,
+        }
     ]
 };
