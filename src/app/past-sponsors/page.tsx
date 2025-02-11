@@ -1,6 +1,6 @@
 "use client";
 
-import { defaultSponsorImageUrl, sponsors } from "@/data/sponsors";
+import { defaultSponsorImageUrl, sponsors } from "../../data/past_sponsors";
 import Image from "next/image";
 import { Crown, Gem } from "lucide-react";
 
@@ -20,8 +20,8 @@ const Sponsors: React.FC = () => {
         <div className="text-center mb-20">
           <div className="flex justify-center items-center gap-4 mb-6">
             <Crown className="w-12 h-12 text-yellow-400 animate-pulse" />
-            <h1 className="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600">
-              Our Sponsors
+            <h1 className="text-4xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600">
+              Our Past Sponsors
             </h1>
             <Crown className="w-12 h-12 text-yellow-400 animate-pulse" />
           </div>
