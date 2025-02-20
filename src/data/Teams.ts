@@ -59,7 +59,7 @@ export const Teams: {
       email: "b23cs020@nitm.ac.in",
       position: "Head-Cultural-II",
       linkedinLink: undefined,
-      imageLink: "/Teams\ChunchaHemchand.jpg",
+      imageLink: "/Teams/ChunchaHemchand.jpg",
     },
   ],
 
@@ -86,7 +86,7 @@ export const Teams: {
       email: "b21cs035@nitm.ac.in",
       position: "Head",
       linkedinLink: undefined,
-      imageLink: "\Teams\AchintyaChaudhary.jpg",
+      imageLink: "/Teams/AchintyaChaudhary.jpg",
     },
     {
       name: "Neelkantha Mandal",
@@ -120,7 +120,7 @@ export const Teams: {
       email: "b21cs029@nitm.ac.in",
       position: "Head",
       linkedinLink: undefined,
-      imageLink: "\Teams\Supriya.jpg",
+      imageLink: "/Teams/Supriya.jpg",
     },
     {
       name: "Sourabh Paul",
@@ -128,7 +128,7 @@ export const Teams: {
       email: "b21me013@nitm.ac.in",
       position: "Head",
       linkedinLink: undefined,
-      imageLink: "\Teams\SaurabPaul.jpg",
+      imageLink: "/Teams/SaurabPaul.jpg",
     },
     {
       name: "Angshuman Dey",
@@ -136,7 +136,7 @@ export const Teams: {
       email: "b22ec032@nitm.ac.in",
       position: "Coordinator",
       linkedinLink: undefined,
-      imageLink: "\Teams\AngshumanDey.jpg",
+      imageLink: "/Teams/AngshumanDey.jpg",
     },
     {
       name: "Aroma Marwein",
@@ -144,7 +144,7 @@ export const Teams: {
       email: "b22ec027@nitm.ac.in",
       position: "Co-Coordinator",
       linkedinLink: undefined,
-      imageLink: "\Teams\Aroma.jpg",
+      imageLink: "/Teams/Aroma.jpg",
     },
     {
       name: "Apratim Chatterjee",
@@ -152,7 +152,7 @@ export const Teams: {
       email: "b23ee015@nitm.ac.in",
       position: "Co-Coordinator",
       linkedinLink: undefined,
-      imageLink: "\Teams\ApratimChatterjee.jpg",
+      imageLink: "/Teams/ApratimChatterjee.jpg",
     },
     {
       name: "Subarata Das",
@@ -160,7 +160,7 @@ export const Teams: {
       email: "b23cs015@nitm.ac.in",
       position: "Co-Coordinator",
       linkedinLink: undefined,
-      imageLink: "\Teams\SubrataDas.jpg",
+      imageLink: "/Teams/SubrataDas.jpg",
     },
     {
       name: "Syed Ashraf Rafi",
@@ -168,7 +168,7 @@ export const Teams: {
       email: "b23ec001@nitm.ac.in",
       position: "Co-Coordinator",
       linkedinLink: undefined,
-      imageLink: "\Teams\Rafi.jpg",
+      imageLink: "/Teams/Rafi.jpg",
     },
   ],
   "Publicity & Social Media": [
@@ -178,7 +178,7 @@ export const Teams: {
       email: "b21ec019@nitm.ac.in",
       position: "Head",
       linkedinLink: undefined,
-      imageLink: "\Teams\KEDIA.jpg",
+      imageLink: "/Teams/KEDIA.jpg",
     },
     {
       name: "Gaurav Polai",
@@ -186,7 +186,7 @@ export const Teams: {
       email: "b21me004@nitm.ac.in",
       position: "Head",
       linkedinLink: undefined,
-      imageLink: "\Teams\GauravPollai.jpg",
+      imageLink: "/Teams/GauravPollai.jpg",
     },
     {
       name: "Harsh Parashar",
@@ -194,7 +194,7 @@ export const Teams: {
       email: "b21ec033@nitm.ac.in",
       position: "Head",
       linkedinLink: undefined,
-      imageLink: "\Teams\HarshPrasar.jpg",
+      imageLink: "/Teams/HarshPrasar.jpg",
     },
     {
       name: "Prem Kumar Gupta",
@@ -202,7 +202,7 @@ export const Teams: {
       email: "b22cs026@nitm.ac.in",
       position: "Co-Coordinator",
       linkedinLink: undefined,
-      imageLink: "\Teams\PremKumarGupta.jpg",
+      imageLink: "/Teams/PremKumarGupta.jpg",
     },
     {
       name: "Dip Kundu",
@@ -210,7 +210,7 @@ export const Teams: {
       email: "b22ce001@nitm.ac.in",
       position: "Co-Coordinator",
       linkedinLink: undefined,
-      imageLink: "\Teams\DipKundu.jpeg",
+      imageLink: "/Teams/DipKundu.jpeg",
     },
     {
       name: "Saksham",
@@ -218,7 +218,7 @@ export const Teams: {
       email: "b23ce026@nitm.ac.in",
       position: "Co-Coordinator",
       linkedinLink: undefined,
-      imageLink: "\Teams\Saksham.jpg",
+      imageLink: "/Teams/Saksham.jpg",
     },
     {
       name: "Bekkam Manohar Sai",
@@ -226,7 +226,7 @@ export const Teams: {
       email: "b23cs022@nitm.ac.in",
       position: "Co-Coordinator",
       linkedinLink: undefined,
-      imageLink: "\Teams\BekkamManoharSai.jpg",
+      imageLink: "/Teams/BekkamManoharSai.jpg",
     },
     {
       name: "Arunoday Tiwari",
@@ -234,7 +234,7 @@ export const Teams: {
       email: "b23ec009@nitm.ac.in",
       position: "Co-Coordinator",
       linkedinLink: undefined,
-      imageLink: "\Teams\ArunodayTiwari.png",
+      imageLink: "/Teams/ArunodayTiwari.png",
     },
   ],
   Designing: [
@@ -260,7 +260,7 @@ export const Teams: {
       email: "b22ec008@nitm.ac.in",
       position: "Co-Coordinator",
       linkedinLink: undefined,
-      imageLink: "\Teams\BotuVarunKumar.jpeg",
+      imageLink: "/Teams/BotuVarunKumar.jpeg",
     },
     {
       name: "Pankaj Saraswat",
@@ -268,7 +268,7 @@ export const Teams: {
       email: "b22ec040@nitm.ac.in",
       position: "Co-Coordinator",
       linkedinLink: undefined,
-      imageLink: "\Teams\PankajSaraswat.jpg",
+      imageLink: "/Teams/PankajSaraswat.jpg",
     },
     {
       name: "Mewantei S. Marbaniang",
@@ -276,7 +276,7 @@ export const Teams: {
       email: "b23ce023@nitm.ac.in",
       position: "Co-Coordinator",
       linkedinLink: undefined,
-      imageLink: "\Teams\MewanteiMarbaniang.jpg",
+      imageLink: "/Teams/MewanteiMarbaniang.jpg",
     },
     {
       name: "Satyam Singh",
@@ -284,7 +284,7 @@ export const Teams: {
       email: "b23ce020@nitm.ac.in",
       position: "Co-Coordinator",
       linkedinLink: undefined,
-      imageLink: "\Teams\SatyamSingh.jpg",
+      imageLink: "/Teams/SatyamSingh.jpg",
     },
   ],
   "Stage Management": [
@@ -294,7 +294,7 @@ export const Teams: {
       email: "b21ce013@nitm.ac.in",
       position: "Head",
       linkedinLink: undefined,
-      imageLink: "\Teams\ManishBishnoi.jpg",
+      imageLink: "/Teams/ManishBishnoi.jpg",
     },
     {
       name: "Dhanunjay Naidu",
@@ -310,7 +310,7 @@ export const Teams: {
       email: "b21ee030@nitm.ac.in",
       position: "Head",
       linkedinLink: undefined,
-      imageLink: "\Teams\Dharampal.jpg",
+      imageLink: "/Teams/Dharampal.jpg",
     },
     {
       name: "Rahul Kumar",
@@ -318,7 +318,7 @@ export const Teams: {
       email: "b22ce020@nitm.ac.in",
       position: "Co-Coordinator",
       linkedinLink: undefined,
-      imageLink: "\Teams\RahulKumar.jpeg",
+      imageLink: "/Teams/RahulKumar.jpeg",
     },
     {
       name: "Avinash Kumar Singh",
@@ -326,7 +326,7 @@ export const Teams: {
       email: "b22cs012@nitm.ac.in",
       position: "Co-Coordinator",
       linkedinLink: undefined,
-      imageLink: "\Teams\AvinashKumarSingh.jpg",
+      imageLink: "/Teams/AvinashKumarSingh.jpg",
     },
     {
       name: "Shivam Dawar",
@@ -334,7 +334,7 @@ export const Teams: {
       email: "b23me022@nitm.ac.in",
       position: "Co-Coordinator",
       linkedinLink: undefined,
-      imageLink: "\Teams\ShivamDawar.jpg",
+      imageLink: "/Teams/ShivamDawar.jpg",
     },
     {
       name: "Nazia Hasan Sheikh",
@@ -342,7 +342,7 @@ export const Teams: {
       email: "b23ce029@nitm.ac.in",
       position: "Co-Coordinator",
       linkedinLink: undefined,
-      imageLink: "\Teams\NaziaHasanSheikh.jpg",
+      imageLink: "/Teams/NaziaHasanSheikh.jpg",
     },
     {
       name: "Amiya Ratan Roy",
@@ -350,7 +350,7 @@ export const Teams: {
       email: "b23me001@nitm.ac.in",
       position: "Co-Coordinator",
       linkedinLink: undefined,
-      imageLink: "\Teams\AmiyaRatanRay.jpg",
+      imageLink: "/Teams/AmiyaRatanRay.jpg",
     },
   ],
   Hospitality: [
@@ -368,7 +368,7 @@ export const Teams: {
       email: "b21ee018@nitm.ac.in",
       position: "Head",
       linkedinLink: undefined,
-      imageLink: "\Teams\WailadmiSManner.jpg",
+      imageLink: "/Teams/WailadmiSManner.jpg",
     },
     {
       name: "Betdahunlin Sohkhia",
@@ -376,7 +376,7 @@ export const Teams: {
       email: "b21me025@nitm.ac.in",
       position: "Head",
       linkedinLink: undefined,
-      imageLink: "\Teams\BetdahunlinSohkhia.jpg",
+      imageLink: "/Teams/BetdahunlinSohkhia.jpg",
     },
     {
       name: "Ebarnes Kharwar",
@@ -384,7 +384,7 @@ export const Teams: {
       email: "b22ee023@nitm.ac.in",
       position: "Co-Coordinator",
       linkedinLink: undefined,
-      imageLink: "\Teams\EbarnesKharwar.jpg",
+      imageLink: "/Teams/EbarnesKharwar.jpg",
     },
     {
       name: "Ibanrisha Madur",
@@ -392,7 +392,7 @@ export const Teams: {
       email: "b23ee021@nitm.ac.in",
       position: "Co-Coordinator",
       linkedinLink: undefined,
-      imageLink: "\Teams\IbanrishaMadur.jpg",
+      imageLink: "/Teams/IbanrishaMadur.jpg",
     },
     {
       name: "Ibanylla M Maring",
@@ -400,7 +400,7 @@ export const Teams: {
       email: "b23ee031@nitm.ac.in",
       position: "Co-Coordinator",
       linkedinLink: undefined,
-      imageLink: "\Teams\Ibanylla.jpg",
+      imageLink: "/Teams/Ibanylla.jpg",
     },
   ],
   "Event Management": [
@@ -426,7 +426,7 @@ export const Teams: {
       email: "b21ee026@nitm.ac.in",
       position: "Head",
       linkedinLink: undefined,
-      imageLink: "\Teams\Dinesh.jpg",
+      imageLink: "/Teams/Dinesh.jpg",
     },
     {
       name: "Manish Kumar Prashad",
@@ -434,7 +434,7 @@ export const Teams: {
       email: "b23ce017@nitm.ac.in",
       position: "Co-Coordinator",
       linkedinLink: undefined,
-      imageLink: "\Teams\ManishKumar.jpeg",
+      imageLink: "/Teams/ManishKumar.jpeg",
     },
     {
       name: "Balajee Kanhaiya",
@@ -442,7 +442,7 @@ export const Teams: {
       email: "balajeekanahaiya@gmail.com",
       position: "Co-Coordinator",
       linkedinLink: undefined,
-      imageLink: "\Teams\BalajeeKanhaiya.jpg",
+      imageLink: "/Teams/BalajeeKanhaiya.jpg",
     },
     {
       name: "Adharsh Barman",
@@ -450,7 +450,7 @@ export const Teams: {
       email: "b23ee005@nitm.ac.in",
       position: "Co-Coordinator",
       linkedinLink: undefined,
-      imageLink: "\Teams\AdharshBarman.png",
+      imageLink: "/Teams/AdharshBarman.png",
     },
     {
       name: "Ankit Raj",
@@ -458,7 +458,7 @@ export const Teams: {
       email: "b23ec012@nitm.ac.in",
       position: "Co-Coordinator",
       linkedinLink: undefined,
-      imageLink: "\Teams\ANKITRAJ.jpg",
+      imageLink: "/Teams/ANKITRAJ.jpg",
     },
   ],
   "Web Development": [
@@ -508,7 +508,7 @@ export const Teams: {
       email: "b23cs037@nitm.ac.in",
       position: "Co-Coordinator",
       linkedinLink: undefined,
-      imageLink: "\Teams\JishnuDuhan.jpg",
+      imageLink: "/Teams/JishnuDuhan.jpg",
     },
     {
       name: "Charity Rymbai",
@@ -516,7 +516,7 @@ export const Teams: {
       email: "b23me010@nitm.ac.in",
       position: "Co-Coordinator",
       linkedinLink: undefined,
-      imageLink: "\Teams\CharityRymbai.jpg",
+      imageLink: "/Teams/CharityRymbai.jpg",
     },
   ],
 
@@ -527,7 +527,7 @@ export const Teams: {
       email: "b21ce017@nitm.ac.in",
       position: "Head",
       linkedinLink: undefined,
-      imageLink: "\Teams\Narendra.jpg",
+      imageLink: "/Teams/Narendra.jpg",
     },
     {
       name: "Sachin Kumar",
@@ -543,7 +543,7 @@ export const Teams: {
       email: "b22ee028@nitm.ac.in",
       position: "Co-Coordinator",
       linkedinLink: undefined,
-      imageLink: "\Teams\ShubhamKumar.jpg",
+      imageLink: "/Teams/ShubhamKumar.jpg",
     },
     {
       name: "Saurav Kumar",
@@ -551,7 +551,7 @@ export const Teams: {
       email: "b22ce029@nitm.ac.in",
       position: "Co-Coordinator",
       linkedinLink: undefined,
-      imageLink: "\Teams\SauravKumar.jpg",
+      imageLink: "/Teams/SauravKumar.jpg",
     },
     {
       name: "Manish Kumar",
@@ -559,7 +559,7 @@ export const Teams: {
       email: "b23ce017@nitm.ac.in",
       position: "Co-Coordinator",
       linkedinLink: undefined,
-      imageLink: "\Teams\ManishKumar.jpeg",
+      imageLink: "/Teams/ManishKumar.jpeg",
     },
   ],
   "Public Relations": [
@@ -569,7 +569,7 @@ export const Teams: {
       email: "b21cs008@nitm.ac.in",
       position: "Head",
       linkedinLink: undefined,
-      imageLink: "\Teams\PangaSaiTeja.jpeg",
+      imageLink: "/Teams/PangaSaiTeja.jpeg",
     },
     {
       name: "Gannu Abhijith Sai",
@@ -577,7 +577,7 @@ export const Teams: {
       email: "b21ec003@nitm.ac.in",
       position: "Head",
       linkedinLink: undefined,
-      imageLink: "\Teams\GannuAbhijithSai.jpg",
+      imageLink: "/Teams/GannuAbhijithSai.jpg",
     },
     {
       name: "Chandrani Dalui",
@@ -585,7 +585,7 @@ export const Teams: {
       email: "chandranidalui2003@gmail.com",
       position: "Co-Coordinator",
       linkedinLink: undefined,
-      imageLink: "\Teams\ChandraniDalui.jpg",
+      imageLink: "/Teams/ChandraniDalui.jpg",
     },
     {
       name: "Gurjala Meghana",
@@ -601,7 +601,7 @@ export const Teams: {
       email: "b23ce004@nitm.ac.in",
       position: "Co-Coordinator",
       linkedinLink: undefined,
-      imageLink: "\Teams\BiandikSangma.jpeg",
+      imageLink: "/Teams/BiandikSangma.jpeg",
     },
     {
       name: "Dean Chisam T Sangma",
@@ -609,7 +609,7 @@ export const Teams: {
       email: "b23ec007@nitm.ac.in",
       position: "Co-Coordinator",
       linkedinLink: undefined,
-      imageLink: "\Teams\DeanSangma.jpg",
+      imageLink: "/Teams/DeanSangma.jpg",
     },
   ],
   "Security Team": [
@@ -643,7 +643,7 @@ export const Teams: {
       email: "b22me032@nitm.ac.in",
       position: "Co-Coordinator",
       linkedinLink: undefined,
-      imageLink: "\Teams\SumitKumar.jpg",
+      imageLink: "/Teams/SumitKumar.jpg",
     },
     {
       name: "Uttam Kumar",
@@ -651,7 +651,7 @@ export const Teams: {
       email: "b23ec004@nitm.ac.in",
       position: "Co-Coordinator",
       linkedinLink: undefined,
-      imageLink: "\Teams\UttamKumar.jpg",
+      imageLink: "/Teams/UttamKumar.jpg",
     },
     {
       name: "Aman Mina",
@@ -659,7 +659,7 @@ export const Teams: {
       email: "b23me031@nitm.ac.in",
       position: "Co-Coordinator",
       linkedinLink: undefined,
-      imageLink: "\Teams\AMANMINA.jpg",
+      imageLink: "/Teams/AMANMINA.jpg",
     },
   ],
 };
