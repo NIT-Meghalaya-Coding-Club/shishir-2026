@@ -32,7 +32,7 @@ export const Teams: {
     {
       name: "Himanshu Kashyap",
       contactNo: "+91 6205986263",
-      email: "himanshu@example.com",
+      email: "b21ce002@nitm.ac.in",
       position: "GS-I, Cultural",
       linkedinLink: undefined,
       imageLink: "/Teams/himanshu.jpg",
@@ -596,7 +596,7 @@ export const Teams: {
       imageLink: undefined,
     },
     {
-      name: "Biandik Biachisa D Sangma",
+      name: "Biandik D Sangma",
       contactNo: "+91 9366566010",
       email: "b23ce004@nitm.ac.in",
       position: "Co-Coordinator",

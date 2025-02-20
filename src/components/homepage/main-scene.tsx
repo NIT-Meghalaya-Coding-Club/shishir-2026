@@ -30,14 +30,14 @@ const ResponsiveScene = () => {
       {/* Main Scene Image */}
       <div className="relative w-full h-screen">
         <Image
-          src="/img/img.png"
+          src="/img/img.gif"
           alt="Festival Scene"
           fill
           priority
           className="object-cover shadow-xl rounded-b-2xl"
           sizes="100vw"
           quality={100}
-          unoptimized
+          
         />
       </div>
 
@@ -50,7 +50,7 @@ const ResponsiveScene = () => {
             width={1000}
             height={250}
             priority
-            unoptimized
+            
             className="w-full h-auto transition-all duration-300"
           />
         </div>

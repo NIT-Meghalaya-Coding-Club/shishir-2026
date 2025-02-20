@@ -192,7 +192,7 @@ export const BentoCard = ({
 };
 
 const Events = () => (
-  <section className="min-h-screen bg-gradient-to-b from-blue-950 via-black to-blue-950 pb-20 sm:pb-32 lg:pb-52">
+  <section className="min-h-screen bg-gradient-to-b from-blue-950 via-blue-950 to-black pb-20 sm:pb-24 lg:pb-40">
     <div className="container mx-auto px-4 sm:px-6 lg:px-10">
       {/* Hero Text Section */}
       <div className="relative px-4 py-16 sm:py-24 lg:py-32 text-center">
