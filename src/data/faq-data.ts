@@ -1,34 +1,52 @@
 export const faqData = [
-    {
-      id: 1,
-      question: "What is LYP?",
-      answer: "LYP stands for Live Your Passion. This is an initiative taken up by Mood Indigo in order to promote and showcase the talent of winners of competitions. Wherever applicable, they have been mentioned in the competition details itself under the Prizes & LYP tab."
-    },
-    {
-      id: 2,
-      question: "Will I get a certificate for participation in Mood Indigo competitions?",
-      answer: "Winners and finalists of all the competitions shall get a digital certificate after Mood Indigo. Everyone participating will get a digital certificate of participation."
-    },
-    {
-      id: 3,
-      question: "Who can participate in these competitions? Is there any fee involved for registration?",
-      answer: "Any college student can take part in these competitions. There is no registration fee for participation."
-    },
-    {
-      id: 4,
-      question: "How do I register for Competitions at Mood Indigo?",
-      answer: "If you do not have an MI Number, go to the 'Register' tab and fill in your details there to get an MI Number. Then go to your Dashboard > Competitions > Genre and register in the required competition. If you already have an MI Number then directly register for the competition by going to Dashboard > Competitions > Genre and register in the required competition."
-    },
-    {
-      id: 5,
-      question: "We participated in multicity eliminations but could not qualify are we still eligible for participating in offline elimination?",
-      answer: "Anyone can participate through the offline eliminations happening during the main fest from 24th - 27th December irrespective of whether they participated/qualified in Multicity eliminations or not."
-    },
-    {
-      id: 6,
-      question: "How many teams from a college can participate?",
-      answer: "There is no restriction on the number of teams participating from a college. We welcome maximum participation from your end."
-    }
-  ];
-  
-  
+  {
+    id: 1,
+    question: "Who can participate in these competitions?",
+    answer: "Any college student with a valid college ID can participate in the competitions. Both individual and team participation is allowed depending on the competition format."
+  },
+  {
+    id: 2,
+    question: "Is there a registration fee?",
+    answer: "Yes, there is a nominal registration fee that varies by competition. The exact fee details will be provided during the registration process. The fee covers participation materials and certificates."
+  },
+  {
+    id: 3,
+    question: "How do I register for the competitions?",
+    answer: "Registration can be done through our website. Select the competition you're interested in, fill out the registration form, and complete the payment process. Make sure to carefully read the rules and requirements for each competition."
+  },
+  {
+    id: 4,
+    question: "What documents do I need for registration?",
+    answer: "You'll need a valid college ID, a recent photograph, and proof of payment. For team events, all team members must provide their college IDs and complete individual registration forms."
+  },
+  {
+    id: 5,
+    question: "Can I participate in multiple events?",
+    answer: "Yes, you can participate in multiple events as long as there are no schedule conflicts. Please check the event timeline carefully before registering for multiple competitions."
+  },
+  {
+    id: 6,
+    question: "What are the prizes for winners?",
+    answer: "All competitions have exciting cash prizes for winners. Additionally, winners and runners-up will receive certificates and trophies. Some events also offer special recognition and opportunities for future performances."
+  },
+  {
+    id: 7,
+    question: "Will accommodation be provided for outstation participants?",
+    answer: "Yes, accommodation can be arranged for outstation participants at a nominal cost. Please indicate your accommodation requirements during registration."
+  },
+  {
+    id: 8,
+    question: "What are the rules for Model United Nations?",
+    answer: "The MUN will follow standard parliamentary procedure. Participants should be well-versed with current international affairs and the specific committee protocols. Detailed rules and committee assignments will be shared after registration."
+  },
+  {
+    id: 9,
+    question: "What equipment will be provided for Battle of Bands?",
+    answer: "Basic sound equipment including speakers, microphones, and standard drum kit will be provided. Bands should bring their own instruments like guitars, keyboards, and any special equipment they need."
+  },
+  {
+    id: 10,
+    question: "Are there any time limits for performances?",
+    answer: "Yes, each competition has specific time limits. Traditional Dance and Step Up performances are limited to 8 minutes, Battle of Bands gets 15 minutes, and Open Mic performances are limited to 5 minutes per participant."
+  }
+];

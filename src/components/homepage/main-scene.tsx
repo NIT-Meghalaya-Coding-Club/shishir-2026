@@ -45,11 +45,12 @@ const ResponsiveScene = () => {
       <div className="absolute top-16 md:top-16 lg:top-16 left-1/2 transform -translate-x-1/2 z-10 transition-all duration-300">
         <div style={{ width: bannerWidth }}>
           <Image
-            src="/img/banner.png"
+            src="/img/banner.gif"
             alt="Shishir 2025"
             width={1000}
             height={250}
             priority
+            unoptimized
             className="w-full h-auto transition-all duration-300"
           />
         </div>
