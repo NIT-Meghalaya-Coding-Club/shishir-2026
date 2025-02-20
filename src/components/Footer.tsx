@@ -6,7 +6,7 @@ import { IoMail, IoCall, IoLocationSharp } from "react-icons/io5";
 
 export default function Footer() {
   return (
-    <footer className="-z-10 relative overflow-hidden bg-gradient-to-b from-blue-950 via-black to-blue-950 pt-16 text-amber-100">
+    <footer className="relative overflow-hidden bg-gradient-to-b from-blue-950 via-black to-blue-950 pt-16 text-amber-100">
       {/* Animated background particles - Adjusted for better visibility on all screens */}
       <div className="absolute inset-0 opacity-10">
         <div
@@ -24,7 +24,7 @@ export default function Footer() {
       </div>
 
       {/* Semi-circle Background with Logo - Improved scaling */}
-      <div className="absolute left-1/2 top-5 sm:top-10 -translate-x-1/2 transform">
+      <div className="absolute left-1/2 lg:left-1/2 top-5 sm:top-10 -translate-x-1/2 transform">
         <div className="relative h-[80px] w-[160px] sm:h-[100px] sm:w-[200px] md:h-[200px] md:w-[400px]">
           <div className="absolute h-full w-full rounded-t-full bg-gradient-to-b from-amber-500/20 via-amber-500/5 to-transparent" />
           <div className="absolute left-1/2 top-1/2 flex h-16 w-16 sm:h-24 sm:w-24 md:h-36 md:w-36 -translate-x-1/2 -translate-y-1/2 transform items-center justify-center">

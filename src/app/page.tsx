@@ -2,6 +2,7 @@ import MainScene from '@/components/homepage/main-scene'
 
 import About from '@/components/homepage/about'
 import Events from '@/components/homepage/stats'
+import CountdownTimer from '@/components/homepage/countdownTimer'
 
 export default function Home() {
   return (
@@ -9,6 +10,7 @@ export default function Home() {
       <div className='home_contianer relative border-box overflow-hidden'>
         <MainScene />
         {/* <HeadliningEvents /> */}
+        <CountdownTimer />
         <About />
         <Events />
       </div>
