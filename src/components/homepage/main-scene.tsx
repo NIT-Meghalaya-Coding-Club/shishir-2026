@@ -10,7 +10,7 @@ const ResponsiveScene = () => {
     const handleResize = () => {
       const width = window.innerWidth;
       if (width <= 640) { // mobile
-        setBannerWidth(500);
+        setBannerWidth(400);
       } else if (width <= 1024) { // tablet
         setBannerWidth(600);
       } else if (width <= 1440) { // small desktop
@@ -36,7 +36,7 @@ const ResponsiveScene = () => {
           priority
           className="object-cover shadow-xl rounded-b-2xl"
           sizes="100vw"
-          quality={90}
+          quality={100}
           unoptimized
         />
       </div>

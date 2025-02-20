@@ -48,7 +48,7 @@ export default function Contact() {
           </div>
 
           {/* Updated Navigation Links */}
-          <div className="flex flex-col w-full max-w-xs overflow-hidden relative h-64">
+          <div className="flex flex-col w-full max-w-xs overflow-hidden relative h-96">
             <div className="absolute inset-0 overflow-y-hidden hover:overflow-y-auto hide-scrollbar">
               <div className="animate-scroll hover:animation-pause">
                 <div className="flex flex-col gap-8">
@@ -119,7 +119,7 @@ export default function Contact() {
                     <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 rounded-2xl animate-gradient-x" />
 
                     {/* Card Content */}
-                    <div className="relative m-0.5 bg-gradient-to-br from-gray-900 to-black rounded-2xl p-8 backdrop-blur-xl transform hover:scale-105 transition-all duration-500">
+                    <div className="relative m-0.5 bg-gradient-to-br from-gray-900 to-black rounded-2xl p-8 backdrop-blur-xl transform hover:scale-95 transition-all duration-500">
                       {/* Spotlight effect */}
                       <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-32 h-32 bg-yellow-400/10 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
@@ -150,13 +150,13 @@ export default function Contact() {
                           <div className="flex gap-6 justify-center pt-3">
                             <a
                               href={`tel:${member.contactNo}`}
-                              className="text-gray-400 hover:text-yellow-400 transition-colors duration-300"
+                              className="text-gray-400 hover:text-yellow-400 transition-colors duration-300 relative z-20"
                             >
                               <FaPhone size={24} />
                             </a>
                             <a
                               href={`mailto:${member.email}`}
-                              className="text-gray-400 hover:text-yellow-400 transition-colors duration-300"
+                              className="text-gray-400 hover:text-yellow-400 transition-colors duration-300 relative z-20"
                             >
                               <FaEnvelope size={24} />
                             </a>
@@ -165,7 +165,7 @@ export default function Contact() {
                                 href={member.linkedinLink}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-gray-400 hover:text-yellow-400 transition-colors duration-300"
+                                className="text-gray-400 hover:text-yellow-400 transition-colors duration-300 relative z-20"
                               >
                                 <FaLinkedin size={24} />
                               </a>
