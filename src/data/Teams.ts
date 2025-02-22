@@ -252,7 +252,7 @@ export const Teams: {
       email: "b21ec004@nitm.ac.in",
       position: "Head",
       linkedinLink: undefined,
-      imageLink: undefined,
+      imageLink: "/Teams/SubhadeepSinha.jpg",
     },
     {
       name: "Botu Varun Kumar",
@@ -535,7 +535,7 @@ export const Teams: {
       email: "b21me011@nitm.ac.in",
       position: "Head",
       linkedinLink: undefined,
-      imageLink: "/Teams/SachinKumarjpg",
+      imageLink: "/Teams/SachinKumar.jpg",
     },
     {
       name: "Shubham Kumar",
@@ -619,7 +619,7 @@ export const Teams: {
       email: "b21ec022@nitm.ac.in",
       position: "Head",
       linkedinLink: undefined,
-      imageLink: undefined,
+      imageLink: "/Teams/NimmakuriVarunTeja.jpg",
     },
     {
       name: "Hauniwan Dkhar",
@@ -627,7 +627,7 @@ export const Teams: {
       email: "hauniwan@example.com",
       position: "Head",
       linkedinLink: undefined,
-      imageLink: undefined,
+      imageLink: "/Teams/Hauni.jpg",
     },
     {
       name: "Pyndapmain Marngar",
