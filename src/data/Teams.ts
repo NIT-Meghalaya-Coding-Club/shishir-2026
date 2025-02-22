@@ -458,7 +458,7 @@ export const Teams: {
       email: "b23ec012@nitm.ac.in",
       position: "Co-Coordinator",
       linkedinLink: undefined,
-      imageLink: "/Teams/ANKITRAJ.jpg",
+      imageLink: "/Teams/AnkitRaj.png",
     },
   ],
   "Web Development": [
@@ -500,7 +500,7 @@ export const Teams: {
       email: "b22me004@nitm.ac.in",
       position: "Co-Coordinator",
       linkedinLink: undefined,
-      imageLink: undefined,
+      imageLink: "/Teams/GauravJoshi.jpg",
     },
     {
       name: "Jishnu Duhan",
@@ -535,7 +535,7 @@ export const Teams: {
       email: "b21me011@nitm.ac.in",
       position: "Head",
       linkedinLink: undefined,
-      imageLink: undefined,
+      imageLink: "/Teams/SachinKumarjpg",
     },
     {
       name: "Shubham Kumar",

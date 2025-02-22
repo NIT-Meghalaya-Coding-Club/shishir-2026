@@ -13,7 +13,7 @@ const eventsData: EventsData = {
   "DANCE AND DRAMA CLUB": [
     {
       name: "Flash Mob",
-      image: "/img/event/flash-mob.png",
+      image: "/img/event/Flash-Mob.png",
       registrationLink: "",
       rulebook: "",
     },
@@ -30,7 +30,7 @@ const eventsData: EventsData = {
       rulebook: "",
     },
     {
-      name: "Prom Night (Open For All)",
+      name: "Prom Night",
       image: "/img/event/prom-night.png",
       registrationLink: "",
       rulebook: "",
@@ -38,12 +38,6 @@ const eventsData: EventsData = {
     {
       name: "Classical Song",
       image: "/img/event/class-song.png",
-      registrationLink: "",
-      rulebook: "",
-    },
-    {
-      name: "Drama Performance",
-      image: "/img/event/drama-performance.png",
       registrationLink: "",
       rulebook: "",
     },
@@ -95,12 +89,6 @@ const eventsData: EventsData = {
       registrationLink: "",
       rulebook: "",
     },
-    {
-      name: "Game 2 (Inter)",
-      image: "/img/event/game-2.png",
-      registrationLink: "",
-      rulebook: "",
-    },
   ],
   "KRIGG ": [
     {
@@ -123,7 +111,7 @@ const eventsData: EventsData = {
     },
     {
       name: "Rangoli",
-      image: "/img/event/rangoli.png",
+      image: "/img/event/Rangoli.png",
       registrationLink: "",
       rulebook: "",
     },
@@ -203,7 +191,7 @@ const eventsData: EventsData = {
     },
     {
       name: "Instrumental",
-      image: "/img/event/instrumental.png",
+      image: "/img/event/Instrumental.png",
       registrationLink: "",
       rulebook: "",
     },
@@ -228,8 +216,8 @@ const eventsData: EventsData = {
       rulebook: "",
     },
     {
-      name: "Short Film making competition",
-      image: "/img/event/short-film.png",
+      name: "Reel Making Competition",
+      image: "/img/event/reel-making-competition.png",
       registrationLink: "",
       rulebook: "",
     },
