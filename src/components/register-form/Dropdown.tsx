@@ -26,7 +26,7 @@ const Dropdown:React.FC<DropdownProps> = ({title, options, onChange, required=tr
   },[inputValue])
 
   return (
-      <div className="space-y-2">
+      <div className="space-y-2 w-[50vw] sm:w-56 md:w-64 lg:w-72 ">
         <p className="text-yellow-500">{title}</p>
         <div 
           className="backdrop-blur-lg bg-white/10 p-[8px]

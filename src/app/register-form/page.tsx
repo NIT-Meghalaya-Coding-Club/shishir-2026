@@ -48,18 +48,18 @@ const RegisterForm: React.FC = () => {
   });
 
     return (
-        <div className="bg-[#202551] flex justify-center relative min-h-screen w-full h-fit">
+        <div className="bg-[#202551] flex justify-center items-center relative min-h-screen w-full h-fit overflow-hidden">
       <NeonCursorBackground/>
             <form className="relative w-4/5 xl:w-1/2 p-10 mt-10 backdrop-blur-md rounded-lg shadow-2xl flex flex-col space-y-5">
                 <div className="relative flex justify-center items-center gap-4 mb-6">
                 <Crown className="w-12 h-12 text-yellow-400 animate-pulse" />
-                <h1 className="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 pt-10">
+                <h1 className="text-[10vw] lg:text-6xl xl:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 pt-10">
                   REGISTER
                 </h1>
                 <Crown className="w-12 h-12 text-yellow-400 animate-pulse" />
               <div className="absolute -bottom-2 h-1 w-48 mx-auto bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full" />
             </div>
-                <div className="grid text-whitegrid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="grid place-items-center sm:grid-cols-2 gap-6">
                   {/* Basic Details */}
                   <InputBox
                     onChange={(e) =>
@@ -165,9 +165,14 @@ const RegisterForm: React.FC = () => {
                           } title="Emergency Contact Details" type="text" /> */}
                 </div>
                 <div className="flex justify-center">
-                    <button className="p-3 w-1/2 xl:w-1/4 text-lg font-mono font-semibold text-gray-700 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 rounded-md shadow-2xl transition-all duration-200
-                      hover:shadow-lg hover:-translate-y-1 active:translate-y-1 active:shadow-inner focus:outline-none" type="submit">Register</button>
+                  <button className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl p-3 w-1/2 xl:w-1/4 font-mono font-bold text-gray-700 
+                      bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 rounded-md shadow-2xl transition-all duration-200
+                      hover:shadow-lg hover:-translate-y-1 active:translate-y-1 active:shadow-inner focus:outline-none"
+                      type="submit">
+                      Register
+                  </button>
                 </div>
+
             </form>
     </div>
     );
