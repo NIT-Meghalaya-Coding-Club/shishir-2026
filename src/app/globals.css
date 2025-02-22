@@ -219,3 +219,28 @@ h3 {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+  
+  
+  
+  @layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* DiagonalImageScroll   */
+@keyframes diagonal-scroll {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(650px); /* Adjust the distance as needed */
+  }
+}
+
+.animate-diagonal-scroll {
+  animation: diagonal-scroll 6s linear infinite; /* Adjust duration as needed */
+}
