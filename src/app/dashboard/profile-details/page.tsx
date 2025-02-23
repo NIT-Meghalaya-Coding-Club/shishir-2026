@@ -4,8 +4,12 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
+import { Crown } from "lucide-react";
+
+import NeonCursorBackground from '@/components/NeonCursorBackground';
+
 const ProfileDetailsForm = () => {
-    const { data: session, status } = useSession();
+    const { data: session } = useSession();
     const router = useRouter();
     const [dataFetched, setDataFetched] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -113,7 +117,7 @@ const ProfileDetailsForm = () => {
             });
 
             if (res.ok) {
-                setShowModal(true);
+                // setShowModal(true);
             } else {
                 alert("Failed to update profile!");
             }
@@ -125,12 +129,20 @@ const ProfileDetailsForm = () => {
     };
 
     if (isLoading) {
-        return <div className="min-h-screen flex items-center justify-center text-white">Loading...</div>;
+        return <div className="min-h-screen flex items-center justify-center text-white"><NeonCursorBackground /></div>;
     }
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white p-6 py-20">
-            <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-2xl border border-amber-500 border-opacity-20">
-                <h2 className="text-2xl font-bold text-center text-yellow-400">Profile Details</h2>
+            <NeonCursorBackground />
+            <div className="bg-gray-800 bg-opacity-50 backdrop-blur-md p-6 rounded-lg shadow-lg w-full max-w-2xl border border-amber-500 border-opacity-20 z-50">
+                <div className="relative flex justify-center items-center gap-4 mb-6">
+                    <Crown className="w-12 h-12 text-yellow-400 animate-pulse" />
+                    <h1 className="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 pt-10">
+                        REGISTER
+                    </h1>
+                    <Crown className="w-12 h-12 text-yellow-400 animate-pulse" />
+                    <div className="absolute -bottom-2 h-1 w-48 mx-auto bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full" />
+                </div>
                 <form onSubmit={handleSubmit} className="mt-4 space-y-4">
                     <div className="grid md:grid-cols-2 gap-10">
                         <div className="space-y-2">

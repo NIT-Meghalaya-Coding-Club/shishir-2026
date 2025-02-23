@@ -5,7 +5,6 @@ import MoreButton from "@/components/dashboard/MoreButton";
 import LogoutButton from "@/components/dashboard/LogoutButton";
 import ContactInfo from "@/components/dashboard/ContactInfo";
 import AdditionalInfo from "@/components/dashboard/AdditionalInfo";
-import EditButton from "@/components/dashboard/EditButton";
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";

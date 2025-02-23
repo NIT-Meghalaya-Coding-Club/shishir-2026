@@ -16,14 +16,14 @@ const Dropdown:React.FC<DropdownProps> = ({title, options, onChange, required=tr
 
   useEffect(() => {
     onChange?.(selectedOption || '');
-  },[selectedOption])
+  },[selectedOption, onChange])
 
   useEffect(() => {
     if (inputValue === '') {
       setSelectedOption(null);
       setFinalOptions(options);
     }
-  },[inputValue])
+  },[inputValue, options])
 
   return (
       <div className="space-y-2">
