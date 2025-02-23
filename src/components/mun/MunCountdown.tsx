@@ -80,13 +80,13 @@ const CountdownTimer = () => {
           <Image src="/img/mun_logo.png" alt="Conference" width={100} height={100} className=" rounded-lg " />
         </div>
         
-        <h2 className="text-3xl md:text-4xl lg:text-5xl text-center text-yellow-400 font-semibold mb-4">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-center text-yellow-400 font-semibold mb-4">
           Shaping Tomorrow's Diplomatic Leaders
         </h2>
 
         <div className="w-24 h-0.5 bg-yellow-500/50 mx-auto mb-8" />
         
-        <div className="flex flex-wrap justify-center gap-6 md:gap-8 lg:gap-12">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 md:gap-8 lg:gap-12 justify-center">
           {[
             { label: 'Days', value: timeLeft.days },
             { label: 'Hours', value: timeLeft.hours },
@@ -99,17 +99,17 @@ const CountdownTimer = () => {
               className="flex flex-col items-center"
             >
               <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.98 }}
-                className="relative w-20 h-20 md:w-28 md:h-28 lg:w-32 lg:h-32 bg-white/5 backdrop-blur-lg rounded-lg flex items-center justify-center shadow-xl border border-yellow-500/20"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.98 }}
+          className="relative w-20 h-20 md:w-28 md:h-28 lg:w-32 lg:h-32 bg-white/5 backdrop-blur-lg rounded-lg flex items-center justify-center shadow-xl border border-yellow-500/20"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/10 to-transparent rounded-lg" />
-                <span className="text-3xl md:text-4xl lg:text-5xl font-semibold text-yellow-400 relative z-10 font-mono">
-                  {String(item.value).padStart(2, '0')}
-                </span>
+          <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/10 to-transparent rounded-lg" />
+          <span className="text-3xl md:text-4xl lg:text-5xl font-semibold text-yellow-400 relative z-10 font-mono">
+            {String(item.value).padStart(2, '0')}
+          </span>
               </motion.div>
               <span className="mt-3 text-sm md:text-base lg:text-lg text-yellow-100 font-medium uppercase tracking-wider">
-                {item.label}
+          {item.label}
               </span>
             </motion.div>
           ))}
