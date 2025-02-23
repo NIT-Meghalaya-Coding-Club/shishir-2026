@@ -4,7 +4,7 @@
 @tailwind utilities;
 
 
-body{
+body {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
@@ -24,12 +24,14 @@ body{
   height: 20px;
   width: 20px;
 }
+
 .loader:before {
   animation: ball1 1s infinite;
   background-color: #cf8600;
   box-shadow: 30px 0 0 #fec800;
   margin-bottom: 10px;
 }
+
 .loader:after {
   animation: ball2 1s infinite;
   background-color: #fec800;
@@ -37,20 +39,30 @@ body{
 }
 
 @keyframes rotate {
-  0% { transform: rotate(0deg) scale(0.8) }
-  50% { transform: rotate(360deg) scale(1.2) }
-  100% { transform: rotate(720deg) scale(0.8) }
+  0% {
+    transform: rotate(0deg) scale(0.8)
+  }
+
+  50% {
+    transform: rotate(360deg) scale(1.2)
+  }
+
+  100% {
+    transform: rotate(720deg) scale(0.8)
+  }
 }
 
 @keyframes ball1 {
   0% {
     box-shadow: 30px 0 0 #fec800;
   }
+
   50% {
     box-shadow: 0 0 0 #fec800;
     margin-bottom: 0;
     transform: translate(15px, 15px);
   }
+
   100% {
     box-shadow: 30px 0 0 #fec800;
     margin-bottom: 10px;
@@ -61,11 +73,13 @@ body{
   0% {
     box-shadow: 30px 0 0 #cf8600;
   }
+
   50% {
     box-shadow: 0 0 0 #cf8600;
     margin-top: -20px;
     transform: translate(15px, 15px);
   }
+
   100% {
     box-shadow: 30px 0 0 #cf8600;
     margin-top: 0;
@@ -105,17 +119,18 @@ h3 {
 }
 
 @keyframes spin-slow {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
+  from {
+    transform: rotate(0deg);
   }
-  
-  .animate-spin-slow {
-    animation: spin-slow 18s linear infinite;
+
+  to {
+    transform: rotate(360deg);
   }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 18s linear infinite;
+}
 
 @layer base {
   :root {
@@ -127,6 +142,7 @@ h3 {
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -146,7 +162,7 @@ h3 {
   }
 
   .bento-title {
-    @apply uppercase md:text-6xl text-4xl font-black ;
+    @apply uppercase md:text-6xl text-4xl font-black;
   }
 }
 
@@ -158,6 +174,7 @@ h3 {
   0% {
     transform: translateX(0);
   }
+
   100% {
     transform: translateX(-50%);
   }
@@ -165,7 +182,8 @@ h3 {
 
 .animate-infinite-scroll {
   display: flex;
-  gap: 1rem; /* Adjust gap between items */
+  gap: 1rem;
+  /* Adjust gap between items */
   animation: infinite-scroll 20s linear infinite;
 }
 
@@ -180,42 +198,48 @@ h3 {
 }
 
 @keyframes spin-slow {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
+  from {
+    transform: rotate(0deg);
   }
-  
-  .animate-spin-slow {
-    animation: spin-slow 18s linear infinite;
+
+  to {
+    transform: rotate(360deg);
   }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 18s linear infinite;
+}
 
 
 
-  @keyframes scroll {
-    0% {
-      transform: translateY(0);
-    }
-    100% {
-      transform: translateY(-33.33%);
-    }
+@keyframes scroll {
+  0% {
+    transform: translateY(0);
   }
-  
-  .animate-scroll {
-    animation: scroll 20s linear infinite;
+
+  100% {
+    transform: translateY(-33.33%);
   }
-  
-  .hover\:animation-pause:hover {
-    animation-play-state: paused;
-  }
-  
-  .hide-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-  
-  .hide-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
+}
+
+.animate-scroll {
+  animation: scroll 20s linear infinite;
+}
+
+.hover\:animation-pause:hover {
+  animation-play-state: paused;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.input-style {
+  @apply w-full px-4 py-2 bg-gray-700 text-white rounded-md focus:ring focus:ring-yellow-400;
+}

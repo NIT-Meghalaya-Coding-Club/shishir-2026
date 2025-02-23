@@ -12,12 +12,15 @@ const userSchema = new Schema(
     college: { type: String },
     collegeID: { type: String },
     yearOfStudy: { type: Number },
-    dept: { type: Number },
-    accomdation: { type: Boolean, default: false },
+    dept: { type: String },
+    accommodation: { type: Boolean, default: false },
     nonVeg: { type: Boolean, default: false },
+    emergencyContact: { type: String, unique: true },
+    alternateNumber: { type: String, unique: true },
     image: { type: String, default: null },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
+    registered: { type: Boolean, default: false },
   },
   { timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" } }
 );
