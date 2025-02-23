@@ -252,7 +252,7 @@ export const Teams: {
       email: "b21ec004@nitm.ac.in",
       position: "Head",
       linkedinLink: undefined,
-      imageLink: undefined,
+      imageLink: "/Teams/SubhadeepSinha.jpg",
     },
     {
       name: "Botu Varun Kumar",
@@ -458,7 +458,7 @@ export const Teams: {
       email: "b23ec012@nitm.ac.in",
       position: "Co-Coordinator",
       linkedinLink: undefined,
-      imageLink: "/Teams/ANKITRAJ.jpg",
+      imageLink: "/Teams/AnkitRaj.png",
     },
   ],
   "Web Development": [
@@ -500,7 +500,7 @@ export const Teams: {
       email: "b22me004@nitm.ac.in",
       position: "Co-Coordinator",
       linkedinLink: undefined,
-      imageLink: undefined,
+      imageLink: "/Teams/GauravJoshi.jpg",
     },
     {
       name: "Jishnu Duhan",
@@ -535,7 +535,7 @@ export const Teams: {
       email: "b21me011@nitm.ac.in",
       position: "Head",
       linkedinLink: undefined,
-      imageLink: undefined,
+      imageLink: "/Teams/SachinKumar.jpg",
     },
     {
       name: "Shubham Kumar",
@@ -619,7 +619,7 @@ export const Teams: {
       email: "b21ec022@nitm.ac.in",
       position: "Head",
       linkedinLink: undefined,
-      imageLink: undefined,
+      imageLink: "/Teams/NimmakuriVarunTeja.jpg",
     },
     {
       name: "Hauniwan Dkhar",
@@ -627,7 +627,7 @@ export const Teams: {
       email: "hauniwan@example.com",
       position: "Head",
       linkedinLink: undefined,
-      imageLink: undefined,
+      imageLink: "/Teams/Hauni.jpg",
     },
     {
       name: "Pyndapmain Marngar",

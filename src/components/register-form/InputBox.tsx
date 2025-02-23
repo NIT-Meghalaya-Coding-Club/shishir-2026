@@ -7,7 +7,7 @@ interface InputBoxProps {
 
 const InputBox: React.FC<InputBoxProps> = ({ type, title, required = true, onChange }) => {
     return (
-        <div className="space-y-1 text-yellow-500 font-serif text-lg  flex flex-col">
+        <div className="space-y-1 text-yellow-500 w-[50vw] sm:w-56 md:w-64 lg:w-72 font-serif text-lg  flex flex-col">
           <label htmlFor={title}>{title}</label>
           <input
             onChange={onChange}

@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import { TiLocationArrow } from "react-icons/ti";
 import { ReactNode } from "react";
 
-const NumberCounter = ({
+export const NumberCounter = ({
   end,
   duration = 2000,
 }: {
