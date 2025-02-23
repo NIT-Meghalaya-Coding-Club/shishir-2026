@@ -6,15 +6,15 @@ export const MUN_Team: {
 }[] = [
   {
     id: 1,
-    name: "Ankit Singh",
+    name: "Parthiv Das",
     position: "Founder President",
-    imageLink: "/Teams/Ankit.jpg"
+    imageLink: "/Teams/MUN/Parthiv.jpg"
   },
   {
     id: 2,
     name: "Samiksha Deb",
     position: "Secretary General",
-    imageLink: undefined
+    imageLink: "/Teams/MUN/Samiksha.jpg"
   },
   {
     id: 3,
@@ -26,7 +26,7 @@ export const MUN_Team: {
     id: 4,
     name: "Yashvi Arya",
     position: "Director General",
-    imageLink: undefined
+    imageLink: "/Teams/MUN/Yashvi.jpg"
   },
   {
     id: 5,
@@ -56,19 +56,19 @@ export const MUN_Team: {
     id: 9,
     name: "Akshith Reddy",
     position: "Head of Delegate Affairs",
-    imageLink: undefined
+    imageLink: "/Teams/MUN/Akshith.jpg"
   },
   {
     id: 10,
     name: "Swarnim Suman",
     position: "Head of EB Affairs",
-    imageLink: undefined
+    imageLink: "/Teams/MUN/Swarnim.JPG"
   },
   {
     id: 11,
     name: "Arush Rahman",
     position: "Head of Marketing",
-    imageLink: undefined
+    imageLink: "/Teams/MUN/Arush.jpg"
   },
   {
     id: 12,
