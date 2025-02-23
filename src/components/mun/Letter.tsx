@@ -46,7 +46,7 @@ const SACLetter: React.FC = () => {
         and solution-oriented discussions that resonated well beyond our campus.
       </p>
       <p className="py-3">
-        As we step into our third session, amidst the echoes of Shishir's
+        As we step into our third session, amidst the echoes of Shishir&apos;s
         cultural anthems, I invite you all to embrace the challenge, celebrate
         diversity, and contribute to the dialogues that stimulate change. Let
         this platform be a testimony to your potential to influence the world,
