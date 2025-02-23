@@ -11,8 +11,8 @@ const NeonCursorBackground = () => {
       radius1: 5,
       radius2: 30,
       velocityTreshold: 10,
-      sleepRadiusX: 100,
-      sleepRadiusY: 100,
+      sleepRadiusX: 70,
+      sleepRadiusY: 70,
       sleepTimeCoefX: 0.0025,
       sleepTimeCoefY: 0.0025,
     });
