@@ -171,6 +171,33 @@ h1, h2, h3 {
 
 .input-style {
   @apply w-full px-4 py-2 bg-gray-700 text-white rounded-md focus:ring focus:ring-yellow-400;
+
+  
+  .hover\:animation-pause:hover {
+    animation-play-state: paused;
+  }
+  
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+  
+  
+  
+  @layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+
+
 }
 
 @keyframes diagonal-scroll {
