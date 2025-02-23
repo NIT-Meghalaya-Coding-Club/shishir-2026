@@ -13,6 +13,7 @@ export const MUN_LegacyData: {
     "description": "The 2024 conference was a huge success with over 250 delegates participating in the event. The conference was held in the newly constructed auditorium of the college.",
   }, 
   2025: {
+    "delegatesNo": 250,
     "description": "The 2025 conference was a huge success with over 300 delegates participating in the event. The conference was held in the newly constructed auditorium of the college.",
   },
 }

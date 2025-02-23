@@ -1,6 +1,7 @@
 "use client"
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 
 const CountdownTimer = () => {
   const [timeLeft, setTimeLeft] = useState({
@@ -86,11 +87,11 @@ const CountdownTimer = () => {
               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
               className="mr-3 hidden md:block"
             >
-              <img 
+              <Image 
               src="/assets/logo.png" 
               alt="Custom Icon" 
-              width="50" 
-              height="50" 
+              width={50} 
+              height={50} 
               className="object-contain"
               />
             </motion.div>
@@ -142,7 +143,7 @@ const CountdownTimer = () => {
               { label: 'H', value: timeLeft.hours },
               { label: 'M', value: timeLeft.minutes },
               { label: 'S', value: timeLeft.seconds }
-            ].map((item, index) => (
+            ].map((item) => (
               <motion.div
                 key={item.label}
                 variants={itemVariants}
