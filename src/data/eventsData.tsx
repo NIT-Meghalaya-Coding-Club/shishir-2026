@@ -6,6 +6,8 @@ interface Event {
   image: string;
   registrationLink: string;
   rulebook: string;
+  min: number,
+  max: number
 }
 
 type EventsData = Record<Category, Event[]>;
@@ -18,6 +20,8 @@ const eventsData: EventsData = {
       image: "/img/event/Flash-Mob.png",
       registrationLink: "",
       rulebook: "",
+      min: 3,
+      max: 5
     },
     {
       code: "dance_comp",
@@ -25,6 +29,8 @@ const eventsData: EventsData = {
       image: "/img/event/dance-competition.png",
       registrationLink: "",
       rulebook: "",
+      min: 3,
+      max: 5
     },
     {
       code: "team_dance",
@@ -32,6 +38,8 @@ const eventsData: EventsData = {
       image: "/img/event/group-dance.png",
       registrationLink: "",
       rulebook: "",
+      min: 3,
+      max: 5
     },
     {
       code: "prom_night",
@@ -39,6 +47,8 @@ const eventsData: EventsData = {
       image: "/img/event/prom-night.png",
       registrationLink: "",
       rulebook: "",
+      min: 3,
+      max: 5
     },
     {
       code: "class_song",
@@ -46,6 +56,8 @@ const eventsData: EventsData = {
       image: "/img/event/class-song.png",
       registrationLink: "",
       rulebook: "",
+      min: 3,
+      max: 5
     },
     {
       code: "drama_comp",
@@ -53,6 +65,8 @@ const eventsData: EventsData = {
       image: "/img/event/drama-competition.png",
       registrationLink: "",
       rulebook: "",
+      min: 3,
+      max: 5
     },
   ],
   "EBSB CLUB": [
@@ -62,6 +76,8 @@ const eventsData: EventsData = {
       image: "/img/event/cultural-exhibition.png",
       registrationLink: "",
       rulebook: "",
+      min: 3,
+      max: 5
     },
     {
       code: "food_fest",
@@ -69,6 +85,8 @@ const eventsData: EventsData = {
       image: "/img/event/food-fest.png",
       registrationLink: "",
       rulebook: "",
+      min: 3,
+      max: 5
     },
   ],
   "FUN EVENTS": [
@@ -78,6 +96,8 @@ const eventsData: EventsData = {
       image: "/img/event/buzz-wire.png",
       registrationLink: "",
       rulebook: "",
+      min: 3,
+      max: 5
     },
     {
       code: "shoot_cont",
@@ -85,6 +105,8 @@ const eventsData: EventsData = {
       image: "/img/event/shooting-contest.png",
       registrationLink: "",
       rulebook: "",
+      min: 3,
+      max: 5
     },
     {
       code: "dart_throw",
@@ -92,6 +114,8 @@ const eventsData: EventsData = {
       image: "/img/event/dart-throwing.png",
       registrationLink: "",
       rulebook: "",
+      min: 3,
+      max: 5
     },
   ],
   "GAMING ": [
@@ -101,6 +125,8 @@ const eventsData: EventsData = {
       image: "/img/event/game-1.png",
       registrationLink: "",
       rulebook: "",
+      min: 3,
+      max: 5
     },
   ],
   "KRIGG ": [
@@ -110,6 +136,8 @@ const eventsData: EventsData = {
       image: "/img/event/dumb-charades.png",
       registrationLink: "",
       rulebook: "",
+      min: 3,
+      max: 5
     },
     {
       code: "snake_ladder",
@@ -117,6 +145,8 @@ const eventsData: EventsData = {
       image: "/img/event/snake-ladder.png",
       registrationLink: "",
       rulebook: "",
+      min: 3,
+      max: 5
     },
     {
       code: "mus_chair",
@@ -124,6 +154,8 @@ const eventsData: EventsData = {
       image: "/img/event/musical-chair.png",
       registrationLink: "",
       rulebook: "",
+      min: 3,
+      max: 5
     },
     {
       code: "rangoli",
@@ -131,6 +163,8 @@ const eventsData: EventsData = {
       image: "/img/event/Rangoli.png",
       registrationLink: "",
       rulebook: "",
+      min: 3,
+      max: 5
     },
     {
       code: "tug_war",
@@ -138,6 +172,8 @@ const eventsData: EventsData = {
       image: "/img/event/tug-of-war.png",
       registrationLink: "",
       rulebook: "",
+      min: 3,
+      max: 5
     },
     {
       code: "box_cric",
@@ -145,6 +181,8 @@ const eventsData: EventsData = {
       image: "/img/event/box-cricket.png",
       registrationLink: "",
       rulebook: "",
+      min: 3,
+      max: 5
     },
   ],
   "LITERARY CLUB": [
@@ -154,6 +192,8 @@ const eventsData: EventsData = {
       image: "/img/event/treasure-hunt.png",
       registrationLink: "",
       rulebook: "",
+      min: 3,
+      max: 5
     },
     {
       code: "open_mic",
@@ -161,6 +201,8 @@ const eventsData: EventsData = {
       image: "/img/event/open-mic.png",
       registrationLink: "",
       rulebook: "",
+      min: 3,
+      max: 5
     },
     {
       code: "lit_quiz",
@@ -168,6 +210,8 @@ const eventsData: EventsData = {
       image: "/img/event/literary-quiz.png",
       registrationLink: "",
       rulebook: "",
+      min: 3,
+      max: 5
     },
     {
       code: "doo_art",
@@ -175,6 +219,8 @@ const eventsData: EventsData = {
       image: "/img/event/doodle-art.png",
       registrationLink: "",
       rulebook: "",
+      min: 3,
+      max: 5
     },
     {
       code: "jam_chat",
@@ -182,6 +228,8 @@ const eventsData: EventsData = {
       image: "/img/event/jam-chat.png",
       registrationLink: "",
       rulebook: "",
+      min: 3,
+      max: 5
     },
   ],
   MAINS: [
@@ -191,6 +239,8 @@ const eventsData: EventsData = {
       image: "/img/event/shimmer.png",
       registrationLink: "",
       rulebook: "",
+      min: 3,
+      max: 5
     },
     {
       code: "panache",
@@ -198,6 +248,8 @@ const eventsData: EventsData = {
       image: "/img/event/panache.png",
       registrationLink: "",
       rulebook: "",
+      min: 3,
+      max: 5
     },
   ],
   "MODEL UNITED NATIONS": [
@@ -207,6 +259,8 @@ const eventsData: EventsData = {
       image: "/img/event/mun.png",
       registrationLink: "",
       rulebook: "",
+      min: 3,
+      max: 5
     },
   ],
   "MUSIC CLUB": [
@@ -216,6 +270,8 @@ const eventsData: EventsData = {
       image: "/img/event/symphony.png",
       registrationLink: "",
       rulebook: "",
+      min: 3,
+      max: 5
     },
     {
       code: "inst",
@@ -223,6 +279,8 @@ const eventsData: EventsData = {
       image: "/img/event/Instrumental.png",
       registrationLink: "",
       rulebook: "",
+      min: 3,
+      max: 5
     },
     {
       code: "bob",
@@ -230,6 +288,8 @@ const eventsData: EventsData = {
       image: "/img/event/battle-of-bands.png",
       registrationLink: "",
       rulebook: "",
+      min: 3,
+      max: 5
     },
   ],
   "PHOTOGRAPHY & FINE ARTS CLUB": [
@@ -239,6 +299,8 @@ const eventsData: EventsData = {
       image: "/img/event/photo-walk.png",
       registrationLink: "",
       rulebook: "",
+      min: 3,
+      max: 5
     },
     {
       code: "art_bat",
@@ -246,6 +308,8 @@ const eventsData: EventsData = {
       image: "/img/event/art-battle.png",
       registrationLink: "",
       rulebook: "",
+      min: 3,
+      max: 5
     },
     {
       code: "reel_makg",
@@ -253,6 +317,8 @@ const eventsData: EventsData = {
       image: "/img/event/reel-making-competition.png",
       registrationLink: "",
       rulebook: "",
+      min: 3,
+      max: 5
     },
   ],
   "SPIC MACAY": [
@@ -262,6 +328,8 @@ const eventsData: EventsData = {
       image: "/img/event/spicmacay.png",
       registrationLink: "",
       rulebook: "",
+      min: 3,
+      max: 5
     },
   ],
   "TASKFORCE CLUB": [
@@ -271,6 +339,8 @@ const eventsData: EventsData = {
       image: "/img/event/stand-up-comedy.png",
       registrationLink: "",
       rulebook: "",
+      min: 1,
+      max: 1
     },
   ],
 };
