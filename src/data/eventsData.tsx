@@ -6,8 +6,8 @@ interface Event {
   image: string;
   registrationLink: string;
   rulebook: string;
-  min: number,
-  max: number
+  min: number;
+  max: number;
 }
 
 type EventsData = Record<Category, Event[]>;
@@ -21,7 +21,7 @@ const eventsData: EventsData = {
       registrationLink: "",
       rulebook: "",
       min: 3,
-      max: 5
+      max: 5,
     },
     {
       code: "dance_comp",
@@ -30,7 +30,7 @@ const eventsData: EventsData = {
       registrationLink: "",
       rulebook: "",
       min: 3,
-      max: 5
+      max: 5,
     },
     {
       code: "team_dance",
@@ -39,7 +39,7 @@ const eventsData: EventsData = {
       registrationLink: "",
       rulebook: "",
       min: 3,
-      max: 5
+      max: 5,
     },
     {
       code: "prom_night",
@@ -48,7 +48,7 @@ const eventsData: EventsData = {
       registrationLink: "",
       rulebook: "",
       min: 3,
-      max: 5
+      max: 5,
     },
     {
       code: "class_song",
@@ -57,7 +57,7 @@ const eventsData: EventsData = {
       registrationLink: "",
       rulebook: "",
       min: 3,
-      max: 5
+      max: 5,
     },
     {
       code: "drama_comp",
@@ -66,7 +66,7 @@ const eventsData: EventsData = {
       registrationLink: "",
       rulebook: "",
       min: 3,
-      max: 5
+      max: 5,
     },
   ],
   "EBSB CLUB": [
@@ -77,7 +77,7 @@ const eventsData: EventsData = {
       registrationLink: "",
       rulebook: "",
       min: 3,
-      max: 5
+      max: 5,
     },
     {
       code: "food_fest",
@@ -86,18 +86,18 @@ const eventsData: EventsData = {
       registrationLink: "",
       rulebook: "",
       min: 3,
-      max: 5
+      max: 5,
     },
   ],
   "FUN EVENTS": [
     {
-      code: "",
+      code: "buzz_wire",
       name: "Buzz wire",
       image: "/img/event/buzz-wire.png",
       registrationLink: "",
       rulebook: "",
       min: 3,
-      max: 5
+      max: 5,
     },
     {
       code: "shoot_cont",
@@ -106,7 +106,7 @@ const eventsData: EventsData = {
       registrationLink: "",
       rulebook: "",
       min: 3,
-      max: 5
+      max: 5,
     },
     {
       code: "dart_throw",
@@ -115,7 +115,7 @@ const eventsData: EventsData = {
       registrationLink: "",
       rulebook: "",
       min: 3,
-      max: 5
+      max: 5,
     },
   ],
   "GAMING ": [
@@ -126,7 +126,7 @@ const eventsData: EventsData = {
       registrationLink: "",
       rulebook: "",
       min: 3,
-      max: 5
+      max: 5,
     },
   ],
   "KRIGG ": [
@@ -137,7 +137,7 @@ const eventsData: EventsData = {
       registrationLink: "",
       rulebook: "",
       min: 3,
-      max: 5
+      max: 5,
     },
     {
       code: "snake_ladder",
@@ -146,7 +146,7 @@ const eventsData: EventsData = {
       registrationLink: "",
       rulebook: "",
       min: 3,
-      max: 5
+      max: 5,
     },
     {
       code: "mus_chair",
@@ -155,7 +155,7 @@ const eventsData: EventsData = {
       registrationLink: "",
       rulebook: "",
       min: 3,
-      max: 5
+      max: 5,
     },
     {
       code: "rangoli",
@@ -164,7 +164,7 @@ const eventsData: EventsData = {
       registrationLink: "",
       rulebook: "",
       min: 3,
-      max: 5
+      max: 5,
     },
     {
       code: "tug_war",
@@ -173,7 +173,7 @@ const eventsData: EventsData = {
       registrationLink: "",
       rulebook: "",
       min: 3,
-      max: 5
+      max: 5,
     },
     {
       code: "box_cric",
@@ -182,7 +182,7 @@ const eventsData: EventsData = {
       registrationLink: "",
       rulebook: "",
       min: 3,
-      max: 5
+      max: 5,
     },
   ],
   "LITERARY CLUB": [
@@ -193,7 +193,7 @@ const eventsData: EventsData = {
       registrationLink: "",
       rulebook: "",
       min: 3,
-      max: 5
+      max: 5,
     },
     {
       code: "open_mic",
@@ -202,7 +202,7 @@ const eventsData: EventsData = {
       registrationLink: "",
       rulebook: "",
       min: 3,
-      max: 5
+      max: 5,
     },
     {
       code: "lit_quiz",
@@ -211,7 +211,7 @@ const eventsData: EventsData = {
       registrationLink: "",
       rulebook: "",
       min: 3,
-      max: 5
+      max: 5,
     },
     {
       code: "doo_art",
@@ -220,7 +220,7 @@ const eventsData: EventsData = {
       registrationLink: "",
       rulebook: "",
       min: 3,
-      max: 5
+      max: 5,
     },
     {
       code: "jam_chat",
@@ -229,7 +229,7 @@ const eventsData: EventsData = {
       registrationLink: "",
       rulebook: "",
       min: 3,
-      max: 5
+      max: 5,
     },
   ],
   MAINS: [
@@ -240,7 +240,7 @@ const eventsData: EventsData = {
       registrationLink: "",
       rulebook: "",
       min: 3,
-      max: 5
+      max: 5,
     },
     {
       code: "panache",
@@ -249,7 +249,7 @@ const eventsData: EventsData = {
       registrationLink: "",
       rulebook: "",
       min: 3,
-      max: 5
+      max: 5,
     },
   ],
   "MODEL UNITED NATIONS": [
@@ -260,7 +260,7 @@ const eventsData: EventsData = {
       registrationLink: "",
       rulebook: "",
       min: 3,
-      max: 5
+      max: 5,
     },
   ],
   "MUSIC CLUB": [
@@ -271,7 +271,7 @@ const eventsData: EventsData = {
       registrationLink: "",
       rulebook: "",
       min: 3,
-      max: 5
+      max: 5,
     },
     {
       code: "inst",
@@ -280,7 +280,7 @@ const eventsData: EventsData = {
       registrationLink: "",
       rulebook: "",
       min: 3,
-      max: 5
+      max: 5,
     },
     {
       code: "bob",
@@ -289,7 +289,7 @@ const eventsData: EventsData = {
       registrationLink: "",
       rulebook: "",
       min: 3,
-      max: 5
+      max: 5,
     },
   ],
   "PHOTOGRAPHY & FINE ARTS CLUB": [
@@ -300,7 +300,7 @@ const eventsData: EventsData = {
       registrationLink: "",
       rulebook: "",
       min: 3,
-      max: 5
+      max: 5,
     },
     {
       code: "art_bat",
@@ -309,7 +309,7 @@ const eventsData: EventsData = {
       registrationLink: "",
       rulebook: "",
       min: 3,
-      max: 5
+      max: 5,
     },
     {
       code: "reel_makg",
@@ -318,7 +318,7 @@ const eventsData: EventsData = {
       registrationLink: "",
       rulebook: "",
       min: 3,
-      max: 5
+      max: 5,
     },
   ],
   "SPIC MACAY": [
@@ -329,7 +329,7 @@ const eventsData: EventsData = {
       registrationLink: "",
       rulebook: "",
       min: 3,
-      max: 5
+      max: 5,
     },
   ],
   "TASKFORCE CLUB": [
@@ -340,7 +340,7 @@ const eventsData: EventsData = {
       registrationLink: "",
       rulebook: "",
       min: 1,
-      max: 1
+      max: 1,
     },
   ],
 };

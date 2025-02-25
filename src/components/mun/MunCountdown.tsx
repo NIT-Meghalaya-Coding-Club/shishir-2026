@@ -19,7 +19,7 @@ const CountdownTimer = () => {
   });
 
   useEffect(() => {
-    const targetDate = new Date('2025-04-04T00:00:00');
+    const targetDate = new Date('2025-04-05T00:00:00');
 
     const calculateTimeLeft = () => {
       const difference = +targetDate - +new Date();
@@ -67,7 +67,7 @@ const CountdownTimer = () => {
 
   return (
     <div className="relative w-full min-h-[400px] flex flex-col items-center justify-center py-12 px-4">
-      <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" />
+      <div className="absolute inset-0 bg-black/20 backdrop-blur-sm rounded-3xl" />
       
       <motion.div
         initial="hidden"
@@ -122,7 +122,7 @@ const CountdownTimer = () => {
             rel="noopener noreferrer"
             className="inline-block text-yellow-100/80 rounded-lg text-sm md:text-base backdrop-blur-sm py-2 px-4 bg-yellow-500/20 hover:bg-yellow-500/30 transition-colors"
           >
-            April 4th, 2025 | Join us for this transformative event
+            April 5th, 2025 | Join us for this transformative event
           </a>
         </div>
       </motion.div>
