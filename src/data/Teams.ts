@@ -106,7 +106,7 @@ export const Teams: {
     },
     {
       name: "Jitta Chandra Sekhar",
-      contactNo: "+91 8348994393",
+      contactNo: "+91 8309892125",
       email: "b23me013@nitm.ac.in",
       position: "Co-Coordinator",
       linkedinLink: undefined,
