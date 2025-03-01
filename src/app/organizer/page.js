@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useMemo } from "react";
+import * as XLSX from "xlsx";
 
 // Components
 import Loading from "../components/Loading";
@@ -8,15 +9,19 @@ import Loading from "../components/Loading";
 // MUI Icons
 import SearchIcon from "@mui/icons-material/Search";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
+import DownloadIcon from "@mui/icons-material/Download";
 
 // Context
 import { useOrganizer } from "@/context/OrganizerContext";
+import { useRouter } from "next/navigation";
 
 const Organizer = () => {
   const [loading, setLoading] = useState(false);
   const [searchEntry, setSearchEntry] = useState("");
   const { organizer } = useOrganizer(null);
   const [participants, setParticipants] = useState([]);
+  const router = useRouter();
+
 
   // Add filtered data using useMemo
   const filteredParticipants = useMemo(() => {
@@ -56,18 +61,80 @@ const Organizer = () => {
     };
 
     fetchParticipants();
-  }, []);
+  }, [organizer.userId]);
+
+  const handleLogout = async () => {
+    setLoading(true);
+
+    try {
+      setLoading(true);
+      const response = await fetch("/api/organizer/auth/logout", {
+        method: "POST",
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      if (data.success) {
+        router.push("/organizer/login");
+      }
+    } catch (error) {
+      console.error("Couldn't log out at the moment:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSearchEntry = (e) => {
     setSearchEntry(e.target.value);
   };
 
+  const handleDownloadExcel = () => {
+    const data = filteredParticipants.map((team, index) => {
+      const leader = team.teamMembers[0];
+      const members = team.teamMembers.slice(1);
+
+      return {
+        "Sl No.": index + 1,
+        "Leader Name": leader.name,
+        "Leader Roll No.": leader.rollNumber,
+        "Leader Email": team.userId,
+        "Leader Phone": leader.phone,
+        "Team Members": members
+          .map(
+            (member, memberIndex) =>
+              `${memberIndex + 1}. ${member.name} (${
+                member.rollNumber || "N/A"
+              }, ${member.phone})`
+          )
+          .join(", "),
+      };
+    });
+
+    const worksheet = XLSX.utils.json_to_sheet(data);
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Participants");
+
+    XLSX.writeFile(workbook, `participants_${organizer.userId}.xlsx`);
+  };
+
   if (loading) return <Loading />;
 
   return (
-    <div className="px-10 pb-10 pt-40 md:w-[80svw] w-screen">
-      <h1 className="font-assistant text-2xl">Dashboard</h1>
-      <p className="text-3xl">{organizer?.name}</p>
+    <div className="px-10 pb-10 pt-0 md:w-[80svw] w-screen">
+      <div className="absolute w-screen h-[10svh] bg-gradient-to-b from-blue-950 to-blue-950 top-0 left-0"></div>
+      <div className="flex flex-row justify-between md:mt-10 mt-40 mb-5">
+        <h1 className="font-assistant text-2xl">@{organizer.userId}</h1>
+        <button
+          className="border blue-950 px-3 rounded-md hover:bg-blue-950 hover:text-white transition-all duration-500"
+          onClick={handleLogout}
+        >
+          Logout
+        </button>
+      </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
@@ -77,32 +144,33 @@ const Organizer = () => {
           </h2>
           <p className="font-assistant text-xl">Total Registrations</p>
         </div>
-        <div className="border border-black border-opacity-5 px-10 py-5 rounded-md shadow-lg text-center">
-          <h2 className="text-5xl font-thin font-anton">0</h2>
-          <p className="font-assistant text-xl">Selected</p>
-        </div>
-        <div className="border border-black border-opacity-5 px-10 py-5 rounded-md shadow-lg text-center">
-          <h2 className="text-5xl font-thin font-anton">0</h2>
-          <p className="font-assistant text-xl">Paid Participation Fee</p>
-        </div>
       </div>
 
-      {/* Search Bar */}
-      <div className="flex flex-row items-center gap-3 w-fit bg-[#D9D9D9] text-black px-2 my-4 rounded-md">
-        <input
-          type="search"
-          name="searchEntry"
-          id="searchEntry"
-          placeholder="Search "
-          value={searchEntry}
-          onChange={handleSearchEntry}
-          className="px-2 bg-[#D9D9D9] py-1 font-medium focus:outline-none"
-        />
-        <SearchIcon className="cursor-pointer" />
+      {/* Search Bar & Download Button*/}
+      <div className="flex md:flex-row flex-col gap-5 md:items-center my-4 mt-10">
+        <div className="flex flex-row items-center gap-3 w-fit bg-[#D9D9D9] text-black px-2 rounded-md">
+          <input
+            type="search"
+            name="searchEntry"
+            id="searchEntry"
+            placeholder="Search "
+            value={searchEntry}
+            onChange={handleSearchEntry}
+            className="px-2 bg-[#D9D9D9] py-1 font-medium focus:outline-none"
+          />
+          <SearchIcon className="cursor-pointer" />
+        </div>
+        <button
+          onClick={handleDownloadExcel}
+          className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 h-fit rounded-md hover:bg-green-700"
+        >
+          <DownloadIcon />
+          Download Excel
+        </button>
       </div>
 
       {/* Participants Table */}
-      <div className="overflow-x-auto w-full mt-5">
+      <div className="overflow-x-auto md:max-w-[60vw] w-full mt-5">
         <p>
           Scroll <ArrowRightIcon sx={{ paddingBottom: "2px" }} />
         </p>
@@ -111,6 +179,7 @@ const Organizer = () => {
             <tr className="bg-gray-200">
               <th className="border p-2">Sl No.</th>
               <th className="border p-2">Name</th>
+              <th className="border p-2">Roll No.</th>
               <th className="border p-2">Email</th>
               <th className="border p-2">Phone</th>
               <th className="border p-2">Team Members</th>
@@ -125,30 +194,67 @@ const Organizer = () => {
                   <tr key={team._id} className="text-center">
                     <td className="border p-2">{index + 1}</td>
                     <td className="border p-2">{leader.name}</td>
+                    <td className="border p-2">{leader.rollNumber}</td>
                     <td className="border p-2">{team.userId}</td>
                     <td className="border p-2">{leader.phone}</td>
-                    <td className="border p-2">
+                    <td className="border">
                       {members.length > 0 ? (
-                        <table className="w-full border">
+                        <table className="w-full border-none">
                           <thead>
-                            <tr>
-                              <th className="border p-2">SI No.</th>
-                              <th className="border p-2">Name</th>
-                              <th className="border p-2">Email</th>
-                              <th className="border p-2">Phone</th>
+                            <tr className="bg-gray-200">
+                              <th className="border border-l-white border-t-white p-2">
+                                SI No.
+                              </th>
+                              <th className="border border-t-white p-2">
+                                Name
+                              </th>
+                              <th className="border border-t-white p-2">
+                                Roll No.
+                              </th>
+                              <th className="border border-t-white border-r-white  p-2">
+                                Phone
+                              </th>
                             </tr>
                           </thead>
                           <tbody>
                             {members.map((member, memberIndex) => (
                               <tr key={member._id}>
-                                <td className="border p-2">
+                                <td
+                                  className={`border border-l-white ${
+                                    memberIndex + 1 === members.length
+                                      ? "border-b-white"
+                                      : ""
+                                  } p-2`}
+                                >
                                   {memberIndex + 1}
                                 </td>
-                                <td className="border p-2">{member.name}</td>
-                                <td className="border p-2">
-                                  {member.email || "N/A"}
+                                <td
+                                  className={`border ${
+                                    memberIndex + 1 === members.length
+                                      ? "border-b-white"
+                                      : ""
+                                  } p-2`}
+                                >
+                                  {member.name}
                                 </td>
-                                <td className="border p-2">{member.phone}</td>
+                                <td
+                                  className={`border ${
+                                    memberIndex + 1 === members.length
+                                      ? "border-b-white"
+                                      : ""
+                                  } p-2`}
+                                >
+                                  {member.rollNumber || "N/A"}
+                                </td>
+                                <td
+                                  className={`border border-r-white ${
+                                    memberIndex + 1 === members.length
+                                      ? "border-b-white"
+                                      : ""
+                                  }  p-2`}
+                                >
+                                  {member.phone}
+                                </td>
                               </tr>
                             ))}
                           </tbody>

@@ -4,7 +4,7 @@ const TeamMemberSchema = new mongoose.Schema({
     name: {
         type: String,
     },
-    email: {
+    rollNumber: {
         type: String,
     },
     phone: {
