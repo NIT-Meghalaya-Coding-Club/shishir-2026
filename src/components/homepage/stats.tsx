@@ -2,6 +2,8 @@
 import { useState, useRef, useEffect } from "react";
 import { TiLocationArrow } from "react-icons/ti";
 import { ReactNode } from "react";
+import Image from "next/image";
+
 
 export const NumberCounter = ({
   end,
@@ -148,8 +150,11 @@ export const BentoCard = ({
           className="absolute left-0 top-0 size-full object-cover object-center"
         />
       ) : (
-        <img
-          src={src}
+        <Image
+          src={`/${src}`}
+          width="0"
+          height="0"
+          sizes="100svw"
           alt=""
           className="absolute left-0 top-0 size-full object-cover object-center"
         />
