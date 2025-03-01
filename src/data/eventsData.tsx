@@ -4,6 +4,8 @@ interface Event {
   code: string;
   name: string;
   image: string;
+  eventType?: "individual" | "team" | "performance";
+  allowPerformanceTypes?: boolean;
   registrationLink: string;
   rulebook: string;
   min: number;
@@ -18,6 +20,7 @@ const eventsData: EventsData = {
       code: "flash_mob",
       name: "Flash Mob",
       image: "/img/event/Flash-Mob.png",
+      eventType: "team",
       registrationLink: "",
       rulebook: "",
       min: 3,
@@ -27,10 +30,12 @@ const eventsData: EventsData = {
       code: "dance_comp",
       name: "Dance Competitions",
       image: "/img/event/dance-competition.png",
+      eventType: "performance",
+      allowPerformanceTypes: true,
       registrationLink: "",
       rulebook: "https://drive.google.com/file/d/1w2tB4lvZtp3qQiqOPG_giRYmMZiaVXHu/view?usp=drive_link",
       min: 1,
-      max: 2,
+      max: 12,
     },
     // {
     //   code: "team_dance",
@@ -94,6 +99,7 @@ const eventsData: EventsData = {
       code: "buzz_wire",
       name: "Buzz wire",
       image: "/img/event/BUZZWIRE.png",
+      eventType: "individual",
       registrationLink: "",
       rulebook: "",
       min: 1,
