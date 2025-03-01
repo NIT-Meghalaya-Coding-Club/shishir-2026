@@ -6,7 +6,6 @@ const TeamMemberSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        match: /.+\@.+\..+/ // Basic email validation
     },
     phone: {
         type: String,
