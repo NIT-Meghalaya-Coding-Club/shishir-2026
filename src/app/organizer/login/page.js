@@ -17,30 +17,29 @@ export default function LoginPage() {
   const router = useRouter();
   const { loginOrganizer } = useOrganizer();
 
-  const verifyUser = async () => {
-    try {
-      const res = await fetch("/api/organizer/auth/verify", {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        loginOrganizer(data.organizer);
-        router.push("/organizer/");
-      } else {
-        setLoading(false);
-      }
-    } catch (error) {
-      console.error("Failed to verify token", error);
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
     // To verify admin jwt token using cookies
+    const verifyUser = async () => {
+      try {
+        const res = await fetch("/api/organizer/auth/verify", {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          loginOrganizer(data.organizer);
+          router.push("/organizer/");
+        } else {
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error("Failed to verify token", error);
+        setLoading(false);
+      }
+    };
     verifyUser();
-  }, [router]);
+  }, [router, loginOrganizer]);
 
   async function handleSubmit(e) {
     e.preventDefault();

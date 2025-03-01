@@ -4,6 +4,8 @@ import Title from "./Title";
 import { MUN_LegacyData } from "@/data/MUN_Legacy";
 import { motion } from "framer-motion";
 import { FaCrown } from "react-icons/fa";
+import Link from "next/link";
+
 
 const LegacySection: React.FC = () => {
   const isCurrentYear = (year: string) => year === "2025";
@@ -75,12 +77,12 @@ const LegacySection: React.FC = () => {
           </p>
           {isCurrentYear(year) && (
             <div className="mt-8">
-            <a
+            <Link
               href="/register"
               className="inline-block px-4 py-2 sm:px-6 sm:py-3 text-base sm:text-lg font-semibold text-white bg-yellow-500 rounded-lg shadow hover:bg-yellow-600 transition-colors"
             >
               Register Now
-            </a>
+            </Link>
             </div>
           )}
               </div>
