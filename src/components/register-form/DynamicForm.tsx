@@ -187,22 +187,19 @@ const DynamicForm = ({ eventId, eventName, min, max }: DynamicFormProps) => {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg"
+        className="max-w-md mx-auto mt-10 p-6 bg-white/10 rounded-lg shadow-lg text-center"
       >
         <h2 className="text-2xl font-bold text-green-600 mb-4">
           Submission Successful!
         </h2>
-        <p className="text-gray-700">Thank you for your registration.</p>
+        <p className="text-white">Thank you for your registration.</p>
         <button
           onClick={() => {
-            setSubmitted(false);
-            setFormData(
-              fields.reduce((obj, field) => ({ ...obj, [field.id]: "" }), {})
-            );
+            router.push('/')
           }}
-          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+          className="mt-4 px-4 py-2 bg-amber-500 text-white rounded hover:bg-amber-600 transition"
         >
-          Submit Another Response
+          Go back to Shishir
         </button>
       </motion.div>
     );
@@ -227,6 +224,18 @@ const DynamicForm = ({ eventId, eventName, min, max }: DynamicFormProps) => {
         Registration Form for {eventName || eventId}
       </h2>
 
+      <label htmlFor="email" className="block text-gray-300 font-medium mb-1">
+        Email {<span className="text-red-500">*</span>}
+      </label>
+      <input
+        disabled
+        type="email"
+        id="email"
+        value={session?.user?.email || ""}
+        className={`w-full bg-black/10 px-3 py-2 border rounded-md border-gray-300"
+                 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-3 cursor-not-allowed mb-10`}
+      />
+
       <form onSubmit={handleSubmit}>
         {Object.entries(groupedFields).map(
           ([memberIndex, memberFields], index) => (
@@ -240,20 +249,6 @@ const DynamicForm = ({ eventId, eventName, min, max }: DynamicFormProps) => {
               <h3 className="text-lg font-semibold mb-3">
                 {index === 0 ? "Team Leader" : `Team Member ${index}`}
               </h3>
-              <label
-                htmlFor="email"
-                className="block text-gray-300 font-medium mb-1"
-              >
-                Email {<span className="text-red-500">*</span>}
-              </label>
-              <input
-                disabled
-                type="email"
-                id="email"
-                value={session?.user?.email || ""}
-                className={`w-full bg-black/10 px-3 py-2 border rounded-md border-gray-300"
-                 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-3 cursor-not-allowed`}
-              />
               {memberFields.map((field) => (
                 <div key={field.id} className="mb-4">
                   <label
@@ -267,11 +262,17 @@ const DynamicForm = ({ eventId, eventName, min, max }: DynamicFormProps) => {
                     type={field.type}
                     id={field.id}
                     value={formData[field.id] || ""}
-                    disabled={field.memberIndex === 0 && field.id.startsWith("name_")}
+                    disabled={
+                      field.memberIndex === 0 && field.id.startsWith("name_")
+                    }
                     onChange={handleChange}
                     className={`w-full bg-black/10 px-3 py-2 border rounded-md ${
                       errors[field.id] ? "border-red-500" : "border-gray-300"
-                    } ${(field.memberIndex === 0 && (field.id.startsWith("name_")))?"cursor-not-allowed":""} focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                    } ${
+                      field.memberIndex === 0 && field.id.startsWith("name_")
+                        ? "cursor-not-allowed"
+                        : ""
+                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
                   />
                   {errors[field.id] && (
                     <motion.p
