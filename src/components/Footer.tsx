@@ -57,7 +57,7 @@ export default function Footer() {
               </div>
               <div className="flex items-center gap-2">
                 <IoCall className="text-amber-400 text-xl" />
-                <p className="font-bold text-amber-200">+91-8765432190</p>
+                <p className="font-bold text-amber-200">+91-6205986263</p>
               </div>
             </div>
           </div>
