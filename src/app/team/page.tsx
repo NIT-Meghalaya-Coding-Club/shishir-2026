@@ -110,7 +110,7 @@ export default function Contact() {
             </div>
 
             {/* Team Members Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 justify-items-center">
+            <div className="flex flex-wrap justify-center gap-8">
               {Teams[team].map((member, index) => (
                 <div key={index} className="group relative w-[300px]">
                   {/* Member Card */}

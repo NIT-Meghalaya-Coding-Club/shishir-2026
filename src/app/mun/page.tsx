@@ -6,6 +6,7 @@ import LegacySection from "@/components/mun/Legacy";
 import SACLetter from "@/components/mun/Letter";
 import Logo_mun from "@/components/mun/Logo";
 import TeamSection from "@/components/mun/TeamSection";
+import StickyRegisterButton from "@/components/mun/StickyRegisterButton";
 import { Crown } from "lucide-react";
 
 const Mun: React.FC = () => {
@@ -38,6 +39,7 @@ const Mun: React.FC = () => {
         <LegacySection />
         <MUN_FAQ />
         <TeamSection />
+        <StickyRegisterButton />
       </div>
     </div>
   );

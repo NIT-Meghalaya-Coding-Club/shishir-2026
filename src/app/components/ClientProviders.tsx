@@ -6,8 +6,8 @@ import { SessionProvider } from "next-auth/react";
 import { OrganizerProvider } from "@/context/OrganizerContext";
 
 //Components
-import Footer from "@/components/Footer";
-import NavBar from "@/components/NavBar";
+// import Footer from "@/components/Footer";
+// import NavBar from "@/components/NavBar";
 
 import { ToastContainer } from "react-toastify";
 
@@ -16,9 +16,9 @@ export function ClientProviders({ children }: { children: React.ReactNode }) {
     <SessionProvider>
       <OrganizerProvider>
         <ToastContainer position="top-center" />
-        <NavBar />
+        {/* <NavBar /> */}
         {children}
-        <Footer />
+        {/* <Footer /> */}
       </OrganizerProvider>
     </SessionProvider>
   );

@@ -117,7 +117,7 @@ const CountdownTimer = () => {
 
         <div className="mt-12 text-center">
           <a 
-            href="https://example.com" 
+            href="https://docs.google.com/forms/d/1vbrhrbnte5RRreJOnH3nQlgewDCuSv2aLWFw_czVg4c/edit?ts=67bde88f" 
             target="_blank" 
             rel="noopener noreferrer"
             className="inline-block text-yellow-100/80 rounded-lg text-sm md:text-base backdrop-blur-sm py-2 px-4 bg-yellow-500/20 hover:bg-yellow-500/30 transition-colors"
