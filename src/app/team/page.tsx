@@ -139,7 +139,7 @@ export default function Contact() {
 
                         {/* Member Info */}
                         <div className="text-center">
-                          <h3 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600 ">
+                          <h3 className="text-base font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600 ">
                             {member.name}
                           </h3>
                           <span className="text-sm text-transparent bg-clip-text text-white ">
