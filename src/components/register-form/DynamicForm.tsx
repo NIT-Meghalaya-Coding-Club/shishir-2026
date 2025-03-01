@@ -1,13 +1,13 @@
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { useSession } from 'next-auth/react';
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 //Components
-import Loading from '@/app/components/Loading';
+import Loading from "@/app/components/Loading";
 
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
 
 type Field = {
   id: string;
@@ -31,10 +31,19 @@ const DynamicForm = ({ eventId, eventName, min, max }: DynamicFormProps) => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
   const { data: session, status } = useSession();
+  const router = useRouter();
 
   useEffect(() => {
+    if (status === "unauthenticated") {
+      toast.warn("Please log in to register!", { autoClose: 3000 });
+      setTimeout(() => {
+        router.push("/register");
+      }, 1000);
+    }
+  }, [status, router]);
 
-    setLoading(true)
+  useEffect(() => {
+    setLoading(true);
 
     const minValue = min !== undefined ? min : 0;
     const maxValue = max !== undefined ? max : 0;
@@ -43,29 +52,29 @@ const DynamicForm = ({ eventId, eventName, min, max }: DynamicFormProps) => {
 
     for (let i = 0; i < maxValue; i++) {
       const isRequired = i < minValue;
-      const memberLabel = i === 0 ? 'Leader' : `Member ${i}`;
+      const memberLabel = i === 0 ? "Leader" : `Member ${i}`;
 
       newFields.push(
         {
           id: `name_${i}`,
           label: `${memberLabel} Name`,
-          type: 'text',
+          type: "text",
           required: isRequired,
-          memberIndex: i
+          memberIndex: i,
         },
         {
           id: `roll_${i}`,
           label: `${memberLabel} Roll Number`,
-          type: 'text',
+          type: "text",
           required: isRequired,
-          memberIndex: i
+          memberIndex: i,
         },
         {
           id: `phone_${i}`,
           label: `${memberLabel} Phone Number`,
-          type: 'tel',
+          type: "tel",
           required: isRequired,
-          memberIndex: i
+          memberIndex: i,
         }
       );
     }
@@ -73,20 +82,23 @@ const DynamicForm = ({ eventId, eventName, min, max }: DynamicFormProps) => {
     setFields(newFields);
 
     const initialData: Record<string, string> = {};
-    newFields.forEach(field => {
-      initialData[field.id] = '';
+    newFields.forEach((field) => {
+      initialData[field.id] = "";
     });
+    if (session?.user?.name) {
+      initialData["name_0"] = session.user.name;
+    }
     setFormData(initialData);
-    setLoading(false)
     setLoading(false);
-  }, [eventId, min, max]);
+    setLoading(false);
+  }, [eventId, min, max, session]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
-    setFormData(prev => ({ ...prev, [id]: value }));
+    setFormData((prev) => ({ ...prev, [id]: value }));
 
     if (errors[id]) {
-      setErrors(prev => {
+      setErrors((prev) => {
         const newErrors = { ...prev };
         delete newErrors[id];
         return newErrors;
@@ -97,15 +109,15 @@ const DynamicForm = ({ eventId, eventName, min, max }: DynamicFormProps) => {
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
-    fields.forEach(field => {
+    fields.forEach((field) => {
       if (field.required && !formData[field.id]?.trim()) {
         newErrors[field.id] = `${field.label} is required`;
       }
 
-      if (field.type === 'tel' && formData[field.id]?.trim()) {
+      if (field.type === "tel" && formData[field.id]?.trim()) {
         const phoneRegex = /^\+?[0-9]{10,15}$/;
         if (!phoneRegex.test(formData[field.id])) {
-          newErrors[field.id] = 'Please enter a valid phone number';
+          newErrors[field.id] = "Please enter a valid phone number";
         }
       }
     });
@@ -123,7 +135,7 @@ const DynamicForm = ({ eventId, eventName, min, max }: DynamicFormProps) => {
         teamData.push({
           name: formData[`name_${i}`],
           rollNumber: formData[`roll_${i}`],
-          phone: formData[`phone_${i}`]
+          phone: formData[`phone_${i}`],
         });
       }
 
@@ -137,7 +149,7 @@ const DynamicForm = ({ eventId, eventName, min, max }: DynamicFormProps) => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            userId: "gauravcodes123@gmail.com",
+            userId: session?.user?.email,
             eventId,
             teamData,
           }),
@@ -150,14 +162,20 @@ const DynamicForm = ({ eventId, eventName, min, max }: DynamicFormProps) => {
           toast.success("Registration successful!", { autoClose: 3000 });
         } else {
           if (data.message === "Already registered for this event") {
-            toast.info("You have already registered for this event!", { autoClose: 4000 });
+            toast.info("You have already registered for this event!", {
+              autoClose: 4000,
+            });
           } else {
-            toast.error(`${data.message || "Failed to register!"}`, { autoClose: 4000 });
+            toast.error(`${data.message || "Failed to register!"}`, {
+              autoClose: 4000,
+            });
           }
         }
       } catch (error) {
         console.error("Error in Registration:", error);
-        toast.error("An error occurred. Please try again later.", { autoClose: 4000 });
+        toast.error("An error occurred. Please try again later.", {
+          autoClose: 4000,
+        });
       } finally {
         setLoading(false);
       }
@@ -171,12 +189,16 @@ const DynamicForm = ({ eventId, eventName, min, max }: DynamicFormProps) => {
         animate={{ opacity: 1 }}
         className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg"
       >
-        <h2 className="text-2xl font-bold text-green-600 mb-4">Submission Successful!</h2>
+        <h2 className="text-2xl font-bold text-green-600 mb-4">
+          Submission Successful!
+        </h2>
         <p className="text-gray-700">Thank you for your registration.</p>
         <button
           onClick={() => {
             setSubmitted(false);
-            setFormData(fields.reduce((obj, field) => ({ ...obj, [field.id]: '' }), {}));
+            setFormData(
+              fields.reduce((obj, field) => ({ ...obj, [field.id]: "" }), {})
+            );
           }}
           className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
         >
@@ -198,59 +220,80 @@ const DynamicForm = ({ eventId, eventName, min, max }: DynamicFormProps) => {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="max-w-lg mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg"
+      className="max-w-lg mx-auto mt-10 p-6 rounded-lg shadow-lg bg-white/5 text-white"
     >
-
       {(status === "loading" || loading) && <Loading />}
       <h2 className="text-2xl font-bold text-center mb-6">
         Registration Form for {eventName || eventId}
       </h2>
 
       <form onSubmit={handleSubmit}>
-        {Object.entries(groupedFields).map(([memberIndex, memberFields], index) => (
-          <motion.div
-            key={memberIndex}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: index * 0.2 }}
-            className="mb-6 border-b pb-4 last:border-b-0"
-          >
-            <h3 className="text-lg font-semibold mb-3">
-              {index === 0 ? 'Team Leader' : `Team Member ${index}`}
-            </h3>
-            {memberFields.map((field) => (
-              <div key={field.id} className="mb-4">
-                <label htmlFor={field.id} className="block text-gray-700 font-medium mb-1">
-                  {field.label} {field.required && <span className="text-red-500">*</span>}
-                </label>
-                <input
-                  type={field.type}
-                  id={field.id}
-                  value={formData[field.id] || ''}
-                  onChange={handleChange}
-                  className={`w-full px-3 py-2 border rounded-md ${errors[field.id] ? 'border-red-500' : 'border-gray-300'
-                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                />
-                {errors[field.id] && (
-                  <motion.p
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="mt-1 text-red-500 text-sm"
+        {Object.entries(groupedFields).map(
+          ([memberIndex, memberFields], index) => (
+            <motion.div
+              key={memberIndex}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.2 }}
+              className="mb-6 border-b pb-4 last:border-b-0"
+            >
+              <h3 className="text-lg font-semibold mb-3">
+                {index === 0 ? "Team Leader" : `Team Member ${index}`}
+              </h3>
+              <label
+                htmlFor="email"
+                className="block text-gray-300 font-medium mb-1"
+              >
+                Email {<span className="text-red-500">*</span>}
+              </label>
+              <input
+                disabled
+                type="email"
+                id="email"
+                value={session?.user?.email || ""}
+                className={`w-full bg-black/10 px-3 py-2 border rounded-md border-gray-300"
+                 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-3 cursor-not-allowed`}
+              />
+              {memberFields.map((field) => (
+                <div key={field.id} className="mb-4">
+                  <label
+                    htmlFor={field.id}
+                    className="block text-gray-300 font-medium mb-1"
                   >
-                    {errors[field.id]}
-                  </motion.p>
-                )}
-              </div>
-            ))}
-          </motion.div>
-        ))}
+                    {field.label}{" "}
+                    {field.required && <span className="text-red-500">*</span>}
+                  </label>
+                  <input
+                    type={field.type}
+                    id={field.id}
+                    value={formData[field.id] || ""}
+                    disabled={field.memberIndex === 0 && field.id.startsWith("name_")}
+                    onChange={handleChange}
+                    className={`w-full bg-black/10 px-3 py-2 border rounded-md ${
+                      errors[field.id] ? "border-red-500" : "border-gray-300"
+                    } ${(field.memberIndex === 0 && (field.id.startsWith("name_")))?"cursor-not-allowed":""} focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  />
+                  {errors[field.id] && (
+                    <motion.p
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="mt-1 text-red-500 text-sm"
+                    >
+                      {errors[field.id]}
+                    </motion.p>
+                  )}
+                </div>
+              ))}
+            </motion.div>
+          )
+        )}
 
-        <div className="sticky bottom-0 w-full py-5 pt-16 bg-gradient-to-t from-white via-white/70 to-transparent">
+        <div className="sticky bottom-0 w-full  to-transparent">
           <motion.button
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.98 }}
             type="submit"
-            className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition duration-200 mt-6"
+            className="w-full bg-amber-500 text-white font-semibold py-2 px-4 rounded-t-xl hover:bg-amber-600 transition duration-200 mt-6"
           >
             Submit
           </motion.button>

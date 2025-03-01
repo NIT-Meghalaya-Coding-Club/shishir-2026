@@ -6,6 +6,8 @@ import { motion } from 'framer-motion';
 import eventsData from '@/data/eventsData';
 import { useEffect, useState } from 'react';
 import Loading from '@/app/components/Loading';
+import Image from 'next/image';
+
 
 const DynamicForm = dynamic(() => import('@/components/register-form/DynamicForm'), {
   ssr: false,
@@ -32,7 +34,7 @@ export default function EventPage() {
   const [ isLoading, setIsLoading ] = useState(false);
 
   // Find the event in eventsData
-  let eventInfo = null;
+  const eventInfo = null;
   // for (const categoryEvents of Object.values(eventsData)) {
   //   const foundEvent = categoryEvents.find(event => event.code === eventId);
   //   if (foundEvent) {
@@ -53,19 +55,19 @@ export default function EventPage() {
       }
     }
     setIsLoading(false);
-  }, [pathname])
+  }, [pathname, eventId])
 
   if(isLoading) return <Loading />
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 pt-24">
+    <div className="min-h-screen bg-gradient-to-br from-blue-950 via-blue-950 to-black py-12 pt-24">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         className="container mx-auto px-4"
       >
-        <h1 className="text-3xl font-bold text-center text-gray-800 mb-8">
-          Event Registration: {event?.name || eventId}
+        <h1 className="text-3xl font-bold text-center text-amber-500 mb-8">
+          Event Registration: <span className='text-white'>{event?.name || eventId}</span>
         </h1>
 
         {event?.image && (
@@ -74,8 +76,11 @@ export default function EventPage() {
             animate={{ opacity: 1 }}
             className="max-w-md mx-auto mb-8"
           >
-            <img
-              src={event.image}
+            <Image
+              src={`https://shishir.nitm.ac.in${event.image}`}
+              width="0"
+              height="0"
+              sizes="100svw"
               alt={`${event.name} poster`}
               className="w-full h-auto rounded-lg shadow-md"
             />
