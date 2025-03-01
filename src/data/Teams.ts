@@ -30,6 +30,15 @@ export const Teams: {
       imageLink: "/Teams/Susmita.jpg",
     },
     {
+      name: "Dr. Paonam Sudeep Mangang",
+      contactNo: "+91 9485177004",
+      email: "paonam.sudeep@nitm.ac.in",
+      position: "Dean Student's Welfare",
+      linkedinLink: undefined,
+      imageLink: "/Teams/Paonam.jpg",
+    },
+    
+    {
       name: "Himanshu Kashyap",
       contactNo: "+91 6205986263",
       email: "b21ce002@nitm.ac.in",
@@ -49,7 +58,7 @@ export const Teams: {
       name: "Bhabok Myrchiang",
       contactNo: "+91 9362756221 ",
       email: "b23ee029@nitm.ac.in",
-      position: "Head-Cultural-I",
+      position: "GS Member-I, Cultural",
       linkedinLink: undefined,
       imageLink: "/Teams/BhabokMyrchiang.jpeg",
     },
@@ -57,7 +66,7 @@ export const Teams: {
       name: "Chuncha Hemchand",
       contactNo: "+91 7386618846",
       email: "b23cs020@nitm.ac.in",
-      position: "Head-Cultural-II",
+      position: "GS Member-II, Cultural",
       linkedinLink: undefined,
       imageLink: "/Teams/ChunchaHemchand.jpg",
     },
@@ -593,7 +602,7 @@ export const Teams: {
       email: "b22cs019@nitm.ac.in ",
       position: "Co-Coordinator",
       linkedinLink: undefined,
-      imageLink: undefined,
+      imageLink: "/Teams/Meghana.jpg",
     },
     {
       name: "Biandik D Sangma",
@@ -635,7 +644,7 @@ export const Teams: {
       email: "b22me005@nitm.ac.in ",
       position: "Co-Coordinator",
       linkedinLink: undefined,
-      imageLink: undefined,
+      imageLink: "/Teams/PYNDAPMAINMARNGAR.jpg",
     },
     {
       name: "Sumit Kumar",
