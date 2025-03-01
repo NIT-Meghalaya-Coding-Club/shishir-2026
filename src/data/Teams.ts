@@ -14,6 +14,14 @@ export const Teams: {
 } = {
   "Student Activity Center (SAC)": [
     {
+      name: "Dr. Paonam Sudeep Mangang",
+      contactNo: "+91 9485177004",
+      email: "paonam.sudeep@nitm.ac.in",
+      position: "Dean Student's Welfare",
+      linkedinLink: undefined,
+      imageLink: "/Teams/Paonam.jpg",
+    },
+    {
       name: "Dr. Atanu Singha Roy ",
       contactNo: "+91 9402102387",
       email: "asroy86@nitm.ac.oin",
@@ -37,7 +45,47 @@ export const Teams: {
       linkedinLink: undefined,
       imageLink: "/Teams/Paonam.jpg",
     },
-    
+    {
+      name: "Dr. Paonam Sudeep Mangang",
+      contactNo: "+91 9485177004",
+      email: "paonam.sudeep@nitm.ac.in",
+      position: "Dean Student's Welfare",
+      linkedinLink: undefined,
+      imageLink: "/Teams/Paonam.jpg",
+    },
+    {
+      name: "Dr. Paonam Sudeep Mangang",
+      contactNo: "+91 9485177004",
+      email: "paonam.sudeep@nitm.ac.in",
+      position: "Dean Student's Welfare",
+      linkedinLink: undefined,
+      imageLink: "/Teams/Paonam.jpg",
+    },
+    {
+      name: "Dr. Paonam Sudeep Mangang",
+      contactNo: "+91 9485177004",
+      email: "paonam.sudeep@nitm.ac.in",
+      position: "Dean Student's Welfare",
+      linkedinLink: undefined,
+      imageLink: "/Teams/Paonam.jpg",
+    },
+    {
+      name: "Dr. Paonam Sudeep Mangang",
+      contactNo: "+91 9485177004",
+      email: "paonam.sudeep@nitm.ac.in",
+      position: "Dean Student's Welfare",
+      linkedinLink: undefined,
+      imageLink: "/Teams/Paonam.jpg",
+    },
+    {
+      name: "Dr. Paonam Sudeep Mangang",
+      contactNo: "+91 9485177004",
+      email: "paonam.sudeep@nitm.ac.in",
+      position: "Dean Student's Welfare",
+      linkedinLink: undefined,
+      imageLink: "/Teams/Paonam.jpg",
+    },
+
     {
       name: "Himanshu Kashyap",
       contactNo: "+91 6205986263",
