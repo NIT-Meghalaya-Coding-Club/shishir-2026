@@ -16,7 +16,29 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Shishir 2025",
   description: "Annual cultural festival of NIT Meghalaya - Shishir 2025",
+  openGraph: {
+    title: "Shishir 2025 - NIT Meghalaya",
+    description: "Join us for the biggest cultural festival of NIT Meghalaya, Shishir 2025!",
+    url: "https://shishir.nitm.ac.in", 
+    siteName: "Shishir 2025",
+    images: [
+      {
+        url: "https://shishir.nitm.ac.in/shishir.png", 
+        width: 500,
+        height: 500,
+        alt: "Shishir 2025 Banner",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Shishir 2025 - NIT Meghalaya",
+    description: "Join us for the biggest cultural festival of NIT Meghalaya, Shishir 2025!",
+    images: ["https://shishir.nitm.ac.in/shishir.png"], 
+  },
 };
+
 
 // import { SessionProvider } from "next-auth/react";
 
