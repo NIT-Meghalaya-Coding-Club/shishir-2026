@@ -7,7 +7,7 @@ import React from 'react'
 function Rbutton() {
   return (
     <div>
-      <Link href="/register">
+      <Link href="/">
         <Image
           src="/img/ml_stone.png"
           alt="Arrow Down"
