@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect,useMemo  } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 
 const EventAnnouncement = () => {
@@ -124,6 +124,9 @@ const EventAnnouncement = () => {
 
   return (
     <div className="w-full py-10 px-4 sm:px-6 lg:px-8 overflow-hidden bg-gray-900 relative">
+      {/* Top border with animated gradient */}
+      <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-purple-600 via-pink-500 to-yellow-500 animate-gradient-x"></div>
+      
       {/* Simple animated background */}
       <div className="absolute inset-0 overflow-hidden opacity-20">
         <motion.div
@@ -154,7 +157,7 @@ const EventAnnouncement = () => {
 
       <div className="max-w-7xl mx-auto relative z-10">
         <motion.h2
-          className="text-3xl md:text-5xl font-bold text-center text-white mb-4"
+          className="font-bold text-3xl md:text-6xl lg:text-7xl bg-clip-text text-transparent bg-gradient-to-r from-[#d4a200] to-[#ffd960] mb-2 md:mb-4 special-font tracking-wider transform hover:scale-105 transition-transform duration-300 text-center"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
@@ -312,8 +315,14 @@ const EventAnnouncement = () => {
             </div>
           </div>
         </motion.div>
-        {/* Gradient divider at the bottom */}
-        <div className="w-full h-1 bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800 mt-10"></div>
+        
+        {/* Bottom border with decorative elements */}
+        <div className="relative w-full h-8 mt-8">
+          <div className="absolute bottom-0 left-0 w-full h-2 bg-gradient-to-r from-yellow-500 via-pink-500 to-purple-600 animate-gradient-x"></div>
+          <div className="absolute bottom-4 left-1/4 w-8 h-8 rounded-full bg-purple-600 transform -translate-y-1/2"></div>
+          <div className="absolute bottom-4 left-2/4 w-8 h-8 rounded-full bg-pink-500 transform -translate-y-1/2 -translate-x-1/2"></div>
+          <div className="absolute bottom-4 left-3/4 w-8 h-8 rounded-full bg-yellow-500 transform -translate-y-1/2"></div>
+        </div>
       </div>
     </div>
   );
