@@ -75,8 +75,8 @@ const eventsData: EventsData = {
       registrationLink: "",
       rulebook:
         "https://drive.google.com/file/d/15Jr9WUFwri3LNtF3Jdlfj9cgX8-GfdzG/view?usp=drive_link",
-      min: 3,
-      max: 5,
+      min: 1,
+      max: 8,
     },
   ],
   "EBSB CLUB": [

@@ -36,35 +36,21 @@ export default function EventPage() {
   });
   const [isLoading, setIsLoading] = useState(false);
 
-  // Find the event in eventsData
-  // const eventInfo = null;
-  // for (const categoryEvents of Object.values(eventsData)) {
-  //   const foundEvent = categoryEvents.find(event => event.code === eventId);
-  //   if (foundEvent) {
-  //     eventInfo = foundEvent;
-  //     break;
-  //   }
-  // }
-
   useEffect(() => {
     setIsLoading(true);
     for (const categoryEvents of Object.values(eventsData)) {
       const foundEvent = categoryEvents.find((event) => event.code === eventId);
       if (foundEvent) {
-        // Use type assertion to ensure all required properties are present
-        // or provide default values for optional properties
         setEvent({
           code: foundEvent.code,
           name: foundEvent.name,
           image: foundEvent.image,
-          eventType: foundEvent.eventType || "individual", 
+          eventType: foundEvent.eventType || "individual",
           allowPerformanceTypes: foundEvent.allowPerformanceTypes || false,
           registrationLink: foundEvent.registrationLink,
           rulebook: foundEvent.rulebook,
           min: foundEvent.min,
-          max: foundEvent.max
-
-          
+          max: foundEvent.max,
         });
         break;
       }
@@ -88,30 +74,102 @@ export default function EventPage() {
 
         {event?.image && (
           <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="max-w-md mx-auto mb-8"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="max-w-md mx-auto mb-8"
           >
-        <Image
-          src={`https://shishir.nitm.ac.in${event.image}`}
-          width="0"
-          height="0"
-          sizes="100svw"
-          alt={`${event.name} poster`}
-          className="w-full h-auto rounded-lg shadow-md"
-        />
+            <Image
+              src={`https://shishir.nitm.ac.in${event.image}`}
+              width="0"
+              height="0"
+              sizes="100svw"
+              alt={`${event.name} poster`}
+              className="w-full h-auto rounded-lg shadow-md"
+            />
           </motion.div>
         )}
+
+        {/* Event Info Section */}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="max-w-md mx-auto mb-8 bg-blue-900/50 p-5 rounded-lg shadow-lg"
+        >
+          <h2 className="text-xl font-semibold text-amber-400 mb-3">Event Details</h2>
+          <div className="space-y-2 text-white">
+            <div className="flex justify-between">
+              <span>Participation:</span>
+              <span className="font-medium">
+                {event.eventType === "individual" ? "Individual" : 
+                 event.eventType === "team" ? "Team" : 
+                 event.eventType === "performance" ? "Performance" : "—"}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span>Team Size:</span>
+              <span className="font-medium">
+                {event.min === event.max 
+                  ? `${event.min} ${event.min > 1 ? 'participants' : 'participant'}`
+                  : `${event.min} - ${event.max} participants`}
+              </span>
+            </div>
+            {event.rulebook && (
+              <div className="pt-2">
+                <a 
+                  href={event.rulebook}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block bg-amber-500 hover:bg-amber-600 text-blue-950 font-medium py-2 px-4 rounded-md transition-colors duration-200 w-full text-center"
+                >
+                  View Rulebook
+                </a>
+              </div>
+            )}
+          </div>
+        </motion.div>
+
+        {/* Terms and Conditions Section
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="max-w-md mx-auto mb-8 bg-red-900/30 p-4 rounded-lg border border-red-500/50"
+        >
+          <h3 className="text-lg font-semibold text-red-300 mb-2">Important Notice:</h3>
+          <p className="text-white text-sm">
+            Each participant can register for only one event using their account. 
+            If you wish to participate in additional events, please register using a different account.
+          </p>
+        </motion.div> */}
 
         <DynamicForm
           eventId={event?.code}
           eventName={event?.name}
           min={event?.min}
           max={event?.max}
-          eventType={event?.eventType as "individual" | "team" | "performance" | undefined}
+          eventType={
+            event?.eventType as
+              | "individual"
+              | "team"
+              | "performance"
+              | undefined
+          }
           allowPerformanceTypes={event?.allowPerformanceTypes}
           eventCode={event?.code}
         />
+        
+        {/* Contact Information */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="max-w-md mx-auto mt-8 p-4 text-center text-white/80 bg-blue-900/20 rounded-lg"
+        >
+          <h3 className="text-md font-medium text-amber-400 mb-2">Got Questions?</h3>
+            <p className="text-sm">
+            For any queries, please contact:<br />
+            <span className="font-medium text-white">Gaurav Joshi</span><br />
+            <span className="font-medium text-white">+91 84150 31939</span><br />
+            </p>
+        </motion.div>
       </motion.div>
     </div>
   );
