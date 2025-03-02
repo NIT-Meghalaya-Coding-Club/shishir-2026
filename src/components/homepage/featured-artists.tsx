@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 
 const artists = [
   {
@@ -96,7 +97,7 @@ const FeaturedArtists = () => {
           style={{ backgroundSize: '200% 200%' }}
         />
         <p className="text-gray-300 mt-4 max-w-2xl mx-auto">
-          Experience the incredible lineup at NITM's Cultural Fest this year!
+          Experience the incredible lineup at NITM&apos;s Cultural Fest this year!
         </p>
       </motion.div>
 
@@ -121,10 +122,11 @@ const FeaturedArtists = () => {
             />
             
             <div className="aspect-square">
-              <img 
-                src={artist.image} 
-                alt={artist.name}
-                className="w-full h-full object-cover"
+              <Image 
+              src={artist.image} 
+              alt={artist.name}
+              layout="fill"
+              objectFit="cover"
               />
             </div>
             
@@ -144,7 +146,7 @@ const FeaturedArtists = () => {
                     className="mt-4"
                   >
                     <p className="text-gray-300 text-sm">
-                      Don't miss the electrifying performance by {artist.name} at this year's cultural fest!
+                      Don&apos;t miss the electrifying performance by {artist.name} at this year&apos;s cultural fest!
                       Bringing their unique {artist.genre} style to the main stage.
                     </p>
                     <motion.button

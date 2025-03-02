@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect,useMemo  } from "react";
 import { motion } from "framer-motion";
-import Link from "next/link";
 
 const EventAnnouncement = () => {
   const [activeUnlock, setActiveUnlock] = useState(0);
@@ -15,12 +14,12 @@ const EventAnnouncement = () => {
   });
   const [isClient, setIsClient] = useState(false);
 
-  const unlockDates = [
+  const unlockDates = useMemo(() => [
     new Date("2025-03-01T00:00:00"), // MUN Registration Begins
     new Date("2025-03-02T00:00:00"), // Panache Registration Begins
     new Date("2025-03-04T00:00:00"), // Dance Club Registration Begins
     new Date("2025-04-04T00:00:00"), // Event Date
-  ];
+  ], []);
   
   const unlockContent = [
     {
@@ -97,7 +96,7 @@ const EventAnnouncement = () => {
     const timer = setInterval(updateTimer, 1000);
 
     return () => clearInterval(timer);
-  }, [isClient, selectedUnlock]);
+  }, [isClient, selectedUnlock, unlockDates]);
 
   // Handle timeline dot click to view previous or current unlocks
   const handleUnlockClick = (index: number) => {
@@ -253,7 +252,7 @@ const EventAnnouncement = () => {
                 {selectedUnlock !== null &&
                   unlockContent[selectedUnlock].link && (
                     <span className="ml-2 text-sm bg-white/20 px-2 py-1 rounded-full">
-                      Click for details
+                      Click for Details
                     </span>
                   )}
               </h3>
