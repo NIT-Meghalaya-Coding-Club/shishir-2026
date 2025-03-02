@@ -67,7 +67,7 @@ const ProfileCard = () => {
 
   useEffect(() => {
     if (status === "unauthenticated") {
-      router.push("/auth/signin");
+      router.push("/register");
     }
   }, [status, router]);
 
