@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
-//Components
+// Components
 import Loading from "@/app/components/Loading";
 
 import { toast } from "react-toastify";
@@ -26,7 +26,25 @@ interface DynamicFormProps {
   min?: number;
   max?: number;
   allowPerformanceTypes?: boolean;
+  eventCode?: string;
 }
+
+// Event configurations
+const EVENT_CONFIGS = {
+  dance_comp: {
+    events: [
+      { id: "solo_duo", name: "Solo and Duo", min: 1, max: 2 },
+      { id: "trio_group", name: "Trio & Group", min: 3, max: 10 },
+      { id: "traditional", name: "Traditional", min: 1, max: 10 },
+    ],
+  },
+  drama_comp: {
+    events: [
+      { id: "mono_act", name: "Mono Act", min: 1, max: 1 },
+      { id: "group_act", name: "Group Act", min: 2, max: 8 },
+    ],
+  },
+};
 
 const DynamicForm = ({
   eventId,
@@ -35,6 +53,7 @@ const DynamicForm = ({
   min = 1,
   max = 1,
   allowPerformanceTypes = false,
+  eventCode,
 }: DynamicFormProps) => {
   const [loading, setLoading] = useState(false);
   const [fields, setFields] = useState<Field[]>([]);
@@ -42,10 +61,18 @@ const DynamicForm = ({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
   const [performanceType, setPerformanceType] = useState<string>("solo");
+  const [selectedEvent, setSelectedEvent] = useState<string>("");
+  const [dynamicMin, setDynamicMin] = useState<number>(min);
+  const [dynamicMax, setDynamicMax] = useState<number>(max);
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  const isIndividualEvent = min === 1 && max === 1;
+  // Check if this is an event that needs dynamic configuration
+  const isDynamicEvent =
+    !!eventCode && (eventCode === "dance_comp" || eventCode === "drama_comp");
+
+  // Set isIndividualEvent dynamically based on either props or selected event
+  const isIndividualEvent = dynamicMin === 1 && dynamicMax === 1;
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -56,13 +83,47 @@ const DynamicForm = ({
     }
   }, [status, router]);
 
+  // Event selection handler for dynamic events
+  const handleEventChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const eventValue = e.target.value;
+    setSelectedEvent(eventValue);
+
+    if (eventCode && EVENT_CONFIGS[eventCode as keyof typeof EVENT_CONFIGS]) {
+      const eventConfig = EVENT_CONFIGS[
+        eventCode as keyof typeof EVENT_CONFIGS
+      ].events.find((event) => event.id === eventValue);
+
+      if (eventConfig) {
+        setDynamicMin(eventConfig.min);
+        setDynamicMax(eventConfig.max);
+        setFormData((prev) => {
+          const updatedData = { ...prev, event_type: eventValue };
+          console.log("Updated formData:", updatedData); // Debug log
+          return updatedData;
+        });
+      }
+    }
+  };
+
   useEffect(() => {
     setLoading(true);
 
-    const minValue = min !== undefined ? min : 1;
-    const maxValue = max !== undefined ? max : 1;
+    // Use dynamic values if available, otherwise fall back to props
+    const minValue = isDynamicEvent ? dynamicMin : min !== undefined ? min : 1;
+    const maxValue = isDynamicEvent ? dynamicMax : max !== undefined ? max : 1;
 
     const newFields: Field[] = [];
+
+    // Add event type selector for dynamic events
+    if (isDynamicEvent && eventCode) {
+      newFields.push({
+        id: "event_type",
+        label: "Event Type",
+        type: "select",
+        required: true,
+        memberIndex: -1,
+      });
+    }
 
     // Add group name field for team or performance events if there are multiple members
     if (
@@ -79,7 +140,12 @@ const DynamicForm = ({
     }
 
     // Add performance type selector for performance events
-    if (allowPerformanceTypes && eventType === "performance") {
+    // Only add this for non-dynamic events since dynamic events use their own selectors
+    if (
+      allowPerformanceTypes &&
+      eventType === "performance" &&
+      !isDynamicEvent
+    ) {
       newFields.push({
         id: "performance_type",
         label: "Performance Type",
@@ -98,7 +164,7 @@ const DynamicForm = ({
       } else if (i === 0) {
         memberLabel = "Team Leader";
       } else {
-        memberLabel = `Member ${i}`;
+        memberLabel = `Member ${i + 1}`;
       }
 
       const isRequired = i < minValue;
@@ -132,16 +198,30 @@ const DynamicForm = ({
 
     const initialData: Record<string, string> = {};
     newFields.forEach((field) => {
-      initialData[field.id] = "";
+      initialData[field.id] = formData[field.id] || ""; // Preserve existing values
     });
 
-    // Initialize with default values
     if (session?.user?.name) {
       initialData["name_0"] = session.user.name;
     }
 
-    if (allowPerformanceTypes) {
+    if (allowPerformanceTypes && !isDynamicEvent) {
       initialData["performance_type"] = "solo";
+    }
+
+    if (isDynamicEvent && eventCode) {
+      const defaultEvent =
+        EVENT_CONFIGS[eventCode as keyof typeof EVENT_CONFIGS]?.events[0]?.id;
+      if (defaultEvent && !selectedEvent) {
+        setSelectedEvent(defaultEvent);
+        initialData["event_type"] = defaultEvent; // Set default event type
+        const eventConfig =
+          EVENT_CONFIGS[eventCode as keyof typeof EVENT_CONFIGS].events[0];
+        setDynamicMin(eventConfig.min);
+        setDynamicMax(eventConfig.max);
+      } else if (selectedEvent) {
+        initialData["event_type"] = selectedEvent; // Preserve selected event type
+      }
     }
 
     setFormData(initialData);
@@ -154,16 +234,29 @@ const DynamicForm = ({
     eventType,
     isIndividualEvent,
     allowPerformanceTypes,
+    dynamicMin,
+    dynamicMax,
+    eventCode,
+    isDynamicEvent,
+    selectedEvent,
   ]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { id, value } = e.target;
-    setFormData((prev) => ({ ...prev, [id]: value }));
 
-    if (id === "performance_type") {
-      setPerformanceType(value);
+    if (
+      id === "event_type" &&
+      isDynamicEvent &&
+      e.target instanceof HTMLSelectElement
+    ) {
+      handleEventChange(e as React.ChangeEvent<HTMLSelectElement>);
+    } else {
+      setFormData((prev) => ({ ...prev, [id]: value }));
+      if (id === "performance_type") {
+        setPerformanceType(value);
+      }
     }
 
     if (errors[id]) {
@@ -179,11 +272,13 @@ const DynamicForm = ({
     const newErrors: Record<string, string> = {};
 
     fields.forEach((field) => {
-      // Only validate fields for visible members based on performance type
+      // Only validate fields for visible members based on performance type and dynamic event settings
       if (field.memberIndex >= 0) {
+        const currentMin = isDynamicEvent ? dynamicMin : min;
         const shouldValidate =
-          field.memberIndex < min ||
+          field.memberIndex < currentMin ||
           (allowPerformanceTypes &&
+            !isDynamicEvent &&
             ((performanceType === "solo" && field.memberIndex < 1) ||
               (performanceType === "duo" && field.memberIndex < 2) ||
               (performanceType === "trio" && field.memberIndex < 3) ||
@@ -193,7 +288,7 @@ const DynamicForm = ({
           newErrors[field.id] = `${field.label} is required`;
         }
       } else {
-        // Always validate general fields (group name, performance type)
+        // Always validate general fields (group name, performance type, event type)
         if (field.required && !formData[field.id]?.trim()) {
           newErrors[field.id] = `${field.label} is required`;
         }
@@ -218,9 +313,13 @@ const DynamicForm = ({
       // Create teamData array to maintain the same format as the original code
       const teamData = [];
 
-      // Determine how many members to include based on event type and performance type
-      let effectiveMax = max;
-      if (allowPerformanceTypes && eventType === "performance") {
+      // Determine how many members to include based on event type, performance type, and dynamic settings
+      let effectiveMax = isDynamicEvent ? dynamicMax : max;
+      if (
+        allowPerformanceTypes &&
+        eventType === "performance" &&
+        !isDynamicEvent
+      ) {
         switch (performanceType) {
           case "solo":
             effectiveMax = 1;
@@ -231,7 +330,7 @@ const DynamicForm = ({
           case "trio":
             effectiveMax = 3;
             break;
-          // For "group", use the original max
+          // For "group", use the original max or dynamic max
         }
       }
 
@@ -256,9 +355,15 @@ const DynamicForm = ({
         metadata: {
           eventType,
           groupName: formData.group_name || undefined,
-          performanceType: allowPerformanceTypes
-            ? formData.performance_type
-            : undefined,
+          performanceType:
+            allowPerformanceTypes && !isDynamicEvent
+              ? formData.performance_type
+              : undefined,
+          // Add dynamic event information
+          dynamicEventCode: eventCode || undefined,
+          dynamicEventType: isDynamicEvent ? formData.event_type : undefined,
+          minParticipants: isDynamicEvent ? dynamicMin : min,
+          maxParticipants: isDynamicEvent ? dynamicMax : max,
         },
       };
 
@@ -339,22 +444,34 @@ const DynamicForm = ({
     return acc;
   }, {} as Record<string | number, Field[]>);
 
-  // Determine number of visible members for performance events
+  // Determine number of visible members for performance events and dynamic events
   const getVisibleMembersCount = () => {
-    if (!allowPerformanceTypes || eventType !== "performance") return max;
-
-    switch (performanceType) {
-      case "solo":
-        return 1;
-      case "duo":
-        return 2;
-      case "trio":
-        return 3;
-      case "group":
-        return max;
-      default:
-        return max;
+    // For dynamic events, use the dynamic max
+    if (isDynamicEvent) {
+      return dynamicMax;
     }
+
+    // For performance events with type selection
+    if (
+      allowPerformanceTypes &&
+      eventType === "performance" &&
+      !isDynamicEvent
+    ) {
+      switch (performanceType) {
+        case "solo":
+          return 1;
+        case "duo":
+          return 2;
+        case "trio":
+          return 3;
+        case "group":
+          return max;
+        default:
+          return max;
+      }
+    }
+
+    return max;
   };
 
   const visibleMembersCount = getVisibleMembersCount();
@@ -382,7 +499,7 @@ const DynamicForm = ({
       />
 
       <form onSubmit={handleSubmit}>
-        {/* General fields (group name, performance type) */}
+        {/* General fields (event type, group name, performance type) */}
         {groupedFields["general"] && (
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -390,7 +507,11 @@ const DynamicForm = ({
             className="mb-6 border-b pb-4"
           >
             {groupedFields["general"].map((field) => {
-              if (field.type === "select" && field.id === "performance_type") {
+              if (
+                field.type === "select" &&
+                field.id === "performance_type" &&
+                !isDynamicEvent
+              ) {
                 return (
                   <div key={field.id} className="mb-4">
                     <label
@@ -412,6 +533,48 @@ const DynamicForm = ({
                       <option value="duo">Duo</option>
                       <option value="trio">Trio</option>
                       <option value="group">Group</option>
+                    </select>
+                    {errors[field.id] && (
+                      <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="mt-1 text-red-500 text-sm"
+                      >
+                        {errors[field.id]}
+                      </motion.p>
+                    )}
+                  </div>
+                );
+              } else if (
+                field.type === "select" &&
+                field.id === "event_type" &&
+                isDynamicEvent &&
+                eventCode
+              ) {
+                return (
+                  <div key={field.id} className="mb-4">
+                    <label
+                      htmlFor={field.id}
+                      className="block text-gray-300 font-medium mb-1"
+                    >
+                      {field.label}{" "}
+                      {field.required && (
+                        <span className="text-red-500">*</span>
+                      )}
+                    </label>
+                    <select
+                      id={field.id}
+                      value={selectedEvent}
+                      onChange={handleChange}
+                      className="w-full bg-blue-950/80 px-3 py-2 border rounded-md border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+                    >
+                      {EVENT_CONFIGS[
+                        eventCode as keyof typeof EVENT_CONFIGS
+                      ]?.events.map((event) => (
+                        <option key={event.id} value={event.id}>
+                          {event.name}
+                        </option>
+                      ))}
                     </select>
                     {errors[field.id] && (
                       <motion.p
@@ -475,7 +638,7 @@ const DynamicForm = ({
             } else if (numericIndex === 0) {
               sectionTitle = "Team Leader";
             } else {
-              sectionTitle = `Member ${numericIndex}`;
+              sectionTitle = `Member ${numericIndex + 1}`;
             }
 
             return (

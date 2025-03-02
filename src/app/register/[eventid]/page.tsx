@@ -110,6 +110,7 @@ export default function EventPage() {
           max={event?.max}
           eventType={event?.eventType as "individual" | "team" | "performance" | undefined}
           allowPerformanceTypes={event?.allowPerformanceTypes}
+          eventCode={event?.code}
         />
       </motion.div>
     </div>
