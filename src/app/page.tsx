@@ -3,7 +3,7 @@ import About from '@/components/homepage/about'
 import Events from '@/components/homepage/stats'
 import CountdownTimer from '@/components/homepage/countdownTimer'
 // import ComingSoon from '@/components/ComingSoon'
-import Announcement from '@/components/homepage/announcement'
+// import Announcement from '@/components/homepage/announcement'
 // import FeaturedArtists from '@/components/homepage/featured-artists'
 
 
@@ -17,7 +17,7 @@ export default function Home() {
         {/* <FeaturedArtists /> */}
 
         <CountdownTimer />
-        <Announcement />
+        {/* <Announcement /> */}
         <About />
         <Events />
       </div>
