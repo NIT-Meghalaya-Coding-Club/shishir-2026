@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-// import { useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { LuMenu } from "react-icons/lu";
 import { motion, AnimatePresence } from "framer-motion";
 import NavBarItem from "./NavBarItem";
@@ -13,7 +13,7 @@ const NavBar: React.FC = () => {
   const menuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
-  // const { status } = useSession();
+  const { status } = useSession();
 
   const toggleMenu = () => {
     setIsOpen((prev) => !prev);
@@ -92,12 +92,12 @@ const NavBar: React.FC = () => {
             <NavBarItem to="/mun" text="MUN" onClick={closeMenu} />
             <NavBarItem to="/past-sponsors" text="Past Sponsors" onClick={closeMenu} />
             <NavBarItem to="/team" text="Team" onClick={closeMenu} />
-            {/* {status === "unauthenticated" && (
+            {status === "unauthenticated" && (
               <NavBarItem to="/register" text="Login" onClick={closeMenu} />
             )}
             {status === "authenticated" && (
               <NavBarItem to="/dashboard" text="Dashboard" onClick={closeMenu} />
-            )} */}
+            )}
           </motion.ul>
         )}
       </AnimatePresence>
