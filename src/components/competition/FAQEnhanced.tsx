@@ -1,7 +1,6 @@
 "use client";
 import React from "react";
 import { motion } from "framer-motion";
-import router from "next/router";
 import Link from "next/link";
 
 const faqData = [
