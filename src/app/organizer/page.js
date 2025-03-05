@@ -2,16 +2,10 @@
 
 import React, { useEffect, useState, useMemo } from "react";
 import * as XLSX from "xlsx";
-
-// Components
 import Loading from "../components/Loading";
-
-// MUI Icons
 import SearchIcon from "@mui/icons-material/Search";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import DownloadIcon from "@mui/icons-material/Download";
-
-// Context
 import { useOrganizer } from "@/context/OrganizerContext";
 import { useRouter } from "next/navigation";
 
@@ -22,21 +16,21 @@ const Organizer = () => {
   const [participants, setParticipants] = useState([]);
   const router = useRouter();
 
+  const eventId = "dance_comp"; // Hardcoded for testing; replace with dynamic logic later
 
-  // Add filtered data using useMemo
   const filteredParticipants = useMemo(() => {
     if (!searchEntry) return participants;
     const searchLower = searchEntry.toLowerCase();
     return participants.filter((participant) => {
-      const fullName =
-        `${participant.firstname} ${participant.lastname}`.toLowerCase();
+      const leader = participant.teamData[0] || {};
+      const fullName = leader.name?.toLowerCase() || "";
       return (
         fullName.includes(searchLower) ||
-        participant.email.toLowerCase().includes(searchLower) ||
-        participant.phone.toLowerCase().includes(searchLower) ||
-        participant.city.toLowerCase().includes(searchLower) ||
-        participant.state.toLowerCase().includes(searchLower) ||
-        participant.sport.toLowerCase().includes(searchLower)
+        participant.userId.toLowerCase().includes(searchLower) ||
+        leader.phone?.toLowerCase().includes(searchLower) ||
+        participant.metadata?.eventType?.toLowerCase().includes(searchLower) ||
+        participant.metadata?.groupName?.toLowerCase().includes(searchLower) ||
+        participant.eventId?.toLowerCase().includes(searchLower)
       );
     });
   }, [participants, searchEntry]);
@@ -44,38 +38,38 @@ const Organizer = () => {
   useEffect(() => {
     const fetchParticipants = async () => {
       setLoading(true);
-
       try {
         const response = await fetch(
-          `/api/organizer/all-registered/${organizer.userId}`
+          `/api/organizer/all-registered/${eventId}`
         );
         const data = await response.json();
+        console.log("API Response:", data); // Debug: Log the response
         if (data.success) {
-          setParticipants(data.registration);
+          setParticipants(data.registration || []);
+        } else {
+          console.error("API Error:", data.error);
+          setParticipants([]);
         }
       } catch (error) {
         console.error("Error fetching participants:", error);
+        setParticipants([]);
       } finally {
         setLoading(false);
       }
     };
 
     fetchParticipants();
-  }, [organizer.userId]);
+  }, [eventId]); // Dependency on eventId instead of organizer.userId
 
   const handleLogout = async () => {
     setLoading(true);
-
     try {
-      setLoading(true);
       const response = await fetch("/api/organizer/auth/logout", {
         method: "POST",
       });
-
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-
       const data = await response.json();
       if (data.success) {
         router.push("/organizer/login");
@@ -93,32 +87,39 @@ const Organizer = () => {
 
   const handleDownloadExcel = () => {
     const data = filteredParticipants.map((team, index) => {
-      const leader = team.teamMembers[0];
-      const members = team.teamMembers.slice(1);
+      const leader = team.teamData[0] || {};
+      const members = team.teamData.slice(1);
 
       return {
         "Sl No.": index + 1,
-        "Leader Name": leader.name,
-        "Leader Roll No.": leader.rollNumber,
+        "Leader Name": leader.name || "N/A",
+        "Leader Roll No.": leader.rollNumber || "N/A",
         "Leader Email": team.userId,
-        "Leader Phone": leader.phone,
+        "Leader Phone": leader.phone || "N/A",
         "Team Members": members
           .map(
             (member, memberIndex) =>
               `${memberIndex + 1}. ${member.name} (${
                 member.rollNumber || "N/A"
-              }, ${member.phone})`
+              }, ${member.phone || "N/A"})`
           )
           .join(", "),
+        "Event ID": team.eventId || "N/A",
+        "Event Type": team.metadata?.eventType || "N/A",
+        "Group Name": team.metadata?.groupName || "N/A",
+        "Performance Type": team.metadata?.performanceType || "N/A",
+        "Dynamic Event Code": team.metadata?.dynamicEventCode || "N/A",
+        "Dynamic Event Type": team.metadata?.dynamicEventType || "N/A",
+        "Min Participants": team.metadata?.minParticipants || "N/A",
+        "Max Participants": team.metadata?.maxParticipants || "N/A",
+        Timestamp: team.timestamp,
       };
     });
 
     const worksheet = XLSX.utils.json_to_sheet(data);
-
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Participants");
-
-    XLSX.writeFile(workbook, `participants_${organizer.userId}.xlsx`);
+    XLSX.writeFile(workbook, `participants_${eventId}.xlsx`);
   };
 
   if (loading) return <Loading />;
@@ -146,7 +147,7 @@ const Organizer = () => {
         </div>
       </div>
 
-      {/* Search Bar & Download Button*/}
+      {/* Search Bar & Download Button */}
       <div className="flex md:flex-row flex-col gap-5 md:items-center my-4 mt-10">
         <div className="flex flex-row items-center gap-3 w-fit bg-[#D9D9D9] text-black px-2 rounded-md">
           <input
@@ -183,20 +184,23 @@ const Organizer = () => {
               <th className="border p-2">Email</th>
               <th className="border p-2">Phone</th>
               <th className="border p-2">Team Members</th>
+              <th className="border p-2">Event ID</th>
+              <th className="border p-2">Event Type</th>
+              <th className="border p-2">Group Name</th>
             </tr>
           </thead>
           <tbody>
             {filteredParticipants?.length > 0 ? (
               filteredParticipants.map((team, index) => {
-                const leader = team.teamMembers[0];
-                const members = team.teamMembers.slice(1);
+                const leader = team.teamData[0] || {};
+                const members = team.teamData.slice(1);
                 return (
                   <tr key={team._id} className="text-center">
                     <td className="border p-2">{index + 1}</td>
-                    <td className="border p-2">{leader.name}</td>
-                    <td className="border p-2">{leader.rollNumber}</td>
+                    <td className="border p-2">{leader.name || "N/A"}</td>
+                    <td className="border p-2">{leader.rollNumber || "N/A"}</td>
                     <td className="border p-2">{team.userId}</td>
-                    <td className="border p-2">{leader.phone}</td>
+                    <td className="border p-2">{leader.phone || "N/A"}</td>
                     <td className="border">
                       {members.length > 0 ? (
                         <table className="w-full border-none">
@@ -211,7 +215,7 @@ const Organizer = () => {
                               <th className="border border-t-white p-2">
                                 Roll No.
                               </th>
-                              <th className="border border-t-white border-r-white  p-2">
+                              <th className="border border-t-white border-r-white p-2">
                                 Phone
                               </th>
                             </tr>
@@ -235,7 +239,7 @@ const Organizer = () => {
                                       : ""
                                   } p-2`}
                                 >
-                                  {member.name}
+                                  {member.name || "N/A"}
                                 </td>
                                 <td
                                   className={`border ${
@@ -251,9 +255,9 @@ const Organizer = () => {
                                     memberIndex + 1 === members.length
                                       ? "border-b-white"
                                       : ""
-                                  }  p-2`}
+                                  } p-2`}
                                 >
-                                  {member.phone}
+                                  {member.phone || "N/A"}
                                 </td>
                               </tr>
                             ))}
@@ -263,12 +267,19 @@ const Organizer = () => {
                         <span>N/A</span>
                       )}
                     </td>
+                    <td className="border p-2">{team.eventId || "N/A"}</td>
+                    <td className="border p-2">
+                      {team.metadata?.eventType || "N/A"}
+                    </td>
+                    <td className="border p-2">
+                      {team.metadata?.groupName || "N/A"}
+                    </td>
                   </tr>
                 );
               })
             ) : (
               <tr>
-                <td colSpan="5" className="border p-2 text-center">
+                <td colSpan="9" className="border p-2 text-center">
                   No participants found
                 </td>
               </tr>

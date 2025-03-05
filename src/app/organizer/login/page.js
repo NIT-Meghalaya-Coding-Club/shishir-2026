@@ -1,11 +1,8 @@
+// src/app/organizer/login/page.js
 "use client";
-
-// Images
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-
-// Context
 import { useOrganizer } from "@/context/OrganizerContext";
 import Loading from "../../components/Loading";
 
@@ -18,7 +15,6 @@ export default function LoginPage() {
   const { loginOrganizer } = useOrganizer();
 
   useEffect(() => {
-    // To verify admin jwt token using cookies
     const verifyUser = async () => {
       try {
         const res = await fetch("/api/organizer/auth/verify", {
@@ -43,8 +39,7 @@ export default function LoginPage() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    setErrorMessage(""); // Reset error message
-    // console.log(email, password)
+    setErrorMessage("");
     try {
       const res = await fetch("/api/organizer/auth/login", {
         method: "POST",
@@ -55,8 +50,7 @@ export default function LoginPage() {
       if (res.ok) {
         const data = await res.json();
         loginOrganizer(data.organizer);
-        // router.push('/organizer');
-        verifyUser();
+        router.push("/organizer/"); // Redirect directly
       } else {
         const data = await res.json();
         setErrorMessage(data.message || "Invalid username or password");
@@ -88,7 +82,7 @@ export default function LoginPage() {
         </div>
         <div className="w-full bg-white/5 rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0 dark:bg-[#1e1e1e]">
           <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-            <h1 className=" text-xl font-bold leading-tight tracking-tight text-white md:text-2xl dark:text-white">
+            <h1 className="text-xl font-bold leading-tight tracking-tight text-white md:text-2xl dark:text-white">
               ADMIN LOGIN
             </h1>
             <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit}>
@@ -106,7 +100,7 @@ export default function LoginPage() {
                   type="text"
                   name="email"
                   id="email"
-                  className="bg-black/0 w-full text-white border-b border-white/50 py-2  rounded-none outline-none"
+                  className="bg-black/0 w-full text-white border-b border-white/50 py-2 rounded-none outline-none"
                   placeholder=""
                   required
                   value={email}
@@ -125,7 +119,7 @@ export default function LoginPage() {
                   name="password"
                   id="password"
                   placeholder="••••••••"
-                  className="bg-black/0 w-full text-white border-b border-white/50 py-2  rounded-none outline-none"
+                  className="bg-black/0 w-full text-white border-b border-white/50 py-2 rounded-none outline-none"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
