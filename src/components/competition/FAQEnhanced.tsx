@@ -1,5 +1,8 @@
+"use client";
 import React from "react";
 import { motion } from "framer-motion";
+import router from "next/router";
+import Link from "next/link";
 
 const faqData = [
   {
@@ -71,6 +74,12 @@ export const FAQEnhanced: React.FC = () => {
         <p className="text-gray-300 mb-6">
           Still have questions? Contact our team
         </p>
+        <Link
+          href="/team"
+          className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 px-4 rounded-lg transition-colors duration-200"
+        >
+          Contact Team
+        </Link>
       </motion.div>
     </div>
   );

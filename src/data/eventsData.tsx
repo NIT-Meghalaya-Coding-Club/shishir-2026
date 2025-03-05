@@ -286,7 +286,7 @@ const eventsData: EventsData = {
       code: "mun",
       name: "MUN",
       image: "/img/mun_logo.png",
-      registrationLink: "https://shishir.nitm.ac.in/register/mun",
+      registrationLink: "https://docs.google.com/forms/d/1vbrhrbnte5RRreJOnH3nQlgewDCuSv2aLWFw_czVg4c/viewform?ts=67bde88f&edit_requested=true",
       rulebook: "https://shishir.nitm.ac.in/mun",
       min: 1,
       max: 1,

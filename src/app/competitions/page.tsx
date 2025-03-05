@@ -4,7 +4,22 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { GenreListEnhanced } from "../../components/competition/GenreListEnhanced";
 import { FAQEnhanced } from "../../components/competition/FAQEnhanced";
-import { genres } from "@/data/genreData";
+import { genreData } from "@/data/genreData";
+
+// Updated interface to match our enhanced component
+interface Competition {
+  name: string;
+  posterUrl: string;
+  registerLink: string;  // Added register link
+}
+
+interface Genre {
+  name: string;
+  competitions: Competition[];
+}
+
+// Type assertion using our updated genreData with register links
+const genresWithPosters = genreData as unknown as Genre[];
 
 const Competition: React.FC = () => {
   const [activeTab, setActiveTab] = useState("genres");
@@ -61,14 +76,14 @@ const Competition: React.FC = () => {
           </motion.p>
         </motion.div>
 
-        <motion.div
-          className="absolute top-10 right-10 text-yellow-500 text-4xl"
+        {/* <motion.div
+          className="absolute top-20 right-10 text-yellow-500 text-4xl"
           initial={{ rotate: 0, opacity: 0.7 }}
           animate={{ rotate: 360, opacity: 1 }}
           transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
         >
           👑
-        </motion.div>
+        </motion.div> */}
       </div>
 
       {/* Navigation Tabs */}
@@ -115,7 +130,7 @@ const Competition: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <GenreListEnhanced genres={genres} />
+            <GenreListEnhanced genres={genresWithPosters} />
           </motion.div>
         ) : (
           <motion.div
@@ -130,7 +145,7 @@ const Competition: React.FC = () => {
 
       {/* Team Section */}
       <div className="container mx-auto px-4 py-16 bg-gradient-to-b from-transparent to-black/70">
-        {/* ... Team section content remains the same ... */}
+        {/* Team content here */}
       </div>
     </div>
   );
