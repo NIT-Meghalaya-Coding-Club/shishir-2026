@@ -4,7 +4,7 @@ import Registration from "@/models/Registration";
 export async function GET(req, { params }) {
   try {
     await connectMongo();
-    const { eventId } = params;
+    const { eventId } = await params;
 
     if (!eventId) {
       return new Response(

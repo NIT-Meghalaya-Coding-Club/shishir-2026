@@ -1,4 +1,3 @@
-// src/app/organizer/layout.js
 "use client";
 
 import { useRouter, usePathname } from "next/navigation";
@@ -10,9 +9,10 @@ import { useOrganizer } from "@/context/OrganizerContext";
 
 const OrganizerLayout = ({ children }) => {
   const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // New state
   const { loginOrganizer, logoutOrganizer } = useOrganizer();
   const router = useRouter();
-  const pathname = usePathname(); // Get current path
+  const pathname = usePathname();
   const [logoutModal, setLogoutModal] = useState(false);
 
   useEffect(() => {
@@ -26,23 +26,27 @@ const OrganizerLayout = ({ children }) => {
         if (res.ok) {
           const data = await res.json();
           loginOrganizer(data.organizer);
+          setIsAuthenticated(true); // User is authenticated
           setLoading(false);
         } else {
+          setIsAuthenticated(false); // User not authenticated
           setLoading(false);
-          if (pathname !== "/organizer/login") { // Only redirect if not already on login
+          if (pathname !== "/organizer/login") {
             router.push("/organizer/login");
           }
         }
       } catch (error) {
         console.error("Failed to verify token", error);
-        if (pathname !== "/organizer/login") { // Only redirect if not already on login
+        setIsAuthenticated(false);
+        setLoading(false);
+        if (pathname !== "/organizer/login") {
           router.push("/organizer/login");
         }
       }
     };
 
     verifyUser();
-  }, [router, loginOrganizer, pathname]); // Add pathname as dependency
+  }, [router, loginOrganizer, pathname]);
 
   const handleLogout = async () => {
     setLogoutModal(false);
@@ -53,6 +57,7 @@ const OrganizerLayout = ({ children }) => {
       });
       if (res.ok) {
         logoutOrganizer();
+        setIsAuthenticated(false); // Reset authentication state
         toast.success("Logged out user!", { autoClose: 3000 });
         router.push("/organizer/login");
       }
@@ -64,6 +69,11 @@ const OrganizerLayout = ({ children }) => {
 
   if (loading) {
     return <Loading />;
+  }
+
+  // Only render children if authenticated and not on login page
+  if (!isAuthenticated && pathname !== "/organizer/login") {
+    return null; // Prevent rendering until redirect happens
   }
 
   return (

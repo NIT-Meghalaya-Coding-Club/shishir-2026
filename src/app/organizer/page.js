@@ -16,7 +16,9 @@ const Organizer = () => {
   const [participants, setParticipants] = useState([]);
   const router = useRouter();
 
-  const eventId = "dance_comp"; // Hardcoded for testing; replace with dynamic logic later
+  const eventId = useMemo(() => organizer?.eventId || "dance_comp", [organizer]);
+
+  
 
   const filteredParticipants = useMemo(() => {
     if (!searchEntry) return participants;
@@ -38,12 +40,14 @@ const Organizer = () => {
   useEffect(() => {
     const fetchParticipants = async () => {
       setLoading(true);
+      console.log("Fetching participants for eventId:", eventId);
+      console.log("Organizer:", organizer);
       try {
         const response = await fetch(
-          `/api/organizer/all-registered/${eventId}`
+          `/api/organizer/all-registered/${organizer.userId}`
         );
         const data = await response.json();
-        console.log("API Response:", data); // Debug: Log the response
+        console.log("API Response:", data);
         if (data.success) {
           setParticipants(data.registration || []);
         } else {
@@ -57,9 +61,14 @@ const Organizer = () => {
         setLoading(false);
       }
     };
-
-    fetchParticipants();
-  }, [eventId]); // Dependency on eventId instead of organizer.userId
+  
+    if (organizer?.userId) {
+      fetchParticipants();
+    } else {
+      console.log("Organizer not ready yet"); // Debug
+      setLoading(false); // Prevent infinite loading if no organizer
+    }
+  }, [eventId, organizer]); // Add organizer to dependencies
 
   const handleLogout = async () => {
     setLoading(true);
@@ -104,14 +113,14 @@ const Organizer = () => {
               }, ${member.phone || "N/A"})`
           )
           .join(", "),
-        "Event ID": team.eventId || "N/A",
-        "Event Type": team.metadata?.eventType || "N/A",
+        // "Event ID": team.eventId || "N/A",
+        // "Event Type": team.metadata?.eventType || "N/A",
         "Group Name": team.metadata?.groupName || "N/A",
-        "Performance Type": team.metadata?.performanceType || "N/A",
-        "Dynamic Event Code": team.metadata?.dynamicEventCode || "N/A",
-        "Dynamic Event Type": team.metadata?.dynamicEventType || "N/A",
-        "Min Participants": team.metadata?.minParticipants || "N/A",
-        "Max Participants": team.metadata?.maxParticipants || "N/A",
+        // "Performance Type": team.metadata?.performanceType || "N/A",
+        // "Event Code": team.metadata?.dynamicEventCode || "N/A",
+        "Event Type": team.metadata?.dynamicEventType || "N/A",
+        // "Min Participants": team.metadata?.minParticipants || "N/A",
+        // "Max Participants": team.metadata?.maxParticipants || "N/A",
         Timestamp: team.timestamp,
       };
     });
@@ -171,27 +180,26 @@ const Organizer = () => {
       </div>
 
       {/* Participants Table */}
-      <div className="overflow-x-auto md:max-w-[60vw] w-full mt-5">
-        <p>
-          Scroll <ArrowRightIcon sx={{ paddingBottom: "2px" }} />
-        </p>
-        <table className="min-w-full border border-gray-300">
-          <thead>
-            <tr className="bg-gray-200">
-              <th className="border p-2">Sl No.</th>
-              <th className="border p-2">Name</th>
-              <th className="border p-2">Roll No.</th>
-              <th className="border p-2">Email</th>
-              <th className="border p-2">Phone</th>
-              <th className="border p-2">Team Members</th>
-              <th className="border p-2">Event ID</th>
-              <th className="border p-2">Event Type</th>
-              <th className="border p-2">Group Name</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredParticipants?.length > 0 ? (
-              filteredParticipants.map((team, index) => {
+        <div className="overflow-x-auto md:max-w-[60vw] w-full mt-5">
+          <p>
+            Scroll <ArrowRightIcon sx={{ paddingBottom: "2px" }} />
+          </p>
+          <table className="min-w-full border border-gray-300">
+            <thead>
+          <tr className="bg-gray-200">
+            <th className="border p-2">Sl No.</th>
+            <th className="border p-2">Name</th>
+            <th className="border p-2">Roll No.</th>
+            <th className="border p-2">Email</th>
+            <th className="border p-2">Phone</th>
+            <th className="border p-2">Team Members</th>
+            <th className="border p-2">Event Type</th>
+            <th className="border p-2">Group Name</th>
+          </tr>
+            </thead>
+            <tbody>
+          {filteredParticipants?.length > 0 ? (
+            filteredParticipants.map((team, index) => {
                 const leader = team.teamData[0] || {};
                 const members = team.teamData.slice(1);
                 return (
@@ -267,10 +275,7 @@ const Organizer = () => {
                         <span>N/A</span>
                       )}
                     </td>
-                    <td className="border p-2">{team.eventId || "N/A"}</td>
-                    <td className="border p-2">
-                      {team.metadata?.eventType || "N/A"}
-                    </td>
+                    <td className="border p-2">{team.metadata?.dynamicEventType || "N/A"}</td>
                     <td className="border p-2">
                       {team.metadata?.groupName || "N/A"}
                     </td>
