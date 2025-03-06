@@ -185,18 +185,18 @@ const ProfileDetailsForm = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 py-20 relative">
+    <div className="min-h-[calc(100vh-64px)] flex items-center justify-center p-6 py-10 relative">
       {/* Fixed position for background to cover entire screen */}
       <div className="fixed inset-0">
         <NeonCursorBackground />
       </div>
 
-      <div className="bg-gray-800 bg-opacity-50 backdrop-blur-md p-6 rounded-lg shadow-lg w-full max-w-2xl border border-amber-500 border-opacity-20 z-50">
+      <div className="bg-gray-800 bg-opacity-50 backdrop-blur-md p-6 rounded-lg shadow-lg w-full max-w-2xl border border-amber-500 border-opacity-20 z-10 mt-16">
         <div className="relative flex justify-center items-center gap-4 mb-6">
           <Crown className="w-12 h-12 text-yellow-400 animate-pulse" />
-          <h1 className="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 pt-10">
+            <h1 className="text-2xl md:text-4xl lg:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 pt-4 md:pt-10">
             REGISTER
-          </h1>
+            </h1>
           <Crown className="w-12 h-12 text-yellow-400 animate-pulse" />
           <div className="absolute -bottom-2 h-1 w-48 mx-auto bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full" />
         </div>

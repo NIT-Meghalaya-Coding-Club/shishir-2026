@@ -65,7 +65,13 @@ const DynamicForm = ({
   const [dynamicMin, setDynamicMin] = useState<number>(min);
   const [dynamicMax, setDynamicMax] = useState<number>(max);
   const { data: session, status } = useSession();
+  const [showModal, setShowModal] = useState(false);
   const router = useRouter();
+  const [userData, setUserData] = useState({
+    registered: false,
+  });
+  const [dataFetched, setDataFetched] = useState(false);
+  
 
   // Check if this is an event that needs dynamic configuration
   const isDynamicEvent =
@@ -80,10 +86,49 @@ const DynamicForm = ({
       setTimeout(() => {
         router.push("/register");
       }, 1000);
+    } else if (status === "authenticated" && session && session.user?.email && !dataFetched) {
+      // Fetch user data to check registration status
+      const fetchUserData = async () => {
+        try {
+          setLoading(true);
+          const res = await fetch(`/api/user/get-info/${session?.user?.email}`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+          
+          if (res.ok) {
+            const data = await res.json();
+            console.log("User data fetched:", data);
+            setUserData({
+              // name: data.user?.name || "",
+              // other fields as needed
+              registered: data.user?.registered || false
+            });
+            
+            // If the user is not registered, prompt for registration
+            if (!data.user?.registered) {
+              setTimeout(() => {
+                setShowModal(true);
+              }, 1000);
+            }
+            
+            setDataFetched(true);
+          } else {
+            console.error("Failed to fetch user data");
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+  
+      fetchUserData();
     }
-  }, [status, router]);
-
-  // Event selection handler for dynamic events
+  }, [status, router, session, dataFetched]);
+    // Event selection handler for dynamic events
   const handleEventChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const eventValue = e.target.value;
     setSelectedEvent(eventValue);
@@ -622,6 +667,35 @@ const DynamicForm = ({
               }
             })}
           </motion.div>
+        )}
+
+        {showModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50 backdrop-blur-sm p-4">
+            <div className="bg-gradient-to-b from-[#1a1c6b] to-[#0c0e33] p-5 sm:p-8 rounded-xl shadow-2xl text-center w-full max-w-xs sm:max-w-sm border border-indigo-500/30">
+              <h2 className="text-xl sm:text-3xl font-bold text-amber-400 mb-2">
+                Complete Your Registration
+              </h2>
+              <div className="w-16 h-1 bg-gradient-to-r from-amber-400 to-purple-500 mx-auto mb-4 rounded-full"></div>
+              <p className="mt-2 text-sm sm:text-base text-indigo-100">
+                You have not completed your registration. Please proceed to set
+                up your profile.
+              </p>
+              <div className="flex flex-col mt-6 sm:mt-8 gap-3">
+                <button
+                  className="bg-gradient-to-r from-amber-400 to-amber-600 text-blue-900 font-medium px-6 py-2 sm:py-3 rounded-lg hover:shadow-lg hover:shadow-amber-500/30 transition-all duration-300 transform hover:scale-105 text-sm sm:text-base"
+                  onClick={() => router.push("/dashboard/profile-details")}
+                >
+                  Proceed to Registration
+                </button>
+                {/* <button
+                  className="mt-2 bg-transparent border border-indigo-400/30 text-indigo-200 px-6 py-2 sm:py-3 rounded-lg hover:bg-indigo-900/20 transition-all duration-300 text-sm sm:text-base"
+                  onClick={() => setShowModal(false)}
+                >
+                  Cancel
+                </button> */}
+              </div>
+            </div>
+          </div>
         )}
 
         {/* Member fields */}
