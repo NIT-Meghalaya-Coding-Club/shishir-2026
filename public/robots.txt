@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://shishir.nitm.ac.in
+
+# Sitemaps
+Sitemap: https://shishir.nitm.ac.in/sitemap.xml

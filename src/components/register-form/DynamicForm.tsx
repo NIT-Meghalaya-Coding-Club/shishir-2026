@@ -67,7 +67,7 @@ const DynamicForm = ({
   const { data: session, status } = useSession();
   const [showModal, setShowModal] = useState(false);
   const router = useRouter();
-  const [userData, setUserData] = useState({
+  const [, setUserData] = useState({
     registered: false,
   });
   const [dataFetched, setDataFetched] = useState(false);
@@ -102,8 +102,6 @@ const DynamicForm = ({
             const data = await res.json();
             console.log("User data fetched:", data);
             setUserData({
-              // name: data.user?.name || "",
-              // other fields as needed
               registered: data.user?.registered || false
             });
             
