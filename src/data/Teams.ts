@@ -59,7 +59,7 @@ export const Teams: {
       email: "b23ee029@nitm.ac.in",
       position: "GS Member-I, Cultural",
       linkedinLink: undefined,
-      imageLink: "/Teams/BhabokMyrchiang.jpeg",
+      imageLink: "/Teams/BhabokMyrchiang.webp",
     },
     {
       name: "Chuncha Hemchand",
@@ -78,7 +78,7 @@ export const Teams: {
       email: "b21ce003@nitm.ac.in",
       position: "Head",
       linkedinLink: undefined,
-      imageLink: "/Teams/SaketPratapSingh.jpeg",
+      imageLink: "/Teams/SaketPratapSingh.webp",
     },
     {
       name: "Sojib Datta",
@@ -218,7 +218,7 @@ export const Teams: {
       email: "b22ce001@nitm.ac.in",
       position: "Coordinator",
       linkedinLink: undefined,
-      imageLink: "/Teams/DipKundu.jpeg",
+      imageLink: "/Teams/DipKundu.webp",
     },
     // {
     //   name: "Saksham",
@@ -268,7 +268,7 @@ export const Teams: {
       email: "b22ec008@nitm.ac.in",
       position: "Coordinator",
       linkedinLink: undefined,
-      imageLink: "/Teams/BotuVarunKumar.jpeg",
+      imageLink: "/Teams/BotuVarunKumar.webp",
     },
     {
       name: "Pankaj Saraswat",
@@ -326,7 +326,7 @@ export const Teams: {
       email: "b22ce020@nitm.ac.in",
       position: "Coordinator",
       linkedinLink: undefined,
-      imageLink: "/Teams/RahulKumar.jpeg",
+      imageLink: "/Teams/RahulKumar.webp",
     },
     {
       name: "Avinash Kumar Singh",
@@ -567,7 +567,7 @@ export const Teams: {
       email: "b23ce017@nitm.ac.in",
       position: "Co-Coordinator",
       linkedinLink: undefined,
-      imageLink: "/Teams/ManishKumar.jpeg",
+      imageLink: "/Teams/ManishKumar.webp",
     },
   ],
   "Public Relations": [
@@ -577,7 +577,7 @@ export const Teams: {
       email: "b21cs008@nitm.ac.in",
       position: "Head",
       linkedinLink: undefined,
-      imageLink: "/Teams/PangaSaiTeja.jpeg",
+      imageLink: "/Teams/PangaSaiTeja.webp",
     },
     {
       name: "Gannu Abhijith Sai",
@@ -609,7 +609,7 @@ export const Teams: {
       email: "b23ce004@nitm.ac.in",
       position: "Co-Coordinator",
       linkedinLink: undefined,
-      imageLink: "/Teams/BiandikSangma.jpeg",
+      imageLink: "/Teams/BiandikSangma.webp",
     },
     {
       name: "Dean Chisam T Sangma",

@@ -37,6 +37,7 @@ const ResponsiveScene = () => {
           className="object-cover shadow-xl rounded-b-2xl"
           sizes="100vw"
           quality={100}
+          unoptimized
           
         />
       </div>
@@ -50,6 +51,7 @@ const ResponsiveScene = () => {
             width={1000}
             height={250}
             priority
+            unoptimized
             
             className="w-full h-auto transition-all duration-300"
           />

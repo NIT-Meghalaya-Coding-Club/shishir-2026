@@ -11,7 +11,7 @@ const LegacySection: React.FC = () => {
 
   return (
     <div className="relative py-16">
-      <div className="absolute inset-0 opacity-10 bg-[url('/pattern.png')] bg-repeat" />
+      <div className="absolute inset-0 opacity-10 bg-repeat" />
       
       <Title text="Legacy" />
       

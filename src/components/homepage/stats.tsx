@@ -201,7 +201,7 @@ const Events = () => (
     <div className="container mx-auto px-4 sm:px-6 lg:px-10">
       {/* Hero Text Section */}
       <div className="relative px-4 py-16 sm:py-24 lg:py-32 text-center">
-        <div className="absolute inset-0 bg-[url('/pattern.png')] opacity-10" />
+        <div className="absolute inset-0 opacity-10" />
         <p className="relative mx-auto max-w-3xl font-circular-web text-base sm:text-lg lg:text-2xl text-blue-50 leading-relaxed">
           Experience the cultural extravaganza with{" "}
           <span className="bg-gradient-to-r from-amber-300 to-amber-500 bg-clip-text font-bold text-transparent">

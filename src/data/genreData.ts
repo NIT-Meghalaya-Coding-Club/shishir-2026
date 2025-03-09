@@ -17,17 +17,17 @@ export const genreData: Genre[] = [
     competitions: [
       {
         name: "Dance Competition",
-        posterUrl: "/img/event/dance-competition.png",
+        posterUrl: "/img/event/dance-competition.webp",
         registerLink: "https://shishir.nitm.ac.in/register/dance_comp",
       },
       {
         name: "Drama Competition",
-        posterUrl: "/img/event/drama-competition.png",
+        posterUrl: "/img/event/drama-competition.webp",
         registerLink: "https://shishir.nitm.ac.in/register/drama_comp",
       },
       {
         name: "Prom Night",
-        posterUrl: "/img/event/PromNight.png",
+        posterUrl: "/img/event/PromNight.webp",
         registerLink: "https://shishir.nitm.ac.in/register/prom_night",
       },
     ],
@@ -37,17 +37,17 @@ export const genreData: Genre[] = [
     competitions: [
       {
         name: "Battle of Bands",
-        posterUrl: "/img/event/battle-of-bands.png",
+        posterUrl: "/img/event/battle-of-bands.webp",
         registerLink: "https://shishir.nitm.ac.in/register/bob",
       },
       {
         name: "Symphony",
-        posterUrl: "/img/event/symphony.png",
+        posterUrl: "/img/event/symphony.webp",
         registerLink: "https://shishir.nitm.ac.in/register/symp",
       },
       {
         name: "Instrumental",
-        posterUrl: "/img/event/Instrumental.png",
+        posterUrl: "/img/event/Instrumental.webp",
         registerLink: "https://shishir.nitm.ac.in/register/inst",
       },
     ],
@@ -57,12 +57,12 @@ export const genreData: Genre[] = [
     competitions: [
       {
         name: "Open Mic",
-        posterUrl: "/img/event/open-mic.png",
+        posterUrl: "/img/event/open-mic.webp",
         registerLink: "https://shishir.nitm.ac.in/register/open_mic",
       },
       {
         name: "Doodle Art",
-        posterUrl: "/img/event/doodle-art.png",
+        posterUrl: "/img/event/doodle-art.webp",
         registerLink: "https://shishir.nitm.ac.in/register/doo_art",
       },
     ],
@@ -72,12 +72,12 @@ export const genreData: Genre[] = [
     competitions: [
       {
         name: "Valorant",
-        posterUrl: "/img/event/Valorant.png",
+        posterUrl: "/img/event/Valorant.webp",
         registerLink: "https://shishir.nitm.ac.in/register/valorant",
       },
       {
         name: "Free Fire",
-        posterUrl: "/img/event/FreeFire.png",
+        posterUrl: "/img/event/FreeFire.webp",
         registerLink: "https://shishir.nitm.ac.in/register/free_fire",
       },
     ],
@@ -88,7 +88,7 @@ export const genreData: Genre[] = [
     competitions: [
       {
         name: "Art Battle",
-        posterUrl: "/img/event/art-battle.png",
+        posterUrl: "/img/event/art-battle.webp",
         registerLink: "https://shishir.nitm.ac.in/register/art_bat",
       },
     ],
