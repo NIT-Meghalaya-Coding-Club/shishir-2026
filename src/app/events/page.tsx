@@ -11,11 +11,11 @@ export default function Events() {
   return (
     <>
       <Head>
-        <link rel="preload" href="/img/brickwall.png" as="image" />
+        <link rel="preload" href="/img/brickwall.webp" as="image" />
       </Head>
       <div
         className="relative flex flex-col items-center w-full h-auto min-h-screen overflow-x-hidden pb-16"
-        style={{ backgroundImage: `url('/img/brickwall.png')` }}
+        style={{ backgroundImage: `url('/img/brickwall.webp')` }}
       >
         {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 to-black-900/80 pointer-events-none" />

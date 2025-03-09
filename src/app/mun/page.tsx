@@ -13,7 +13,7 @@ const Mun: React.FC = () => {
   return (
     <div
       style={{
-        backgroundImage: "url('/img/brickwall.png')",
+        backgroundImage: "url('/img/brickwall.webp')",
         backgroundPosition: "center",
       }}
       className="relative min-h-screen"

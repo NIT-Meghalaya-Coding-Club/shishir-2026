@@ -77,7 +77,7 @@ const CountdownTimer = () => {
       >
         
         <div className="flex justify-center mb-6">
-          <Image src="/img/mun_logo.png" alt="Conference" width={100} height={100} className=" rounded-lg " />
+          <Image src="/img/mun_logo.webp" alt="Conference" width={100} height={100} className=" rounded-lg " />
         </div>
         
         <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-center text-yellow-400 font-semibold mb-4">

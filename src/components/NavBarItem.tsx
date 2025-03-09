@@ -27,7 +27,7 @@ const NavBarItem: React.FC<Props> = ({ to, text, onClick }) => {
     >
       <div className="relative h-12 flex items-center justify-center">
         <Image
-          src="/assets/scroll-banner.png"
+          src="/assets/scroll-banner.webp"
           alt="Scroll Banner"
           layout="fill"
           priority

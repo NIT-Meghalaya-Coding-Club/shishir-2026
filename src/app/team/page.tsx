@@ -27,7 +27,7 @@ export default function Contact() {
   return (
     <div
       className="flex flex-col sm:flex-row min-h-screen w-full relative"
-      style={{ backgroundImage: 'url("/img/brickwall.png")' }}
+      style={{ backgroundImage: 'url("/img/brickwall.webp")' }}
     >
       {/* Gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 to-black-900/80" />

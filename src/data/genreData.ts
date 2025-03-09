@@ -98,7 +98,7 @@ export const genreData: Genre[] = [
     competitions: [
       {
         name: "NITM Model United Nation",
-        posterUrl: "/img/mun_logo.png",
+        posterUrl: "/img/mun_logo.webp",
         registerLink:
           "https://docs.google.com/forms/d/1vbrhrbnte5RRreJOnH3nQlgewDCuSv2aLWFw_czVg4c/viewform?ts=67bde88f&edit_requested=true",
       },

@@ -5,7 +5,7 @@ function Logo_mun() {
   return (
     <div className="flex justify-center items-center">
       <Image
-        src={"/img/mun_logo.png"} 
+        src={"/img/mun_logo.webp"} 
         alt="MUN"
         width={250}
         height={250}
