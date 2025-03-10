@@ -70,6 +70,10 @@ const RegistrationSchema = new mongoose.Schema(
         type: Number,
         min: 1,
       },
+      utensilsRequired: {
+        type: String,
+        trim: true,
+      },
     },
     timestamp: {
       type: Date,

@@ -44,6 +44,11 @@ const EVENT_CONFIGS = {
       { id: "group_act", name: "Group Act", min: 2, max: 8 },
     ],
   },
+  food_fest: {
+    events: [
+      { id: "team_dish", name: "Team Participation", min: 3, max: 5 },
+    ],
+  },
 };
 
 const DynamicForm = ({
@@ -75,10 +80,14 @@ const DynamicForm = ({
 
   // Check if this is an event that needs dynamic configuration
   const isDynamicEvent =
-    !!eventCode && (eventCode === "dance_comp" || eventCode === "drama_comp");
+    !!eventCode && 
+    (eventCode === "dance_comp" || eventCode === "drama_comp" || eventCode === "food_fest");
 
   // Set isIndividualEvent dynamically based on either props or selected event
   const isIndividualEvent = dynamicMin === 1 && dynamicMax === 1;
+
+  // Check if this is a food fest event
+  const isFoodFestEvent = eventCode === "food_fest";
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -163,6 +172,17 @@ const DynamicForm = ({
         id: "event_type",
         label: "Event Type",
         type: "select",
+        required: true,
+        memberIndex: -1,
+      });
+    }
+
+    // Add utensils required field for food fest events
+    if (isFoodFestEvent) {
+      newFields.push({
+        id: "utensils_required",
+        label: "Utensils Required",
+        type: "textarea",
         required: true,
         memberIndex: -1,
       });
@@ -282,10 +302,11 @@ const DynamicForm = ({
     eventCode,
     isDynamicEvent,
     selectedEvent,
+    isFoodFestEvent,
   ]);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { id, value } = e.target;
 
@@ -407,6 +428,7 @@ const DynamicForm = ({
           dynamicEventType: isDynamicEvent ? formData.event_type : undefined,
           minParticipants: isDynamicEvent ? dynamicMin : min,
           maxParticipants: isDynamicEvent ? dynamicMax : max,
+          utensilsRequired: isFoodFestEvent ? formData.utensils_required : undefined,
         },
       };
 
@@ -619,6 +641,39 @@ const DynamicForm = ({
                         </option>
                       ))}
                     </select>
+                    {errors[field.id] && (
+                      <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="mt-1 text-red-500 text-sm"
+                      >
+                        {errors[field.id]}
+                      </motion.p>
+                    )}
+                  </div>
+                );
+              } else if (field.type === "textarea") {
+                return (
+                  <div key={field.id} className="mb-4">
+                    <label
+                      htmlFor={field.id}
+                      className="block text-gray-300 font-medium mb-1"
+                    >
+                      {field.label}{" "}
+                      {field.required && (
+                        <span className="text-red-500">*</span>
+                      )}
+                    </label>
+                    <textarea
+                      id={field.id}
+                      value={formData[field.id] || ""}
+                      onChange={handleChange}
+                      rows={4}
+                      className={`w-full bg-black/10 px-3 py-2 border rounded-md ${
+                        errors[field.id] ? "border-red-500" : "border-gray-300"
+                      } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                      placeholder="List all utensils you'll need for the food fest (e.g., pans, spatulas, serving plates)"
+                    ></textarea>
                     {errors[field.id] && (
                       <motion.p
                         initial={{ opacity: 0 }}
