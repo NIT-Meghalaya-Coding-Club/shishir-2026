@@ -58,6 +58,7 @@ export async function POST(req) {
         dynamicEventType: metadata?.dynamicEventType || undefined,
         minParticipants: metadata?.minParticipants || undefined,
         maxParticipants: metadata?.maxParticipants || undefined,
+        utensilsRequired: metadata?.utensilsRequired || undefined,
       },
     });
 
