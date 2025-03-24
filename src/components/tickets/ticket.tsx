@@ -25,33 +25,47 @@ const ShishirTicketSeller: React.FC = () => {
   const ticketRef = useRef<HTMLDivElement>(null);
 
   const submitToGoogleSheet = async (): Promise<void> => {
-    if (!selectedEvent || !process.env.NEXT_PUBLIC_GOOGLE_SCRIPT_URL) return;
-    
+    if (!selectedEvent || !process.env.NEXT_PUBLIC_GOOGLE_SCRIPT_URL) {
+      console.error('Missing required data or Google Script URL');
+      return;
+    }
+  
+    const submissionData = {
+      ticketNumber,
+      eventName: selectedEvent.name,
+      eventDate: selectedEvent.date,
+      artist: selectedEvent.artist,
+      quantity,
+      totalAmount,
+      name,
+      email,
+      phone,
+      paymentVerified,
+      timestamp: new Date().toISOString()
+    };
+  
+    console.log('Attempting to submit:', submissionData);
+  
     try {
-      await fetch(process.env.NEXT_PUBLIC_GOOGLE_SCRIPT_URL, {
+      const response = await fetch(process.env.NEXT_PUBLIC_GOOGLE_SCRIPT_URL, {
         method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ticketNumber,
-          eventName: selectedEvent.name,
-          eventDate: selectedEvent.date,
-          artist: selectedEvent.artist,
-          quantity,
-          totalAmount,
-          name,
-          email,
-          phone,
-          paymentVerified
-        }),
+        headers: { 
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(submissionData),
       });
-    } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
-        console.error('Google Sheet submission error:', error);
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
+  
+      const data = await response.json();
+      console.log('Submission successful:', data);
+    } catch (error) {
+      console.error('Submission failed:', error);
+      
     }
   };
-
   // Event data for 3 days + combo
   const events = [
     {
