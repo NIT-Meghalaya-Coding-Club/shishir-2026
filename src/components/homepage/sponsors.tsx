@@ -149,7 +149,7 @@ const SponsorAnnouncement = () => {
           </motion.div>
 
           {/* Sponsor Cycle Button */}
-          {/* <motion.button
+          <motion.button
             onClick={nextSponsor}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -160,7 +160,7 @@ const SponsorAnnouncement = () => {
             }}
           >
             Next Sponsor
-          </motion.button> */}
+          </motion.button>
         </div>
       </motion.div>
     </div>
