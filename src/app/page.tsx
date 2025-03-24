@@ -2,6 +2,7 @@ import MainScene from '@/components/homepage/main-scene'
 import About from '@/components/homepage/about'
 import Events from '@/components/homepage/stats'
 import CountdownTimer from '@/components/homepage/countdownTimer'
+import Sponsors from '@/components/homepage/sponsors'
 // import ComingSoon from '@/components/ComingSoon'
 // import Announcement from '@/components/homepage/announcement'
 // import FeaturedArtists from '@/components/homepage/featured-artists'
@@ -17,6 +18,7 @@ export default function Home() {
         {/* <FeaturedArtists /> */}
 
         <CountdownTimer />
+        <Sponsors />
         {/* <Announcement /> */}
         <About />
         <Events />
