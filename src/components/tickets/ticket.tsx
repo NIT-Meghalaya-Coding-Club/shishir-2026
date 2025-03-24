@@ -24,48 +24,31 @@ const ShishirTicketSeller: React.FC = () => {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const ticketRef = useRef<HTMLDivElement>(null);
 
-  const submitToGoogleSheet = async () => {
-    if (!selectedEvent) return;
-  
+  const submitToGoogleSheet = async (): Promise<void> => {
+    if (!selectedEvent || !process.env.NEXT_PUBLIC_GOOGLE_SCRIPT_URL) return;
+    
     try {
-      const scriptUrl = process.env.NEXT_PUBLIC_GOOGLE_SCRIPT_URL;
-      
-      // Test if URL is valid
-      if (!scriptUrl || !scriptUrl.includes('google.com')) {
-        throw new Error('Invalid Google Script URL');
-      }
-  
-      const formData = {
-        ticketNumber,
-        eventName: selectedEvent.name,
-        eventDate: selectedEvent.date,
-        artist: selectedEvent.artist,
-        quantity,
-        totalAmount,
-        name,
-        email,
-        phone,
-        paymentVerified
-      };
-  
-      console.log('Submitting to:', scriptUrl); // Debug log
-      console.log('Data:', formData); // Debug log
-  
-      const response = await fetch(scriptUrl, {
+      await fetch(process.env.NEXT_PUBLIC_GOOGLE_SCRIPT_URL, {
         method: 'POST',
-        mode: 'no-cors', // Important for Google Script
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ticketNumber,
+          eventName: selectedEvent.name,
+          eventDate: selectedEvent.date,
+          artist: selectedEvent.artist,
+          quantity,
+          totalAmount,
+          name,
+          email,
+          phone,
+          paymentVerified
+        }),
       });
-  
-      // Note: With no-cors mode, response will be opaque
-      console.log('Submission complete');
-      
     } catch (error) {
-      console.error('Full error:', error);
-      alert('Failed to save ticket data. Please take a screenshot of your ticket.');
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Google Sheet submission error:', error);
+      }
     }
   };
 
@@ -147,13 +130,7 @@ const ShishirTicketSeller: React.FC = () => {
 
   // Generate random ticket number
   const ticketNumber = `SHISHIR-${Math.floor(Math.random() * 90000) + 10000}`;
-
-  // Generate UPI payment link
-  const upiId = "shishirfest@examplebank"; // Replace with your actual UPI ID
-  const paymentLink = `upi://pay?pa=${upiId}&pn=SHISHIR%202025&am=${totalAmount}&cu=INR&tn=Ticket%20for%20${
-    selectedEvent?.name.replace(/ /g, "%20") || "SHISHIR2025"
-  }`;
-
+  
   const handleDownloadTicket = () => {
     if (!ticketRef.current) return;
 
@@ -504,12 +481,14 @@ const ShishirTicketSeller: React.FC = () => {
                   {/* Ticket header with logos */}
                   <div className="bg-gradient-to-r from-amber-500 to-amber-400 p-4 text-center relative">
                     <div className="absolute left-4 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-white rounded-full flex items-center justify-center">
-                        {/* College Logo */}
-                        <img
+                      {/* College Logo */}
+                      <img
                         src="/assets/NITM.png"
                         alt="College Logo"
-                        className="w-8 h-8 object-contain"
-                        />
+                        width={32}
+                        height={32}
+                        className="object-contain"
+                      />
                     </div>
                     <div className="absolute right-4 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-white rounded-full flex items-center justify-center">
                       {/* Event Logo */}
