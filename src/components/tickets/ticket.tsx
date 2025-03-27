@@ -678,10 +678,10 @@ const ShishirTicketSeller: React.FC = () => {
 
             {/* Footer */}
             <div className="mt-8 pt-4 border-t border-indigo-800 text-center text-indigo-400 text-sm">
-              <p>SHISHIR 2025 • Annual College Cultural Fest</p>
-              <p className="text-xs mt-1 text-indigo-500">
-                Powered by Shishir Ticket System
-              </p>
+              <p>SHISHIR 2025 | NITM | Annual Cultural Fest</p>
+              {/* <p className="text-xs mt-1 text-indigo-500">
+                
+              </p> */}
             </div>
           </div>
         </div>
