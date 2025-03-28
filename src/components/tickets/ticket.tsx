@@ -75,7 +75,7 @@ const ShishirTicketSeller: React.FC = () => {
       id: 3,
       name: "Day 3 - EDM Night",
       date: "April 5, 2025",
-      artist: "Krispie Kristina",
+      artist: "DJ Alberic X DJ Infinit",
       price: 200,
       remaining: 100,
       image: "edm",

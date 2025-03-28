@@ -14,10 +14,11 @@ export default function Home() {
       <div className='home_contianer relative border-box overflow-hidden'>
         {/* <ComingSoon /> */}
         <MainScene />
+        {/* <Tbutton /> */}
         {/* <HeadliningEvents /> */}
-        {/* <FeaturedArtists /> */}
 
         <CountdownTimer />
+        {/* <FeaturedArtists /> */}
         <Sponsors />
         {/* <Announcement /> */}
         <About />

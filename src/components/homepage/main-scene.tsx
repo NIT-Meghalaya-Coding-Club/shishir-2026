@@ -1,6 +1,8 @@
 'use client'
 import Image from 'next/image'
-import Rbutton from './register-button' 
+// import Rbutton from './register-button' 
+import TicketButton from './ticket'
+
 import { useState, useEffect } from 'react';
 
 const ResponsiveScene = () => {
@@ -38,7 +40,6 @@ const ResponsiveScene = () => {
           sizes="100vw"
           quality={100}
           unoptimized
-          
         />
       </div>
 
@@ -52,16 +53,18 @@ const ResponsiveScene = () => {
             height={250}
             priority
             unoptimized
-            
             className="w-full h-auto transition-all duration-300"
           />
         </div>
       </div>
 
-      {/* Bottom Right Image */}
-      <div className="absolute bottom-0 right-8">
-        <div className=" rounded-full cursor-pointer hover:scale-105 transition-transform">
-          <Rbutton/>
+      {/* Bottom Right Buttons */}
+      <div className="absolute bottom-0 right-8 flex items-center space-x-4">
+        <div className="rounded-full cursor-pointer hover:scale-105 transition-transform">
+          {/* <TicketButton /> */}
+        </div>
+        <div className="rounded-full cursor-pointer hover:scale-105 transition-transform">
+        <TicketButton />
         </div>
       </div>
     </div>

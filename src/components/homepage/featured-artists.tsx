@@ -1,65 +1,74 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import Image from 'next/image';
+import React, { useState, useEffect } from "react";
+import { motion} from "framer-motion";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 const artists = [
   {
     id: 1,
-    name: 'DJ Nebula',
-    genre: 'Electronic / House',
-    image: '/api/placeholder/400/400',
-    color: '#FF5E5B'
+    name: "Pandit Satish Vyas",
+    genre: "Hindustani Classical",
+    image: "/artists/tushar_joshi.webp",
+    color: "#FF5E5B",
   },
   {
     id: 2,
-    name: 'The Cosmic Beats',
-    genre: 'Alternative Rock',
-    image: '/api/placeholder/400/400',
-    color: '#22BABB'
+    name: "Tushar Joshi",
+    genre: "Bollywood",
+    image: "/artists/tushar_joshi.webp",
+    color: "#22BABB",
   },
   {
     id: 3,
-    name: 'Luna Echo',
-    genre: 'Indie Pop',
-    image: '/api/placeholder/400/400',
-    color: '#9B5DE5'
+    name: "DJ Alberic",
+    genre: "Indie Pop",
+    image: "/artists/tushar_joshi.webp",
+    color: "#9B5DE5",
   },
   {
     id: 4,
-    name: 'Rhythm Raiders',
-    genre: 'Hip Hop / Rap',
-    image: '/api/placeholder/400/400',
-    color: '#F15BB5'
+    name: "DJ Infinit",
+    genre: "Indie Pop",
+    image: "/artists/tushar_joshi.webp",
+    color: "#0000FF",
   },
-  {
-    id: 5,
-    name: 'Mystic Sound',
-    genre: 'World Fusion',
-    image: '/api/placeholder/400/400',
-    color: '#00BBF9'
-  }
 ];
 
 const FeaturedArtists = () => {
   const [activeArtist, setActiveArtist] = useState<number | null>(null);
+  const [decorativeElements, setDecorativeElements] = useState<{ key: number; style: React.CSSProperties }[]>([]); // State for decorative elements
+  const router = useRouter();
+
+  useEffect(() => {
+    // Generate decorative elements only on the client-side
+    const elements = [...Array(20)].map((_, i) => ({
+      key: i,
+      style: {
+        background: `${artists[i % artists.length].color}`,
+        width: `${Math.random() * 100 + 50}px`,
+        height: `${Math.random() * 100 + 50}px`,
+        left: `${Math.random() * 100}%`,
+        top: `${Math.random() * 100}%`,
+      },
+    }));
+    setDecorativeElements(elements);
+  }, []); // Empty dependency array ensures this runs once on mount
+
+  const handleRedirect = () => {
+    router.push("/ticket");
+  };
 
   return (
     <div className="w-full bg-gray-900 py-16 px-4 md:px-8 relative overflow-hidden">
       {/* Background decorative elements */}
       <div className="absolute inset-0 overflow-hidden">
-        {[...Array(20)].map((_, i) => (
+        {decorativeElements.map((element) => (
           <motion.div
-            key={i}
+            key={element.key}
             className="absolute rounded-full opacity-20"
-            style={{
-              background: `${artists[i % 5].color}`,
-              width: `${Math.random() * 100 + 50}px`,
-              height: `${Math.random() * 100 + 50}px`,
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
+            style={element.style}
             animate={{
               x: [0, Math.random() * 50 - 25],
               y: [0, Math.random() * 50 - 25],
@@ -75,26 +84,26 @@ const FeaturedArtists = () => {
       </div>
 
       {/* Header with animated gradient text */}
-      <motion.div 
+      <motion.div
         className="relative z-10 text-center mb-12"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7 }}
       >
-        <h2 className="text-4xl md:text-6xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 inline-block">
+        <h2 className="font-bold text-3xl md:text-6xl lg:text-7xl bg-clip-text text-transparent bg-gradient-to-r from-[#d4a200] to-[#ffd960] special-font tracking-wider transform hover:scale-105 transition-transform duration-300 text-center">
           Featured Artists
         </h2>
-        <motion.div 
+        <motion.div
           className="h-1 w-24 mx-auto bg-gradient-to-r from-red-500 via-yellow-500 to-green-500"
-          animate={{ 
-            backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
+          animate={{
+            backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
           }}
-          transition={{ 
-            duration: 5, 
+          transition={{
+            duration: 5,
             repeat: Infinity,
-            ease: "linear" 
+            ease: "linear",
           }}
-          style={{ backgroundSize: '200% 200%' }}
+          style={{ backgroundSize: "200% 200%" }}
         />
         <p className="text-gray-300 mt-4 max-w-2xl mx-auto">
           Experience the incredible lineup at NITM&apos;s Cultural Fest this year!
@@ -102,67 +111,39 @@ const FeaturedArtists = () => {
       </motion.div>
 
       {/* Artists Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6 relative z-10">
-        {artists.map((artist) => (
-          <motion.div
-            key={artist.id}
-            className="relative rounded-xl overflow-hidden cursor-pointer group"
-            whileHover={{ 
-              scale: 1.05,
-              zIndex: 20,
-              boxShadow: `0 0 30px ${artist.color}` 
-            }}
-            onClick={() => setActiveArtist(activeArtist === artist.id ? null : artist.id)}
-            layout
-          >
-            <motion.div 
-              className="absolute inset-0 opacity-60"
-              style={{ backgroundColor: artist.color }}
-              whileHover={{ opacity: 0.8 }}
-            />
-            
-            <div className="aspect-square">
-              <Image 
-              src={artist.image} 
-              alt={artist.name}
-              layout="fill"
-              objectFit="cover"
-              />
-            </div>
-            
-            <motion.div 
-              className="absolute bottom-0 left-0 right-0 p-4 bg-black bg-opacity-60 backdrop-blur-md"
-              whileHover={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
+      <div className="flex justify-center">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 relative z-10">
+          {artists.map((artist) => (
+            <motion.div
+              key={artist.id}
+              className="relative rounded-xl overflow-hidden cursor-pointer group"
+              whileHover={{
+                scale: 1.05,
+                zIndex: 20,
+                boxShadow: `0 0 30px ${artist.color}`,
+              }}
+              onClick={() =>
+                setActiveArtist(activeArtist === artist.id ? null : artist.id)
+              }
+              layout
             >
-              <h3 className="text-xl font-bold text-white">{artist.name}</h3>
-              <p className="text-gray-200 text-sm">{artist.genre}</p>
-              
-              <AnimatePresence>
-                {activeArtist === artist.id && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="mt-4"
-                  >
-                    <p className="text-gray-300 text-sm">
-                      Don&apos;t miss the electrifying performance by {artist.name} at this year&apos;s cultural fest!
-                      Bringing their unique {artist.genre} style to the main stage.
-                    </p>
-                    <motion.button
-                      className="mt-4 px-4 py-2 rounded-full text-sm font-semibold"
-                      style={{ backgroundColor: artist.color }}
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      View Schedule
-                    </motion.button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              <motion.div
+                className="absolute inset-0 opacity-90"
+                whileHover={{ opacity: 0.8 }}
+              />
+                <div className="aspect-square">
+                <Image
+                  src={artist.image}
+                  alt={artist.name}
+                  // layout="fill"
+                  objectFit="cover"
+                  width={300}
+                  height={300}
+                />
+                </div>
             </motion.div>
-          </motion.div>
-        ))}
+          ))}
+        </div>
       </div>
 
       {/* Animated call to action */}
@@ -174,10 +155,14 @@ const FeaturedArtists = () => {
       >
         <motion.button
           className="px-8 py-3 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full text-white font-bold text-lg"
-          whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(131, 56, 236, 0.7)" }}
+          whileHover={{
+            scale: 1.05,
+            boxShadow: "0 0 20px rgba(131, 56, 236, 0.7)",
+          }}
           whileTap={{ scale: 0.95 }}
+          onClick={handleRedirect}
         >
-          Book Tickets Now
+          Grab Your Tickets!
         </motion.button>
       </motion.div>
     </div>
