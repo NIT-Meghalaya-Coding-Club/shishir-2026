@@ -33,6 +33,7 @@ export default function EventPage() {
     min: 0,
     max: 0,
     allowPerformanceTypes: false,
+    paymentRequired: undefined as { amount: number; qrCodeUrl: string } | undefined, // Add this
   });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -51,6 +52,7 @@ export default function EventPage() {
           rulebook: foundEvent.rulebook,
           min: foundEvent.min,
           max: foundEvent.max,
+          paymentRequired: foundEvent.paymentRequired,
         });
         break;
       }
@@ -155,6 +157,7 @@ export default function EventPage() {
           }
           allowPerformanceTypes={event?.allowPerformanceTypes}
           eventCode={event?.code}
+          paymentRequired={event?.paymentRequired}
         />
         
         {/* Contact Information */}

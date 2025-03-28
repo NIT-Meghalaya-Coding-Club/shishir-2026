@@ -10,6 +10,10 @@ interface Event {
   rulebook: string;
   min: number;
   max: number;
+  paymentRequired?: { 
+    amount: number;    // Amount in rupees
+    qrCodeUrl: string; // URL to the event-specific QR code image
+  };
 }
 
 type EventsData = Record<Category, Event[]>;
@@ -325,6 +329,10 @@ const eventsData: EventsData = {
         "https://drive.google.com/file/d/1FaXgmzXhHPWGbsrGVtdRPn5oI4SRq3uy/view?usp=sharing",
       min: 4,
       max: 7,
+      paymentRequired: {  // Add this
+        amount: 700,
+        qrCodeUrl: "/payment/bob.jpg",
+      },
     },
   ],
   "PHOTOGRAPHY & FINE ARTS CLUB": [

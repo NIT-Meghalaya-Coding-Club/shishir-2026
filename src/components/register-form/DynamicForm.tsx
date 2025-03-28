@@ -27,6 +27,10 @@ interface DynamicFormProps {
   max?: number;
   allowPerformanceTypes?: boolean;
   eventCode?: string;
+  paymentRequired?: {  
+    amount: number;    // Amount in rupees
+    qrCodeUrl: string; // URL to the event-specific QR code image
+  };
 }
 
 // Event configurations
@@ -59,12 +63,14 @@ const DynamicForm = ({
   max = 1,
   allowPerformanceTypes = false,
   eventCode,
+  paymentRequired,
 }: DynamicFormProps) => {
   const [loading, setLoading] = useState(false);
   const [fields, setFields] = useState<Field[]>([]);
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
+  const [paymentPending, setPaymentPending] = useState(false);
   const [performanceType, setPerformanceType] = useState<string>("solo");
   const [selectedEvent, setSelectedEvent] = useState<string>("");
   const [dynamicMin, setDynamicMin] = useState<number>(min);
@@ -372,35 +378,18 @@ const DynamicForm = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+  
     if (validateForm()) {
-      // Create teamData array to maintain the same format as the original code
       const teamData = [];
-
-      // Determine how many members to include based on event type, performance type, and dynamic settings
       let effectiveMax = isDynamicEvent ? dynamicMax : max;
-      if (
-        allowPerformanceTypes &&
-        eventType === "performance" &&
-        !isDynamicEvent
-      ) {
+      if (allowPerformanceTypes && eventType === "performance" && !isDynamicEvent) {
         switch (performanceType) {
-          case "solo":
-            effectiveMax = 1;
-            break;
-          case "duo":
-            effectiveMax = 2;
-            break;
-          case "trio":
-            effectiveMax = 3;
-            break;
-          // For "group", use the original max or dynamic max
+          case "solo": effectiveMax = 1; break;
+          case "duo": effectiveMax = 2; break;
+          case "trio": effectiveMax = 3; break;
         }
       }
-
-      // Build the teamData array with the same structure as before
       for (let i = 0; i < effectiveMax; i++) {
-        // Only include members that have at least a name
         if (formData[`name_${i}`]?.trim()) {
           teamData.push({
             name: formData[`name_${i}`],
@@ -434,34 +423,31 @@ const DynamicForm = ({
 
       try {
         setLoading(true);
-
         const res = await fetch(`/api/event/register`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(requestBody),
         });
-
         const data = await res.json();
-
+  
         if (res.ok) {
-          setSubmitted(true);
-          toast.success("Registration successful!", { autoClose: 3000 });
+          if (paymentRequired) { // Add this condition
+            setPaymentPending(true);
+            toast.info("Please complete the payment to finalize your registration!", { autoClose: 4000 });
+          } else {
+            setSubmitted(true);
+            toast.success("Registration successful!", { autoClose: 3000 });
+          }
         } else {
           if (data.message === "Already registered for this event") {
-            toast.info("You have already registered for this event!", {
-              autoClose: 4000,
-            });
+            toast.info("You have already registered for this event!", { autoClose: 4000 });
           } else {
-            toast.error(`${data.message || "Failed to register!"}`, {
-              autoClose: 4000,
-            });
+            toast.error(`${data.message || "Failed to register!"}`, { autoClose: 4000 });
           }
         }
       } catch (error) {
         console.error("Error in Registration:", error);
-        toast.error("An error occurred. Please try again later.", {
-          autoClose: 4000,
-        });
+        toast.error("An error occurred. Please try again later.", { autoClose: 4000 });
       } finally {
         setLoading(false);
       }
@@ -475,15 +461,41 @@ const DynamicForm = ({
         animate={{ opacity: 1 }}
         className="max-w-md mx-auto mt-10 p-6 bg-white/10 rounded-lg shadow-lg text-center"
       >
-        <h2 className="text-2xl font-bold text-green-600 mb-4">
-          Submission Successful!
-        </h2>
+        <h2 className="text-2xl font-bold text-green-600 mb-4">Submission Successful!</h2>
         <p className="text-white">Thank you for your registration.</p>
         <button
-          onClick={() => {
-            router.push("/");
-          }}
+          onClick={() => router.push("/")}
           className="mt-4 px-4 py-2 bg-amber-500 text-white rounded hover:bg-amber-600 transition"
+        >
+          Go back to Shishir
+        </button>
+      </motion.div>
+    );
+  }
+  
+  // Add this new block
+  if (paymentPending && paymentRequired) {
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="max-w-md mx-auto mt-10 p-6 bg-white/10 rounded-lg shadow-lg text-center"
+      >
+        <h2 className="text-2xl font-bold text-amber-400 mb-4">Payment Required</h2>
+        <p className="text-white mb-4">
+          Please make a payment of <span className="font-bold">₹{paymentRequired.amount}</span> to complete your registration for {eventName || eventId}.
+        </p>
+        <img
+          src={paymentRequired.qrCodeUrl}
+          alt={`QR Code for ${eventName || eventId} Payment`}
+          className="mx-auto mb-4 w-48 h-48"
+        />
+        <p className="text-gray-300 mb-6">
+          Scan the QR code above to make the payment. Your registration will be confirmed only after the payment is received.
+        </p>
+        <button
+          onClick={() => router.push("/")}
+          className="px-4 py-2 bg-amber-500 text-white rounded hover:bg-amber-600 transition"
         >
           Go back to Shishir
         </button>
@@ -562,6 +574,12 @@ const DynamicForm = ({
         value={session?.user?.email || ""}
         className="w-full bg-black/10 px-3 py-2 border rounded-md border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-not-allowed mb-6"
       />
+
+      {paymentRequired && (
+            <p className="text-amber-400 mb-4">
+              Note: A payment of ₹{paymentRequired.amount} is required to complete registration.
+            </p>
+          )}
 
       <form onSubmit={handleSubmit}>
         {/* General fields (event type, group name, performance type) */}
@@ -833,6 +851,16 @@ const DynamicForm = ({
             Submit
           </motion.button>
         </div>
+        <div className="sticky bottom-0 w-full to-transparent">
+        <motion.button
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.98 }}
+          type="submit"
+          className="w-full bg-amber-500 text-white font-semibold py-2 px-4 rounded-t-xl hover:bg-amber-600 transition duration-200 mt-6"
+        >
+          {paymentRequired ? "Proceed to Payment" : "Submit"} {/* Update this */}
+        </motion.button>
+      </div>
       </form>
     </motion.div>
   );
