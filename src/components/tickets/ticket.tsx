@@ -52,15 +52,14 @@ const ShishirTicketSeller: React.FC = () => {
     }
   };
 
-  // Event data for 3 days + combo
-  const events = [
+  const [events, setEvents] = useState([
     {
       id: 1,
-      name: "Day 1 - Cultural Night",
+      name: "Day 1 - Spic Macay",
       date: "April 3, 2025",
-      artist: "Cultural Performances",
+      artist: "Pandit Satish Vyas",
       price: 150,
-      remaining: 200,
+      remaining: 100,
       image: "cultural",
     },
     {
@@ -69,7 +68,7 @@ const ShishirTicketSeller: React.FC = () => {
       date: "April 4, 2025",
       artist: "Tushar Joshi",
       price: 200,
-      remaining: 150,
+      remaining: 100,
       image: "bollywood",
     },
     {
@@ -78,7 +77,7 @@ const ShishirTicketSeller: React.FC = () => {
       date: "April 5, 2025",
       artist: "Krispie Kristina",
       price: 200,
-      remaining: 150,
+      remaining: 100,
       image: "edm",
     },
     {
@@ -90,7 +89,7 @@ const ShishirTicketSeller: React.FC = () => {
       remaining: 100,
       image: "combo",
     },
-  ];
+  ]);
 
   // Animation when selecting event
   useEffect(() => {
@@ -125,6 +124,25 @@ const ShishirTicketSeller: React.FC = () => {
       setPaymentVerified(false);
     }
   };
+
+  const updateRemainingTickets = () => {
+    if (!selectedEvent) return;
+
+    setEvents(prevEvents => 
+      prevEvents.map(event => 
+        event.id === selectedEvent.id 
+          ? { ...event, remaining: event.remaining - quantity }
+          : event
+      )
+    );
+    
+    // Update selectedEvent with new remaining value
+    setSelectedEvent(prev => 
+      prev ? { ...prev, remaining: prev.remaining - quantity } : null
+    );
+  };
+
+  
 
   const totalAmount = selectedEvent ? selectedEvent.price * quantity : 0;
 
@@ -236,9 +254,6 @@ const ShishirTicketSeller: React.FC = () => {
                         </div>
                         <div className="mt-1 text-sm text-indigo-300">
                           Featuring: {event.artist}
-                        </div>
-                        <div className="mt-1 text-xs text-indigo-400">
-                          {event.remaining} tickets remaining
                         </div>
                         {selectedEvent?.id === event.id && (
                           <div className="absolute top-2 right-2 w-6 h-6 bg-amber-400 rounded-full flex items-center justify-center text-indigo-900">
@@ -639,6 +654,7 @@ const ShishirTicketSeller: React.FC = () => {
                             setTimeout(() => {
                               setIsLoading(false);
                               setPaymentVerified(true);
+                              updateRemainingTickets();
                               submitToGoogleSheet();
                             }, 1000);
                           }}
