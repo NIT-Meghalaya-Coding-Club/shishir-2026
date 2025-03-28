@@ -16,9 +16,17 @@ const Organizer = () => {
   const [participants, setParticipants] = useState([]);
   const router = useRouter();
 
-  const eventId = useMemo(() => organizer?.eventId || "dance_comp", [organizer]);
+  const eventId = useMemo(() => {
+    const id = organizer?.userId || "dance_comp";
+    // console.log("Computed eventId:", id);
+    return id;
+  }, [organizer]);
 
-  
+  const isFoodFest = useMemo(() => {
+    const result = eventId === "food_fest";
+    // console.log("isFoodFest:", result);
+    return result;
+  }, [eventId]);
 
   const filteredParticipants = useMemo(() => {
     if (!searchEntry) return participants;
@@ -32,16 +40,16 @@ const Organizer = () => {
         leader.phone?.toLowerCase().includes(searchLower) ||
         participant.metadata?.eventType?.toLowerCase().includes(searchLower) ||
         participant.metadata?.groupName?.toLowerCase().includes(searchLower) ||
-        participant.eventId?.toLowerCase().includes(searchLower)
+        participant.eventId?.toLowerCase().includes(searchLower) ||
+        (isFoodFest && participant.metadata?.utensilsRequired?.toLowerCase().includes(searchLower))
       );
     });
-  }, [participants, searchEntry]);
+  }, [participants, searchEntry, isFoodFest]);
 
   useEffect(() => {
     const fetchParticipants = async () => {
       setLoading(true);
       console.log("Fetching participants for eventId:", eventId);
-      console.log("Organizer:", organizer);
       try {
         const response = await fetch(
           `/api/organizer/all-registered/${organizer.userId}`
@@ -61,14 +69,14 @@ const Organizer = () => {
         setLoading(false);
       }
     };
-  
+
     if (organizer?.userId) {
       fetchParticipants();
     } else {
-      console.log("Organizer not ready yet"); // Debug
-      setLoading(false); // Prevent infinite loading if no organizer
+      console.log("Organizer not ready yet");
+      setLoading(false);
     }
-  }, [eventId, organizer]); // Add organizer to dependencies
+  }, [eventId, organizer]);
 
   const handleLogout = async () => {
     setLoading(true);
@@ -99,7 +107,7 @@ const Organizer = () => {
       const leader = team.teamData[0] || {};
       const members = team.teamData.slice(1);
 
-      return {
+      const rowData = {
         "Sl No.": index + 1,
         "Leader Name": leader.name || "N/A",
         "Leader Roll No.": leader.rollNumber || "N/A",
@@ -108,21 +116,19 @@ const Organizer = () => {
         "Team Members": members
           .map(
             (member, memberIndex) =>
-              `${memberIndex + 1}. ${member.name} (${
-                member.rollNumber || "N/A"
-              }, ${member.phone || "N/A"})`
+              `${memberIndex + 1}. ${member.name} (${member.rollNumber || "N/A"}, ${member.phone || "N/A"})`
           )
           .join(", "),
-        // "Event ID": team.eventId || "N/A",
-        // "Event Type": team.metadata?.eventType || "N/A",
-        "Group Name": team.metadata?.groupName || "N/A",
-        // "Performance Type": team.metadata?.performanceType || "N/A",
-        // "Event Code": team.metadata?.dynamicEventCode || "N/A",
         "Event Type": team.metadata?.dynamicEventType || "N/A",
-        // "Min Participants": team.metadata?.minParticipants || "N/A",
-        // "Max Participants": team.metadata?.maxParticipants || "N/A",
+        "Group Name": team.metadata?.groupName || "N/A",
         Timestamp: team.timestamp,
       };
+
+      if (isFoodFest) {
+        rowData["Utensils Required"] = team.metadata?.utensilsRequired || "N/A";
+      }
+
+      return rowData;
     });
 
     const worksheet = XLSX.utils.json_to_sheet(data);
@@ -180,26 +186,27 @@ const Organizer = () => {
       </div>
 
       {/* Participants Table */}
-        <div className="overflow-x-auto md:max-w-[60vw] w-full mt-5">
-          <p>
-            Scroll <ArrowRightIcon sx={{ paddingBottom: "2px" }} />
-          </p>
-          <table className="min-w-full border border-gray-300">
-            <thead>
-          <tr className="bg-gray-200">
-            <th className="border p-2">Sl No.</th>
-            <th className="border p-2">Name</th>
-            <th className="border p-2">Roll No.</th>
-            <th className="border p-2">Email</th>
-            <th className="border p-2">Phone</th>
-            <th className="border p-2">Team Members</th>
-            <th className="border p-2">Event Type</th>
-            <th className="border p-2">Group Name</th>
-          </tr>
-            </thead>
-            <tbody>
-          {filteredParticipants?.length > 0 ? (
-            filteredParticipants.map((team, index) => {
+      <div className="overflow-x-auto md:max-w-[60vw] w-full mt-5">
+        <p>
+          Scroll <ArrowRightIcon sx={{ paddingBottom: "2px" }} />
+        </p>
+        <table className="min-w-full border border-gray-300">
+          <thead>
+            <tr className="bg-gray-200">
+              <th className="border p-2">Sl No.</th>
+              <th className="border p-2">Name</th>
+              <th className="border p-2">Roll No.</th>
+              <th className="border p-2">Email</th>
+              <th className="border p-2">Phone</th>
+              <th className="border p-2">Team Members</th>
+              <th className="border p-2">Event Type</th>
+              <th className="border p-2">Group Name</th>
+              {isFoodFest && <th className="border p-2">Utensils Required</th>}
+            </tr>
+          </thead>
+          <tbody>
+            {filteredParticipants?.length > 0 ? (
+              filteredParticipants.map((team, index) => {
                 const leader = team.teamData[0] || {};
                 const members = team.teamData.slice(1);
                 return (
@@ -217,9 +224,7 @@ const Organizer = () => {
                               <th className="border border-l-white border-t-white p-2">
                                 SI No.
                               </th>
-                              <th className="border border-t-white p-2">
-                                Name
-                              </th>
+                              <th className="border border-t-white p-2">Name</th>
                               <th className="border border-t-white p-2">
                                 Roll No.
                               </th>
@@ -275,16 +280,26 @@ const Organizer = () => {
                         <span>N/A</span>
                       )}
                     </td>
-                    <td className="border p-2">{team.metadata?.dynamicEventType || "N/A"}</td>
+                    <td className="border p-2">
+                      {team.metadata?.dynamicEventType || "N/A"}
+                    </td>
                     <td className="border p-2">
                       {team.metadata?.groupName || "N/A"}
                     </td>
+                    {isFoodFest && (
+                      <td className="border p-2">
+                        {team.metadata?.utensilsRequired || "N/A"}
+                      </td>
+                    )}
                   </tr>
                 );
               })
             ) : (
               <tr>
-                <td colSpan="9" className="border p-2 text-center">
+                <td
+                  colSpan={isFoodFest ? 9 : 8}
+                  className="border p-2 text-center"
+                >
                   No participants found
                 </td>
               </tr>
