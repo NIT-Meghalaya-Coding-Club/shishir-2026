@@ -5,7 +5,7 @@ import CountdownTimer from '@/components/homepage/countdownTimer'
 import Sponsors from '@/components/homepage/sponsors'
 // import ComingSoon from '@/components/ComingSoon'
 // import Announcement from '@/components/homepage/announcement'
-// import FeaturedArtists from '@/components/homepage/featured-artists'
+import FeaturedArtists from '@/components/homepage/featured-artists'
 
 
 export default function Home() {
@@ -18,7 +18,7 @@ export default function Home() {
         {/* <HeadliningEvents /> */}
 
         <CountdownTimer />
-        {/* <FeaturedArtists /> */}
+        <FeaturedArtists />
         <Sponsors />
         {/* <Announcement /> */}
         <About />

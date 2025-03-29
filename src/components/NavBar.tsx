@@ -86,11 +86,12 @@ const NavBar: React.FC = () => {
             className="absolute right-4 top-16 w-48 rounded-xl backdrop-blur-md shadow-lg border border-white/10 p-4" // Glassmorphism effect for dropdown
           >
             <NavBarItem to="/" text="Home" onClick={closeMenu} />
+            <NavBarItem to="/ticket" text="Ticket" onClick={closeMenu} />
             <NavBarItem to="/events" text="Events" onClick={closeMenu} />
             <NavBarItem to="/competitions" text="Competitions" onClick={closeMenu} />
-            {/* <NavBarItem to="/schedule" text="Schedule" onClick={closeMenu} /> */}
+            <NavBarItem to="/schedule" text="Schedule" onClick={closeMenu} />
             <NavBarItem to="/mun" text="MUN" onClick={closeMenu} />
-            <NavBarItem to="/past-sponsors" text="Past Sponsors" onClick={closeMenu} />
+            <NavBarItem to="/sponsors" text="Sponsors" onClick={closeMenu} />
             <NavBarItem to="/team" text="Team" onClick={closeMenu} />
             {status === "unauthenticated" && (
               <NavBarItem to="/register" text="Login" onClick={closeMenu} />

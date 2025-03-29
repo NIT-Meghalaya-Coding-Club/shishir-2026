@@ -8,81 +8,41 @@ export const sponsors: {
       sponsorType: string;
       imageLink: string | undefined;
     }[];
-  } = {
-    "Marketing Sponsors": [
+} = {
+    "Title Sponsor": [
       {
-        name: "sponsor1",
-        sponsorType: "sponsorType1",
-        imageLink: undefined,
-      },
-      {
-        name: "sponsor2",
-        sponsorType: "sponsorType2",
-        imageLink: undefined,
-      },
-      {
-        name: "sponsor3",
-        sponsorType: "sponsorType3",
-        imageLink: undefined,
-      },
-      {
-        name: "sponsor3",
-        sponsorType: "sponsorType3",
-        imageLink: undefined,
-      },
-      {
-        name: "sponsor3",
-        sponsorType: "sponsorType3",
-        imageLink: undefined,
-      },
+        name: "Polo Orchid",
+        sponsorType: "Title Sponsor",
+        imageLink: "/sponsors/poloorchid.webp",
+      }
     ],
-    "Media Sponsors": [
+    "Powered By": [
       {
-        name: "sponsor4",
-        sponsorType: "sponsorType4",
-        imageLink: undefined,
+        name: "State Bank of India",
+        sponsorType: "Banking",
+        imageLink: "/sponsors/sbi.webp",
       },
       {
-        name: "sponsor5",
-        sponsorType: "sponsorType5",
-        imageLink: undefined,
+        name: "Canara Bank",
+        sponsorType: "Banking",
+        imageLink: "/sponsors/canara-bank.webp",
       },
+      {
+        name: "Pantaloons",
+        sponsorType: "Retail",
+        imageLink: "/sponsors/pantaloons.webp",
+      }
     ],
-    "Technology Sponsors": [
+    "Co-Powered By": [
       {
-        name: "sponsor6",
-        sponsorType: "sponsorType6",
-        imageLink: undefined,
+        name: "RITES",
+        sponsorType: "Engineering Consultancy",
+        imageLink: "/sponsors/rites.webp",
       },
       {
-        name: "sponsor7",
-        sponsorType: "sponsorType7",
-        imageLink: undefined,
-      },
-    ],
-    "Logistics Sponsors": [
-      {
-        name: "sponsor8",
-        sponsorType: "sponsorType8",
-        imageLink: undefined,
-      },
-      {
-        name: "sponsor9",
-        sponsorType: "sponsorType9",
-        imageLink: undefined,
-      },
-    ],
-    "Education Sponsors": [
-      {
-        name: "sponsor10",
-        sponsorType: "sponsorType10",
-        imageLink: undefined,
-      },
-      {
-        name: "sponsor11",
-        sponsorType: "sponsorType11",
-        imageLink: undefined,
-      },
-    ],
-  };
-  
+        name: "NECTAR",
+        sponsorType: "Technology & Research",
+        imageLink: "/sponsors/necar.webp",
+      }
+    ]
+};

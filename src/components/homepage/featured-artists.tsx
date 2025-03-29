@@ -20,20 +20,20 @@ const artists = [
     image: "/artists/tushar_joshi.webp",
     color: "#22BABB",
   },
-  {
-    id: 3,
-    name: "DJ Alberic",
-    genre: "Indie Pop",
-    image: "/artists/tushar_joshi.webp",
-    color: "#9B5DE5",
-  },
-  {
-    id: 4,
-    name: "DJ Infinit",
-    genre: "Indie Pop",
-    image: "/artists/tushar_joshi.webp",
-    color: "#0000FF",
-  },
+  // {
+  //   id: 3,
+  //   name: "DJ Alberic",
+  //   genre: "Indie Pop",
+  //   image: "/artists/tushar_joshi.webp",
+  //   color: "#9B5DE5",
+  // },
+  // {
+  //   id: 4,
+  //   name: "DJ Infinit",
+  //   genre: "Indie Pop",
+  //   image: "/artists/tushar_joshi.webp",
+  //   color: "#0000FF",
+  // },
 ];
 
 const FeaturedArtists = () => {
