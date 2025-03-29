@@ -121,7 +121,7 @@ const Organizer = () => {
           .join(", "),
         "Event Type": team.metadata?.dynamicEventType || "N/A",
         "Group Name": team.metadata?.groupName || "N/A",
-        Timestamp: team.timestamp,
+        // Timestamp: team.timestamp,
       };
 
       if (isFoodFest) {

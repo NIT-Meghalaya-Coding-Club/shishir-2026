@@ -1,11 +1,13 @@
 import { Category } from "./categoryData";
 
 interface Event {
+  registrationClosed?: boolean;
   code: string;
   name: string;
   image: string;
   eventType?: "individual" | "team" | "performance";
   allowPerformanceTypes?: boolean;
+  
   registrationLink: string;
   rulebook: string;
   min: number;
@@ -24,6 +26,7 @@ const eventsData: EventsData = {
       code: "flash_mob",
       name: "Flash Mob",
       image: "/img/event/Flash-Mob.webp",
+      registrationClosed: true,
       eventType: "team",
       registrationLink: "https://forms.gle/3SpbzLLYs9q52GBH6",
       rulebook: "",
@@ -45,9 +48,10 @@ const eventsData: EventsData = {
       code: "prom_night",
       name: "Prom Night",
       image: "/img/event/PromNight.webp",
+      registrationClosed: true,
       registrationLink: "https://shishir.nitm.ac.in/register/prom_night",
       rulebook:
-        "https://drive.google.com/file/d/1ewceVxxaiz1tVm73U91brdGrQ8mOTzPy/view?usp=drive_link",
+        "https://drive.google.com/file/d/1V8O3waMwpn5cZdGxGNyXW2d7IMBPPxsg/view?usp=drive_link",
       min: 2,
       max: 2,
     },
@@ -173,16 +177,16 @@ const eventsData: EventsData = {
       min: 1,
       max: 1,
     },
-    {
-      code: "rangoli",
-      name: "Rangoli",
-      image: "/img/event/Rangoli.webp",
-      eventType: "individual",
-      registrationLink: "https://shishir.nitm.ac.in/register/rangoli",
-      rulebook: "",
-      min: 1,
-      max: 1,
-    },
+    // {
+    //   code: "rangoli",
+    //   name: "Rangoli",
+    //   image: "/img/event/Rangoli.webp",
+    //   eventType: "individual",
+    //   registrationLink: "https://shishir.nitm.ac.in/register/rangoli",
+    //   rulebook: "",
+    //   min: 1,
+    //   max: 1,
+    // },
     {
       code: "tug_war",
       name: "Tug of War",
@@ -341,6 +345,7 @@ const eventsData: EventsData = {
       name: "Photo Walk",
       eventType: "individual",
       image: "/img/event/photo-walk.webp",
+      registrationClosed: true,
       registrationLink: "https://docs.google.com/forms/d/e/1FAIpQLSdYGl47FvapzMbryH-iPuweSjKSbote-ZYBzgsdO3QI_xk7Sg/viewform?usp=pp_url",
       rulebook:
         "https://drive.google.com/file/d/1wgWtdFB_iEKHzJ2pNXpJa7Xz9aIYgr4q/view?usp=drive_link",

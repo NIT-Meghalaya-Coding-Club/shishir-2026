@@ -4,7 +4,7 @@ import Image from "next/image";
 import Inav from "@/components/events/internal-nav";
 import eventsData from "@/data/eventsData";
 import event_categories from "@/data/categoryData";
-import { Crown, Sparkles } from "lucide-react";
+import { Crown, Sparkles, LockIcon } from "lucide-react";
 import Head from "next/head";
 
 export default function Events() {
@@ -109,7 +109,12 @@ export default function Events() {
 
                           {/* Links */}
                           <div className="flex flex-col gap-3">
-                            {event.registrationLink ? (
+                            {event.registrationClosed ? (
+                              <div className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-gray-700 to-gray-800 text-gray-300 font-bold py-2 px-4 rounded-lg text-center">
+                                <LockIcon className="w-4 h-4" />
+                                Registration Closed
+                              </div>
+                            ) : event.registrationLink ? (
                               <a
                                 href={event.registrationLink}
                                 target="_blank"
