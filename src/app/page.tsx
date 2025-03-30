@@ -19,7 +19,7 @@ export default function Home() {
 
         <CountdownTimer />
         <FeaturedArtists />
-        <Sponsors />
+        {/* <Sponsors /> */}
         {/* <Announcement /> */}
         <About />
         <Events />

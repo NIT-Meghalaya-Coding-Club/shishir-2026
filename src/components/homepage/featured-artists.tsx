@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { motion} from "framer-motion";
+import { motion } from "framer-motion";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
@@ -10,7 +10,7 @@ const artists = [
     id: 1,
     name: "Pandit Satish Vyas",
     genre: "Hindustani Classical",
-    image: "/artists/tushar_joshi.webp",
+    image: "/artists/pandit.webp",
     color: "#FF5E5B",
   },
   {
@@ -20,29 +20,16 @@ const artists = [
     image: "/artists/tushar_joshi.webp",
     color: "#22BABB",
   },
-  // {
-  //   id: 3,
-  //   name: "DJ Alberic",
-  //   genre: "Indie Pop",
-  //   image: "/artists/tushar_joshi.webp",
-  //   color: "#9B5DE5",
-  // },
-  // {
-  //   id: 4,
-  //   name: "DJ Infinit",
-  //   genre: "Indie Pop",
-  //   image: "/artists/tushar_joshi.webp",
-  //   color: "#0000FF",
-  // },
 ];
 
 const FeaturedArtists = () => {
   const [activeArtist, setActiveArtist] = useState<number | null>(null);
-  const [decorativeElements, setDecorativeElements] = useState<{ key: number; style: React.CSSProperties }[]>([]); // State for decorative elements
+  const [decorativeElements, setDecorativeElements] = useState<
+    { key: number; style: React.CSSProperties }[]
+  >([]);
   const router = useRouter();
 
   useEffect(() => {
-    // Generate decorative elements only on the client-side
     const elements = [...Array(20)].map((_, i) => ({
       key: i,
       style: {
@@ -54,7 +41,7 @@ const FeaturedArtists = () => {
       },
     }));
     setDecorativeElements(elements);
-  }, []); // Empty dependency array ensures this runs once on mount
+  }, []);
 
   const handleRedirect = () => {
     router.push("/ticket");
@@ -106,17 +93,17 @@ const FeaturedArtists = () => {
           style={{ backgroundSize: "200% 200%" }}
         />
         <p className="text-gray-300 mt-4 max-w-2xl mx-auto">
-          Experience the incredible lineup at NITM&apos;s Cultural Fest this year!
+          Experience the incredible lineup at NITM's Cultural Fest this year!
         </p>
       </motion.div>
 
-      {/* Artists Grid */}
+      {/* Artists Grid - Centered for 2 artists */}
       <div className="flex justify-center">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 relative z-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-3xl w-full">
           {artists.map((artist) => (
             <motion.div
               key={artist.id}
-              className="relative rounded-xl overflow-hidden cursor-pointer group"
+              className="relative rounded-xl overflow-hidden cursor-pointer group w-full aspect-square"
               whileHover={{
                 scale: 1.05,
                 zIndex: 20,
@@ -131,16 +118,13 @@ const FeaturedArtists = () => {
                 className="absolute inset-0 opacity-90"
                 whileHover={{ opacity: 0.8 }}
               />
-                <div className="aspect-square">
-                <Image
-                  src={artist.image}
-                  alt={artist.name}
-                  // layout="fill"
-                  objectFit="cover"
-                  width={300}
-                  height={300}
-                />
-                </div>
+              <Image
+                src={artist.image}
+                alt={artist.name}
+                layout="fill" // Use layout="fill" to make the image fill the container
+                objectFit="cover" // Ensure the image covers the container without distortion
+                className="rounded-xl" // Match the container's rounding
+              />
             </motion.div>
           ))}
         </div>
