@@ -55,7 +55,7 @@ const ShishirTicketSeller: React.FC = () => {
   const [events, setEvents] = useState([
     {
       id: 1,
-      name: "Day 1 - Spic Macay",
+      name: "Day 1 - Cultural Night",
       date: "April 3, 2025",
       artist: "Pandit Satish Vyas",
       price: 150,
