@@ -93,7 +93,7 @@ const FeaturedArtists = () => {
           style={{ backgroundSize: "200% 200%" }}
         />
         <p className="text-gray-300 mt-4 max-w-2xl mx-auto">
-          Experience the incredible lineup at NITM's Cultural Fest this year!
+          Experience the incredible lineup at NITM&apos;s Cultural Fest this year!
         </p>
       </motion.div>
 
