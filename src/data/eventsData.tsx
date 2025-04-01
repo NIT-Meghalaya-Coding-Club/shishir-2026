@@ -356,6 +356,7 @@ const eventsData: EventsData = {
       code: "art_bat",
       name: "Art Battle",
       image: "/img/event/art-battle.webp",
+      registrationClosed: true,
       eventType: "individual",
       registrationLink: "https://shishir.nitm.ac.in/register/art_bat",
       rulebook:
