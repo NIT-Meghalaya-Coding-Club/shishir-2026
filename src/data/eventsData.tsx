@@ -37,6 +37,7 @@ const eventsData: EventsData = {
       code: "dance_comp",
       name: "Dance Competitions",
       image: "/img/event/dance-competition.webp",
+      registrationClosed: true,
       eventType: "performance",
       registrationLink: "https://shishir.nitm.ac.in/register/dance_comp",
       rulebook:
@@ -59,6 +60,7 @@ const eventsData: EventsData = {
       code: "drama_comp",
       name: "Drama Competition",
       image: "/img/event/drama-competition.webp",
+      registrationClosed: true,
       eventType: "performance",
       registrationLink: "https://shishir.nitm.ac.in/register/drama_comp",
       rulebook:
@@ -72,6 +74,7 @@ const eventsData: EventsData = {
       code: "cul_exb",
       name: "Cultural Exhibition",
       image: "/img/event/cultural-exhibition.webp",
+      registrationClosed: true,
       eventType: "team",
       registrationLink: "https://shishir.nitm.ac.in/register/cul_exb",
       rulebook: "https://drive.google.com/file/d/1KY9CJJAnN2ULf2Vft9C8-avyiz6oDkV1/view?usp=drive_link",
@@ -82,6 +85,7 @@ const eventsData: EventsData = {
       code: "food_fest",
       name: "Food Fest",
       image: "/img/event/food-fest.webp",
+      registrationClosed: true,
       eventType: "team",
       registrationLink: "https://shishir.nitm.ac.in/register/food_fest",
       rulebook: "https://drive.google.com/file/d/1aRwP2v0403OTBbJF-TEOZTf91rPgSyRC/view?usp=drive_link",
@@ -94,6 +98,7 @@ const eventsData: EventsData = {
       code: "buzz_wire",
       name: "Buzz wire",
       image: "/img/event/BUZZWIRE.webp",
+      registrationClosed: true,
       eventType: "individual",
       registrationLink: "https://shishir.nitm.ac.in/register/buzz_wire",
       rulebook: "",
@@ -104,6 +109,7 @@ const eventsData: EventsData = {
       code: "shoot_cont",
       name: "Shooting Contest",
       image: "/img/event/shooting-contest.webp",
+      registrationClosed: true,
       eventType: "individual",
       registrationLink: "https://shishir.nitm.ac.in/register/shoot_cont",
       rulebook: "",
@@ -114,6 +120,7 @@ const eventsData: EventsData = {
       code: "dart_throw",
       name: "Dart Throwing",
       image: "/img/event/dart-throwing.webp",
+      registrationClosed: true,
       eventType: "individual",
       registrationLink: "https://shishir.nitm.ac.in/register/dart_throw",
       rulebook: "",
@@ -126,6 +133,7 @@ const eventsData: EventsData = {
       code: "valorant",
       name: "Valorant",
       image: "/img/event/Valorant.webp",
+      registrationClosed: true,
       eventType: "team",
       registrationLink: "https://shishir.nitm.ac.in/register/valorant",
       rulebook: "",
@@ -136,6 +144,7 @@ const eventsData: EventsData = {
       code: "free_fire",
       name: "Free Fire",
       image: "/img/event/FreeFire.webp",
+      registrationClosed: true,
       eventType: "team",
       registrationLink: "https://shishir.nitm.ac.in/register/free_fire",
       rulebook: "",
@@ -148,6 +157,7 @@ const eventsData: EventsData = {
       code: "dumb_charades",
       name: "Dumb Charades",
       image: "/img/event/dumb-charades.webp",
+      registrationClosed: true,
       eventType: "team",
       registrationLink: "https://shishir.nitm.ac.in/register/dumb_charades",
       rulebook:
@@ -159,6 +169,7 @@ const eventsData: EventsData = {
       code: "snake_ladder",
       name: "Snake & Ladder",
       image: "/img/event/snake-ladder.webp",
+      registrationClosed: true,
       eventType: "team",
       registrationLink: "https://shishir.nitm.ac.in/register/snake_ladder",
       rulebook:
@@ -170,6 +181,7 @@ const eventsData: EventsData = {
       code: "mus_chair",
       name: "Musical Chair",
       image: "/img/event/musical-chair.webp",
+      registrationClosed: true,
       eventType: "individual",
       registrationLink: "https://shishir.nitm.ac.in/register/mus_chair",
       rulebook:
@@ -192,6 +204,7 @@ const eventsData: EventsData = {
       name: "Tug of War",
       image: "/img/event/tug-of-war.webp",
       eventType: "team",
+      registrationClosed: true,
       registrationLink: "https://shishir.nitm.ac.in/register/tug_war",
       rulebook:
         "https://drive.google.com/file/d/1vaFLkFBOMuSKwihqXCrDB6lMBMhbR1xT/view?usp=drive_link",
@@ -202,6 +215,7 @@ const eventsData: EventsData = {
       code: "box_cric",
       name: "Box Cricket",
       image: "/img/event/box-cricket.webp",
+      registrationClosed: true,
       eventType: "team",
       registrationLink: "https://shishir.nitm.ac.in/register/box_cric",
       rulebook: "",
@@ -214,6 +228,7 @@ const eventsData: EventsData = {
       code: "trea_hunt",
       name: "Treasure Hunt",
       image: "/img/event/treasure-hunt.webp",
+      registrationClosed: true,
       eventType: "team",
       registrationLink: "https://shishir.nitm.ac.in/register/trea_hunt",
       rulebook:
@@ -225,6 +240,7 @@ const eventsData: EventsData = {
       code: "open_mic",
       name: "Open Mic",
       image: "/img/event/open-mic.webp",
+      registrationClosed: true,
       eventType: "individual",
       registrationLink: "https://shishir.nitm.ac.in/register/open_mic",
       rulebook:
@@ -236,6 +252,7 @@ const eventsData: EventsData = {
       code: "lit_quiz",
       name: "Literary Quiz",
       image: "/img/event/literary-quiz.webp",
+      registrationClosed: true,
       eventType: "team",
       registrationLink: "https://shishir.nitm.ac.in/register/lit_quiz",
       rulebook:
@@ -247,6 +264,7 @@ const eventsData: EventsData = {
       code: "doo_art",
       name: "Doodle Art",
       image: "/img/event/doodle-art.webp",
+      registrationClosed: true,
       eventType: "individual",
       registrationLink: "https://shishir.nitm.ac.in/register/doo_art",
       rulebook:
@@ -258,6 +276,7 @@ const eventsData: EventsData = {
       code: "jam",
       name: "Jam",
       image: "/img/event/JustaMinute.webp",
+      registrationClosed: true,
       eventType: "individual",
       registrationLink: "https://shishir.nitm.ac.in/register/jam",
       rulebook:
@@ -271,6 +290,7 @@ const eventsData: EventsData = {
       code: "shimmer",
       name: "Shimmer",
       image: "/img/event/shimmer.webp",
+      registrationClosed: true,
       eventType: "individual",
       registrationLink: "https://shishir.nitm.ac.in/register/shimmer",
       rulebook: "",
@@ -281,6 +301,7 @@ const eventsData: EventsData = {
       code: "panache",
       name: "Panache",
       image: "/img/event/panache.webp",
+      registrationClosed: true,
       eventType: "team",
       registrationLink: "https://docs.google.com/forms/d/e/1FAIpQLSdlssD9Fyi1OkVPkmCJWM_zKyxjlv7j_tmx9oPbZntbNzl48Q/viewform?usp=header",
       rulebook:
@@ -294,6 +315,7 @@ const eventsData: EventsData = {
       code: "mun",
       name: "MUN",
       image: "/img/mun_logo.webp",
+      registrationClosed: true,
       registrationLink: "https://docs.google.com/forms/d/1vbrhrbnte5RRreJOnH3nQlgewDCuSv2aLWFw_czVg4c/viewform?ts=67bde88f&edit_requested=true",
       rulebook: "https://shishir.nitm.ac.in/mun",
       min: 1,
@@ -305,6 +327,7 @@ const eventsData: EventsData = {
       code: "symp",
       name: "Symphony",
       image: "/img/event/symphony.webp",
+      registrationClosed: true,
       eventType: "team",
       registrationLink: "https://shishir.nitm.ac.in/register/symp",
       rulebook:
@@ -316,6 +339,7 @@ const eventsData: EventsData = {
       code: "inst",
       name: "Instrumental",
       image: "/img/event/Instrumental.webp",
+      registrationClosed: true,
       eventType: "individual",
       registrationLink: "https://shishir.nitm.ac.in/register/inst",
       rulebook:
@@ -328,6 +352,7 @@ const eventsData: EventsData = {
       name: "Battle of the Bands",
       eventType: "team",
       image: "/img/event/battle-of-bands.webp",
+      registrationClosed: true,
       registrationLink: "https://shishir.nitm.ac.in/register/bob",
       rulebook:
         "https://drive.google.com/file/d/1FaXgmzXhHPWGbsrGVtdRPn5oI4SRq3uy/view?usp=sharing",
@@ -368,6 +393,7 @@ const eventsData: EventsData = {
       code: "reel_makg",
       name: "Reel Making Competition",
       image: "/img/event/reel-making-competition.webp",
+      registrationClosed: true,
       eventType: "individual",
       registrationLink: "https://shishir.nitm.ac.in/register/reel_makg",
       rulebook:
