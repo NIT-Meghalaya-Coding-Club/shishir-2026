@@ -10,7 +10,7 @@ const userSchema = new Schema(
     dob: { type: Date },
     gender: {type: String},
     college: { type: String },
-    collegeID: { type: String },
+    collegeID: { type: String, trim: true, index: true },
     yearOfStudy: { type: Number },
     dept: { type: String },
     accommodation: { type: Boolean, default: false },
