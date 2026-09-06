@@ -17,6 +17,7 @@ import {
 
 //Components
 import Loading from "../components/Loading";
+import { canCreateEvents } from "./lib";
 
 type UserData = {
   name: string;
@@ -176,6 +177,20 @@ const ProfileCard = () => {
     );
   };
 
+  const CustomEventDashboardButton = () => {
+    const goToEventDashboard = () => {
+      router.push("/event-head/dashboard");
+    }; 
+    return (
+      <button
+        onClick={goToEventDashboard}
+        className="flex items-center justify-center gap-2 px-3 sm:px-5 py-2 rounded-lg bg-gradient-to-r from-blue-900 to-indigo-900 border border-indigo-500/30 hover:from-blue-800 hover:to-indigo-800 transition-all duration-300 shadow-lg shadow-blue-900/20 w-full sm:w-auto"
+      >
+        <span className="text-amber-300 font-medium text-sm sm:text-base">Event Dashboard</span>
+      </button>
+    )
+  };
+
   const CustomContactInfo = ({ student }: { student: UserData }) => {
     return (
       <div className="w-full lg:w-1/2">
@@ -322,6 +337,10 @@ const ProfileCard = () => {
           </div>
           <div className="mt-6 sm:mt-8 md:mt-10 flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-5">
             <CustomMoreButton />
+            {(canCreateEvents(userData))?
+              <CustomEventDashboardButton />
+              : ''
+            }
             <CustomLogoutButton />
           </div>
           <AnimatePresence>
