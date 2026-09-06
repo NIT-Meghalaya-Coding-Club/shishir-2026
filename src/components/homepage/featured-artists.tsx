@@ -121,8 +121,8 @@ const FeaturedArtists = () => {
               <Image
                 src={artist.image}
                 alt={artist.name}
-                layout="fill" // Use layout="fill" to make the image fill the container
-                objectFit="cover" // Ensure the image covers the container without distortion
+                fill
+                style={{ objectFit: "cover" }}
                 className="rounded-xl" // Match the container's rounding
               />
             </motion.div>

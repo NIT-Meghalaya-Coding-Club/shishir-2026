@@ -29,9 +29,10 @@ const NavBarItem: React.FC<Props> = ({ to, text, onClick }) => {
         <Image
           src="/assets/scroll-banner.webp"
           alt="Scroll Banner"
-          layout="fill"
+          fill
           priority
           quality={100}
+          style={{ objectFit: "cover" }}
           className="absolute inset-0 z-0"
         />
         <h1 className="text-lg font-medium text-black special-font relative z-10">
