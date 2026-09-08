@@ -51,6 +51,12 @@ const EventSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    categoryId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+      default: null,
+      index: true,
+    },
     location: {
       type: String,
       required: true,
@@ -68,6 +74,38 @@ const EventSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
+    },
+    eventType: {
+      type: String,
+      enum: ["individual", "team", "performance"],
+      required: true,
+      default: "team",
+    },
+    minParticipants: {
+      type: Number,
+      required: true,
+      min: 1,
+      default: 1,
+    },
+    maxParticipants: {
+      type: Number,
+      required: true,
+      min: 1,
+      default: 1,
+      validate: {
+        validator(value) {
+          return value >= this.minParticipants;
+        },
+        message: "Maximum participants must be at least the minimum participants",
+      },
+    },
+    allowPerformanceTypes: {
+      type: Boolean,
+      default: false,
+    },
+    paymentRequired: {
+      amount: { type: Number, min: 0 },
+      qrCodeUrl: { type: String, trim: true },
     },
     rulebookLink: {
       type: String,

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import connectMongo from "@/lib/mongodb";
+import Category from "@/models/Category";
 import Event from "@/models/Event";
 import {
   getCurrentUser,
@@ -9,6 +10,20 @@ import {
 
 function normalizeCode(code) {
   return String(code || "").trim().toLowerCase();
+}
+
+async function resolveCategory(payload) {
+  if (payload.categoryId) {
+    const category = await Category.findById(payload.categoryId);
+    if (category) return category;
+  }
+
+  const name = String(payload.category || "").trim().replace(/\s+/g, " ");
+  return Category.findOneAndUpdate(
+    { name: { $regex: `^${name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, $options: "i" } },
+    { $setOnInsert: { name } },
+    { new: true, upsert: true, setDefaultsOnInsert: true }
+  );
 }
 
 function validateEventPayload(payload) {
@@ -38,6 +53,24 @@ function validateEventPayload(payload) {
 
   if (endsAt <= startsAt) {
     return "End timing must be after start timing";
+  }
+
+  const minParticipants = Number(payload.minParticipants);
+  const maxParticipants = Number(payload.maxParticipants);
+  if (!Number.isInteger(minParticipants) || minParticipants < 1) {
+    return "Minimum participants must be a positive whole number";
+  }
+  if (!Number.isInteger(maxParticipants) || maxParticipants < minParticipants) {
+    return "Maximum participants must be at least the minimum participants";
+  }
+  const eventType = String(payload.eventType || "").trim().toLowerCase();
+  if (!["individual", "team", "performance"].includes(eventType)) {
+    return "Choose a valid participation type";
+  }
+  if (payload.paymentRequired) {
+    if (Number(payload.paymentRequired.amount) < 0 || !String(payload.paymentRequired.qrCodeUrl || "").trim()) {
+      return "Payment amount and QR code URL are required when payment is enabled";
+    }
   }
 
   return null;
@@ -100,6 +133,9 @@ export async function PATCH(req, { params }) {
 
     const payload = await req.json();
     const validationError = validateEventPayload(payload);
+    const eventType = String(payload.eventType || "").trim().toLowerCase();
+    const minParticipants = Number(payload.minParticipants);
+    const maxParticipants = Number(payload.maxParticipants);
 
     if (validationError) {
       return NextResponse.json(
@@ -109,6 +145,7 @@ export async function PATCH(req, { params }) {
     }
 
     const nextCode = normalizeCode(payload.code);
+    const category = await resolveCategory(payload);
 
     if (nextCode !== event.code) {
       const duplicate = await Event.findOne({ code: nextCode });
@@ -130,11 +167,17 @@ export async function PATCH(req, { params }) {
 
     event.name = payload.name;
     event.code = nextCode;
-    event.category = payload.category;
+    event.category = category.name;
+    event.categoryId = category._id;
     event.location = payload.location;
     event.startsAt = payload.startsAt;
     event.endsAt = payload.endsAt;
     event.description = payload.description;
+    event.eventType = eventType;
+    event.minParticipants = minParticipants;
+    event.maxParticipants = maxParticipants;
+    event.allowPerformanceTypes = Boolean(payload.allowPerformanceTypes);
+    event.paymentRequired = payload.paymentRequired || undefined;
     event.rulebookLink = payload.rulebookLink;
     event.posterLink = payload.posterLink;
     event.eventHeads = await resolveUsersByCollegeIDs(eventHeadIDs, "event heads");

@@ -33,15 +33,26 @@ type EventRecord = {
   name: string;
   code: string;
   category: string;
+  categoryId?: string;
   location: string;
   startsAt: string;
   endsAt: string;
   description: string;
+  eventType: "individual" | "team" | "performance";
+  minParticipants: number;
+  maxParticipants: number;
+  allowPerformanceTypes: boolean;
+  paymentRequired: { amount: number; qrCodeUrl: string } | null;
   rulebookLink: string;
   posterLink: string;
   eventHeads: Person[];
   coordinators: Person[];
   coCoordinators: Person[];
+};
+
+type CategoryRecord = {
+  _id: string;
+  name: string;
 };
 
 type PeopleField = "eventHeads" | "coordinators" | "coCoordinators";
@@ -50,10 +61,16 @@ const emptyEvent: EventRecord = {
   name: "",
   code: "",
   category: "",
+  categoryId: "",
   location: "",
   startsAt: "",
   endsAt: "",
   description: "",
+  eventType: "individual",
+  minParticipants: 1,
+  maxParticipants: 1,
+  allowPerformanceTypes: false,
+  paymentRequired: null,
   rulebookLink: "",
   posterLink: "",
   eventHeads: [],
@@ -84,6 +101,7 @@ function getPersonCollegeIDs(people: Person[]) {
 export default function EventHeadDashboard() {
   const { data: session, status } = useSession();
   const [events, setEvents] = useState<EventRecord[]>([]);
+  const [categories, setCategories] = useState<CategoryRecord[]>([]);
   const [formData, setFormData] = useState<EventRecord>(emptyEvent);
   const [editingCode, setEditingCode] = useState("");
   const [loading, setLoading] = useState(false);
@@ -95,6 +113,7 @@ export default function EventHeadDashboard() {
     coCoordinators: "",
   });
   const [lookupLoading, setLookupLoading] = useState<PeopleField | null>(null);
+  const [newCategoryName, setNewCategoryName] = useState("");
 
   const isEditing = Boolean(editingCode);
 
@@ -118,9 +137,10 @@ export default function EventHeadDashboard() {
       try {
         setLoading(true);
 
-        const [userResponse, eventsResponse] = await Promise.all([
+        const [userResponse, eventsResponse, categoriesResponse] = await Promise.all([
           fetch(`/api/user/get-info/${userEmail}`),
           fetch("/api/events?scope=mine"),
+          fetch("/api/categories"),
         ]);
 
         if (userResponse.ok) {
@@ -142,6 +162,11 @@ export default function EventHeadDashboard() {
           setEvents(eventsData.events || []);
         } else {
           toast.error("Could not load your events");
+        }
+
+        if (categoriesResponse.ok) {
+          const categoriesData = await categoriesResponse.json();
+          setCategories(categoriesData.categories || []);
         }
       } catch (error) {
         console.error("Failed to load dashboard:", error);
@@ -174,6 +199,7 @@ export default function EventHeadDashboard() {
 
   const resetForm = () => {
     setEditingCode("");
+    setNewCategoryName("");
     setFormData({
       ...emptyEvent,
       eventHeads: currentUser?.collegeID ? [currentUser] : [],
@@ -184,12 +210,29 @@ export default function EventHeadDashboard() {
     setEditingCode(event.code);
     setFormData({
       ...event,
+      eventType: event.eventType || "individual",
+      minParticipants: event.minParticipants || 1,
+      maxParticipants: event.maxParticipants || event.minParticipants || 1,
+      allowPerformanceTypes: Boolean(event.allowPerformanceTypes),
+      paymentRequired: event.paymentRequired
+        ? {
+            amount: event.paymentRequired.amount ?? 0,
+            qrCodeUrl: event.paymentRequired.qrCodeUrl || "",
+          }
+        : null,
       startsAt: toDateTimeInputValue(event.startsAt),
       endsAt: toDateTimeInputValue(event.endsAt),
+      categoryId:
+        event.categoryId ||
+        categories.find(
+          (category) => category.name.toLowerCase() === event.category.toLowerCase().trim()
+        )?._id ||
+        "",
       eventHeads: event.eventHeads || [],
       coordinators: event.coordinators || [],
       coCoordinators: event.coCoordinators || [],
     });
+    setNewCategoryName("");
   };
 
   const addPerson = async (field: PeopleField) => {
@@ -250,11 +293,56 @@ export default function EventHeadDashboard() {
       return;
     }
 
+    if (!isEditing) {
+      if (formData.eventHeads.length === 0) {
+        toast.error("Add at least one event head");
+        return;
+      }
+    }
+
     try {
       setSaving(true);
 
+      let categoryId = formData.categoryId;
+      let categoryName = formData.category;
+
+      if (categoryId === "new") {
+        categoryName = newCategoryName.trim();
+        if (!categoryName) {
+          toast.error("Enter a new category name");
+          return;
+        }
+
+        const categoryResponse = await fetch("/api/categories", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: categoryName }),
+        });
+        const categoryData = await categoryResponse.json();
+
+        if (!categoryResponse.ok) {
+          toast.error(categoryData.message || "Could not create category");
+          return;
+        }
+
+        categoryId = categoryData.category._id;
+        categoryName = categoryData.category.name;
+        setCategories((previous) =>
+          previous.some((category) => category._id === categoryId)
+            ? previous
+            : [...previous, categoryData.category].sort((a, b) =>
+                a.name.localeCompare(b.name)
+              )
+        );
+      }
+
       const payload = {
         ...formData,
+        category: categoryName,
+        categoryId,
+        eventType: formData.eventType || "individual",
+        minParticipants: Number(formData.minParticipants) || 1,
+        maxParticipants: Number(formData.maxParticipants) || 1,
         eventHeadCollegeIDs: getPersonCollegeIDs(formData.eventHeads),
         coordinatorCollegeIDs: getPersonCollegeIDs(formData.coordinators),
         coCoordinatorCollegeIDs: getPersonCollegeIDs(formData.coCoordinators),
@@ -472,22 +560,49 @@ export default function EventHeadDashboard() {
             <label className="space-y-2">
               <span className="text-sm text-zinc-300">Event Code</span>
               <input
-                required
+                readOnly
                 value={formData.code}
-                onChange={(event) => handleInputChange("code", event.target.value)}
-                className="w-full rounded-md border border-white/10 bg-zinc-900 px-3 py-2 text-white outline-none focus:border-amber-400"
+                placeholder="Generated when saved"
+                className="w-full cursor-not-allowed rounded-md border border-white/10 bg-zinc-900 px-3 py-2 text-zinc-400 outline-none"
               />
             </label>
             <label className="space-y-2">
               <span className="text-sm text-zinc-300">Category</span>
-              <input
+              <select
                 required
-                value={formData.category}
-                onChange={(event) =>
-                  handleInputChange("category", event.target.value)
-                }
+                value={formData.categoryId || ""}
+                onChange={(event) => {
+                  const categoryId = event.target.value;
+                  const selectedCategory = categories.find(
+                    (category) => category._id === categoryId
+                  );
+                  setFormData((previous) => ({
+                    ...previous,
+                    categoryId,
+                    category: selectedCategory?.name || "",
+                  }));
+                }}
                 className="w-full rounded-md border border-white/10 bg-zinc-900 px-3 py-2 text-white outline-none focus:border-amber-400"
-              />
+              >
+                <option value="" disabled>
+                  Select a category
+                </option>
+                {categories.map((category) => (
+                  <option key={category._id} value={category._id}>
+                    {category.name}
+                  </option>
+                ))}
+                <option value="new">+ Create new category</option>
+              </select>
+              {formData.categoryId === "new" && (
+                <input
+                  required
+                  value={newCategoryName}
+                  onChange={(event) => setNewCategoryName(event.target.value)}
+                  placeholder="New category name"
+                  className="w-full rounded-md border border-white/10 bg-zinc-900 px-3 py-2 text-white outline-none focus:border-amber-400"
+                />
+              )}
             </label>
             <label className="space-y-2">
               <span className="flex items-center gap-2 text-sm text-zinc-300">
@@ -569,10 +684,144 @@ export default function EventHeadDashboard() {
             </label>
           </section>
 
+          <section className="space-y-4 border-y border-white/10 py-5">
+            <div>
+              <h3 className="font-semibold text-amber-300">Registration Settings</h3>
+              <p className="mt-1 text-sm text-zinc-400">
+                These settings control the registration form for this event.
+              </p>
+            </div>
+            <div className="grid gap-4 md:grid-cols-3">
+              <label className="space-y-2">
+                <span className="text-sm text-zinc-300">Participation Type</span>
+                <select
+                  required
+                  value={formData.eventType}
+                  onChange={(event) =>
+                    setFormData((previous) => ({
+                      ...previous,
+                      eventType: event.target.value as EventRecord["eventType"],
+                    }))
+                  }
+                  className="w-full rounded-md border border-white/10 bg-zinc-900 px-3 py-2 text-white outline-none focus:border-amber-400"
+                >
+                  <option value="individual">Individual</option>
+                  <option value="team">Team</option>
+                  <option value="performance">Performance</option>
+                </select>
+              </label>
+              <label className="space-y-2">
+                <span className="text-sm text-zinc-300">Minimum Participants</span>
+                <input
+                  required
+                  min={1}
+                  type="number"
+                  value={formData.minParticipants}
+                  onChange={(event) =>
+                    setFormData((previous) => ({
+                      ...previous,
+                      minParticipants: Number(event.target.value),
+                    }))
+                  }
+                  className="w-full rounded-md border border-white/10 bg-zinc-900 px-3 py-2 text-white outline-none focus:border-amber-400"
+                />
+              </label>
+              <label className="space-y-2">
+                <span className="text-sm text-zinc-300">Maximum Participants</span>
+                <input
+                  required
+                  min={formData.minParticipants || 1}
+                  type="number"
+                  value={formData.maxParticipants}
+                  onChange={(event) =>
+                    setFormData((previous) => ({
+                      ...previous,
+                      maxParticipants: Number(event.target.value),
+                    }))
+                  }
+                  className="w-full rounded-md border border-white/10 bg-zinc-900 px-3 py-2 text-white outline-none focus:border-amber-400"
+                />
+              </label>
+            </div>
+            {formData.eventType === "performance" && (
+              <label className="flex items-center gap-3 text-sm text-zinc-300">
+                <input
+                  type="checkbox"
+                  checked={formData.allowPerformanceTypes}
+                  onChange={(event) =>
+                    setFormData((previous) => ({
+                      ...previous,
+                      allowPerformanceTypes: event.target.checked,
+                    }))
+                  }
+                  className="h-4 w-4 accent-amber-400"
+                />
+                Let participants choose solo, duo, trio, or group
+              </label>
+            )}
+            <label className="flex items-center gap-3 text-sm text-zinc-300">
+              <input
+                type="checkbox"
+                checked={Boolean(formData.paymentRequired)}
+                onChange={(event) =>
+                  setFormData((previous) => ({
+                    ...previous,
+                    paymentRequired: event.target.checked
+                      ? { amount: 0, qrCodeUrl: "" }
+                      : null,
+                  }))
+                }
+                className="h-4 w-4 accent-amber-400"
+              />
+              Require payment during registration
+            </label>
+            {formData.paymentRequired && (
+              <div className="grid gap-4 md:grid-cols-2">
+                <label className="space-y-2">
+                  <span className="text-sm text-zinc-300">Payment Amount (INR)</span>
+                  <input
+                    required
+                    min={0}
+                    type="number"
+                    value={formData.paymentRequired.amount}
+                    onChange={(event) =>
+                      setFormData((previous) => ({
+                        ...previous,
+                        paymentRequired: previous.paymentRequired
+                          ? { ...previous.paymentRequired, amount: Number(event.target.value) }
+                          : null,
+                      }))
+                    }
+                    className="w-full rounded-md border border-white/10 bg-zinc-900 px-3 py-2 text-white outline-none focus:border-amber-400"
+                  />
+                </label>
+                <label className="space-y-2">
+                  <span className="text-sm text-zinc-300">Payment QR Code URL</span>
+                  <input
+                    required
+                    type="url"
+                    value={formData.paymentRequired.qrCodeUrl}
+                    onChange={(event) =>
+                      setFormData((previous) => ({
+                        ...previous,
+                        paymentRequired: previous.paymentRequired
+                          ? { ...previous.paymentRequired, qrCodeUrl: event.target.value }
+                          : null,
+                      }))
+                    }
+                    className="w-full rounded-md border border-white/10 bg-zinc-900 px-3 py-2 text-white outline-none focus:border-amber-400"
+                  />
+                </label>
+              </div>
+            )}
+          </section>
+
           <section className="grid gap-4 xl:grid-cols-3">
             {(Object.keys(peopleLabels) as PeopleField[]).map((field) => (
               <div key={field} className="rounded-md border border-white/10 p-4">
-                <h3 className="font-semibold text-amber-300">{peopleLabels[field]}</h3>
+                <h3 className="font-semibold text-amber-300">
+                  {peopleLabels[field]} <span className="text-red-300">*</span>
+                </h3>
                 <div className="mt-3 flex gap-2">
                   <input
                     value={lookupInputs[field]}

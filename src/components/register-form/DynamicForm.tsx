@@ -75,6 +75,7 @@ const DynamicForm = ({
   const [selectedEvent, setSelectedEvent] = useState<string>("");
   const [dynamicMin, setDynamicMin] = useState<number>(min);
   const [dynamicMax, setDynamicMax] = useState<number>(max);
+  const [participantCount, setParticipantCount] = useState<number>(Math.max(1, min));
   const { data: session, status } = useSession();
   const [showModal, setShowModal] = useState(false);
   const router = useRouter();
@@ -89,11 +90,22 @@ const DynamicForm = ({
     !!eventCode && 
     (eventCode === "dance_comp" || eventCode === "drama_comp" || eventCode === "food_fest");
 
+  const participantMin = isDynamicEvent ? dynamicMin : Math.max(1, Number(min) || 1);
+  const participantMax = isDynamicEvent
+    ? Math.max(dynamicMin, dynamicMax)
+    : Math.max(participantMin, Number(max) || 1);
+
   // Set isIndividualEvent dynamically based on either props or selected event
   const isIndividualEvent = dynamicMin === 1 && dynamicMax === 1;
 
   // Check if this is a food fest event
   const isFoodFestEvent = eventCode === "food_fest";
+
+  useEffect(() => {
+    setParticipantCount((previous) =>
+      Math.min(Math.max(previous, participantMin), participantMax)
+    );
+  }, [participantMin, participantMax]);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -167,8 +179,10 @@ const DynamicForm = ({
     setLoading(true);
 
     // Use dynamic values if available, otherwise fall back to props
-    const minValue = isDynamicEvent ? dynamicMin : min !== undefined ? min : 1;
-    const maxValue = isDynamicEvent ? dynamicMax : max !== undefined ? max : 1;
+    const minValue = isDynamicEvent ? dynamicMin : Math.max(1, Number(min) || 1);
+    const maxValue = isDynamicEvent
+      ? Math.max(dynamicMin, dynamicMax)
+      : Math.max(minValue, Number(max) || 1);
 
     const newFields: Field[] = [];
 
@@ -382,6 +396,9 @@ const DynamicForm = ({
     if (validateForm()) {
       const teamData = [];
       let effectiveMax = isDynamicEvent ? dynamicMax : max;
+      if (eventType === "team" && participantMax > 1) {
+        effectiveMax = participantCount;
+      }
       if (allowPerformanceTypes && eventType === "performance" && !isDynamicEvent) {
         switch (performanceType) {
           case "solo": effectiveMax = 1; break;
@@ -523,6 +540,10 @@ const DynamicForm = ({
 
   // Determine number of visible members for performance events and dynamic events
   const getVisibleMembersCount = () => {
+    if (eventType === "team" && participantMax > 1) {
+      return participantCount;
+    }
+
     // For dynamic events, use the dynamic max
     if (isDynamicEvent) {
       return dynamicMax;
@@ -582,6 +603,30 @@ const DynamicForm = ({
           )}
 
       <form onSubmit={handleSubmit}>
+        {eventType === "team" && participantMax > 1 && (
+          <div className="mb-6 border-b pb-4">
+            <label
+              htmlFor="participant_count"
+              className="block text-gray-300 font-medium mb-1"
+            >
+              Number of Participants <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="number"
+              id="participant_count"
+              min={participantMin}
+              max={participantMax}
+              value={participantCount}
+              onChange={(event) => {
+                const value = Number(event.target.value);
+                setParticipantCount(
+                  Math.min(Math.max(value || participantMin, participantMin), participantMax)
+                );
+              }}
+              className="w-full bg-black/10 px-3 py-2 border rounded-md border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+        )}
         {/* General fields (event type, group name, performance type) */}
         {groupedFields["general"] && (
           <motion.div
@@ -841,16 +886,6 @@ const DynamicForm = ({
             );
           })}
 
-        <div className="sticky bottom-0 w-full to-transparent">
-          <motion.button
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.98 }}
-            type="submit"
-            className="w-full bg-amber-500 text-white font-semibold py-2 px-4 rounded-t-xl hover:bg-amber-600 transition duration-200 mt-6"
-          >
-            Submit
-          </motion.button>
-        </div>
         <div className="sticky bottom-0 w-full to-transparent">
         <motion.button
           whileHover={{ scale: 1.03 }}
