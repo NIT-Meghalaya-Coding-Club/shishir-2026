@@ -35,6 +35,25 @@ export function canCreateEvents(user) {
   return allowedEmails.includes(user.email.toLowerCase());
 }
 
+export function isCommitteeHead(committee, email) {
+  if (!committee || !email) return false;
+
+  return committee.committeeHeads.some(
+    (head) => head.email?.toLowerCase() === email.toLowerCase()
+  );
+}
+
+export function canCreateCommittees(user) {
+  if (!user?.email) return false;
+
+  const allowedEmails = String(process.env.NEXT_PUBLIC_COMMITTEE_HEAD_EMAILS || "")
+    .split(",")
+    .map((email) => email.trim().toLowerCase())
+    .filter(Boolean);
+
+  return allowedEmails.includes(user.email.toLowerCase());
+}
+
 export function snapshotUser(user) {
   return {
     user: user._id,

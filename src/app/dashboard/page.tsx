@@ -12,12 +12,14 @@ import {
   FaUserAlt, FaCalendarAlt, FaUniversity, FaIdCard, 
   FaGraduationCap, FaBookReader, FaPhone, FaEnvelope, 
   FaUtensils, FaBed, FaAmbulance, FaSignOutAlt, FaChevronDown, 
-  FaChevronUp 
+  FaChevronUp, 
+  FaDesktop
 } from "react-icons/fa";
 
 //Components
 import Loading from "../components/Loading";
 import { canCreateEvents } from "./lib";
+import { canCreateCommittees } from "./lib";
 
 type UserData = {
   name: string;
@@ -191,6 +193,21 @@ const ProfileCard = () => {
     )
   };
 
+  const CustomCommitteDashboardButton = () => {
+    const goToCommitteeDashboard = () => {
+      router.push("/committee-head/dashboard")
+    }
+    return (
+      <button
+        onClick={goToCommitteeDashboard}
+        className="flex items-center justify-center gap-2 px-3 sm:px-5 py-2 rounded-lg bg-gradient-to-r from-blue-900 to-indigo-900 border border-indigo-500/30 hover:from-blue-800 hover:to-indigo-800 transition-all duration-300 shadow-lg shadow-blue-900/20 w-full sm:w-auto"
+      >
+        <FaDesktop className="text-amber-300" />
+        <span className="text-amber-300 font-medium text-sm sm:text-base">Committee Dashboard</span>
+      </button>
+    )
+  }
+
   const CustomContactInfo = ({ student }: { student: UserData }) => {
     return (
       <div className="w-full lg:w-1/2">
@@ -340,6 +357,10 @@ const ProfileCard = () => {
             {(canCreateEvents(userData))?
               <CustomEventDashboardButton />
               : ''
+            }
+            {(canCreateCommittees(userData))?
+              <CustomCommitteDashboardButton />
+              :''
             }
             <CustomLogoutButton />
           </div>
