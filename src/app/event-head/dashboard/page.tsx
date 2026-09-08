@@ -13,8 +13,10 @@ import {
   Search,
   Trash2,
   UserPlus,
+  Users,
 } from "lucide-react";
 import { toast } from "react-toastify";
+import EventParticipants from "@/components/event-head/EventParticipants";
 
 type Person = {
   _id?: string;
@@ -114,6 +116,7 @@ export default function EventHeadDashboard() {
   });
   const [lookupLoading, setLookupLoading] = useState<PeopleField | null>(null);
   const [newCategoryName, setNewCategoryName] = useState("");
+  const [participantsCode, setParticipantsCode] = useState("");
 
   const isEditing = Boolean(editingCode);
 
@@ -199,6 +202,7 @@ export default function EventHeadDashboard() {
 
   const resetForm = () => {
     setEditingCode("");
+    setParticipantsCode("");
     setNewCategoryName("");
     setFormData({
       ...emptyEvent,
@@ -207,6 +211,7 @@ export default function EventHeadDashboard() {
   };
 
   const editEvent = (event: EventRecord) => {
+    setParticipantsCode("");
     setEditingCode(event.code);
     setFormData({
       ...event,
@@ -477,10 +482,8 @@ export default function EventHeadDashboard() {
               </p>
             )}
             {events.map((event) => (
-              <button
+              <div
                 key={event.code}
-                type="button"
-                onClick={() => editEvent(event)}
                 className={`w-full rounded-md border p-4 text-left transition ${
                   editingCode === event.code
                     ? "border-amber-400 bg-amber-400/10"
@@ -502,15 +505,33 @@ export default function EventHeadDashboard() {
                     ? new Date(event.startsAt).toLocaleString()
                     : "Timing pending"}
                 </p>
-              </button>
+                <div className="mt-4 flex gap-2 border-t border-white/10 pt-3">
+                  <button type="button" onClick={() => editEvent(event)} className="inline-flex flex-1 items-center justify-center gap-2 rounded-md bg-amber-400 px-3 py-2 text-sm font-semibold text-zinc-950 hover:bg-amber-300">
+                    <Edit3 className="h-4 w-4" /> Edit
+                  </button>
+                  <button type="button" onClick={() => { setParticipantsCode(event.code); setEditingCode(""); }} className="inline-flex flex-1 items-center justify-center gap-2 rounded-md border border-white/10 px-3 py-2 text-sm text-zinc-200 hover:bg-white/10">
+                    <Users className="h-4 w-4" /> Participants
+                  </button>
+                </div>
+              </div>
             ))}
           </div>
         </aside>
 
-        <form
-          onSubmit={submitEvent}
-          className="space-y-6 border border-white/10 bg-white/[0.04] p-4 sm:p-6"
-        >
+        {participantsCode ? (
+          <EventParticipants
+            eventCode={participantsCode}
+            eventName={
+              events.find((event) => event.code === participantsCode)?.name ||
+                participantsCode
+            }
+            onClose={() => setParticipantsCode("")}
+          />
+        ) : (
+          <form
+            onSubmit={submitEvent}
+            className="space-y-6 border border-white/10 bg-white/[0.04] p-4 sm:p-6"
+          >
           <div className="flex flex-col gap-4 border-b border-white/10 pb-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-xl font-semibold text-white">
@@ -882,7 +903,8 @@ export default function EventHeadDashboard() {
               </div>
             ))}
           </section>
-        </form>
+          </form>
+        )}
       </div>
     </main>
   );
