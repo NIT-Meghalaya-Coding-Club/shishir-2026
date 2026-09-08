@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useMemo } from "react";
-import * as XLSX from "xlsx";
+import ExcelJS from "exceljs";
 import Loading from "../components/Loading";
 import SearchIcon from "@mui/icons-material/Search";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
@@ -102,7 +102,7 @@ const Organizer = () => {
     setSearchEntry(e.target.value);
   };
 
-  const handleDownloadExcel = () => {
+  const handleDownloadExcel = async () => {
     const data = filteredParticipants.map((team, index) => {
       const leader = team.teamData[0] || {};
       const members = team.teamData.slice(1);
@@ -131,10 +131,25 @@ const Organizer = () => {
       return rowData;
     });
 
-    const worksheet = XLSX.utils.json_to_sheet(data);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Participants");
-    XLSX.writeFile(workbook, `participants_${eventId}.xlsx`);
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Participants");
+    worksheet.columns = Object.keys(data[0] || {}).map((header) => ({
+      header,
+      key: header,
+      width: Math.max(header.length + 2, 15),
+    }));
+    worksheet.addRows(data);
+
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+    const downloadUrl = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = downloadUrl;
+    link.download = `participants_${eventId}.xlsx`;
+    link.click();
+    URL.revokeObjectURL(downloadUrl);
   };
 
   if (loading) return <Loading />;
