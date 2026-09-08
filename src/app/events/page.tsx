@@ -2,12 +2,51 @@
 import React from "react";
 import Image from "next/image";
 import Inav from "@/components/events/internal-nav";
-import eventsData from "@/data/eventsData";
-import event_categories from "@/data/categoryData";
-import { Crown, Sparkles, LockIcon } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Crown, Sparkles } from "lucide-react";
 import Head from "next/head";
 
+type EventRecord = {
+  _id: string;
+  name: string;
+  code: string;
+  category: string;
+  location: string;
+  startsAt: string;
+  endsAt: string;
+  description: string;
+  rulebookLink: string;
+  posterLink: string;
+};
+
 export default function Events() {
+  const [events, setEvents] = useState<EventRecord[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    async function fetchEvents() {
+      try {
+        const response = await fetch("/api/events");
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+          throw new Error(data.message || "Unable to load events");
+        }
+
+        setEvents(data.events);
+      } catch (fetchError) {
+        setError(fetchError instanceof Error ? fetchError.message : "Unable to load events");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchEvents();
+  }, []);
+
+  const eventCategories = Array.from(new Set(events.map((event) => event.category)));
+
   return (
     <>
       <Head>
@@ -36,7 +75,13 @@ export default function Events() {
 
           <Inav />
 
-          {event_categories.map((category) => (
+          {loading && <p className="text-center text-yellow-400 text-xl">Loading events...</p>}
+          {!loading && error && <p className="text-center text-red-300 text-xl">{error}</p>}
+          {!loading && !error && eventCategories.length === 0 && (
+            <p className="text-center text-gray-300 text-xl">No events available.</p>
+          )}
+
+          {!loading && !error && eventCategories.map((category) => (
             <React.Fragment key={category}>
               {/* Category Header */}
               <div
@@ -79,9 +124,11 @@ export default function Events() {
               {/* Events Grid */}
               <div className="w-[90vw] mx-auto">
                 <div className="flex flex-wrap justify-center gap-8">
-                  {eventsData[category]?.map((event, index) => (
+                  {events
+                    .filter((event) => event.category === category)
+                    .map((event, index) => (
                     <div
-                      key={index}
+                      key={event._id || event.code}
                       className="w-full max-w-[400px] aspect-square rounded-xl shadow-2xl relative overflow-hidden group transform transition-all duration-500 hover:scale-105"
                     >
                       {/* Decorative border */}
@@ -91,7 +138,7 @@ export default function Events() {
                       <div className="absolute inset-0.5 rounded-xl overflow-hidden bg-gradient-to-br from-gray-900 to-black rounded-tl-[18px] rounded-br-[18px]">
                         {/* Image */}
                         <Image
-                          src={event.image}
+                          src={event.posterLink}
                           alt={event.name}
                           fill
                           style={{ objectFit: "cover" }}
@@ -109,29 +156,16 @@ export default function Events() {
 
                           {/* Links */}
                           <div className="flex flex-col gap-3">
-                            {event.registrationClosed ? (
-                              <div className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-gray-700 to-gray-800 text-gray-300 font-bold py-2 px-4 rounded-lg text-center">
-                                <LockIcon className="w-4 h-4" />
-                                Registration Closed
-                              </div>
-                            ) : event.registrationLink ? (
-                              <a
-                                href={event.registrationLink}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-block bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-bold py-2 px-4 rounded-lg text-center transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-yellow-500/25"
-                              >
-                                Register Now
-                              </a>
-                            ) : (
-                              <p className="text-yellow-400/80 text-lg font-bold">
-                                Registration Coming Soon
-                              </p>
-                            )}
+                            <a
+                              href={`/register/${event.code}`}
+                              className="inline-block bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-bold py-2 px-4 rounded-lg text-center transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-yellow-500/25"
+                            >
+                              Register Now
+                            </a>
 
-                            {event.rulebook ? (
+                            {event.rulebookLink ? (
                               <a
-                                href={event.rulebook}
+                                href={event.rulebookLink}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="inline-block bg-gradient-to-r from-gray-800 to-gray-900 text-yellow-400 border border-yellow-400/30 font-bold py-2 px-4 rounded-lg text-center transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-yellow-500/10"

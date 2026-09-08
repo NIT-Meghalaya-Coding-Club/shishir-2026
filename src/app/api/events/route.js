@@ -1,5 +1,7 @@
+import { randomBytes } from "node:crypto";
 import { NextResponse } from "next/server";
 import connectMongo from "@/lib/mongodb";
+import Category from "@/models/Category";
 import Event from "@/models/Event";
 import {
   canCreateEvents,
@@ -8,14 +10,38 @@ import {
   snapshotUser,
 } from "@/lib/eventAuth";
 
-function normalizeCode(code) {
-  return String(code || "").trim().toLowerCase();
+async function resolveCategory(payload) {
+  if (payload.categoryId) {
+    const category = await Category.findById(payload.categoryId);
+    if (category) return category;
+  }
+
+  const name = String(payload.category || "").trim().replace(/\s+/g, " ");
+  return Category.findOneAndUpdate(
+    { name: { $regex: `^${name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, $options: "i" } },
+    { $setOnInsert: { name } },
+    { new: true, upsert: true, setDefaultsOnInsert: true }
+  );
+}
+
+async function generateUniqueCode() {
+  const characters = "abcdefghijklmnopqrstuvwxyz0123456789";
+
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    const bytes = randomBytes(10);
+    const code = Array.from(bytes, (byte) => characters[byte % characters.length]).join("");
+
+    if (!(await Event.exists({ code }))) {
+      return code;
+    }
+  }
+
+  throw new Error("Could not generate a unique event code");
 }
 
 function validateEventPayload(payload) {
   const requiredFields = [
     "name",
-    "code",
     "category",
     "location",
     "startsAt",
@@ -41,28 +67,61 @@ function validateEventPayload(payload) {
     return "End timing must be after start timing";
   }
 
+  const minParticipants = Number(payload.minParticipants);
+  const maxParticipants = Number(payload.maxParticipants);
+  if (!Number.isInteger(minParticipants) || minParticipants < 1) {
+    return "Minimum participants must be a positive whole number";
+  }
+  if (!Number.isInteger(maxParticipants) || maxParticipants < minParticipants) {
+    return "Maximum participants must be at least the minimum participants";
+  }
+  const eventType = String(payload.eventType || "").trim().toLowerCase();
+  if (!["individual", "team", "performance"].includes(eventType)) {
+    return "Choose a valid participation type";
+  }
+  if (payload.paymentRequired) {
+    if (Number(payload.paymentRequired.amount) < 0 || !String(payload.paymentRequired.qrCodeUrl || "").trim()) {
+      return "Payment amount and QR code URL are required when payment is enabled";
+    }
+  }
+
+  const requiredPeople = [
+    ["eventHeadCollegeIDs", "event heads"],
+  ];
+  const missingPeople = requiredPeople
+    .filter(([field]) => !Array.isArray(payload[field]) || payload[field].length === 0)
+    .map(([, label]) => label);
+
+  if (missingPeople.length > 0) {
+    return `Add at least one user to: ${missingPeople.join(", ")}`;
+  }
+
   return null;
 }
 
 export async function GET(req) {
   try {
     const { user } = await getCurrentUser();
-
-    if (!user) {
+    const { searchParams } = new URL(req.url);
+    const scope = searchParams.get("scope");
+    if (scope === "mine" && !user) {
       return NextResponse.json(
         { success: false, message: "Unauthorized" },
         { status: 401 }
       );
     }
 
-    const { searchParams } = new URL(req.url);
-    const scope = searchParams.get("scope");
-    const query = scope === "mine" ? { "eventHeads.email": user.email } : {};
+    await connectMongo();
 
-    const events = await Event.find(query).sort({ startsAt: 1 }).lean();
+    const query = scope === "mine" ? { "eventHeads.email": user.email } : {};
+    const projection = user && scope === "mine"
+      ? undefined
+      : "name code category location startsAt endsAt description rulebookLink posterLink";
+
+    const events = await Event.find(query, projection).sort({ startsAt: 1 }).lean();
 
     return NextResponse.json(
-      { success: true, events, canCreateEvents: canCreateEvents(user) },
+      { success: true, events, canCreateEvents: user ? canCreateEvents(user) : false },
       { status: 200 }
     );
   } catch (error) {
@@ -104,6 +163,7 @@ export async function POST(req) {
 
     const payload = await req.json();
     const validationError = validateEventPayload(payload);
+    const eventType = String(payload.eventType || "").trim().toLowerCase();
 
     if (validationError) {
       return NextResponse.json(
@@ -114,15 +174,8 @@ export async function POST(req) {
 
     await connectMongo();
 
-    const code = normalizeCode(payload.code);
-    const existing = await Event.findOne({ code });
-
-    if (existing) {
-      return NextResponse.json(
-        { success: false, message: "Event code already exists" },
-        { status: 409 }
-      );
-    }
+    const code = await generateUniqueCode();
+    const category = await resolveCategory(payload);
 
     const currentUserCollegeID = user.collegeID;
     const eventHeadIDs = [
@@ -143,11 +196,17 @@ export async function POST(req) {
     const event = await Event.create({
       name: payload.name,
       code,
-      category: payload.category,
+      category: category.name,
+      categoryId: category._id,
       location: payload.location,
       startsAt: payload.startsAt,
       endsAt: payload.endsAt,
       description: payload.description,
+      eventType,
+      minParticipants: Number(payload.minParticipants),
+      maxParticipants: Number(payload.maxParticipants),
+      allowPerformanceTypes: Boolean(payload.allowPerformanceTypes),
+      paymentRequired: payload.paymentRequired || undefined,
       rulebookLink: payload.rulebookLink,
       posterLink: payload.posterLink,
       eventHeads: eventHeads.length > 0 ? eventHeads : [snapshotUser(user)],

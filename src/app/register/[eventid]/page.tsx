@@ -26,38 +26,69 @@ export default function EventPage() {
   const [event, setEvent] = useState({
     code: "-",
     name: "-",
-    image: "-",
+    image: "",
     eventType: "",
     registrationLink: "",
     rulebook: "",
-    min: 0,
-    max: 0,
+    min: 1,
+    max: 1,
     allowPerformanceTypes: false,
     paymentRequired: undefined as { amount: number; qrCodeUrl: string } | undefined, // Add this
   });
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    setIsLoading(true);
-    for (const categoryEvents of Object.values(eventsData)) {
-      const foundEvent = categoryEvents.find((event) => event.code === eventId);
-      if (foundEvent) {
-        setEvent({
-          code: foundEvent.code,
-          name: foundEvent.name,
-          image: foundEvent.image,
-          eventType: foundEvent.eventType || "individual",
-          allowPerformanceTypes: foundEvent.allowPerformanceTypes || false,
-          registrationLink: foundEvent.registrationLink,
-          rulebook: foundEvent.rulebook,
-          min: foundEvent.min,
-          max: foundEvent.max,
-          paymentRequired: foundEvent.paymentRequired,
-        });
-        break;
+    const loadEvent = async () => {
+      setIsLoading(true);
+
+      try {
+        const response = await fetch(`/api/events/${encodeURIComponent(eventId)}`);
+        const data = await response.json();
+
+        if (response.ok && data.success && data.event) {
+          const createdEvent = data.event;
+          setEvent({
+            code: createdEvent.code,
+            name: createdEvent.name,
+            image: createdEvent.posterLink,
+            eventType: createdEvent.eventType || "individual",
+            allowPerformanceTypes: createdEvent.allowPerformanceTypes || false,
+            registrationLink: `/register/${createdEvent.code}`,
+            rulebook: createdEvent.rulebookLink,
+            min: Math.max(1, Number(createdEvent.minParticipants) || 1),
+            max: Math.max(1, Number(createdEvent.maxParticipants) || 1),
+            paymentRequired: createdEvent.paymentRequired,
+          });
+          setIsLoading(false);
+          return;
+        }
+      } catch (error) {
+        console.error("Failed to load created event:", error);
       }
-    }
-    setIsLoading(false);
+
+      for (const categoryEvents of Object.values(eventsData)) {
+        const foundEvent = categoryEvents.find((event) => event.code === eventId);
+        if (foundEvent) {
+          setEvent({
+            code: foundEvent.code,
+            name: foundEvent.name,
+            image: foundEvent.image,
+            eventType: foundEvent.eventType || "individual",
+            allowPerformanceTypes: foundEvent.allowPerformanceTypes || false,
+            registrationLink: foundEvent.registrationLink,
+            rulebook: foundEvent.rulebook,
+            min: Math.max(1, Number(foundEvent.min) || 1),
+            max: Math.max(1, Number(foundEvent.max) || 1),
+            paymentRequired: foundEvent.paymentRequired,
+          });
+          break;
+        }
+      }
+
+      setIsLoading(false);
+    };
+
+    loadEvent();
   }, [pathname, eventId]);
 
   if (isLoading) return <Loading />;
@@ -81,7 +112,7 @@ export default function EventPage() {
             className="max-w-md mx-auto mb-8"
           >
             <Image
-              src={`https://shishir.nitm.ac.in${event.image}`}
+              src={event.image.startsWith("http") ? event.image : `https://shishir.nitm.ac.in${event.image}`}
               width="0"
               height="0"
               sizes="100svw"
