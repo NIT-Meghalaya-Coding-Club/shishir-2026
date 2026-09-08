@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -18,6 +18,17 @@ type Field = {
 };
 
 type EventType = "individual" | "team" | "performance";
+
+type RegistrationRecord = {
+  _id: string;
+  teamData: { name?: string; rollNumber?: string; phone?: string }[];
+  metadata?: {
+    groupName?: string;
+    performanceType?: string;
+    dynamicEventType?: string;
+  };
+  createdAt?: string;
+};
 
 interface DynamicFormProps {
   eventId: string;
@@ -76,6 +87,9 @@ const DynamicForm = ({
   const [dynamicMin, setDynamicMin] = useState<number>(min);
   const [dynamicMax, setDynamicMax] = useState<number>(max);
   const [participantCount, setParticipantCount] = useState<number>(Math.max(1, min));
+  const [registrations, setRegistrations] = useState<RegistrationRecord[]>([]);
+  const [selectedRegistrationId, setSelectedRegistrationId] = useState<string | null>(null);
+  const [hasExistingRegistration, setHasExistingRegistration] = useState(false);
   const { data: session, status } = useSession();
   const [showModal, setShowModal] = useState(false);
   const router = useRouter();
@@ -106,6 +120,53 @@ const DynamicForm = ({
       Math.min(Math.max(previous, participantMin), participantMax)
     );
   }, [participantMin, participantMax]);
+
+  const populateRegistration = useCallback((registration: RegistrationRecord) => {
+    const savedMetadata = registration.metadata || {};
+    const savedTeamData = registration.teamData || [];
+    setSelectedRegistrationId(registration._id);
+    setHasExistingRegistration(true);
+    setSubmitted(false);
+    setPaymentPending(false);
+    setParticipantCount(Math.min(Math.max(savedTeamData.length, participantMin), participantMax));
+    setPerformanceType(savedMetadata.performanceType || "solo");
+    setSelectedEvent(savedMetadata.dynamicEventType || "");
+    setFormData((previous) => ({
+      ...previous,
+      group_name: savedMetadata.groupName || "",
+      performance_type: savedMetadata.performanceType || "solo",
+      event_type: savedMetadata.dynamicEventType || "",
+      ...savedTeamData.reduce((values: Record<string, string>, member, index) => {
+        values[`name_${index}`] = member.name || "";
+        values[`roll_${index}`] = member.rollNumber || "";
+        values[`phone_${index}`] = member.phone || "";
+        return values;
+      }, {}),
+    }));
+  }, [participantMin, participantMax]);
+
+  useEffect(() => {
+    if (status !== "authenticated" || !eventId) return;
+
+    const loadRegistration = async () => {
+      try {
+        const response = await fetch(
+          `/api/event/register?eventId=${encodeURIComponent(eventId)}`,
+          { cache: "no-store" }
+        );
+        if (!response.ok) return;
+
+        const data = await response.json();
+        const savedRegistrations = data.registrations || [];
+        setRegistrations(savedRegistrations);
+        if (savedRegistrations.length > 0) populateRegistration(savedRegistrations[0]);
+      } catch (error) {
+        console.error("Failed to load registration:", error);
+      }
+    };
+
+    loadRegistration();
+  }, [eventId, populateRegistration, status]);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -436,12 +497,13 @@ const DynamicForm = ({
           maxParticipants: isDynamicEvent ? dynamicMax : max,
           utensilsRequired: isFoodFestEvent ? formData.utensils_required : undefined,
         },
+        registrationId: selectedRegistrationId,
       };
 
       try {
         setLoading(true);
         const res = await fetch(`/api/event/register`, {
-          method: "POST",
+          method: hasExistingRegistration ? "PATCH" : "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(requestBody),
         });
@@ -453,7 +515,7 @@ const DynamicForm = ({
             toast.info("Please complete the payment to finalize your registration!", { autoClose: 4000 });
           } else {
             setSubmitted(true);
-            toast.success("Registration successful!", { autoClose: 3000 });
+            toast.success(hasExistingRegistration ? "Registration updated!" : "Registration successful!", { autoClose: 3000 });
           }
         } else {
           if (data.message === "Already registered for this event") {
@@ -471,6 +533,20 @@ const DynamicForm = ({
     }
   };
 
+  const startNewRegistration = () => {
+    setSelectedRegistrationId(null);
+    setHasExistingRegistration(false);
+    setSubmitted(false);
+    setPaymentPending(false);
+    setErrors({});
+    setParticipantCount(participantMin);
+    setPerformanceType("solo");
+    setSelectedEvent("");
+    setFormData({
+      name_0: session?.user?.name || "",
+    });
+  };
+
   if (submitted) {
     return (
       <motion.div
@@ -478,8 +554,17 @@ const DynamicForm = ({
         animate={{ opacity: 1 }}
         className="max-w-md mx-auto mt-10 p-6 bg-white/10 rounded-lg shadow-lg text-center"
       >
-        <h2 className="text-2xl font-bold text-green-600 mb-4">Submission Successful!</h2>
-        <p className="text-white">Thank you for your registration.</p>
+        <h2 className="text-2xl font-bold text-green-600 mb-4">
+          {hasExistingRegistration ? "Registration Updated!" : "Registration Successful!"}
+        </h2>
+        <p className="text-white">Your registration details have been saved.</p>
+        <button
+          type="button"
+          onClick={startNewRegistration}
+          className="mt-4 px-4 py-2 bg-amber-500 text-white rounded hover:bg-amber-600 transition"
+        >
+          Submit another registration
+        </button>
         <button
           onClick={() => router.push("/")}
           className="mt-4 px-4 py-2 bg-amber-500 text-white rounded hover:bg-amber-600 transition"
@@ -581,9 +666,48 @@ const DynamicForm = ({
       className="max-w-lg mx-auto mt-10 p-6 rounded-lg shadow-lg bg-white/5 text-white"
     >
       {(status === "loading" || loading) && <Loading />}
+      {registrations.length > 0 && (
+        <section className="mb-6 space-y-3">
+          <h3 className="text-lg font-semibold text-amber-300">Your Submissions</h3>
+          {registrations.map((registration, index) => (
+            <button
+              key={registration._id}
+              type="button"
+              onClick={() => populateRegistration(registration)}
+              className={`w-full rounded-md border p-4 text-left transition ${
+                selectedRegistrationId === registration._id
+                  ? "border-amber-400 bg-amber-400/10"
+                  : "border-white/15 bg-black/10 hover:border-amber-300/60"
+              }`}
+            >
+              <div className="flex items-center justify-between gap-3">
+                <span className="font-medium text-white">Submission {registrations.length - index}</span>
+                <span className="text-xs text-amber-300">Edit</span>
+              </div>
+              <p className="mt-2 text-sm text-gray-300">
+                {registration.teamData.map((member) => member.name).filter(Boolean).join(", ")}
+              </p>
+              <p className="mt-1 text-xs text-gray-400">
+                {registration.createdAt
+                  ? new Date(registration.createdAt).toLocaleString()
+                  : "Saved registration"}
+              </p>
+            </button>
+          ))}
+        </section>
+      )}
       <h2 className="text-2xl font-bold text-center mb-6">
         Registration Form for {eventName || eventId}
       </h2>
+      {hasExistingRegistration && (
+        <button
+          type="button"
+          onClick={startNewRegistration}
+          className="mb-4 w-full px-4 py-2 border border-amber-400 text-amber-300 rounded hover:bg-amber-400/10 transition"
+        >
+          Submit another registration
+        </button>
+      )}
 
       <label htmlFor="email" className="block text-gray-300 font-medium mb-1">
         Email {<span className="text-red-500">*</span>}
