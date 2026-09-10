@@ -2,10 +2,11 @@ import connectMongo from '@/lib/mongodb';
 import User from '@/models/User';
 
 export async function POST(req, { params }) {
-    await connectMongo();
-
     try {
-        const email = params.id;
+        await connectMongo();
+
+        const { id } = await params;
+        const email = decodeURIComponent(id || "");
         const formData = await req.json();
 
         if (!email) {
@@ -24,11 +25,14 @@ export async function POST(req, { params }) {
 
         user.registered = true;
 
-        user.save();
+        await user.save();
 
         return new Response(JSON.stringify({ success: true, user }), { status: 200 });
     } catch (error) {
         console.error("Error updating user:", error);
-        return new Response(JSON.stringify({ success: false, error: "Internal server error." }), { status: 500 });
+        return new Response(JSON.stringify({
+            success: false,
+            error: error.message || "Internal server error.",
+        }), { status: 500 });
     }
 }

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
-import { Crown } from "lucide-react";
+import { Crown, Pencil } from "lucide-react";
 
 import NeonCursorBackground from "@/components/NeonCursorBackground";
 
@@ -17,6 +17,20 @@ const ProfileDetailsForm = () => {
   const [showModal, setShowModal] = useState(false);
   const [otherCollege, setOtherCollege] = useState("");
   const [showOtherCollege, setShowOtherCollege] = useState(false);
+  const [profileFile, setProfileFile] = useState<File | null>(null);
+  const [profilePreview, setProfilePreview] = useState("");
+
+  const getProfileImageUrl = (image: string) => {
+    if (!image || image.startsWith("/api/uploads/profile/")) return image;
+
+    try {
+      const url = new URL(image);
+      const key = url.pathname.replace(/^\//, "");
+      return key.startsWith("profiles/") ? `/api/uploads/profile/${key}` : image;
+    } catch {
+      return image;
+    }
+  };
 
   const [formData, setFormData] = useState({
     name: "",
@@ -68,7 +82,7 @@ const ProfileDetailsForm = () => {
             accommodation: data.user?.accommodation || false,
             nonVeg: data.user?.nonVeg || false,
             emergencyContact: data.user?.emergencyContact || "",
-            image: data.user?.image || "",
+            image: getProfileImageUrl(data.user?.image || session.user?.image || ""),
             registered: data.user?.registered || false,
           });
 
@@ -125,6 +139,22 @@ const ProfileDetailsForm = () => {
     setOtherCollege(e.target.value);
   };
 
+  const handleProfileFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setProfileFile(e.target.files?.[0] || null);
+  };
+
+  useEffect(() => {
+    if (!profileFile) {
+      setProfilePreview("");
+      return;
+    }
+
+    const previewUrl = URL.createObjectURL(profileFile);
+    setProfilePreview(previewUrl);
+
+    return () => URL.revokeObjectURL(previewUrl);
+  }, [profileFile]);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSaving(true);
@@ -151,6 +181,8 @@ const ProfileDetailsForm = () => {
       return;
     }
 
+    let profileImage = formData.image;
+
     const submissionData = {
       ...formData,
       email: session?.user?.email || formData.email,
@@ -158,13 +190,45 @@ const ProfileDetailsForm = () => {
     };
 
     try {
+      if (profileFile) {
+        const presignResponse = await fetch("/api/uploads/profile/presign", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contentType: profileFile.type,
+            fileSize: profileFile.size,
+          }),
+        });
+        const presignData = await presignResponse.json();
+
+        if (!presignResponse.ok) {
+          alert(presignData.message || "Could not prepare profile picture upload");
+          return;
+        }
+
+        const uploadResponse = await fetch(presignData.uploadUrl, {
+          method: "PUT",
+          headers: { "Content-Type": profileFile.type },
+          body: profileFile,
+        });
+
+        if (!uploadResponse.ok) {
+          alert("Could not upload profile picture");
+          return;
+        }
+
+        profileImage = presignData.publicUrl;
+      }
+
       const res = await fetch(`/api/user/update/${formData.email}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(submissionData),
+        body: JSON.stringify({ ...submissionData, image: profileImage }),
       });
 
       if (res.ok) {
+        setFormData((previous) => ({ ...previous, image: profileImage }));
+        setProfileFile(null);
         setShowModal(true);
       } else {
         alert("Failed to update profile!");
@@ -215,6 +279,47 @@ const ProfileDetailsForm = () => {
                 className="input-style"
                 required
               />
+            </div>
+            <div className="space-y-2 md:col-span-2">
+              <label htmlFor="profilePicture" className="text-yellow-300">
+                Profile Picture
+              </label>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                <div className="relative h-20 w-20">
+                  {profilePreview ? (
+                    <img
+                      src={profilePreview}
+                      alt="Selected profile preview"
+                      className="h-20 w-20 rounded-full object-cover border border-yellow-500/50"
+                    />
+                  ) : formData.image ? (
+                    <img
+                      src={formData.image}
+                      alt="Current profile"
+                      className="h-20 w-20 rounded-full object-cover border border-yellow-500/50"
+                    />
+                  ) : (
+                    <div className="h-20 w-20 rounded-full border border-yellow-500/50 bg-gray-700" />
+                  )}
+                  <label
+                    htmlFor="profilePicture"
+                    title="Change profile picture"
+                    className="absolute -right-1 -bottom-1 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-2 border-gray-800 bg-yellow-500 text-black shadow-lg transition-transform hover:scale-110"
+                  >
+                    <Pencil size={15} aria-hidden="true" />
+                    <span className="sr-only">Change profile picture</span>
+                  </label>
+                </div>
+                <input
+                  id="profilePicture"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  onChange={handleProfileFileChange}
+                  className="sr-only"
+                />
+                <span className="text-sm text-yellow-100/80">Click the pencil to change your picture.</span>
+              </div>
+              <p className="text-xs text-yellow-100/70">JPEG, PNG, or WebP up to 5 MB.</p>
             </div>
             <div className="space-y-2">
               <label htmlFor="gender" className="text-yellow-300">

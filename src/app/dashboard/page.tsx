@@ -4,8 +4,9 @@
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Loader2, Pencil } from "lucide-react";
 
 // Import react-icons
 import { 
@@ -65,6 +66,8 @@ const ProfileCard = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showMoreInfo, setShowMoreInfo] = useState(false);
+  const [isUploadingProfile, setIsUploadingProfile] = useState(false);
+  const profileFileInput = useRef<HTMLInputElement>(null);
 
   // useEffect hooks remain the same
 
@@ -104,7 +107,7 @@ const ProfileCard = () => {
             accommodation: data.user?.accommodation || false,
             nonVeg: data.user?.nonVeg || false,
             emergencyContact: data.user?.emergencyContact || "+91 XXXXXXXXXX",
-            image: data.user?.image || "",
+            image: data.user?.image || session.user?.image || "",
             registered: data.user?.registered || false
           });
 
@@ -142,6 +145,77 @@ const ProfileCard = () => {
       document.body.style.overflow = "auto"; // Ensure unlock on unmount
     };
   }, [showModal]);
+
+  const handleProfileImageChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+
+    if (!file) return;
+
+    const allowedTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
+    if (!allowedTypes.has(file.type)) {
+      alert("Profile picture must be a JPEG, PNG, or WebP image");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Profile picture must be smaller than 5 MB");
+      return;
+    }
+
+    setIsUploadingProfile(true);
+
+    try {
+      const presignResponse = await fetch("/api/uploads/profile/presign", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ contentType: file.type, fileSize: file.size }),
+      });
+      const presignData = await presignResponse.json();
+
+      if (!presignResponse.ok) {
+        throw new Error(
+          presignData.message || "Could not prepare profile picture upload"
+        );
+      }
+
+      const uploadResponse = await fetch(presignData.uploadUrl, {
+        method: "PUT",
+        headers: { "Content-Type": file.type },
+        body: file,
+      });
+
+      if (!uploadResponse.ok) {
+        throw new Error("Could not upload profile picture");
+      }
+
+      const email = session?.user?.email || userData.email;
+      const updateResponse = await fetch(
+        `/api/user/update/${encodeURIComponent(email)}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ image: presignData.publicUrl }),
+        }
+      );
+
+      if (!updateResponse.ok) {
+        throw new Error("Could not save profile picture");
+      }
+
+      setUserData((previous) => ({
+        ...previous,
+        image: presignData.publicUrl,
+      }));
+    } catch (error) {
+      console.error("Profile picture update failed:", error);
+      alert(error instanceof Error ? error.message : "Could not update profile picture");
+    } finally {
+      setIsUploadingProfile(false);
+    }
+  };
 
   // Custom Components with improved responsiveness
 
@@ -291,6 +365,27 @@ const ProfileCard = () => {
                   width={96}
                   height={96}
                   className="w-32 h-32 sm:w-36 sm:h-36 md:w-[10vw] md:h-[10vw] rounded-full shadow-xl object-cover absolute z-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => profileFileInput.current?.click()}
+                  title={isUploadingProfile ? "Uploading profile picture" : "Change profile picture"}
+                  aria-label="Change profile picture"
+                  disabled={isUploadingProfile}
+                  className="absolute bottom-2 right-2 z-20 flex h-9 w-9 items-center justify-center rounded-full border-2 border-[#0d1445] bg-amber-400 text-blue-950 shadow-lg transition-transform hover:scale-110 disabled:cursor-wait disabled:opacity-60"
+                >
+                  {isUploadingProfile ? (
+                    <Loader2 size={16} className="animate-spin" aria-hidden="true" />
+                  ) : (
+                    <Pencil size={16} aria-hidden="true" />
+                  )}
+                </button>
+                <input
+                  ref={profileFileInput}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  onChange={handleProfileImageChange}
+                  className="sr-only"
                 />
                 <div className="w-full h-full rounded-full absolute animate-spin-slow">
                   <div className="w-full h-full rounded-full border-4 border-t-amber-400 border-r-purple-500 border-b-blue-600 border-l-indigo-600 animate-spin-slow"></div>
