@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { toast } from "react-toastify";
 import EventParticipants from "@/components/event-head/EventParticipants";
+import ImageCropper, { MAX_IMAGE_SIZE_MB } from "@/components/ImageCropper";
 
 type Person = {
   _id?: string;
@@ -118,6 +119,7 @@ export default function EventHeadDashboard() {
   const [newCategoryName, setNewCategoryName] = useState("");
   const [participantsCode, setParticipantsCode] = useState("");
   const [posterFile, setPosterFile] = useState<File | null>(null);
+  const [posterToCrop, setPosterToCrop] = useState<File | null>(null);
 
   const isEditing = Boolean(editingCode);
 
@@ -206,6 +208,7 @@ export default function EventHeadDashboard() {
     setParticipantsCode("");
     setNewCategoryName("");
     setPosterFile(null);
+    setPosterToCrop(null);
     setFormData({
       ...emptyEvent,
       eventHeads: currentUser?.collegeID ? [currentUser] : [],
@@ -241,6 +244,7 @@ export default function EventHeadDashboard() {
     });
     setNewCategoryName("");
     setPosterFile(null);
+    setPosterToCrop(null);
   };
 
   const addPerson = async (field: PeopleField) => {
@@ -490,7 +494,8 @@ export default function EventHeadDashboard() {
   }
 
   return (
-    <main className="min-h-screen bg-zinc-950 px-4 py-24 text-white sm:px-6">
+    <>
+      <main className="min-h-screen bg-zinc-950 px-4 py-24 text-white sm:px-6">
       <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[320px_1fr]">
         <aside className="space-y-4">
           <div className="flex items-center justify-between">
@@ -722,15 +727,19 @@ export default function EventHeadDashboard() {
                 required={!formData.posterLink}
                 type="file"
                 accept="image/jpeg,image/png,image/webp"
-                onChange={(event) => setPosterFile(event.target.files?.[0] || null)}
+                onChange={(event) => {
+                  const file = event.target.files?.[0];
+                  event.target.value = "";
+                  if (file) setPosterToCrop(file);
+                }}
                 className="w-full rounded-md border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-white file:mr-3 file:rounded file:border-0 file:bg-amber-400 file:px-3 file:py-1 file:font-semibold file:text-zinc-950"
               />
               <p className="text-xs text-zinc-500">
-                JPEG, PNG, or WebP, up to 10 MB.
+                JPEG, PNG, or WebP. The final square image must be {MAX_IMAGE_SIZE_MB} MB or smaller.
                 {formData.posterLink && " Choose a file to replace the current poster."}
               </p>
               {posterFile && (
-                <p className="text-xs text-amber-300">Ready to upload: {posterFile.name}</p>
+                <p className="text-xs text-amber-300">Ready to upload: {posterFile.name} (square crop)</p>
               )}
               {!posterFile && formData.posterLink && (
                 <a
@@ -958,6 +967,17 @@ export default function EventHeadDashboard() {
           </form>
         )}
       </div>
-    </main>
+      </main>
+      {posterToCrop && (
+        <ImageCropper
+          file={posterToCrop}
+          onComplete={(croppedFile) => {
+            setPosterFile(croppedFile);
+            setPosterToCrop(null);
+          }}
+          onCancel={() => setPosterToCrop(null)}
+        />
+      )}
+    </>
   );
 }
