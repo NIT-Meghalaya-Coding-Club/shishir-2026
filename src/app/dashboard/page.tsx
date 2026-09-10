@@ -40,6 +40,20 @@ type UserData = {
   registered: boolean;
 };
 
+type RegisteredEvent = {
+  id: string;
+  eventId: string;
+  name: string;
+  category: string;
+  location: string;
+  startsAt: string;
+  endsAt: string;
+  eventType: "individual" | "team" | "performance";
+  role: string;
+  groupName: string | null;
+  participantCount: number;
+};
+
 const ProfileCard = () => {
   // State and other variables remain the same
   const [userData, setUserData] = useState<UserData>({
@@ -67,6 +81,8 @@ const ProfileCard = () => {
   const [showModal, setShowModal] = useState(false);
   const [showMoreInfo, setShowMoreInfo] = useState(false);
   const [isUploadingProfile, setIsUploadingProfile] = useState(false);
+  const [registeredEvents, setRegisteredEvents] = useState<RegisteredEvent[]>([]);
+  const [eventsLoading, setEventsLoading] = useState(false);
   const profileFileInput = useRef<HTMLInputElement>(null);
 
   // useEffect hooks remain the same
@@ -133,6 +149,28 @@ const ProfileCard = () => {
 
     fetchUserData();
   }, [session, router, dataFetched]);
+
+  useEffect(() => {
+    if (status !== "authenticated") return;
+
+    const fetchRegisteredEvents = async () => {
+      setEventsLoading(true);
+      try {
+        const response = await fetch("/api/user/registrations", { cache: "no-store" });
+        if (!response.ok) throw new Error("Failed to fetch registered events");
+
+        const data = await response.json();
+        setRegisteredEvents(data.events || []);
+      } catch (error) {
+        console.error("Error fetching registered events:", error);
+        setRegisteredEvents([]);
+      } finally {
+        setEventsLoading(false);
+      }
+    };
+
+    fetchRegisteredEvents();
+  }, [status]);
 
   useEffect(() => {
     if (showModal) {
@@ -473,6 +511,66 @@ const ProfileCard = () => {
               </motion.div>
             )}
           </AnimatePresence>
+          <section className="mt-8 border-t border-indigo-500/20 pt-6" aria-labelledby="my-events-heading">
+            <div className="flex items-center justify-between gap-3">
+              <h3 id="my-events-heading" className="text-lg sm:text-xl font-semibold text-amber-300">
+                My Events
+              </h3>
+              {!eventsLoading && registeredEvents.length > 0 && (
+                <span className="text-xs text-indigo-200">
+                  {registeredEvents.length} registered
+                </span>
+              )}
+            </div>
+
+            {eventsLoading ? (
+              <p className="mt-4 text-sm text-indigo-200">Loading your events...</p>
+            ) : registeredEvents.length === 0 ? (
+              <p className="mt-4 text-sm text-indigo-200">You have not registered for any events yet.</p>
+            ) : (
+              <div className="mt-4 grid gap-3">
+                {registeredEvents.map((event) => (
+                  <article
+                    key={event.id}
+                    className="rounded-lg border border-indigo-500/20 bg-blue-950/30 p-4"
+                  >
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                      <div>
+                        <h4 className="font-semibold text-white">{event.name}</h4>
+                        <p className="mt-1 text-xs text-indigo-200">{event.category}</p>
+                      </div>
+                      <span className="w-fit rounded-full border border-amber-400/30 bg-amber-400/10 px-3 py-1 text-xs font-medium text-amber-300">
+                        {event.role}
+                      </span>
+                    </div>
+                    <div className="mt-3 grid gap-1 text-sm text-indigo-100 sm:grid-cols-2">
+                      <p>
+                        <span className="text-indigo-300">When: </span>
+                        {new Date(event.startsAt).toLocaleDateString("en-GB", {
+                          day: "2-digit",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </p>
+                      <p>
+                        <span className="text-indigo-300">Location: </span>{event.location}
+                      </p>
+                      {event.groupName && (
+                        <p>
+                          <span className="text-indigo-300">Group: </span>{event.groupName}
+                        </p>
+                      )}
+                      {event.eventType !== "individual" && (
+                        <p>
+                          <span className="text-indigo-300">Participants: </span>{event.participantCount}
+                        </p>
+                      )}
+                    </div>
+                  </article>
+                ))}
+              </div>
+            )}
+          </section>
         </div>
       </div>
 
