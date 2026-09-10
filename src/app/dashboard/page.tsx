@@ -19,8 +19,14 @@ import {
 
 //Components
 import Loading from "../components/Loading";
+import ImageCropper from "@/components/ImageCropper";
 import { canCreateEvents } from "./lib";
 import { canCreateCommittees } from "./lib";
+
+const configuredProfileSizeMb = Number(process.env.NEXT_PUBLIC_PROFILE_MAX_SIZE_MB);
+const PROFILE_MAX_SIZE_MB = Number.isFinite(configuredProfileSizeMb) && configuredProfileSizeMb > 0
+  ? configuredProfileSizeMb
+  : 1;
 
 type UserData = {
   name: string;
@@ -67,6 +73,7 @@ const ProfileCard = () => {
   const [showModal, setShowModal] = useState(false);
   const [showMoreInfo, setShowMoreInfo] = useState(false);
   const [isUploadingProfile, setIsUploadingProfile] = useState(false);
+  const [profileFileToCrop, setProfileFileToCrop] = useState<File | null>(null);
   const profileFileInput = useRef<HTMLInputElement>(null);
 
   // useEffect hooks remain the same
@@ -146,25 +153,7 @@ const ProfileCard = () => {
     };
   }, [showModal]);
 
-  const handleProfileImageChange = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const file = event.target.files?.[0];
-    event.target.value = "";
-
-    if (!file) return;
-
-    const allowedTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
-    if (!allowedTypes.has(file.type)) {
-      alert("Profile picture must be a JPEG, PNG, or WebP image");
-      return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      alert("Profile picture must be smaller than 5 MB");
-      return;
-    }
-
+  const uploadProfileImage = async (file: File) => {
     setIsUploadingProfile(true);
 
     try {
@@ -215,6 +204,21 @@ const ProfileCard = () => {
     } finally {
       setIsUploadingProfile(false);
     }
+  };
+
+  const handleProfileImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+
+    if (!file) return;
+
+    const allowedTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
+    if (!allowedTypes.has(file.type)) {
+      alert("Profile picture must be a JPEG, PNG, or WebP image");
+      return;
+    }
+
+    setProfileFileToCrop(file);
   };
 
   // Custom Components with improved responsiveness
@@ -498,6 +502,18 @@ const ProfileCard = () => {
             </div>
           </div>
         </div>
+      )}
+      {profileFileToCrop && (
+        <ImageCropper
+          file={profileFileToCrop}
+          shape="circle"
+          maxSizeMb={PROFILE_MAX_SIZE_MB}
+          onComplete={(croppedFile) => {
+            setProfileFileToCrop(null);
+            void uploadProfileImage(croppedFile);
+          }}
+          onCancel={() => setProfileFileToCrop(null)}
+        />
       )}
     </div>
   );

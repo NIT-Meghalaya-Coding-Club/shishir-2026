@@ -8,7 +8,12 @@ import { canCreateEvents, getCurrentUser, isEventHead } from "@/lib/eventAuth";
 
 export const runtime = "nodejs";
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024;
+const DEFAULT_MAX_SIZE_MB = 2;
+const configuredMaxSizeMb = Number(process.env.NEXT_PUBLIC_POSTER_MAX_SIZE_MB);
+const maxSizeMb = Number.isFinite(configuredMaxSizeMb) && configuredMaxSizeMb > 0
+  ? configuredMaxSizeMb
+  : DEFAULT_MAX_SIZE_MB;
+const MAX_FILE_SIZE = maxSizeMb * 1024 * 1024;
 const allowedContentTypes = new Set([
   "image/jpeg",
   "image/png",
@@ -58,7 +63,7 @@ export async function POST(req) {
 
     if (!Number.isInteger(fileSize) || fileSize <= 0 || fileSize > MAX_FILE_SIZE) {
       return NextResponse.json(
-        { message: "Poster must be smaller than 10 MB" },
+        { message: `Poster must be ${maxSizeMb} MB or smaller` },
         { status: 400 }
       );
     }

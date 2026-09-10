@@ -6,7 +6,12 @@ import { getCurrentUser } from "@/lib/eventAuth";
 
 export const runtime = "nodejs";
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024;
+const DEFAULT_MAX_SIZE_MB = 1;
+const configuredMaxSizeMb = Number(process.env.NEXT_PUBLIC_PROFILE_MAX_SIZE_MB);
+const maxSizeMb = Number.isFinite(configuredMaxSizeMb) && configuredMaxSizeMb > 0
+  ? configuredMaxSizeMb
+  : DEFAULT_MAX_SIZE_MB;
+const MAX_FILE_SIZE = maxSizeMb * 1024 * 1024;
 const allowedContentTypes = new Set([
   "image/jpeg",
   "image/png",
@@ -55,7 +60,7 @@ export async function POST(req) {
 
     if (!Number.isInteger(fileSize) || fileSize <= 0 || fileSize > MAX_FILE_SIZE) {
       return NextResponse.json(
-        { message: "Profile picture must be smaller than 5 MB" },
+        { message: `Profile picture must be ${maxSizeMb} MB or smaller` },
         { status: 400 }
       );
     }
