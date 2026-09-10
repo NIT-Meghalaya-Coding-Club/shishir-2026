@@ -117,6 +117,7 @@ export default function EventHeadDashboard() {
   const [lookupLoading, setLookupLoading] = useState<PeopleField | null>(null);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [participantsCode, setParticipantsCode] = useState("");
+  const [posterFile, setPosterFile] = useState<File | null>(null);
 
   const isEditing = Boolean(editingCode);
 
@@ -204,6 +205,7 @@ export default function EventHeadDashboard() {
     setEditingCode("");
     setParticipantsCode("");
     setNewCategoryName("");
+    setPosterFile(null);
     setFormData({
       ...emptyEvent,
       eventHeads: currentUser?.collegeID ? [currentUser] : [],
@@ -238,6 +240,7 @@ export default function EventHeadDashboard() {
       coCoordinators: event.coCoordinators || [],
     });
     setNewCategoryName("");
+    setPosterFile(null);
   };
 
   const addPerson = async (field: PeopleField) => {
@@ -341,8 +344,41 @@ export default function EventHeadDashboard() {
         );
       }
 
+      let posterLink = formData.posterLink;
+      if (posterFile) {
+        const presignResponse = await fetch("/api/uploads/poster/presign", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contentType: posterFile.type,
+            fileSize: posterFile.size,
+            eventCode: isEditing ? editingCode : undefined,
+          }),
+        });
+        const presignData = await presignResponse.json();
+
+        if (!presignResponse.ok) {
+          toast.error(presignData.message || "Could not prepare poster upload");
+          return;
+        }
+
+        const uploadResponse = await fetch(presignData.uploadUrl, {
+          method: "PUT",
+          headers: { "Content-Type": posterFile.type },
+          body: posterFile,
+        });
+
+        if (!uploadResponse.ok) {
+          toast.error("Could not upload poster");
+          return;
+        }
+
+        posterLink = presignData.publicUrl;
+      }
+
       const payload = {
         ...formData,
+        posterLink,
         category: categoryName,
         categoryId,
         eventType: formData.eventType || "individual",
@@ -381,6 +417,7 @@ export default function EventHeadDashboard() {
         startsAt: toDateTimeInputValue(savedEvent.startsAt),
         endsAt: toDateTimeInputValue(savedEvent.endsAt),
       });
+      setPosterFile(null);
       toast.success(isEditing ? "Event updated" : "Event created");
     } catch (error) {
       console.error("Save event failed:", error);
@@ -679,17 +716,32 @@ export default function EventHeadDashboard() {
             <label className="space-y-2">
               <span className="flex items-center gap-2 text-sm text-zinc-300">
                 <LinkIcon className="h-4 w-4" />
-                Poster Link
+                Poster Image
               </span>
               <input
-                required
-                type="url"
-                value={formData.posterLink}
-                onChange={(event) =>
-                  handleInputChange("posterLink", event.target.value)
-                }
-                className="w-full rounded-md border border-white/10 bg-zinc-900 px-3 py-2 text-white outline-none focus:border-amber-400"
+                required={!formData.posterLink}
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={(event) => setPosterFile(event.target.files?.[0] || null)}
+                className="w-full rounded-md border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-white file:mr-3 file:rounded file:border-0 file:bg-amber-400 file:px-3 file:py-1 file:font-semibold file:text-zinc-950"
               />
+              <p className="text-xs text-zinc-500">
+                JPEG, PNG, or WebP, up to 10 MB.
+                {formData.posterLink && " Choose a file to replace the current poster."}
+              </p>
+              {posterFile && (
+                <p className="text-xs text-amber-300">Ready to upload: {posterFile.name}</p>
+              )}
+              {!posterFile && formData.posterLink && (
+                <a
+                  href={formData.posterLink}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-block text-xs text-zinc-400 underline hover:text-white"
+                >
+                  View current poster
+                </a>
+              )}
             </label>
             <label className="space-y-2 md:col-span-2">
               <span className="text-sm text-zinc-300">Description</span>
