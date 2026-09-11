@@ -3,6 +3,7 @@ import connectMongo from "@/lib/mongodb";
 import { getCurrentUser } from "@/lib/eventAuth";
 import Event from "@/models/Event";
 import Registration from "@/models/Registration";
+import User from "@/models/User";
 
 export async function GET() {
   try {
@@ -18,7 +19,14 @@ export async function GET() {
 
     await connectMongo();
 
-    const registrations = await Registration.find({ userId: email })
+    const user = await User.findOne({ email }).select("_id").lean();
+    const registrationOwnerQuery = [{ userId: email }];
+
+    if (user?._id) {
+      registrationOwnerQuery.push({ teamData: user._id });
+    }
+
+    const registrations = await Registration.find({ $or: registrationOwnerQuery })
       .sort({ createdAt: -1 })
       .lean();
     const eventCodes = [...new Set(registrations.map((registration) => registration.eventId))];
@@ -42,7 +50,11 @@ export async function GET() {
           startsAt: event.startsAt,
           endsAt: event.endsAt,
           eventType,
-          role: eventType === "individual" ? "Participant" : "Group Leader",
+          role: eventType === "individual"
+            ? "Participant"
+            : registration.userId === email
+              ? "Group Leader"
+              : "Team Member",
           groupName: registration.metadata?.groupName || null,
           participantCount: registration.teamData?.length || 0,
         };

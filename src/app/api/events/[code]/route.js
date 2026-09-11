@@ -4,6 +4,7 @@ import Category from "@/models/Category";
 import Event from "@/models/Event";
 import {
   getCurrentUser,
+  hydrateEventPeople,
   isEventHead,
   resolveUsersByCollegeIDs,
 } from "@/lib/eventAuth";
@@ -91,7 +92,9 @@ export async function GET(req, { params }) {
       );
     }
 
-    return NextResponse.json({ success: true, event }, { status: 200 });
+    const [eventWithImages] = await hydrateEventPeople(event);
+
+    return NextResponse.json({ success: true, event: eventWithImages }, { status: 200 });
   } catch (error) {
     console.error("Fetch event error:", error);
     return NextResponse.json(

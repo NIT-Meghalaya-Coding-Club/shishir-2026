@@ -3,7 +3,7 @@ import React from "react";
 import Image from "next/image";
 import Inav from "@/components/events/internal-nav";
 import { useEffect, useState } from "react";
-import { CalendarDays, Crown, MapPin, Sparkles, X } from "lucide-react";
+import { CalendarDays, Crown, ExternalLink, Mail, MapPin, Phone, Sparkles, X } from "lucide-react";
 import Head from "next/head";
 
 type EventRecord = {
@@ -24,6 +24,9 @@ type EventRecord = {
 
 type Person = {
   name: string;
+  collegeID?: string;
+  phone?: string;
+  email?: string;
   image?: string;
 };
 
@@ -50,9 +53,9 @@ function PeopleGroup({ label, people }: { label: string; people: Person[] }) {
   return (
     <div>
       <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-yellow-400">{label}</p>
-      <div className="flex flex-wrap gap-3">
+      <div className="grid gap-3 sm:grid-cols-2">
         {people.map((person) => (
-          <div key={`${label}-${person.name}`} className="flex items-center gap-2 rounded-full border border-yellow-400/20 bg-black/30 py-1 pl-1 pr-3">
+          <div key={`${label}-${person.collegeID || person.email || person.name}`} className="flex min-w-0 items-start gap-3 rounded-lg border border-yellow-400/20 bg-black/30 p-3">
             <Image
               src={person.image || fallbackProfileImage}
               alt=""
@@ -60,7 +63,22 @@ function PeopleGroup({ label, people }: { label: string; people: Person[] }) {
               height={30}
               className="h-7 w-7 rounded-full object-cover"
             />
-            <span className="text-sm text-gray-100">{person.name}</span>
+            <div className="min-w-0 space-y-1 text-sm">
+              <p className="break-words font-semibold text-gray-100">{person.name}</p>
+              {person.collegeID && <p className="break-words text-gray-400">Roll no: {person.collegeID}</p>}
+              {person.phone && (
+                <a href={`tel:${person.phone}`} className="flex break-all items-center gap-1 text-yellow-300 hover:text-yellow-200">
+                  <Phone size={13} />
+                  {person.phone}
+                </a>
+              )}
+              {person.email && (
+                <a href={`mailto:${person.email}`} className="flex break-all items-center gap-1 text-yellow-300 hover:text-yellow-200">
+                  <Mail size={13} />
+                  {person.email}
+                </a>
+              )}
+            </div>
           </div>
         ))}
       </div>
@@ -85,7 +103,7 @@ function EventDetailsModal({ event, onClose }: { event: EventRecord; onClose: ()
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm" onMouseDown={onClose}>
       <div role="dialog" aria-modal="true" aria-labelledby="event-details-title" className="relative max-h-[90vh] w-full max-w-5xl overflow-y-auto rounded-2xl border border-yellow-400/40 bg-gray-950 shadow-2xl shadow-black/60" onMouseDown={(eventMouseDown) => eventMouseDown.stopPropagation()}>
-        <button type="button" onClick={onClose} aria-label="Close event details" className="absolute right-4 top-4 z-10 rounded-full bg-black/70 p-2 text-yellow-300 transition hover:bg-yellow-400 hover:text-black">
+        <button type="button" onClick={onClose} aria-label="Close event details" className="sticky left-4 top-4 z-20 -mb-10 mr-auto block rounded-full bg-black/70 p-2 text-yellow-300 transition hover:bg-yellow-400 hover:text-black">
           <X size={20} />
         </button>
         <div className="grid min-h-[55vh] md:grid-cols-[1fr_0.9fr]">
@@ -94,7 +112,7 @@ function EventDetailsModal({ event, onClose }: { event: EventRecord; onClose: ()
               <p className="mb-2 text-sm font-bold uppercase tracking-[0.2em] text-yellow-400">{event.category.replace("_", " ")}</p>
               <h2 id="event-details-title" className="text-3xl font-bold text-white sm:text-4xl">{event.name}</h2>
             </div>
-            <p className="leading-7 text-gray-300">{event.description}</p>
+            <p className="whitespace-pre-wrap break-words leading-7 text-gray-300">{event.description}</p>
             <div className="grid gap-3 text-sm text-gray-200 sm:grid-cols-2">
               <p className="flex gap-2"><CalendarDays className="shrink-0 text-yellow-400" size={18} />{formatEventDate(event.startsAt)}</p>
               <p className="flex gap-2"><MapPin className="shrink-0 text-yellow-400" size={18} />{event.location}</p>
@@ -106,9 +124,26 @@ function EventDetailsModal({ event, onClose }: { event: EventRecord; onClose: ()
               <PeopleGroup label="Coordinators" people={event.coordinators} />
               <PeopleGroup label="Co-coordinators" people={event.coCoordinators} />
             </div>
+            <div className="mt-auto flex flex-col gap-3 border-t border-yellow-400/20 pt-5 sm:flex-row">
+              <a
+                href={event.rulebookLink}
+                target="_blank"
+                rel="noreferrer"
+                className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-yellow-400/40 px-4 py-3 text-center font-semibold text-yellow-300 transition hover:bg-yellow-400/10"
+              >
+                <ExternalLink size={18} />
+                View Rulebook
+              </a>
+              <a
+                href={`/register/${event.code}`}
+                className="flex flex-1 items-center justify-center rounded-lg bg-gradient-to-r from-yellow-400 to-yellow-600 px-4 py-3 text-center font-bold text-black transition hover:shadow-lg hover:shadow-yellow-500/25"
+              >
+                Register Now
+              </a>
+            </div>
           </div>
-          <div className="relative order-1 min-h-[280px] bg-black md:order-2 md:min-h-0">
-            <Image src={event.posterLink} alt={`${event.name} poster`} fill className="object-contain" sizes="(max-width: 768px) 100vw, 45vw" />
+          <div className="relative order-1 flex min-h-[280px] items-center justify-center bg-black md:order-2 md:min-h-0">
+            <Image src={event.posterLink} alt={`${event.name} poster`} fill className="object-contain object-center" sizes="(max-width: 768px) 100vw, 45vw" />
           </div>
         </div>
       </div>

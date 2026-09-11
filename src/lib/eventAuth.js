@@ -2,6 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 import connectMongo from "@/lib/mongodb";
 import User from "@/models/User";
+import mongoose from "mongoose";
 
 export async function getCurrentUser() {
   const session = await getServerSession(authOptions);
@@ -63,6 +64,73 @@ export function snapshotUser(user) {
     phone: user.phone || "",
     image: user.image || "",
   };
+}
+
+export async function hydrateEventPeople(events) {
+  const eventList = Array.isArray(events) ? events : [events];
+  const people = eventList.flatMap((event) => [
+    ...(event?.eventHeads || []),
+    ...(event?.coordinators || []),
+    ...(event?.coCoordinators || []),
+  ]);
+
+  const validUserIDs = [...new Set(
+    people
+      .map((person) => String(person?.user || ""))
+      .filter((userID) => mongoose.Types.ObjectId.isValid(userID))
+  )];
+  const emails = [...new Set(
+    people
+      .map((person) => String(person?.email || "").trim().toLowerCase())
+      .filter(Boolean)
+  )];
+  const collegeIDs = [...new Set(
+    people
+      .map((person) => String(person?.collegeID || "").trim())
+      .filter(Boolean)
+  )];
+
+  if (validUserIDs.length === 0 && emails.length === 0 && collegeIDs.length === 0) {
+    return eventList.map((event) => ({
+      ...event,
+      eventHeads: event.eventHeads || [],
+      coordinators: event.coordinators || [],
+      coCoordinators: event.coCoordinators || [],
+    }));
+  }
+
+  const users = await User.find({
+    $or: [
+      ...(validUserIDs.length > 0 ? [{ _id: { $in: validUserIDs } }] : []),
+      ...(emails.length > 0 ? [{ email: { $in: emails } }] : []),
+      ...(collegeIDs.length > 0 ? [{ collegeID: { $in: collegeIDs } }] : []),
+    ],
+  }).select("image email collegeID").lean();
+
+  const usersByKey = new Map();
+  users.forEach((user) => {
+    usersByKey.set(`id:${String(user._id)}`, user);
+    if (user.email) usersByKey.set(`email:${user.email.toLowerCase()}`, user);
+    if (user.collegeID) usersByKey.set(`collegeID:${user.collegeID}`, user);
+  });
+
+  const addImages = (group = []) => group.map((person) => {
+    const user = usersByKey.get(`id:${String(person.user || "")}`)
+      || usersByKey.get(`email:${String(person.email || "").trim().toLowerCase()}`)
+      || usersByKey.get(`collegeID:${String(person.collegeID || "").trim()}`);
+
+    return {
+      ...person,
+      image: user?.image || person.image || "",
+    };
+  });
+
+  return eventList.map((event) => ({
+    ...event,
+    eventHeads: addImages(event.eventHeads),
+    coordinators: addImages(event.coordinators),
+    coCoordinators: addImages(event.coCoordinators),
+  }));
 }
 
 export async function resolveUsersByCollegeIDs(collegeIDs = [], label = "users") {
