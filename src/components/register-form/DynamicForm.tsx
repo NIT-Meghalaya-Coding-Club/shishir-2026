@@ -5,8 +5,6 @@ import { useRouter } from "next/navigation";
 
 // Components
 import Loading from "@/app/components/Loading";
-import ValidationDialog from "@/components/ui/ValidationDialog";
-import { RegistrationPayloadSchema } from "@/lib/validation/registrationSchema";
 
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -90,7 +88,6 @@ const DynamicForm = ({
   const [fields, setFields] = useState<Field[]>([]);
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [validationMessage, setValidationMessage] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [paymentPending, setPaymentPending] = useState(false);
   const [performanceType, setPerformanceType] = useState<string>("solo");
@@ -168,7 +165,7 @@ const DynamicForm = ({
     const loadRegistration = async () => {
       try {
         const response = await fetch(
-          `/api/event/register?eventId=${encodeURIComponent(eventId)}&all=true`,
+          `/api/event/register?eventId=${encodeURIComponent(eventId)}`,
           { cache: "no-store" }
         );
         if (!response.ok) return;
@@ -179,7 +176,7 @@ const DynamicForm = ({
         const currentEventRegistration = savedRegistrations.find(
           (registration: RegistrationRecord) => registration.eventId === eventId
         );
-        if (currentEventRegistration) populateRegistration(currentEventRegistration);
+        if (savedRegistrations[0]) populateRegistration(savedRegistrations[0]);
       } catch (error) {
         console.error("Failed to load registration:", error);
       }
@@ -340,14 +337,11 @@ const DynamicForm = ({
       initialData[field.id] = formData[field.id] || ""; // Preserve existing values
     });
 
-    const sessionUser = session?.user;
-    if (sessionUser?.email) {
-      const leaderEmail = String(sessionUser.email);
-      const leaderName = String(sessionUser.name || "");
-      initialData["email_0"] = leaderEmail;
+    if (session?.user?.email) {
+      initialData["email_0"] = session.user.email;
       setSelectedMembers((previous) => ({
         ...previous,
-        0: { name: leaderName, email: leaderEmail },
+        0: { name: session.user.name || "", email: session.user.email },
       }));
     }
 
@@ -444,9 +438,6 @@ const DynamicForm = ({
     });
 
     setErrors(newErrors);
-    if (Object.keys(newErrors).length > 0) {
-      setValidationMessage(Object.values(newErrors).join("\n"));
-    }
     return Object.keys(newErrors).length === 0;
   };
 
@@ -494,12 +485,6 @@ const DynamicForm = ({
         },
         registrationId: selectedRegistrationId,
       };
-
-      const validation = RegistrationPayloadSchema.safeParse(requestBody);
-      if (!validation.success) {
-        setValidationMessage(validation.error.issues.map((issue) => issue.message).join("\n"));
-        return;
-      }
 
       try {
         setLoading(true);
@@ -671,23 +656,17 @@ const DynamicForm = ({
       animate={{ opacity: 1, y: 0 }}
       className="max-w-lg mx-auto mt-10 p-6 rounded-lg shadow-lg bg-white/5 text-white"
     >
-      <ValidationDialog
-        open={Boolean(validationMessage)}
-        message={validationMessage}
-        onClose={() => setValidationMessage("")}
-      />
       {(status === "loading" || loading) && <Loading />}
       {registrations.length > 0 && (
         <section className="mb-6 space-y-3">
           <h3 className="text-lg font-semibold text-amber-300">Your Submissions</h3>
           {registrations.map((registration, index) => {
-            const isCurrentEvent = registration.eventId === eventId;
             const content = (
               <>
                 <div className="flex items-center justify-between gap-3">
                   <span className="font-medium text-white">Submission {registrations.length - index}</span>
                   <span className="text-xs text-amber-300">
-                    {isCurrentEvent ? "Edit" : registration.eventId}
+                    Edit
                   </span>
                 </div>
                 <p className="mt-2 text-sm text-gray-300">
@@ -701,7 +680,7 @@ const DynamicForm = ({
               </>
             );
 
-            return isCurrentEvent ? (
+            return (
               <button
                 key={registration._id}
                 type="button"
@@ -714,10 +693,6 @@ const DynamicForm = ({
               >
                 {content}
               </button>
-            ) : (
-              <div key={registration._id} className="w-full rounded-md border border-white/15 bg-black/10 p-4 text-left">
-                {content}
-              </div>
             );
           })}
         </section>
