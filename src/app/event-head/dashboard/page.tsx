@@ -16,8 +16,10 @@ import {
   Users,
 } from "lucide-react";
 import { toast } from "react-toastify";
+import { EventPayloadSchema } from "@/lib/validation/eventSchema";
 import EventParticipants from "@/components/event-head/EventParticipants";
 import ImageCropper, { MAX_IMAGE_SIZE_MB } from "@/components/ImageCropper";
+import ValidationDialog from "@/components/ui/ValidationDialog";
 
 type Person = {
   _id?: string;
@@ -109,6 +111,7 @@ export default function EventHeadDashboard() {
   const [editingCode, setEditingCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [validationMessage, setValidationMessage] = useState("");
   const [currentUser, setCurrentUser] = useState<Person | null>(null);
   const [lookupInputs, setLookupInputs] = useState<Record<PeopleField, string>>({
     eventHeads: "",
@@ -312,6 +315,18 @@ export default function EventHeadDashboard() {
       }
     }
 
+    const validation = EventPayloadSchema.safeParse({
+      ...formData,
+      category: formData.categoryId === "new" ? newCategoryName : formData.category,
+      posterLink: formData.posterLink || (posterFile ? "pending" : ""),
+      minParticipants: Number(formData.minParticipants),
+      maxParticipants: Number(formData.maxParticipants),
+    });
+    if (!validation.success) {
+      setValidationMessage(validation.error.issues.map((issue) => issue.message).join("\n"));
+      return;
+    }
+
     try {
       setSaving(true);
 
@@ -495,6 +510,11 @@ export default function EventHeadDashboard() {
 
   return (
     <>
+      <ValidationDialog
+        open={Boolean(validationMessage)}
+        message={validationMessage}
+        onClose={() => setValidationMessage("")}
+      />
       <main className="min-h-screen bg-zinc-950 px-4 py-24 text-white sm:px-6">
       <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[320px_1fr]">
         <aside className="space-y-4">

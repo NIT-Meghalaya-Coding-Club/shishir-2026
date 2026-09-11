@@ -12,6 +12,8 @@ import {
   UserPlus,
 } from "lucide-react";
 import { toast } from "react-toastify";
+import { CommitteePayloadSchema } from "@/lib/validation/dashboardSchemas";
+import ValidationDialog from "@/components/ui/ValidationDialog";
 
 type Person = {
   _id?: string;
@@ -61,6 +63,7 @@ export default function CommitteeHeadDashboard() {
   const [editingCode, setEditingCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [validationMessage, setValidationMessage] = useState("");
   const [currentUser, setCurrentUser] = useState<Person | null>(null);
   const [lookupInputs, setLookupInputs] = useState<Record<PeopleField, string>>({
     committeeHeads: "",
@@ -230,13 +233,18 @@ export default function CommitteeHeadDashboard() {
         coordinatorCollegeIDs: getPersonCollegeIDs(formData.coordinators),
         coCoordinatorCollegeIDs: getPersonCollegeIDs(formData.coCoordinators),
       };
+      const validation = CommitteePayloadSchema.safeParse(payload);
+      if (!validation.success) {
+        setValidationMessage(validation.error.issues.map((issue) => issue.message).join("\n"));
+        return;
+      }
 
       const response = await fetch(
         isEditing ? `/api/committees/${editingCode}` : "/api/committees",
         {
           method: isEditing ? "PATCH" : "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
+          body: JSON.stringify(validation.data),
         }
       );
       const data = await response.json();
@@ -330,6 +338,11 @@ export default function CommitteeHeadDashboard() {
 
   return (
     <main className="min-h-screen bg-zinc-950 px-4 py-24 text-white sm:px-6">
+      <ValidationDialog
+        open={Boolean(validationMessage)}
+        message={validationMessage}
+        onClose={() => setValidationMessage("")}
+      />
       <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[320px_1fr]">
         <aside className="space-y-4">
           <div className="flex items-center justify-between">

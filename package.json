@@ -46,7 +46,8 @@
     "tailwind-scrollbar-hide": "^2.0.0",
     "tailwindcss-animate": "^1.0.7",
     "three": "^0.172.0",
-    "threejs-toys": "^0.0.8"
+    "threejs-toys": "^0.0.8",
+    "zod": "^4.6.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

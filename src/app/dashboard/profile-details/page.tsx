@@ -8,9 +8,14 @@ import { Crown, Pencil } from "lucide-react";
 
 import NeonCursorBackground from "@/components/NeonCursorBackground";
 import ImageCropper, { MAX_IMAGE_SIZE_MB } from "@/components/ImageCropper";
+import ValidationDialog from "@/components/ui/ValidationDialog";
+import {
+  NIT_COLLEGE,
+  ProfileSchema,
+  collegeIdFromEmail,
+  isNITEmail,
+} from "@/lib/validation/profileSchema";
 
-const NIT_COLLEGE = "National Institute of Technology, Meghalaya";
-const COLLEGE_ID_PATTERN = /[A-Za-z]\d{2}[A-Za-z]{2}\d{3}/;
 const DEPARTMENT_SUGGESTIONS = [
   "Mechanical Engineering",
   "Civil Engineering",
@@ -22,14 +27,6 @@ const DEPARTMENT_SUGGESTIONS = [
   "Mathematics",
   "Physics",
 ];
-
-function collegeIdFromEmail(email: string) {
-  return email.split("@")[0].match(COLLEGE_ID_PATTERN)?.[0].toLowerCase() || "";
-}
-
-function isNITEmail(email: string) {
-  return email.trim().toLowerCase().endsWith("@nitm.ac.in");
-}
 
 const ProfileDetailsForm = () => {
   const { data: session } = useSession();
@@ -45,6 +42,7 @@ const ProfileDetailsForm = () => {
   const [profileFileToCrop, setProfileFileToCrop] = useState<File | null>(null);
   const [profilePreview, setProfilePreview] = useState("");
   const [departmentFocused, setDepartmentFocused] = useState(false);
+  const [validationMessage, setValidationMessage] = useState("");
 
   const getProfileImageUrl = (image: string) => {
     if (!image || image.startsWith("/api/uploads/profile/")) return image;
@@ -221,29 +219,19 @@ const ProfileDetailsForm = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSaving(true);
 
-    const requiredFields = [
-      "name",
-      "gender",
-      "dob",
-      "college",
-      "collegeID",
-      "yearOfStudy",
-      "dept",
-      "email",
-      "phone",
-      "emergencyContact",
-    ];
-    const missingFields = requiredFields.filter(
-      (field) => !formData[field as keyof typeof formData]
-    );
-
-    if (missingFields.length > 0) {
-      alert(`Please fill all required fields: ${missingFields.join(", ")}`);
+    const validationResult = ProfileSchema.safeParse({
+      ...formData,
+      email: session?.user?.email || formData.email,
+      otherCollege,
+    });
+    if (!validationResult.success) {
+      setValidationMessage(validationResult.error.issues.map((issue) => issue.message).join("\n"));
       setSaving(false);
       return;
     }
+
+    setSaving(true);
 
     let profileImage = formData.image;
 
@@ -314,6 +302,11 @@ const ProfileDetailsForm = () => {
 
   return (
     <div className="min-h-[calc(100vh-64px)] flex items-center justify-center p-6 py-10 relative">
+      <ValidationDialog
+        open={Boolean(validationMessage)}
+        message={validationMessage}
+        onClose={() => setValidationMessage("")}
+      />
       {/* Fixed position for background to cover entire screen */}
       <div className="fixed inset-0">
         <NeonCursorBackground />
@@ -620,31 +613,12 @@ const ProfileDetailsForm = () => {
         </form>
       </div>
 
-      {/* Confirmation Modal */}
-      {showCollegeEmailDialog && (
-        <div className="fixed inset-0 z-[60] flex items-start justify-center bg-black/70 px-4 pt-20 backdrop-blur-sm">
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="college-email-dialog-title"
-            className="w-full max-w-md rounded-lg border border-yellow-500/50 bg-gray-900 p-6 text-center shadow-2xl"
-          >
-            <h2 id="college-email-dialog-title" className="text-2xl font-semibold text-yellow-400">
-              Please use your college email
-            </h2>
-            <p className="mt-3 text-white">
-              National Institute of Technology, Meghalaya requires an email ending with @nitm.ac.in.
-            </p>
-            <button
-              type="button"
-              className="mt-5 rounded bg-yellow-500 px-5 py-2 font-semibold text-black hover:bg-yellow-400"
-              onClick={() => setShowCollegeEmailDialog(false)}
-            >
-              Okay
-            </button>
-          </div>
-        </div>
-      )}
+      <ValidationDialog
+        open={showCollegeEmailDialog}
+        title="Please use your college email"
+        message="National Institute of Technology, Meghalaya requires an email ending with @nitm.ac.in."
+        onClose={() => setShowCollegeEmailDialog(false)}
+      />
 
       {profileFileToCrop && (
         <ImageCropper

@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 
 // Components
 import Loading from "@/app/components/Loading";
+import ValidationDialog from "@/components/ui/ValidationDialog";
+import { RegistrationPayloadSchema } from "@/lib/validation/registrationSchema";
 
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -88,6 +90,7 @@ const DynamicForm = ({
   const [fields, setFields] = useState<Field[]>([]);
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [validationMessage, setValidationMessage] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [paymentPending, setPaymentPending] = useState(false);
   const [performanceType, setPerformanceType] = useState<string>("solo");
@@ -337,11 +340,14 @@ const DynamicForm = ({
       initialData[field.id] = formData[field.id] || ""; // Preserve existing values
     });
 
-    if (session?.user?.email) {
-      initialData["email_0"] = session.user.email;
+    const sessionUser = session?.user;
+    if (sessionUser?.email) {
+      const leaderEmail = String(sessionUser.email);
+      const leaderName = String(sessionUser.name || "");
+      initialData["email_0"] = leaderEmail;
       setSelectedMembers((previous) => ({
         ...previous,
-        0: { name: session.user.name || "", email: session.user.email },
+        0: { name: leaderName, email: leaderEmail },
       }));
     }
 
@@ -438,6 +444,9 @@ const DynamicForm = ({
     });
 
     setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+      setValidationMessage(Object.values(newErrors).join("\n"));
+    }
     return Object.keys(newErrors).length === 0;
   };
 
@@ -485,6 +494,12 @@ const DynamicForm = ({
         },
         registrationId: selectedRegistrationId,
       };
+
+      const validation = RegistrationPayloadSchema.safeParse(requestBody);
+      if (!validation.success) {
+        setValidationMessage(validation.error.issues.map((issue) => issue.message).join("\n"));
+        return;
+      }
 
       try {
         setLoading(true);
@@ -656,6 +671,11 @@ const DynamicForm = ({
       animate={{ opacity: 1, y: 0 }}
       className="max-w-lg mx-auto mt-10 p-6 rounded-lg shadow-lg bg-white/5 text-white"
     >
+      <ValidationDialog
+        open={Boolean(validationMessage)}
+        message={validationMessage}
+        onClose={() => setValidationMessage("")}
+      />
       {(status === "loading" || loading) && <Loading />}
       {registrations.length > 0 && (
         <section className="mb-6 space-y-3">
@@ -1018,7 +1038,7 @@ const DynamicForm = ({
                             const data = await response.json();
                             if (!response.ok) throw new Error(data.message || "User search failed");
                             setSearchResults((previous) => ({ ...previous, [field.memberIndex]: data.users || [] }));
-                            if (!data.users?.length) throw new Error("No registered users found");
+                            if (!data.users?.length) throw new Error("No registered users found \n\n(Please ask the member to register on the Shishir Website otherwise it won't appear)");
                             setErrors((previous) => {
                               const next = { ...previous };
                               delete next[field.id];
