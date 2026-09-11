@@ -394,9 +394,9 @@ const ProfileCard = () => {
 
   return (
     <div>
-      <div className="min-h-screen h-fit relative px-3 sm:px-5 max-w-full py-10 sm:py-20 bg-gradient-to-b from-[#0a0b2e] via-[#1a1155] to-[#0c1339] overflow-x-hidden">
+      <div className="min-h-screen relative flex items-start justify-center px-3 sm:px-5 max-w-full py-10 sm:py-20 bg-gradient-to-b from-[#0a0b2e] via-[#1a1155] to-[#0c1339] overflow-x-hidden">
         {isLoading && <Loading />}
-        <div className="mx-auto md:absolute h-auto w-full sm:w-[90%] md:w-[75vw] lg:w-[65vw] xl:w-[55vw] md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 backdrop-blur-md bg-[#0d1445]/40 border border-indigo-500/30 text-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-2xl shadow-purple-900/30 pt-10 sm:pt-16 md:pt-20">
+        <div className="mx-auto h-auto w-full sm:w-[90%] md:w-[75vw] lg:w-[65vw] xl:w-[55vw] backdrop-blur-md bg-[#0d1445]/40 border border-indigo-500/30 text-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-2xl shadow-purple-900/30 pt-10 sm:pt-16 md:pt-20">
           <div className="flex flex-col md:flex-row items-center gap-6 md:gap-10 justify-center py-3 sm:py-5">
             <div>
               <div className="relative w-40 h-40 sm:w-48 sm:h-48 md:w-[14vw] md:h-[14vw] flex items-center justify-center">

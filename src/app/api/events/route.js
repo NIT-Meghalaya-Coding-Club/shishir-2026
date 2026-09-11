@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import connectMongo from "@/lib/mongodb";
 import Category from "@/models/Category";
 import Event from "@/models/Event";
+import User from "@/models/User";
 import {
   canCreateEvents,
   getCurrentUser,
@@ -116,12 +117,33 @@ export async function GET(req) {
     const query = scope === "mine" ? { "eventHeads.email": user.email } : {};
     const projection = user && scope === "mine"
       ? undefined
-      : "name code category location startsAt endsAt description rulebookLink posterLink eventHeads coordinators coCoordinators";
+      : "name code category location startsAt endsAt description rulebookLink posterLink "
+        + "eventHeads.user eventHeads.collegeID eventHeads.name eventHeads.email eventHeads.phone eventHeads.image "
+        + "coordinators.user coordinators.collegeID coordinators.name coordinators.email coordinators.phone coordinators.image "
+        + "coCoordinators.user coCoordinators.collegeID coCoordinators.name coCoordinators.email coCoordinators.phone coCoordinators.image";
 
     const events = await Event.find(query, projection).sort({ startsAt: 1 }).lean();
+    const people = events.flatMap((event) => [
+      ...(event.eventHeads || []),
+      ...(event.coordinators || []),
+      ...(event.coCoordinators || []),
+    ]);
+    const userIDs = [...new Set(people.map((person) => String(person.user || "")).filter(Boolean))];
+    const users = await User.find({ _id: { $in: userIDs } }).select("image").lean();
+    const imagesByUserID = new Map(users.map((person) => [String(person._id), person.image || ""]));
+    const addImages = (group) => (group || []).map((person) => ({
+      ...person,
+      image: imagesByUserID.get(String(person.user)) || person.image || "",
+    }));
+    const eventsWithImages = events.map((event) => ({
+      ...event,
+      eventHeads: addImages(event.eventHeads),
+      coordinators: addImages(event.coordinators),
+      coCoordinators: addImages(event.coCoordinators),
+    }));
 
     return NextResponse.json(
-      { success: true, events, canCreateEvents: user ? canCreateEvents(user) : false },
+      { success: true, events: eventsWithImages, canCreateEvents: user ? canCreateEvents(user) : false },
       { status: 200 }
     );
   } catch (error) {
