@@ -61,6 +61,7 @@ export function snapshotUser(user) {
     name: user.name,
     email: user.email,
     phone: user.phone || "",
+    image: user.image || "",
   };
 }
 

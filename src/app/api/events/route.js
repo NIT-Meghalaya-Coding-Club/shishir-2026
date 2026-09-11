@@ -116,7 +116,7 @@ export async function GET(req) {
     const query = scope === "mine" ? { "eventHeads.email": user.email } : {};
     const projection = user && scope === "mine"
       ? undefined
-      : "name code category location startsAt endsAt description rulebookLink posterLink";
+      : "name code category location startsAt endsAt description rulebookLink posterLink eventHeads coordinators coCoordinators";
 
     const events = await Event.find(query, projection).sort({ startsAt: 1 }).lean();
 

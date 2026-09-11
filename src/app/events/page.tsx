@@ -3,7 +3,7 @@ import React from "react";
 import Image from "next/image";
 import Inav from "@/components/events/internal-nav";
 import { useEffect, useState } from "react";
-import { Crown, Sparkles } from "lucide-react";
+import { CalendarDays, Crown, MapPin, Sparkles, X } from "lucide-react";
 import Head from "next/head";
 
 type EventRecord = {
@@ -17,12 +17,110 @@ type EventRecord = {
   description: string;
   rulebookLink: string;
   posterLink: string;
+  eventHeads: Person[];
+  coordinators: Person[];
+  coCoordinators: Person[];
 };
+
+type Person = {
+  name: string;
+  image?: string;
+};
+
+const fallbackProfileImage = "/assets/profile-icon.svg";
+
+function formatEventDate(value: string) {
+  return new Intl.DateTimeFormat("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(new Date(value));
+}
+
+function formatEventTime(value: string) {
+  return new Intl.DateTimeFormat("en-IN", {
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(new Date(value));
+}
+
+function PeopleGroup({ label, people }: { label: string; people: Person[] }) {
+  if (!people?.length) return null;
+
+  return (
+    <div>
+      <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-yellow-400">{label}</p>
+      <div className="flex flex-wrap gap-3">
+        {people.map((person) => (
+          <div key={`${label}-${person.name}`} className="flex items-center gap-2 rounded-full border border-yellow-400/20 bg-black/30 py-1 pl-1 pr-3">
+            <Image
+              src={person.image || fallbackProfileImage}
+              alt=""
+              width={30}
+              height={30}
+              className="h-7 w-7 rounded-full object-cover"
+            />
+            <span className="text-sm text-gray-100">{person.name}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function EventDetailsModal({ event, onClose }: { event: EventRecord; onClose: () => void }) {
+  useEffect(() => {
+    const handleKeyDown = (keyboardEvent: KeyboardEvent) => {
+      if (keyboardEvent.key === "Escape") onClose();
+    };
+
+    document.body.style.overflow = "hidden";
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.style.overflow = "";
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [onClose]);
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm" onMouseDown={onClose}>
+      <div role="dialog" aria-modal="true" aria-labelledby="event-details-title" className="relative max-h-[90vh] w-full max-w-5xl overflow-y-auto rounded-2xl border border-yellow-400/40 bg-gray-950 shadow-2xl shadow-black/60" onMouseDown={(eventMouseDown) => eventMouseDown.stopPropagation()}>
+        <button type="button" onClick={onClose} aria-label="Close event details" className="absolute right-4 top-4 z-10 rounded-full bg-black/70 p-2 text-yellow-300 transition hover:bg-yellow-400 hover:text-black">
+          <X size={20} />
+        </button>
+        <div className="grid min-h-[55vh] md:grid-cols-[1fr_0.9fr]">
+          <div className="order-2 flex flex-col gap-6 p-6 sm:p-8 md:order-1">
+            <div>
+              <p className="mb-2 text-sm font-bold uppercase tracking-[0.2em] text-yellow-400">{event.category.replace("_", " ")}</p>
+              <h2 id="event-details-title" className="text-3xl font-bold text-white sm:text-4xl">{event.name}</h2>
+            </div>
+            <p className="leading-7 text-gray-300">{event.description}</p>
+            <div className="grid gap-3 text-sm text-gray-200 sm:grid-cols-2">
+              <p className="flex gap-2"><CalendarDays className="shrink-0 text-yellow-400" size={18} />{formatEventDate(event.startsAt)}</p>
+              <p className="flex gap-2"><MapPin className="shrink-0 text-yellow-400" size={18} />{event.location}</p>
+              <p><span className="text-yellow-400">Start:</span> {formatEventTime(event.startsAt)}</p>
+              <p><span className="text-yellow-400">End:</span> {formatEventTime(event.endsAt)}</p>
+            </div>
+            <div className="space-y-4 border-t border-yellow-400/20 pt-5">
+              <PeopleGroup label="Event Heads" people={event.eventHeads} />
+              <PeopleGroup label="Coordinators" people={event.coordinators} />
+              <PeopleGroup label="Co-coordinators" people={event.coCoordinators} />
+            </div>
+          </div>
+          <div className="relative order-1 min-h-[280px] bg-black md:order-2 md:min-h-0">
+            <Image src={event.posterLink} alt={`${event.name} poster`} fill className="object-contain" sizes="(max-width: 768px) 100vw, 45vw" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function Events() {
   const [events, setEvents] = useState<EventRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [selectedEvent, setSelectedEvent] = useState<EventRecord | null>(null);
 
   useEffect(() => {
     async function fetchEvents() {
@@ -163,20 +261,13 @@ export default function Events() {
                               Register Now
                             </a>
 
-                            {event.rulebookLink ? (
-                              <a
-                                href={event.rulebookLink}
-                                target="_blank"
-                                rel="noopener noreferrer"
+                            <button
+                                type="button"
+                                onClick={() => setSelectedEvent(event)}
                                 className="inline-block bg-gradient-to-r from-gray-800 to-gray-900 text-yellow-400 border border-yellow-400/30 font-bold py-2 px-4 rounded-lg text-center transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-yellow-500/10"
                               >
-                                View Rulebook
-                              </a>
-                            ) : (
-                              <p className="text-gray-400/80 text-lg font-bold">
-                                Rulebook Coming Soon
-                              </p>
-                            )}
+                                View Event
+                              </button>
                           </div>
                         </div>
                       </div>
@@ -188,6 +279,7 @@ export default function Events() {
           ))}
         </div>
       </div>
+      {selectedEvent && <EventDetailsModal event={selectedEvent} onClose={() => setSelectedEvent(null)} />}
     </>
   );
 }

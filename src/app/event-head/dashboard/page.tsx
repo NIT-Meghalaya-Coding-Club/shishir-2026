@@ -118,6 +118,11 @@ export default function EventHeadDashboard() {
     coordinators: "",
     coCoordinators: "",
   });
+  const [lookupResults, setLookupResults] = useState<Record<PeopleField, Person[]>>({
+    eventHeads: [],
+    coordinators: [],
+    coCoordinators: [],
+  });
   const [lookupLoading, setLookupLoading] = useState<PeopleField | null>(null);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [participantsCode, setParticipantsCode] = useState("");
@@ -275,17 +280,37 @@ export default function EventHeadDashboard() {
         return;
       }
 
-      setFormData((previous) => ({
-        ...previous,
-        [field]: [...previous[field], data.user],
-      }));
-      setLookupInputs((previous) => ({ ...previous, [field]: "" }));
+      const users = data.users || (data.user ? [data.user] : []);
+      if (users.length === 1) {
+        setFormData((previous) => ({
+          ...previous,
+          [field]: [...previous[field], users[0]],
+        }));
+        setLookupInputs((previous) => ({ ...previous, [field]: "" }));
+        setLookupResults((previous) => ({ ...previous, [field]: [] }));
+      } else {
+        setLookupResults((previous) => ({ ...previous, [field]: users }));
+      }
     } catch (error) {
       console.error("College ID lookup failed:", error);
       toast.error("Could not look up user");
     } finally {
       setLookupLoading(null);
     }
+  };
+
+  const selectLookupResult = (field: PeopleField, person: Person) => {
+    if (formData[field].some((existingPerson) => existingPerson.collegeID === person.collegeID)) {
+      toast.info("This user is already added");
+      return;
+    }
+
+    setFormData((previous) => ({
+      ...previous,
+      [field]: [...previous[field], person],
+    }));
+    setLookupInputs((previous) => ({ ...previous, [field]: "" }));
+    setLookupResults((previous) => ({ ...previous, [field]: [] }));
   };
 
   const removePerson = (field: PeopleField, collegeID: string) => {
@@ -933,7 +958,7 @@ export default function EventHeadDashboard() {
                         [field]: event.target.value,
                       }))
                     }
-                    placeholder="College ID"
+                    placeholder="College ID or email"
                     className="min-w-0 flex-1 rounded-md border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-white outline-none focus:border-amber-400"
                   />
                   <button
@@ -949,6 +974,22 @@ export default function EventHeadDashboard() {
                     )}
                   </button>
                 </div>
+
+                {lookupResults[field].length > 0 && (
+                  <div className="mt-2 space-y-1">
+                    {lookupResults[field].map((person) => (
+                      <button
+                        key={`${field}-result-${person.collegeID}`}
+                        type="button"
+                        onClick={() => selectLookupResult(field, person)}
+                        className="block w-full rounded-md bg-zinc-900 px-3 py-2 text-left text-sm hover:bg-amber-400/10"
+                      >
+                        <span className="block text-white">{person.name}</span>
+                        <span className="block text-xs text-zinc-400">{person.email}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
 
                 <div className="mt-4 space-y-2">
                   {formData[field].length === 0 && (
