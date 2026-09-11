@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import connectMongo from "@/lib/mongodb";
 import Event from "@/models/Event";
 import Registration from "@/models/Registration";
+import User from "@/models/User";
 import { getCurrentUser, isEventHead } from "@/lib/eventAuth";
 
 export async function GET(req, { params }) {
@@ -33,10 +34,21 @@ export async function GET(req, { params }) {
     }
 
     const registrations = await Registration.find({ eventId: event.code })
+      .populate("teamData", "name email phone collegeID")
       .sort({ createdAt: -1 })
       .lean();
 
-    return NextResponse.json({ success: true, registrations });
+    const leaderEmails = registrations.map((registration) => registration.userId).filter(Boolean);
+    const leaders = await User.find({ email: { $in: leaderEmails } })
+      .select("name email phone collegeID")
+      .lean();
+    const leadersByEmail = new Map(leaders.map((leader) => [leader.email, leader]));
+    const registrationsWithLeaders = registrations.map((registration) => ({
+      ...registration,
+      leader: leadersByEmail.get(registration.userId) || registration.teamData?.[0] || null,
+    }));
+
+    return NextResponse.json({ success: true, registrations: registrationsWithLeaders });
   } catch (error) {
     console.error("Fetch event participants error:", error);
     return NextResponse.json(

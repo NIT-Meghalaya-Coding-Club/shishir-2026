@@ -19,9 +19,17 @@ type Field = {
 
 type EventType = "individual" | "team" | "performance";
 
+type UserSummary = {
+  name?: string;
+  email: string;
+  phone?: string;
+  collegeID?: string;
+};
+
 type RegistrationRecord = {
   _id: string;
-  teamData: { name?: string; rollNumber?: string; phone?: string }[];
+  eventId: string;
+  teamData: UserSummary[];
   metadata?: {
     groupName?: string;
     performanceType?: string;
@@ -88,6 +96,8 @@ const DynamicForm = ({
   const [dynamicMax, setDynamicMax] = useState<number>(max);
   const [participantCount, setParticipantCount] = useState<number>(Math.max(1, min));
   const [registrations, setRegistrations] = useState<RegistrationRecord[]>([]);
+  const [selectedMembers, setSelectedMembers] = useState<Record<number, UserSummary | null>>({});
+  const [searchResults, setSearchResults] = useState<Record<number, UserSummary[]>>({});
   const [selectedRegistrationId, setSelectedRegistrationId] = useState<string | null>(null);
   const [hasExistingRegistration, setHasExistingRegistration] = useState(false);
   const { data: session, status } = useSession();
@@ -137,12 +147,16 @@ const DynamicForm = ({
       performance_type: savedMetadata.performanceType || "solo",
       event_type: savedMetadata.dynamicEventType || "",
       ...savedTeamData.reduce((values: Record<string, string>, member, index) => {
-        values[`name_${index}`] = member.name || "";
-        values[`roll_${index}`] = member.rollNumber || "";
-        values[`phone_${index}`] = member.phone || "";
+        values[`email_${index}`] = member.email || "";
         return values;
       }, {}),
     }));
+    setSelectedMembers(
+      savedTeamData.reduce((members: Record<number, UserSummary>, member, index) => {
+        members[index] = member;
+        return members;
+      }, {})
+    );
   }, [participantMin, participantMax]);
 
   useEffect(() => {
@@ -151,7 +165,7 @@ const DynamicForm = ({
     const loadRegistration = async () => {
       try {
         const response = await fetch(
-          `/api/event/register?eventId=${encodeURIComponent(eventId)}`,
+          `/api/event/register?eventId=${encodeURIComponent(eventId)}&all=true`,
           { cache: "no-store" }
         );
         if (!response.ok) return;
@@ -159,7 +173,10 @@ const DynamicForm = ({
         const data = await response.json();
         const savedRegistrations = data.registrations || [];
         setRegistrations(savedRegistrations);
-        if (savedRegistrations.length > 0) populateRegistration(savedRegistrations[0]);
+        const currentEventRegistration = savedRegistrations.find(
+          (registration: RegistrationRecord) => registration.eventId === eventId
+        );
+        if (currentEventRegistration) populateRegistration(currentEventRegistration);
       } catch (error) {
         console.error("Failed to load registration:", error);
       }
@@ -258,17 +275,6 @@ const DynamicForm = ({
       });
     }
 
-    // Add utensils required field for food fest events
-    if (isFoodFestEvent) {
-      newFields.push({
-        id: "utensils_required",
-        label: "Utensils Required",
-        type: "textarea",
-        required: true,
-        memberIndex: -1,
-      });
-    }
-
     // Add group name field for team or performance events if there are multiple members
     if (
       !isIndividualEvent &&
@@ -299,7 +305,7 @@ const DynamicForm = ({
       });
     }
 
-    // Create member fields (maintaining the original structure)
+    // Each participant is selected by their registered email address.
     for (let i = 0; i < maxValue; i++) {
       let memberLabel;
 
@@ -315,23 +321,9 @@ const DynamicForm = ({
 
       newFields.push(
         {
-          id: `name_${i}`,
-          label: `${memberLabel} Name`,
-          type: "text",
-          required: isRequired,
-          memberIndex: i,
-        },
-        {
-          id: `roll_${i}`,
-          label: `${memberLabel} Roll Number`,
-          type: "text",
-          required: isRequired,
-          memberIndex: i,
-        },
-        {
-          id: `phone_${i}`,
-          label: `${memberLabel} Phone Number`,
-          type: "tel",
+          id: `email_${i}`,
+          label: `${memberLabel} Email`,
+          type: "email",
           required: isRequired,
           memberIndex: i,
         }
@@ -345,8 +337,12 @@ const DynamicForm = ({
       initialData[field.id] = formData[field.id] || ""; // Preserve existing values
     });
 
-    if (session?.user?.name) {
-      initialData["name_0"] = session.user.name;
+    if (session?.user?.email) {
+      initialData["email_0"] = session.user.email;
+      setSelectedMembers((previous) => ({
+        ...previous,
+        0: { name: session.user.name || "", email: session.user.email },
+      }));
     }
 
     if (allowPerformanceTypes && !isDynamicEvent) {
@@ -439,12 +435,6 @@ const DynamicForm = ({
         }
       }
 
-      if (field.type === "tel" && formData[field.id]?.trim()) {
-        const phoneRegex = /^\+?[0-9]{10,15}$/;
-        if (!phoneRegex.test(formData[field.id])) {
-          newErrors[field.id] = "Please enter a valid phone number";
-        }
-      }
     });
 
     setErrors(newErrors);
@@ -468,18 +458,15 @@ const DynamicForm = ({
         }
       }
       for (let i = 0; i < effectiveMax; i++) {
-        if (formData[`name_${i}`]?.trim()) {
+        if (formData[`email_${i}`]?.trim()) {
           teamData.push({
-            name: formData[`name_${i}`],
-            rollNumber: formData[`roll_${i}`],
-            phone: formData[`phone_${i}`],
+            email: formData[`email_${i}`].trim().toLowerCase(),
           });
         }
       }
 
       // Add metadata to the request body without changing the core structure
       const requestBody = {
-        userId: session?.user?.email,
         eventId,
         teamData,
         // Add additional metadata fields that won't break the existing backend
@@ -495,7 +482,6 @@ const DynamicForm = ({
           dynamicEventType: isDynamicEvent ? formData.event_type : undefined,
           minParticipants: isDynamicEvent ? dynamicMin : min,
           maxParticipants: isDynamicEvent ? dynamicMax : max,
-          utensilsRequired: isFoodFestEvent ? formData.utensils_required : undefined,
         },
         registrationId: selectedRegistrationId,
       };
@@ -543,8 +529,13 @@ const DynamicForm = ({
     setPerformanceType("solo");
     setSelectedEvent("");
     setFormData({
-      name_0: session?.user?.name || "",
+      email_0: session?.user?.email || "",
     });
+    setSelectedMembers(
+      session?.user?.email
+        ? { 0: { name: session.user.name || "", email: session.user.email } }
+        : {}
+    );
   };
 
   if (submitted) {
@@ -669,36 +660,56 @@ const DynamicForm = ({
       {registrations.length > 0 && (
         <section className="mb-6 space-y-3">
           <h3 className="text-lg font-semibold text-amber-300">Your Submissions</h3>
-          {registrations.map((registration, index) => (
-            <button
-              key={registration._id}
-              type="button"
-              onClick={() => populateRegistration(registration)}
-              className={`w-full rounded-md border p-4 text-left transition ${
-                selectedRegistrationId === registration._id
-                  ? "border-amber-400 bg-amber-400/10"
-                  : "border-white/15 bg-black/10 hover:border-amber-300/60"
-              }`}
-            >
-              <div className="flex items-center justify-between gap-3">
-                <span className="font-medium text-white">Submission {registrations.length - index}</span>
-                <span className="text-xs text-amber-300">Edit</span>
+          {registrations.map((registration, index) => {
+            const isCurrentEvent = registration.eventId === eventId;
+            const content = (
+              <>
+                <div className="flex items-center justify-between gap-3">
+                  <span className="font-medium text-white">Submission {registrations.length - index}</span>
+                  <span className="text-xs text-amber-300">
+                    {isCurrentEvent ? "Edit" : registration.eventId}
+                  </span>
+                </div>
+                <p className="mt-2 text-sm text-gray-300">
+                  {registration.teamData.map((member) => member.name).filter(Boolean).join(", ")}
+                </p>
+                <p className="mt-1 text-xs text-gray-400">
+                  {registration.createdAt
+                    ? new Date(registration.createdAt).toLocaleString()
+                    : "Saved registration"}
+                </p>
+              </>
+            );
+
+            return isCurrentEvent ? (
+              <button
+                key={registration._id}
+                type="button"
+                onClick={() => populateRegistration(registration)}
+                className={`w-full rounded-md border p-4 text-left transition ${
+                  selectedRegistrationId === registration._id
+                    ? "border-amber-400 bg-amber-400/10"
+                    : "border-white/15 bg-black/10 hover:border-amber-300/60"
+                }`}
+              >
+                {content}
+              </button>
+            ) : (
+              <div key={registration._id} className="w-full rounded-md border border-white/15 bg-black/10 p-4 text-left">
+                {content}
               </div>
-              <p className="mt-2 text-sm text-gray-300">
-                {registration.teamData.map((member) => member.name).filter(Boolean).join(", ")}
-              </p>
-              <p className="mt-1 text-xs text-gray-400">
-                {registration.createdAt
-                  ? new Date(registration.createdAt).toLocaleString()
-                  : "Saved registration"}
-              </p>
-            </button>
-          ))}
+            );
+          })}
         </section>
       )}
       <h2 className="text-2xl font-bold text-center mb-6">
         Registration Form for {eventName || eventId}
       </h2>
+      {!isIndividualEvent && (
+        <div className="mb-6 rounded-md border border-amber-400/50 bg-amber-400/10 p-4 text-sm text-amber-100">
+          You are the group leader because you are filling out this form. Your account is added automatically as the first participant. Add other members using the email address registered on Shishir.
+        </div>
+      )}
       {hasExistingRegistration && (
         <button
           type="button"
@@ -709,17 +720,6 @@ const DynamicForm = ({
         </button>
       )}
 
-      <label htmlFor="email" className="block text-gray-300 font-medium mb-1">
-        Email {<span className="text-red-500">*</span>}
-      </label>
-      <input
-        disabled
-        type="email"
-        id="email"
-        value={session?.user?.email || ""}
-        className="w-full bg-black/10 px-3 py-2 border rounded-md border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-not-allowed mb-6"
-      />
-
       {paymentRequired && (
             <p className="text-amber-400 mb-4">
               Note: A payment of ₹{paymentRequired.amount} is required to complete registration.
@@ -729,26 +729,36 @@ const DynamicForm = ({
       <form onSubmit={handleSubmit}>
         {eventType === "team" && participantMax > 1 && (
           <div className="mb-6 border-b pb-4">
-            <label
-              htmlFor="participant_count"
-              className="block text-gray-300 font-medium mb-1"
-            >
+            <p className="block text-gray-300 font-medium mb-1">
               Number of Participants <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="number"
-              id="participant_count"
-              min={participantMin}
-              max={participantMax}
-              value={participantCount}
-              onChange={(event) => {
-                const value = Number(event.target.value);
-                setParticipantCount(
-                  Math.min(Math.max(value || participantMin, participantMin), participantMax)
-                );
-              }}
-              className="w-full bg-black/10 px-3 py-2 border rounded-md border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            </p>
+            <div className="flex items-center justify-between rounded-md border border-gray-300 bg-black/10 px-2 py-1">
+              <button
+                type="button"
+                aria-label="Remove participant"
+                disabled={participantCount <= participantMin}
+                onClick={() => setParticipantCount((count) => Math.max(participantMin, count - 1))}
+                className="h-10 w-10 rounded-md text-2xl text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                -
+              </button>
+              <span
+                id="participant_count"
+                aria-live="polite"
+                className="min-w-12 text-center text-lg font-semibold text-white"
+              >
+                {participantCount}
+              </span>
+              <button
+                type="button"
+                aria-label="Add participant"
+                disabled={participantCount >= participantMax}
+                onClick={() => setParticipantCount((count) => Math.min(participantMax, count + 1))}
+                className="h-10 w-10 rounded-md text-2xl text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                +
+              </button>
+            </div>
           </div>
         )}
         {/* General fields (event type, group name, performance type) */}
@@ -964,7 +974,16 @@ const DynamicForm = ({
                 className="mb-6 border-b pb-4 last:border-b-0"
               >
                 <h3 className="text-lg font-semibold mb-3">{sectionTitle}</h3>
-                {memberFields.map((field) => (
+                {numericIndex === 0 ? (
+                  <div className="rounded-md border border-emerald-400/40 bg-emerald-400/10 px-4 py-3">
+                    <p className="font-medium text-emerald-200">
+                      {selectedMembers[0]?.name || session?.user?.name || "Group leader"}
+                    </p>
+                    <p className="mt-1 text-sm text-emerald-300/90">
+                      {selectedMembers[0]?.email || session?.user?.email || ""}
+                    </p>
+                  </div>
+                ) : memberFields.map((field) => (
                   <div key={field.id} className="mb-4">
                     <label
                       htmlFor={field.id}
@@ -979,22 +998,66 @@ const DynamicForm = ({
                       type={field.type}
                       id={field.id}
                       value={formData[field.id] || ""}
-                      disabled={
-                        field.memberIndex === 0 &&
-                        field.id.startsWith("name_") &&
-                        !!session?.user?.name
-                      }
                       onChange={handleChange}
+                      placeholder="member@example.com"
                       className={`w-full bg-black/10 px-3 py-2 border rounded-md ${
                         errors[field.id] ? "border-red-500" : "border-gray-300"
-                      } ${
-                        field.memberIndex === 0 &&
-                        field.id.startsWith("name_") &&
-                        session?.user?.name
-                          ? "cursor-not-allowed"
-                          : ""
-                      } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                      } ${field.memberIndex === 0 ? "cursor-not-allowed opacity-75" : ""} focus:outline-none focus:ring-2 focus:ring-blue-500`}
                     />
+                    {field.memberIndex > 0 && (
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          const query = formData[field.id]?.trim();
+                          if (!query) {
+                            setErrors((previous) => ({ ...previous, [field.id]: "Enter an email address first" }));
+                            return;
+                          }
+                          try {
+                            const response = await fetch(`/api/users/search?query=${encodeURIComponent(query)}`);
+                            const data = await response.json();
+                            if (!response.ok) throw new Error(data.message || "User search failed");
+                            setSearchResults((previous) => ({ ...previous, [field.memberIndex]: data.users || [] }));
+                            if (!data.users?.length) throw new Error("No registered users found");
+                            setErrors((previous) => {
+                              const next = { ...previous };
+                              delete next[field.id];
+                              return next;
+                            });
+                          } catch (error) {
+                            setSearchResults((previous) => ({ ...previous, [field.memberIndex]: [] }));
+                            setErrors((previous) => ({ ...previous, [field.id]: error instanceof Error ? error.message : "User not found" }));
+                          }
+                        }}
+                        className="mt-2 rounded-md bg-amber-500 px-3 py-2 font-medium text-blue-950 hover:bg-amber-400"
+                      >
+                        Find member
+                      </button>
+                    )}
+                    {searchResults[field.memberIndex]?.length > 0 && (
+                      <div className="mt-2 space-y-1 rounded-md border border-white/15 bg-blue-950/80 p-2">
+                        {searchResults[field.memberIndex].map((user) => (
+                          <button
+                            key={user.email}
+                            type="button"
+                            onClick={() => {
+                              setFormData((previous) => ({ ...previous, [field.id]: user.email }));
+                              setSelectedMembers((previous) => ({ ...previous, [field.memberIndex]: user }));
+                              setSearchResults((previous) => ({ ...previous, [field.memberIndex]: [] }));
+                            }}
+                            className="block w-full rounded px-2 py-1 text-left text-sm text-white hover:bg-white/10"
+                          >
+                            <span className="block font-medium">{user.name || "Unnamed user"}</span>
+                            <span className="block text-xs text-gray-300">{user.email}</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                    {selectedMembers[field.memberIndex] && (
+                      <p className="mt-2 text-sm text-emerald-300">
+                        Added: {selectedMembers[field.memberIndex]?.name || selectedMembers[field.memberIndex]?.email}
+                      </p>
+                    )}
                     {errors[field.id] && (
                       <motion.p
                         initial={{ opacity: 0 }}

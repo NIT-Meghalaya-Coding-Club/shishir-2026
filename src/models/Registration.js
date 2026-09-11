@@ -1,22 +1,5 @@
 import mongoose from "mongoose";
 
-const TeamMemberSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-  rollNumber: {
-    type: String,
-    trim: true,
-  },
-  phone: {
-    type: String,
-    trim: true,
-    match: [/^\+?[0-9]{10,15}$/, "Please enter a valid phone number"],
-  },
-});
-
 const RegistrationSchema = new mongoose.Schema(
   {
     userId: {
@@ -32,7 +15,7 @@ const RegistrationSchema = new mongoose.Schema(
       index: true,
     },
     teamData: {
-      type: [TeamMemberSchema],
+      type: [{ type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }],
       required: [true, "At least one team member is required"],
       validate: {
         validator: (v) => v.length > 0,
@@ -70,10 +53,6 @@ const RegistrationSchema = new mongoose.Schema(
         type: Number,
         min: 1,
       },
-      utensilsRequired: {
-        type: String,
-        trim: true,
-      },
     },
     timestamp: {
       type: Date,
@@ -85,5 +64,13 @@ const RegistrationSchema = new mongoose.Schema(
 
 
 RegistrationSchema.index({ userId: 1, eventId: 1 });
+
+const cachedRegistration = mongoose.models.Registration;
+const cachedTeamDataSchema = cachedRegistration?.schema.path("teamData")?.caster?.schema;
+
+// Drop a development-process model created from the previous embedded-member schema.
+if (cachedTeamDataSchema?.path("name")) {
+  delete mongoose.models.Registration;
+}
 
 export default mongoose.models.Registration || mongoose.model("Registration", RegistrationSchema);

@@ -1,20 +1,29 @@
 import connectMongo from "@/lib/mongodb";
 import Registration from "@/models/Registration";
+import User from "@/models/User";
 import { getCurrentUser } from "@/lib/eventAuth";
 import mongoose from "mongoose";
 
-function getRegistrationPayload(payload) {
+async function getRegistrationPayload(payload, leaderEmail) {
   const teamData = Array.isArray(payload.teamData) ? payload.teamData : [];
-  const validTeamMembers = teamData.filter(
-    (member) => member.name && member.rollNumber && member.phone
-  );
+  const requestedEmails = teamData
+    .map((member) => (typeof member?.email === "string" ? member.email.trim().toLowerCase() : ""))
+    .filter(Boolean);
+  const emails = [leaderEmail.trim().toLowerCase(), ...requestedEmails.filter((email) => email !== leaderEmail.trim().toLowerCase())];
+  const uniqueEmails = [...new Set(emails)];
+  const users = await User.find({ email: { $in: uniqueEmails } }).select("_id email").lean();
+  const usersByEmail = new Map(users.map((user) => [user.email.toLowerCase(), user]));
+  const missingEmail = uniqueEmails.find((email) => !usersByEmail.has(email));
 
-  if (validTeamMembers.length === 0) {
-    return { error: "At least one valid team member with name, rollNumber, and phone is required!" };
+  if (!usersByEmail.has(leaderEmail.trim().toLowerCase())) {
+    return { error: "Your user profile could not be found." };
+  }
+  if (missingEmail) {
+    return { error: `No user was found for ${missingEmail}. Search for a registered email address.` };
   }
 
   return {
-    teamData: validTeamMembers,
+    teamData: uniqueEmails.map((email) => usersByEmail.get(email)._id),
     metadata: {
       eventType: payload.metadata?.eventType || "team",
       groupName: payload.metadata?.groupName || undefined,
@@ -23,7 +32,6 @@ function getRegistrationPayload(payload) {
       dynamicEventType: payload.metadata?.dynamicEventType || undefined,
       minParticipants: payload.metadata?.minParticipants || undefined,
       maxParticipants: payload.metadata?.maxParticipants || undefined,
-      utensilsRequired: payload.metadata?.utensilsRequired || undefined,
     },
   };
 }
@@ -47,6 +55,7 @@ export async function GET(req) {
   try {
     const { session } = await getCurrentUser();
     const eventId = new URL(req.url).searchParams.get("eventId");
+    const showAll = new URL(req.url).searchParams.get("all") === "true";
 
     if (!session?.user?.email || !eventId) {
       return Response.json({ success: false, message: "Unauthorized" }, { status: 401 });
@@ -55,8 +64,8 @@ export async function GET(req) {
     await connectMongo();
     const registrations = await Registration.find({
       userId: session.user.email,
-      eventId,
-    }).sort({ createdAt: -1 }).lean();
+      ...(showAll ? {} : { eventId }),
+    }).populate("teamData", "name email phone collegeID").sort({ createdAt: -1 }).lean();
 
     return Response.json(
       { success: true, registrations },
@@ -70,22 +79,27 @@ export async function GET(req) {
 
 export async function POST(req) {
   try {
+    const { session } = await getCurrentUser();
+    if (!session?.user?.email) {
+      return Response.json({ success: false, message: "Unauthorized" }, { status: 401 });
+    }
+
     await connectMongo();
 
-    const { eventId, userId, teamData, metadata } = await req.json();
+    const { eventId, teamData, metadata } = await req.json();
 
     // Basic validation for required fields
-    if (!eventId || !userId || !Array.isArray(teamData) || teamData.length === 0) {
+    if (!eventId || !Array.isArray(teamData) || teamData.length === 0) {
       return new Response(
         JSON.stringify({
           success: false,
-          message: "eventId, userId, and teamData are required, and teamData must be an array with at least one member!",
+          message: "eventId and teamData are required, and teamData must be an array with at least one member!",
         }),
         { status: 400 }
       );
     }
 
-    const registrationPayload = getRegistrationPayload({ teamData, metadata });
+    const registrationPayload = await getRegistrationPayload({ teamData, metadata }, session.user.email);
     if (registrationPayload.error) {
       return new Response(
         JSON.stringify({
@@ -98,7 +112,7 @@ export async function POST(req) {
 
     // Create new registration entry
     const registration = new Registration({
-      userId,
+      userId: session.user.email,
       eventId, // Updated from eventCode to match schema and frontend
       ...registrationPayload,
     });
@@ -154,12 +168,12 @@ export async function PATCH(req) {
       return Response.json({ success: false, message: "eventId, registrationId and teamData are required" }, { status: 400 });
     }
 
-    const registrationPayload = getRegistrationPayload({ teamData, metadata });
+    await connectMongo();
+    const registrationPayload = await getRegistrationPayload({ teamData, metadata }, session.user.email);
     if (registrationPayload.error) {
       return Response.json({ success: false, message: registrationPayload.error }, { status: 400 });
     }
 
-    await connectMongo();
     const registration = await Registration.findOneAndUpdate(
       { _id: registrationId, userId: session.user.email, eventId },
       registrationPayload,
