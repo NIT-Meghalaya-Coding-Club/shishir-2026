@@ -206,7 +206,7 @@ export default function Events() {
             <div className="h-1 w-48 mx-auto bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full" />
           </div>
 
-          <Inav />
+          <Inav categories={eventCategories} />
 
           {loading && <p className="text-center text-yellow-400 text-xl">Loading events...</p>}
           {!loading && error && <p className="text-center text-red-300 text-xl">{error}</p>}

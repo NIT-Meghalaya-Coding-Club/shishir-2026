@@ -29,6 +29,7 @@ export default function Contact() {
         );
 
         setTeams({
+          ...Teams,
           ...Object.fromEntries(
             databaseTeams.map((team: { name: string; members: TeamMember[] }) => [
               team.name,
