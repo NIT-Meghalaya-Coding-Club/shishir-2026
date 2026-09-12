@@ -21,7 +21,7 @@ export async function getAccessSettings() {
     {
       $setOnInsert: {
         eventCreatorEmails: envEmails("EVENT_CREATOR_EMAILS"),
-        committeeHeadEmails: envEmails("NEXT_PUBLIC_COMMITTEE_HEAD_EMAILS"),
+        committeeHeadEmails: envEmails("COMMITTEE_HEAD_EMAILS"),
       },
     },
     { new: true, upsert: true, setDefaultsOnInsert: true }
