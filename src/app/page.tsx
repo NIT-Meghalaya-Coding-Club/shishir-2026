@@ -6,14 +6,15 @@ import CountdownTimer from '@/components/homepage/countdownTimer'
 // import ComingSoon from '@/components/ComingSoon'
 // import Announcement from '@/components/homepage/announcement'
 import FeaturedArtists from '@/components/homepage/featured-artists'
-
+import { SakuraLanding } from '@/components/homepage/SakuraLanding'
 
 export default function Home() {
   return (
     <main>
       <div className='home_contianer relative border-box overflow-hidden'>
         {/* <ComingSoon /> */}
-        <MainScene />
+        {/* <MainScene /> */}
+        <SakuraLanding/>
         {/* <Tbutton /> */}
         {/* <HeadliningEvents /> */}
 

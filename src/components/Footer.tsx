@@ -1,130 +1,121 @@
 "use client";
+import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Instagram, Facebook, Youtube } from "lucide-react";
-import { IoMail, IoCall, IoLocationSharp } from "react-icons/io5";
+import { IoMail } from "react-icons/io5";
 
 export default function Footer() {
+  const socialLinks = [
+    { Icon: Instagram, url: "https://www.instagram.com/shishir_nitm/", label: "Instagram" },
+    { Icon: Facebook, url: "https://www.facebook.com/shishirnitmeghalaya", label: "Facebook" },
+    { Icon: Youtube, url: "https://www.youtube.com/@shishir_nitm", label: "YouTube" },
+  ];
+
   return (
-    <footer className="relative overflow-hidden bg-gradient-to-b from-blue-950 via-black to-blue-950 pt-16 text-amber-100">
-      {/* Animated background particles - Adjusted for better visibility on all screens */}
-      <div className="absolute inset-0 opacity-10">
-        <div
-          className="absolute h-1.5 w-1.5 sm:h-2 sm:w-2 animate-ping rounded-full bg-amber-400"
-          style={{ left: "10%", top: "20%" }}
-        />
-        <div
-          className="absolute h-1.5 w-1.5 sm:h-2 sm:w-2 animate-ping rounded-full bg-amber-400"
-          style={{ left: "80%", top: "50%", animationDelay: "1s" }}
-        />
-        <div
-          className="absolute h-1.5 w-1.5 sm:h-2 sm:w-2 animate-ping rounded-full bg-amber-400"
-          style={{ left: "30%", top: "70%", animationDelay: "2s" }}
-        />
+    <footer className="relative overflow-hidden bg-black text-white pt-12 pb-16 md:py-24 border-t border-white/10 z-10 select-none">
+      {/* Ambient background glows */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-gradient-to-b from-[#ff8c00]/15 via-[#f43f5e]/10 to-transparent blur-[120px] rounded-full" />
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 w-[500px] h-[250px] bg-[#ffd960]/10 blur-[100px] rounded-full" />
       </div>
 
-      {/* Semi-circle Background with Logo - Improved scaling */}
-      <div className="absolute left-1/2 lg:left-1/2 top-5 sm:top-10 -translate-x-1/2 transform">
-        <div className="relative h-[80px] w-[160px] sm:h-[100px] sm:w-[200px] md:h-[200px] md:w-[400px]">
-          <div className="absolute h-full w-full rounded-t-full bg-gradient-to-b from-amber-500/20 via-amber-500/5 to-transparent" />
-          <div className="absolute left-1/2 top-1/2 flex h-16 w-16 sm:h-24 sm:w-24 md:h-36 md:w-36 -translate-x-1/2 -translate-y-1/2 transform items-center justify-center">
-            <Image
-              src="/assets/logo.png"
-              alt="Shishir Logo"
-              width={144}
-              height={144}
-              priority
-              className="h-full w-full object-contain drop-shadow-[0_0_15px_rgba(251,191,36,0.3)]"
-            />
-          </div>
-        </div>
+      {/* ─── Vertical Links Docked on Right Side (Desktop / Tablet) ─── */}
+      <div className="hidden md:flex absolute right-6 lg:right-10 top-1/2 -translate-y-1/2 flex-col items-center gap-4 z-20">
+        <div className="w-[1px] h-12 bg-gradient-to-b from-transparent via-amber-400/40 to-amber-400/60" />
+        {socialLinks.map(({ Icon, url, label }, index) => (
+          <Link
+            key={index}
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={label}
+            className="group relative flex h-11 w-11 items-center justify-center rounded-full bg-white/[0.04] border border-white/10 backdrop-blur-md transition-all duration-300 hover:scale-115 hover:border-amber-400/60 hover:bg-amber-400/10 hover:shadow-[0_0_18px_rgba(251,191,36,0.35)]"
+          >
+            <Icon className="h-5 w-5 text-neutral-300 transition-colors duration-200 group-hover:text-amber-300" />
+          </Link>
+        ))}
+        <a
+          href="mailto:shishir@nitm.ac.in"
+          aria-label="Email"
+          title="shishir@nitm.ac.in"
+          className="group relative flex h-11 w-11 items-center justify-center rounded-full bg-white/[0.04] border border-white/10 backdrop-blur-md transition-all duration-300 hover:scale-115 hover:border-amber-400/60 hover:bg-amber-400/10 hover:shadow-[0_0_18px_rgba(251,191,36,0.35)]"
+        >
+          <IoMail className="h-5 w-5 text-neutral-300 transition-colors duration-200 group-hover:text-amber-300" />
+        </a>
+        <div className="w-[1px] h-12 bg-gradient-to-b from-amber-400/60 via-amber-400/40 to-transparent" />
       </div>
 
-      <div className="container mx-auto px-4 max-w-7xl">
-        <div className="mb-8 sm:mb-16 grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-          {/* Contact Information */}
-          <div className="transform transition-all duration-300 hover:scale-105">
-            <p className="text-lg font-bold text-amber-400">Contact:</p>
-            <div className="mt-3 space-y-3">
-              <div className="flex items-center gap-2">
-                <IoMail className="text-amber-400 text-xl" />
-                <a
-                  href="mailto:shishir@nitm.ac.in"
-                  className="font-bold text-amber-200 transition-colors hover:text-amber-400 hover:underline"
-                >
-                  shishir@nitm.ac.in
-                </a>
-              </div>
-              <div className="flex items-center gap-2">
-                <IoCall className="text-amber-400 text-xl" />
-                <p className="font-bold text-amber-200">+91-6205986263</p>
-              </div>
+      <div className="relative container mx-auto px-4 max-w-5xl flex flex-col items-center text-center gap-6 md:gap-8 z-10">
+        {/* ─── Glowing Arc Vault Over Logo (No Square Box) ─── */}
+        <div className="relative flex flex-col items-center justify-center">
+          <div className="relative h-[85px] w-[180px] sm:h-[105px] sm:w-[220px] md:h-[125px] md:w-[260px] flex items-end justify-center">
+            {/* The Semi-Circle Arc with glowing border */}
+            <div className="absolute inset-0 rounded-t-full border-t-2 border-x border-amber-400/50 bg-gradient-to-b from-amber-500/20 via-amber-500/5 to-transparent shadow-[0_-6px_30px_rgba(251,191,36,0.3)] pointer-events-none" />
+            
+            {/* Pure Shishir Logo without any square box */}
+            <div className="relative z-10 mb-1 sm:mb-2 hover:scale-110 transition-transform duration-300 cursor-pointer">
+              <Image
+                src="/assets/logo.png"
+                alt="Shishir Logo"
+                width={100}
+                height={100}
+                priority
+                className="h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 object-contain drop-shadow-[0_0_22px_rgba(255,160,0,0.65)]"
+              />
             </div>
-          </div>
-
-          {/* Address */}
-          <div className="transform transition-all duration-300 hover:scale-105 md:text-right">
-            <div className="flex items-center gap-2 md:justify-end">
-              <IoLocationSharp className="text-amber-400 text-xl" />
-              <p className="text-lg font-bold text-amber-400">Address:</p>
-            </div>
-            <p className="mt-3 font-bold text-amber-200 text-sm sm:text-base">
-              Saitsohpen, Sohra (Cherrapunji),
-              <br />
-              East Khasi Hills District,
-              <br />
-              Meghalaya (India) 793108
-            </p>
           </div>
         </div>
 
-        {/* Social Links - Improved spacing and hover effects */}
-        <div className="mb-8 flex justify-center gap-6 sm:gap-8">
-          {[
-            { Icon: Instagram, url: "https://www.instagram.com/shishir_nitm/" },
-            {
-              Icon: Facebook,
-              url: "https://www.facebook.com/shishirnitmeghalaya",
-            },
-            { Icon: Youtube, url: "https://www.youtube.com/@shishir_nitm" },
-          ].map(({ Icon, url }, index) => (
+        {/* ─── Hero Titles from Outro ─── */}
+        <div className="flex flex-col items-center gap-2 md:gap-3">
+          <h1 className="fire-text-flow text-[clamp(3.8rem,11vw,7.5rem)] font-[900] uppercase tracking-[-0.01em] leading-[0.95] select-none">
+            SHISHIR 2026
+          </h1>
+          <h2 className="text-[clamp(1.8rem,4.5vw,3.2rem)] font-bold uppercase tracking-[-0.02em] leading-[1.1] bg-gradient-to-br from-white via-[#ffd960] to-[#7cf5ff] bg-clip-text text-transparent">
+            Where Stars Converge
+          </h2>
+          <p className="text-[#a0aec0] text-sm md:text-base tracking-[0.06em] font-light max-w-xl">
+            The Grand Cultural Extravaganza of the Northeast
+          </p>
+        </div>
+
+        {/* Email Pill Button */}
+        {/* <div className="flex items-center justify-center">
+          <a
+            href="mailto:shishir@nitm.ac.in"
+            className="group flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 hover:border-amber-400/40 text-amber-200 hover:text-white transition-all duration-300 shadow-lg hover:shadow-amber-500/10 hover:scale-105"
+          >
+            <IoMail className="text-amber-400 text-lg group-hover:scale-110 transition-transform" />
+            <span className="text-xs md:text-sm font-medium tracking-wide">shishir@nitm.ac.in</span>
+          </a>
+        </div> */}
+
+        {/* ─── Mobile Links (Visible only on mobile devices) ─── */}
+        <div className="flex md:hidden items-center justify-center gap-4">
+          {socialLinks.map(({ Icon, url, label }, index) => (
             <Link
               key={index}
               href={url}
-              className="group relative transform transition-all duration-300 hover:scale-125"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={label}
+              className="group relative flex h-10 w-10 items-center justify-center rounded-full bg-white/[0.04] border border-white/10 backdrop-blur-sm transition-all duration-300 hover:scale-115 hover:border-amber-400/50 hover:bg-amber-400/10"
             >
-              <div className="absolute -inset-2 animate-pulse rounded-full bg-amber-400/20 opacity-0 transition-opacity group-hover:opacity-100" />
-              <Icon
-                size={20}
-                className="text-amber-400 transition-colors group-hover:text-amber-300 sm:h-6 sm:w-6 md:h-7 md:w-7"
-              />
+              <Icon className="h-4 w-4 text-neutral-300 transition-colors duration-200 group-hover:text-amber-300" />
             </Link>
           ))}
         </div>
 
-        {/* Divider */}
-        <div className="my-6 sm:my-8 border-t border-amber-500/30" />
-
-        {/* Copyright - Improved text sizing */}
-        <div className="mb-6 sm:mb-8 text-center">
-          <p className="text-xs sm:text-sm text-amber-300/70">
-            © Copyright 2025 | National Institute of Technology Meghalaya |
-            Shishir 2025
-          </p>
-        </div>
-
-        {/* Large Text - More responsive font sizing */}
-        <div className="mb-8 sm:mb-16 flex w-full items-center justify-center overflow-hidden">
-          <h1 className="relative text-[14vw] sm:text-[12vw] md:text-[10vw] lg:text-[12vw] font-extrabold uppercase tracking-tight">
-            <span className="absolute -inset-2 blur-3xl">
-              <span className="bg-gradient-to-r from-amber-400/20 via-amber-500/20 to-amber-600/20 bg-clip-text text-transparent">
-                SHISHIR 2K25
-              </span>
-            </span>
-            <span className="relative bg-gradient-to-r from-amber-200 via-amber-400 to-amber-500 bg-clip-text text-transparent">
-              SHISHIR 2K25
-            </span>
-          </h1>
+        
+        {/* Location & Copyright */}
+        <div className="flex flex-col items-center gap-1.5 text-center">
+          <div className="text-xs md:text-sm tracking-[0.25em] text-[#ffd960] uppercase font-medium">
+            Saitsohpen, Sohra (Cherrapunji)
+          </div>
+          <div className="text-[0.7rem] md:text-xs text-[#faebd7]/50 tracking-wider">
+            All Rights reserved by National Institute of Technology, Meghalaya
+          </div>
         </div>
       </div>
     </footer>

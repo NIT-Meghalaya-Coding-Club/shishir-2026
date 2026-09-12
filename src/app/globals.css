@@ -39,21 +39,51 @@ body {
 }
 
 @keyframes rotate {
-  0% { transform: rotate(0deg) scale(0.8); }
-  50% { transform: rotate(360deg) scale(1.2); }
-  100% { transform: rotate(720deg) scale(0.8); }
+  0% {
+    transform: rotate(0deg) scale(0.8);
+  }
+
+  50% {
+    transform: rotate(360deg) scale(1.2);
+  }
+
+  100% {
+    transform: rotate(720deg) scale(0.8);
+  }
 }
 
 @keyframes ball1 {
-  0% { box-shadow: 30px 0 0 #fec800; }
-  50% { box-shadow: 0 0 0 #fec800; margin-bottom: 0; transform: translate(15px, 15px); }
-  100% { box-shadow: 30px 0 0 #fec800; margin-bottom: 10px; }
+  0% {
+    box-shadow: 30px 0 0 #fec800;
+  }
+
+  50% {
+    box-shadow: 0 0 0 #fec800;
+    margin-bottom: 0;
+    transform: translate(15px, 15px);
+  }
+
+  100% {
+    box-shadow: 30px 0 0 #fec800;
+    margin-bottom: 10px;
+  }
 }
 
 @keyframes ball2 {
-  0% { box-shadow: 30px 0 0 #cf8600; }
-  50% { box-shadow: 0 0 0 #cf8600; margin-top: -20px; transform: translate(15px, 15px); }
-  100% { box-shadow: 30px 0 0 #cf8600; margin-top: 0; }
+  0% {
+    box-shadow: 30px 0 0 #cf8600;
+  }
+
+  50% {
+    box-shadow: 0 0 0 #cf8600;
+    margin-top: -20px;
+    transform: translate(15px, 15px);
+  }
+
+  100% {
+    box-shadow: 30px 0 0 #cf8600;
+    margin-top: 0;
+  }
 }
 
 @font-face {
@@ -63,7 +93,9 @@ body {
   font-style: normal;
 }
 
-h1, h2, h3 {
+h1,
+h2,
+h3 {
   font-family: "Special-font", sans-serif;
 }
 
@@ -82,8 +114,13 @@ h1, h2, h3 {
 }
 
 @keyframes spin-slow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .animate-spin-slow {
@@ -127,8 +164,13 @@ h1, h2, h3 {
 }
 
 @keyframes infinite-scroll {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
 }
 
 .animate-infinite-scroll {
@@ -148,8 +190,13 @@ h1, h2, h3 {
 }
 
 @keyframes scroll {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(-33.33%); }
+  0% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(-33.33%);
+  }
 }
 
 .animate-scroll {
@@ -172,27 +219,28 @@ h1, h2, h3 {
 .input-style {
   @apply w-full px-4 py-2 bg-gray-700 text-white rounded-md focus:ring focus:ring-yellow-400;
 
-  
+
   .hover\:animation-pause:hover {
     animation-play-state: paused;
   }
-  
+
   .hide-scrollbar::-webkit-scrollbar {
     display: none;
   }
-  
+
   .hide-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
 }
-  
-  
-  
-  @layer base {
+
+
+
+@layer base {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -201,10 +249,282 @@ h1, h2, h3 {
 }
 
 @keyframes diagonal-scroll {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(650px); }
+  0% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(650px);
+  }
 }
 
 .animate-diagonal-scroll {
   animation: diagonal-scroll 6s linear infinite;
+}
+
+/* @import "tailwindcss"; */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  background: #000;
+}
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+body {
+  background: #000;
+  color: #fff;
+  font-family: system-ui, -apple-system, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Hide default browser scrollbar for a seamless luxury experience */
+html,
+body {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+}
+
+/* ─── Custom Text Shadows & Keyframes (not standard in Tailwind) ──────── */
+.event-title {
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+}
+
+.type-cursor {
+  text-shadow: 0 0 8px #ffffff;
+  animation: cursorBlink 0.75s infinite;
+}
+
+@keyframes cursorBlink {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
+}
+
+/* ─── Continuous Liquid Fire Gradient Flow ───────────────────────────────── */
+@keyframes fireFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes fireGlowPulse {
+
+  0%,
+  100% {
+    filter: drop-shadow(0 0 10px rgba(249, 115, 22, 0.5)) drop-shadow(0 0 20px rgba(220, 38, 38, 0.3));
+  }
+
+  50% {
+    filter: drop-shadow(0 0 12px rgba(251, 191, 36, 0.75)) drop-shadow(0 0 20px rgba(234, 88, 12, 0.45));
+  }
+}
+
+.fire-text-flow {
+  background: linear-gradient(270deg,
+      #fff2db 0%,
+      #ff8c00 18%,
+      #ff3c00 36%,
+      #ffd233 54%,
+      #f43f5e 72%,
+      #ff8c00 100%);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: fireFlow 8s ease infinite, fireGlowPulse 5s ease-in-out infinite;
+  will-change: background-position, filter;
+}
+
+/* ─── Continuous Horizontal Marquee (Event names ticker) ─────────────────── */
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: marquee 32s linear infinite;
+  will-change: transform;
+}
+
+/* ─── Stylish Cylindrical Scroll Indicator (Glass cylinder & fire-dot) ──── */
+
+.cylinder-track {
+  position: relative;
+  width: 14px;
+  height: 100%;
+  /* 100% of 60vh container */
+  border-radius: 9999px;
+  background: linear-gradient(90deg,
+      rgba(255, 255, 255, 0.16) 0%,
+      rgba(255, 255, 255, 0.03) 25%,
+      rgba(2, 6, 20, 0.85) 60%,
+      rgba(255, 255, 255, 0.12) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow:
+    inset 0 0 8px rgba(255, 255, 255, 0.06),
+    inset 1px 0 2px rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.cylinder-track:hover {
+  border-color: rgba(255, 140, 0, 0.55);
+  box-shadow:
+    inset 0 0 10px rgba(255, 120, 0, 0.22),
+    inset 1px 0 3px rgba(255, 255, 255, 0.5);
+}
+
+/* Glass curved specular reflection down the cylinder */
+.cylinder-glass-reflection {
+  position: absolute;
+  left: 2px;
+  top: 8px;
+  bottom: 8px;
+  width: 1.5px;
+  border-radius: 9999px;
+  background: linear-gradient(180deg,
+      rgba(255, 255, 255, 0.65) 0%,
+      rgba(255, 255, 255, 0.2) 50%,
+      rgba(255, 255, 255, 0.5) 100%);
+  pointer-events: none;
+  z-index: 4;
+}
+
+/* Inner fiery fluid trail */
+.cylinder-fluid-trail {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 0px;
+  background: linear-gradient(180deg,
+      rgba(255, 115, 0, 0.03) 0%,
+      rgba(255, 80, 0, 0.2) 100%);
+  border-radius: 9999px 9999px 0 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* The Fire-Orange Dot inside the cylinder (dot only) */
+.cylinder-fire-dot {
+  position: absolute;
+  left: 1px;
+  top: 2px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fff7ed 0%, #ff8c00 45%, #ea580c 80%, #c2410c 100%);
+  box-shadow:
+    0 0 8px rgba(255, 115, 0, 0.85),
+    0 0 16px rgba(234, 88, 12, 0.45),
+    inset 0 1px 2px rgba(255, 255, 255, 0.9);
+  pointer-events: none;
+  z-index: 3;
+  will-change: transform;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: box-shadow 0.2s ease;
+}
+
+.cylinder-track:hover .cylinder-fire-dot {
+  box-shadow:
+    0 0 12px rgba(255, 120, 0, 1),
+    0 0 22px rgba(234, 88, 12, 0.7),
+    inset 0 1px 2px #ffffff;
+}
+
+.fire-dot-core {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 0 4px #ffffff;
+  opacity: 0.95;
+}
+
+/* Phase notches on the cylinder */
+.cylinder-notch {
+  position: absolute;
+  right: 2px;
+  width: 2.5px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.35);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.notch-top {
+  top: 12%;
+}
+
+.notch-mid {
+  top: 50%;
+}
+
+.notch-bot {
+  bottom: 12%;
+}
+
+@media (max-width: 768px) {
+  .cylinder-track {
+    width: 12px;
+  }
+
+  .cylinder-fire-dot {
+    width: 8px;
+    height: 8px;
+    left: 1px;
+  }
+
+  .fire-dot-core {
+    width: 2px;
+    height: 2px;
+  }
 }

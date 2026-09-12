@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { LuMenu } from "react-icons/lu";
 import { motion, AnimatePresence } from "framer-motion";
@@ -10,7 +10,13 @@ import { useRouter } from "next/navigation";
 
 const NavBar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [isHovered, setIsHovered] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const lastScrollY = useRef(0);
+  const inactivityTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const isHoveredRef = useRef(false);
+  const isOpenRef = useRef(false);
   const router = useRouter();
 
   const { status } = useSession();
@@ -42,13 +48,134 @@ const NavBar: React.FC = () => {
     router.push("/");
   };
 
+  useEffect(() => {
+    const updateNavHeight = () => {
+      if (menuRef.current) {
+        const height = menuRef.current.offsetHeight;
+        const computedTop = parseFloat(window.getComputedStyle(menuRef.current).top) || 8;
+        const totalHeight = height + computedTop;
+        document.documentElement.style.setProperty("--navbar-height", `${height}px`);
+        document.documentElement.style.setProperty("--navbar-total-height", `${totalHeight}px`);
+      }
+    };
+
+    updateNavHeight();
+    const timer = setTimeout(updateNavHeight, 550);
+    window.addEventListener("resize", updateNavHeight);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("resize", updateNavHeight);
+    };
+  }, []);
+
+  useEffect(() => {
+    isHoveredRef.current = isHovered;
+  }, [isHovered]);
+
+  const resetInactivityTimer = useCallback(() => {
+    if (inactivityTimerRef.current) {
+      clearTimeout(inactivityTimerRef.current);
+      inactivityTimerRef.current = null;
+    }
+
+    // Do not hide if user is hovering over navbar or dropdown is open
+    if (isHoveredRef.current || isOpenRef.current) {
+      return;
+    }
+
+    inactivityTimerRef.current = setTimeout(() => {
+      if (!isHoveredRef.current && !isOpenRef.current) {
+        setIsVisible(false);
+      }
+    }, 3000);
+  }, []);
+
+  const showNavbarAndResetTimer = useCallback(() => {
+    setIsVisible(true);
+    resetInactivityTimer();
+  }, [resetInactivityTimer]);
+
+  useEffect(() => {
+    isOpenRef.current = isOpen;
+    if (isOpen) {
+      if (inactivityTimerRef.current) {
+        clearTimeout(inactivityTimerRef.current);
+        inactivityTimerRef.current = null;
+      }
+    } else {
+      resetInactivityTimer();
+    }
+  }, [isOpen, resetInactivityTimer]);
+
+  useEffect(() => {
+    // Start initial 3s countdown on mount
+    resetInactivityTimer();
+
+    const handleUserActivity = () => {
+      showNavbarAndResetTimer();
+    };
+
+    const handleScroll = () => {
+      const currentScrollY = Math.max(0, window.scrollY);
+
+      if (currentScrollY > lastScrollY.current && currentScrollY > 30) {
+        // Scrolling down past threshold -> hide navbar immediately
+        if (inactivityTimerRef.current) {
+          clearTimeout(inactivityTimerRef.current);
+          inactivityTimerRef.current = null;
+        }
+        setIsVisible(false);
+        setIsOpen(false);
+      } else if (currentScrollY < lastScrollY.current) {
+        // Scrolling up -> show navbar and reset timer
+        showNavbarAndResetTimer();
+      } else if (currentScrollY <= 10) {
+        // Top of page -> show navbar and reset timer
+        showNavbarAndResetTimer();
+      }
+
+      lastScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("mousemove", handleUserActivity, { passive: true });
+    window.addEventListener("touchstart", handleUserActivity, { passive: true });
+    window.addEventListener("keydown", handleUserActivity, { passive: true });
+
+    return () => {
+      if (inactivityTimerRef.current) {
+        clearTimeout(inactivityTimerRef.current);
+      }
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("mousemove", handleUserActivity);
+      window.removeEventListener("touchstart", handleUserActivity);
+      window.removeEventListener("keydown", handleUserActivity);
+    };
+  }, [resetInactivityTimer, showNavbarAndResetTimer]);
+
   return (
     <motion.nav
+      id="main-navbar"
       initial={{ opacity: 0, y: -50 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
+      animate={{
+        opacity: isVisible ? 1 : 0,
+        y: isVisible ? 0 : -100,
+        pointerEvents: isVisible ? "auto" : "none",
+      }}
+      transition={{ duration: 0.35, ease: "easeInOut" }}
       className="fixed top-2 left-2 right-2 z-50 mx-auto rounded-xl backdrop-blur-md shadow-lg border border-white/10"
       ref={menuRef}
+      onMouseEnter={() => {
+        setIsHovered(true);
+        if (inactivityTimerRef.current) {
+          clearTimeout(inactivityTimerRef.current);
+          inactivityTimerRef.current = null;
+        }
+      }}
+      onMouseLeave={() => {
+        setIsHovered(false);
+        resetInactivityTimer();
+      }}
     >
       <div className="container mx-auto flex items-center justify-between p-2">
         {/* Logo with onClick handler */}
