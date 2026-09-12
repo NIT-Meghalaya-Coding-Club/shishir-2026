@@ -24,7 +24,7 @@ export async function GET(req, { params }) {
       ],
     })
       .select("name email phone collegeID dept yearOfStudy image")
-      .limit(10)
+      .limit(5)
       .lean();
 
     if (users.length === 0) {

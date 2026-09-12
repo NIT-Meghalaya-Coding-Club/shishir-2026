@@ -11,7 +11,7 @@ function normalizeCode(code) {
 }
 
 function validateCommitteePayload(payload) {
-  const missing = ["name", "code"].filter(
+  const missing = ["name"].filter(
     (field) => !String(payload[field] || "").trim()
   );
 
@@ -58,15 +58,6 @@ export async function PATCH(req, { params }) {
       );
     }
 
-    const nextCode = normalizeCode(payload.code);
-
-    if (nextCode !== committee.code && (await Committee.findOne({ code: nextCode }))) {
-      return NextResponse.json(
-        { success: false, message: "Committee code already exists" },
-        { status: 409 }
-      );
-    }
-
     const committeeHeadIDs = Array.isArray(payload.committeeHeadCollegeIDs)
       ? payload.committeeHeadCollegeIDs
       : committee.committeeHeads.map((head) => head.collegeID);
@@ -76,7 +67,6 @@ export async function PATCH(req, { params }) {
     }
 
     committee.name = payload.name;
-    committee.code = nextCode;
     committee.committeeHeads = await resolveUsersByCollegeIDs(
       committeeHeadIDs,
       "committee heads"

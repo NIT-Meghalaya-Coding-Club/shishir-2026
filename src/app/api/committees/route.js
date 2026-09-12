@@ -1,3 +1,4 @@
+import { randomBytes } from "node:crypto";
 import { NextResponse } from "next/server";
 import Committee from "@/models/Committee";
 import {
@@ -11,13 +12,27 @@ function normalizeCode(code) {
 }
 
 function validateCommitteePayload(payload) {
-  const missing = ["name", "code"].filter(
+  const missing = ["name"].filter(
     (field) => !String(payload[field] || "").trim()
   );
 
   return missing.length > 0
     ? `Missing required fields: ${missing.join(", ")}`
     : null;
+}
+
+async function generateUniqueCode() {
+  const characters = "abcdefghijklmnopqrstuvwxyz0123456789";
+
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    const code = Array.from(randomBytes(8), (byte) =>
+      characters[byte % characters.length]
+    ).join("");
+
+    if (!(await Committee.exists({ code }))) return code;
+  }
+
+  throw new Error("Could not generate a unique committee code");
 }
 
 export async function GET() {
@@ -89,15 +104,7 @@ export async function POST(req) {
       );
     }
 
-    const code = normalizeCode(payload.code);
-    const existing = await Committee.findOne({ code });
-
-    if (existing) {
-      return NextResponse.json(
-        { success: false, message: "Committee code already exists" },
-        { status: 409 }
-      );
-    }
+    const code = await generateUniqueCode();
 
     const committeeHeadIDs = [
       user.collegeID,

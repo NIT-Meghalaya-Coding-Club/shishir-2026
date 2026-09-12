@@ -1,13 +1,40 @@
 "use client";
-import { defaultImageUrl, Teams } from "@/data/Teams";
-import { useRef } from "react";
+import { defaultImageUrl } from "@/data/Teams";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { FaPhone, FaEnvelope, FaLinkedin } from "react-icons/fa6";
 import { Crown, Sparkles } from "lucide-react";
 
+type TeamMember = {
+  name: string;
+  contactNo: string;
+  email: string;
+  position: string;
+  imageLink?: string;
+};
+
 export default function Contact() {
+  const [teams, setTeams] = useState<Record<string, TeamMember[]>>({});
   const teamRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
-  const teamNames = Object.keys(Teams);
+  const teamNames = Object.keys(teams);
+
+  useEffect(() => {
+    fetch("/api/teams")
+      .then((response) => response.json())
+      .then((data) => {
+        if (!data.success) return;
+
+        setTeams(
+          Object.fromEntries(
+            (data.teams || []).map((team: { name: string; members: TeamMember[] }) => [
+              team.name,
+              team.members,
+            ])
+          )
+        );
+      })
+      .catch((error) => console.error("Failed to load teams:", error));
+  }, []);
 
   function scrollToTeam(team: string) {
     const teamElement = teamRefs.current[team];
@@ -111,7 +138,7 @@ export default function Contact() {
 
             {/* Team Members Grid */}
             <div className="flex flex-wrap justify-center gap-8">
-              {Teams[team].map((member, index) => (
+              {teams[team].map((member, index) => (
                 <div key={index} className="group relative w-[300px]">
                   {/* Member Card */}
                   <div className="relative">

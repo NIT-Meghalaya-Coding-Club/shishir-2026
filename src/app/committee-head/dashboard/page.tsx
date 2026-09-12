@@ -71,6 +71,11 @@ export default function CommitteeHeadDashboard() {
     coCoordinators: "",
   });
   const [lookupLoading, setLookupLoading] = useState<PeopleField | null>(null);
+  const [lookupResults, setLookupResults] = useState<Record<PeopleField, Person[]>>({
+    committeeHeads: [],
+    coordinators: [],
+    coCoordinators: [],
+  });
 
   const isEditing = Boolean(editingCode);
 
@@ -174,11 +179,6 @@ export default function CommitteeHeadDashboard() {
       return;
     }
 
-    if (formData[field].some((person) => person.collegeID === collegeID)) {
-      toast.info("This user is already added");
-      return;
-    }
-
     try {
       setLookupLoading(field);
       const response = await fetch(
@@ -191,17 +191,30 @@ export default function CommitteeHeadDashboard() {
         return;
       }
 
-      setFormData((previous) => ({
+      setLookupResults((previous) => ({
         ...previous,
-        [field]: [...previous[field], data.user],
+        [field]: data.users || [],
       }));
-      setLookupInputs((previous) => ({ ...previous, [field]: "" }));
     } catch (error) {
       console.error("College ID lookup failed:", error);
       toast.error("Could not look up user");
     } finally {
       setLookupLoading(null);
     }
+  };
+
+  const selectPerson = (field: PeopleField, person: Person) => {
+    if (formData[field].some((item) => item.collegeID === person.collegeID)) {
+      toast.info("This user is already added");
+      return;
+    }
+
+    setFormData((previous) => ({
+      ...previous,
+      [field]: [...previous[field], person],
+    }));
+    setLookupInputs((previous) => ({ ...previous, [field]: "" }));
+    setLookupResults((previous) => ({ ...previous, [field]: [] }));
   };
 
   const removePerson = (field: PeopleField, collegeID: string) => {
@@ -445,15 +458,15 @@ export default function CommitteeHeadDashboard() {
                 className="w-full rounded-md border border-white/10 bg-zinc-900 px-3 py-2 text-white outline-none focus:border-amber-400"
               />
             </label>
-            <label className="space-y-2">
+            <div className="space-y-2">
               <span className="text-sm text-zinc-300">Committee Code</span>
-              <input
-                required
-                value={formData.code}
-                onChange={(committee) => handleInputChange("code", committee.target.value)}
-                className="w-full rounded-md border border-white/10 bg-zinc-900 px-3 py-2 text-white outline-none focus:border-amber-400"
-              />
-            </label>
+              <div className="w-full rounded-md border border-white/10 bg-zinc-900 px-3 py-2 text-zinc-400">
+                {formData.code || "Generated after saving"}
+              </div>
+              <p className="text-xs text-zinc-500">
+                Generated automatically and fixed after creation.
+              </p>
+            </div>
           </section>
 
           <section className="grid gap-4 xl:grid-cols-3">
@@ -469,7 +482,7 @@ export default function CommitteeHeadDashboard() {
                         [field]: committee.target.value,
                       }))
                     }
-                    placeholder="College ID"
+                    placeholder="Email or College ID"
                     className="min-w-0 flex-1 rounded-md border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-white outline-none focus:border-amber-400"
                   />
                   <button
@@ -487,6 +500,21 @@ export default function CommitteeHeadDashboard() {
                 </div>
 
                 <div className="mt-4 space-y-2">
+                  {lookupResults[field].map((person) => (
+                    <button
+                      key={`${field}-result-${person.collegeID}`}
+                      type="button"
+                      onClick={() => selectPerson(field, person)}
+                      className="w-full rounded-md border border-amber-400/30 bg-amber-400/10 p-3 text-left hover:bg-amber-400/20"
+                    >
+                      <p className="truncate text-sm font-medium text-white">
+                        {person.name}
+                      </p>
+                      <p className="truncate text-xs text-zinc-400">
+                        {person.collegeID} · {person.email}
+                      </p>
+                    </button>
+                  ))}
                   {formData[field].length === 0 && (
                     <p className="text-sm text-zinc-500">No users added.</p>
                   )}
