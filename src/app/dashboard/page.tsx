@@ -84,7 +84,6 @@ const ProfileCard = () => {
   const router = useRouter();
   const [dataFetched, setDataFetched] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [showModal, setShowModal] = useState(false);
   const [showMoreInfo, setShowMoreInfo] = useState(false);
   const [isUploadingProfile, setIsUploadingProfile] = useState(false);
   const [registeredEvents, setRegisteredEvents] = useState<RegisteredEvent[]>([]);
@@ -139,13 +138,6 @@ const ProfileCard = () => {
           setIsLoading(false);
           setDataFetched(true);
 
-          // If the user is not registered, prompt for registration
-          if (!data.user?.registered) {
-            setTimeout(() => {
-              setShowModal(true);
-            }, 1000);
-          }
-
         } else {
           console.error("Failed to fetch user data");
           setIsLoading(false);
@@ -180,18 +172,6 @@ const ProfileCard = () => {
 
     fetchRegisteredEvents();
   }, [status]);
-
-  useEffect(() => {
-    if (showModal) {
-      document.body.style.overflow = "hidden"; // Lock scroll
-    } else {
-      document.body.style.overflow = "auto"; // Unlock scroll
-    }
-
-    return () => {
-      document.body.style.overflow = "auto"; // Ensure unlock on unmount
-    };
-  }, [showModal]);
 
   const uploadProfileImage = async (file: File) => {
     setIsUploadingProfile(true);
@@ -580,29 +560,6 @@ const ProfileCard = () => {
         </div>
       </div>
 
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50 backdrop-blur-sm p-4">
-          <div className="bg-gradient-to-b from-[#1a1c6b] to-[#0c0e33] p-5 sm:p-8 rounded-xl shadow-2xl text-center w-full max-w-xs sm:max-w-sm border border-indigo-500/30">
-            <h2 className="text-xl sm:text-3xl font-bold text-amber-400 mb-2">Complete Your Registration</h2>
-            <div className="w-16 h-1 bg-gradient-to-r from-amber-400 to-purple-500 mx-auto mb-4 rounded-full"></div>
-            <p className="mt-2 text-sm sm:text-base text-indigo-100">You have not completed your registration. Please proceed to set up your profile.</p>
-            <div className="flex flex-col mt-6 sm:mt-8 gap-3">
-              <button
-                className="bg-gradient-to-r from-amber-400 to-amber-600 text-blue-900 font-medium px-6 py-2 sm:py-3 rounded-lg hover:shadow-lg hover:shadow-amber-500/30 transition-all duration-300 transform hover:scale-105 text-sm sm:text-base"
-                onClick={() => router.push("/dashboard/profile-details")}
-              >
-                Proceed to Registration
-              </button>
-              <button
-                className="mt-2 bg-transparent border border-indigo-400/30 text-indigo-200 px-6 py-2 sm:py-3 rounded-lg hover:bg-indigo-900/20 transition-all duration-300 text-sm sm:text-base"
-                onClick={() => setShowModal(false)}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
       {profileFileToCrop && (
         <ImageCropper
           file={profileFileToCrop}
