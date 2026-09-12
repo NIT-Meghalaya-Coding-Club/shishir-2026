@@ -1,5 +1,5 @@
 "use client";
-import { defaultImageUrl } from "@/data/Teams";
+import { defaultImageUrl, Teams } from "@/data/Teams";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { FaPhone, FaEnvelope, FaLinkedin } from "react-icons/fa6";
@@ -14,7 +14,7 @@ type TeamMember = {
 };
 
 export default function Contact() {
-  const [teams, setTeams] = useState<Record<string, TeamMember[]>>({});
+  const [teams, setTeams] = useState<Record<string, TeamMember[]>>(Teams);
   const teamRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const teamNames = Object.keys(teams);
 
@@ -24,14 +24,18 @@ export default function Contact() {
       .then((data) => {
         if (!data.success) return;
 
-        setTeams(
-          Object.fromEntries(
-            (data.teams || []).map((team: { name: string; members: TeamMember[] }) => [
+        const databaseTeams = (data.teams || []).filter(
+          (team: { name: string }) => team.name !== "Student Activity Center (SAC)"
+        );
+
+        setTeams({
+          ...Object.fromEntries(
+            databaseTeams.map((team: { name: string; members: TeamMember[] }) => [
               team.name,
               team.members,
             ])
-          )
-        );
+          ),
+        });
       })
       .catch((error) => console.error("Failed to load teams:", error));
   }, []);
