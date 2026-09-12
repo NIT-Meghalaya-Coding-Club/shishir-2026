@@ -126,7 +126,7 @@ export async function GET(req) {
     const eventsWithImages = await hydrateEventPeople(events);
 
     return NextResponse.json(
-      { success: true, events: eventsWithImages, canCreateEvents: user ? canCreateEvents(user) : false },
+      { success: true, events: eventsWithImages, canCreateEvents: user ? await canCreateEvents(user) : false },
       { status: 200 }
     );
   } catch (error) {
@@ -149,7 +149,7 @@ export async function POST(req) {
       );
     }
 
-    if (!canCreateEvents(user)) {
+    if (!(await canCreateEvents(user))) {
       return NextResponse.json(
         {
           success: false,

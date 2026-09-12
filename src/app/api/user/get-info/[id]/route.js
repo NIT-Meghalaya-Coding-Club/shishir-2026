@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import connectMongo from '../../../../../lib/mongodb';
 import User from '@/models/User';
+import { canCreateCommittees, canCreateEvents } from '@/lib/eventAuth';
 
 export async function GET(req, { params }) {
     try {
@@ -24,7 +25,11 @@ export async function GET(req, { params }) {
             );
         }
 
-        return NextResponse.json({user: user}, { status: 200 });
+        return NextResponse.json({
+            user,
+            canCreateEvents: await canCreateEvents(user),
+            canCreateCommittees: await canCreateCommittees(user),
+        }, { status: 200 });
     } catch (error) {
         console.error('Error fetching User:', error);
         return NextResponse.json(

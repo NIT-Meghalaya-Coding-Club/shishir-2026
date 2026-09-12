@@ -3,6 +3,7 @@ import { authOptions } from "@/lib/authOptions";
 import connectMongo from "@/lib/mongodb";
 import User from "@/models/User";
 import mongoose from "mongoose";
+import { getAccessSettings } from "@/lib/accessSettings";
 
 export async function getCurrentUser() {
   const session = await getServerSession(authOptions);
@@ -25,15 +26,10 @@ export function isEventHead(event, email) {
   );
 }
 
-export function canCreateEvents(user) {
+export async function canCreateEvents(user) {
   if (!user?.email) return false;
-
-  const allowedEmails = String(process.env.EVENT_CREATOR_EMAILS || "")
-    .split(",")
-    .map((email) => email.trim().toLowerCase())
-    .filter(Boolean);
-
-  return allowedEmails.includes(user.email.toLowerCase());
+  const settings = await getAccessSettings();
+  return settings.eventCreatorEmails.includes(user.email.toLowerCase());
 }
 
 export function isCommitteeHead(committee, email) {
@@ -44,15 +40,10 @@ export function isCommitteeHead(committee, email) {
   );
 }
 
-export function canCreateCommittees(user) {
+export async function canCreateCommittees(user) {
   if (!user?.email) return false;
-
-  const allowedEmails = String(process.env.NEXT_PUBLIC_COMMITTEE_HEAD_EMAILS || "")
-    .split(",")
-    .map((email) => email.trim().toLowerCase())
-    .filter(Boolean);
-
-  return allowedEmails.includes(user.email.toLowerCase());
+  const settings = await getAccessSettings();
+  return settings.committeeHeadEmails.includes(user.email.toLowerCase());
 }
 
 export function snapshotUser(user) {

@@ -38,7 +38,7 @@ export async function GET() {
       .lean();
 
     return NextResponse.json(
-      { success: true, committees, canCreateCommittees: canCreateCommittees(user) },
+      { success: true, committees, canCreateCommittees: await canCreateCommittees(user) },
       { status: 200 }
     );
   } catch (error) {
@@ -61,7 +61,7 @@ export async function POST(req) {
       );
     }
 
-    if (!canCreateCommittees(user)) {
+    if (!(await canCreateCommittees(user))) {
       return NextResponse.json(
         {
           success: false,

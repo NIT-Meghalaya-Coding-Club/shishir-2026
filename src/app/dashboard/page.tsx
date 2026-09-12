@@ -20,8 +20,6 @@ import {
 //Components
 import Loading from "../components/Loading";
 import ImageCropper from "@/components/ImageCropper";
-import { canCreateEvents } from "./lib";
-import { canCreateCommittees } from "./lib";
 
 const configuredProfileSizeMb = Number(process.env.NEXT_PUBLIC_PROFILE_MAX_SIZE_MB);
 const PROFILE_MAX_SIZE_MB = Number.isFinite(configuredProfileSizeMb) && configuredProfileSizeMb > 0
@@ -44,6 +42,8 @@ type UserData = {
   emergencyContact: string;
   image: string;
   registered: boolean;
+  canCreateEvents?: boolean;
+  canCreateCommittees?: boolean;
 };
 
 type RegisteredEvent = {
@@ -131,7 +131,9 @@ const ProfileCard = () => {
             nonVeg: data.user?.nonVeg || false,
             emergencyContact: data.user?.emergencyContact || "+91 XXXXXXXXXX",
             image: data.user?.image || session.user?.image || "",
-            registered: data.user?.registered || false
+            registered: data.user?.registered || false,
+            canCreateEvents: data.canCreateEvents || false,
+            canCreateCommittees: data.canCreateCommittees || false,
           });
 
           setIsLoading(false);
@@ -491,11 +493,11 @@ const ProfileCard = () => {
           </div>
           <div className="mt-6 sm:mt-8 md:mt-10 flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-5">
             <CustomMoreButton />
-            {(canCreateEvents(userData))?
+            {(userData.canCreateEvents)?
               <CustomEventDashboardButton />
               : ''
             }
-            {(canCreateCommittees(userData))?
+            {(userData.canCreateCommittees)?
               <CustomCommitteDashboardButton />
               :''
             }
