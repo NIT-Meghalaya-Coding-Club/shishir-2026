@@ -3,7 +3,6 @@
 import { usePathname } from "next/navigation";
 import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
-import eventsData from "@/data/eventsData";
 import { useEffect, useState } from "react";
 import Loading from "@/app/components/Loading";
 import Image from "next/image";
@@ -28,7 +27,6 @@ export default function EventPage() {
     name: "-",
     image: "",
     eventType: "",
-    registrationLink: "",
     rulebook: "",
     min: 1,
     max: 1,
@@ -53,7 +51,6 @@ export default function EventPage() {
             image: createdEvent.posterLink,
             eventType: createdEvent.eventType || "individual",
             allowPerformanceTypes: createdEvent.allowPerformanceTypes || false,
-            registrationLink: `/register/${createdEvent.code}`,
             rulebook: createdEvent.rulebookLink,
             min: Math.max(1, Number(createdEvent.minParticipants) || 1),
             max: Math.max(1, Number(createdEvent.maxParticipants) || 1),
@@ -64,25 +61,6 @@ export default function EventPage() {
         }
       } catch (error) {
         console.error("Failed to load created event:", error);
-      }
-
-      for (const categoryEvents of Object.values(eventsData)) {
-        const foundEvent = categoryEvents.find((event) => event.code === eventId);
-        if (foundEvent) {
-          setEvent({
-            code: foundEvent.code,
-            name: foundEvent.name,
-            image: foundEvent.image,
-            eventType: foundEvent.eventType || "individual",
-            allowPerformanceTypes: foundEvent.allowPerformanceTypes || false,
-            registrationLink: foundEvent.registrationLink,
-            rulebook: foundEvent.rulebook,
-            min: Math.max(1, Number(foundEvent.min) || 1),
-            max: Math.max(1, Number(foundEvent.max) || 1),
-            paymentRequired: foundEvent.paymentRequired,
-          });
-          break;
-        }
       }
 
       setIsLoading(false);

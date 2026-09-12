@@ -2,6 +2,8 @@
 import React, { useState, useEffect, useRef } from "react";
 // import QRCode from 'qrcode.react';
 import html2canvas from "html2canvas";
+import { TicketCheckoutSchema } from "@/lib/validation/ticketSchema";
+import ValidationDialog from "@/components/ui/ValidationDialog";
 
 const ShishirTicketSeller: React.FC = () => {
   const [selectedEvent, setSelectedEvent] = useState<{
@@ -22,6 +24,7 @@ const ShishirTicketSeller: React.FC = () => {
   const [animationPhase, setAnimationPhase] = useState(0);
   const [paymentVerified, setPaymentVerified] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [validationMessage, setValidationMessage] = useState("");
   const ticketRef = useRef<HTMLDivElement>(null);
 
   const submitToGoogleSheet = async (): Promise<void> => {
@@ -99,13 +102,15 @@ const ShishirTicketSeller: React.FC = () => {
   }, [selectedEvent]);
 
   const handleProceedToPayment = () => {
-    if (!name || !email || !phone) {
-      alert("Please fill all the required fields");
-      return;
-    }
-
-    if (!termsAccepted) {
-      alert("Please accept the terms and conditions");
+    const validation = TicketCheckoutSchema.safeParse({
+      name,
+      email,
+      phone,
+      quantity,
+      termsAccepted,
+    });
+    if (!validation.success) {
+      setValidationMessage(validation.error.issues.map((issue) => issue.message).join("\n"));
       return;
     }
 
@@ -170,6 +175,11 @@ const ShishirTicketSeller: React.FC = () => {
 
   return (
     <div className="w-full min-h-screen flex flex-col justify-center items-center bg-indigo-950 font-sans text-white pt-16 mb-16">
+      <ValidationDialog
+        open={Boolean(validationMessage)}
+        message={validationMessage}
+        onClose={() => setValidationMessage("")}
+      />
       <div className="w-full max-w-4xl h-full bg-indigo-950 bg-opacity-95 shadow-2xl overflow-hidden relative">
         {/* Animated background elements */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0">

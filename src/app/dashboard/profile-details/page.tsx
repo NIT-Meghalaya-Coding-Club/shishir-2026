@@ -7,6 +7,26 @@ import { useRouter } from "next/navigation";
 import { Crown, Pencil } from "lucide-react";
 
 import NeonCursorBackground from "@/components/NeonCursorBackground";
+import ImageCropper, { MAX_IMAGE_SIZE_MB } from "@/components/ImageCropper";
+import ValidationDialog from "@/components/ui/ValidationDialog";
+import {
+  NIT_COLLEGE,
+  ProfileSchema,
+  collegeIdFromEmail,
+  isNITEmail,
+} from "@/lib/validation/profileSchema";
+
+const DEPARTMENT_SUGGESTIONS = [
+  "Mechanical Engineering",
+  "Civil Engineering",
+  "Electrical Engineering",
+  "Electronics and Communications Engineering",
+  "Computer Science Engineering",
+  "Chemical & Biological Sciences",
+  "Humanities & Social Sciences",
+  "Mathematics",
+  "Physics",
+];
 
 const ProfileDetailsForm = () => {
   const { data: session } = useSession();
@@ -15,10 +35,14 @@ const ProfileDetailsForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [showCollegeEmailDialog, setShowCollegeEmailDialog] = useState(false);
   const [otherCollege, setOtherCollege] = useState("");
   const [showOtherCollege, setShowOtherCollege] = useState(false);
   const [profileFile, setProfileFile] = useState<File | null>(null);
+  const [profileFileToCrop, setProfileFileToCrop] = useState<File | null>(null);
   const [profilePreview, setProfilePreview] = useState("");
+  const [departmentFocused, setDepartmentFocused] = useState(false);
+  const [validationMessage, setValidationMessage] = useState("");
 
   const getProfileImageUrl = (image: string) => {
     if (!image || image.startsWith("/api/uploads/profile/")) return image;
@@ -61,7 +85,7 @@ const ProfileDetailsForm = () => {
           const data = await res.json();
           const isOtherCollege =
             data.user?.college &&
-            data.user.college !== "National Institute of Technology, Meghalaya";
+            data.user.college !== NIT_COLLEGE;
 
           setShowOtherCollege(isOtherCollege);
           if (isOtherCollege) {
@@ -117,17 +141,25 @@ const ProfileDetailsForm = () => {
         [name]: (e.target as HTMLInputElement).checked,
       }));
     } else {
+      const value = (
+        e.target as HTMLSelectElement | HTMLInputElement | HTMLTextAreaElement
+      ).value;
+      const invalidNITSelection =
+        name === "college" &&
+        value === NIT_COLLEGE &&
+        !isNITEmail(session?.user?.email || formData.email);
       setFormData((prev) => ({
         ...prev,
-        [name]: (
-          e.target as HTMLSelectElement | HTMLInputElement | HTMLTextAreaElement
-        ).value,
+        [name]: invalidNITSelection ? "" : value,
+        ...(invalidNITSelection ? { collegeID: "" } : {}),
       }));
 
       // Special handling for college dropdown
       if (name === "college") {
-        const value = (e.target as HTMLSelectElement).value;
         setShowOtherCollege(value === "Other");
+        if (invalidNITSelection) {
+          setShowCollegeEmailDialog(true);
+        }
         if (value !== "Other") {
           setOtherCollege("");
         }
@@ -135,12 +167,42 @@ const ProfileDetailsForm = () => {
     }
   };
 
+  useEffect(() => {
+    if (formData.college !== NIT_COLLEGE) return;
+
+    if (!isNITEmail(formData.email || session?.user?.email || "")) {
+      setShowCollegeEmailDialog(true);
+      setFormData((previous) => ({ ...previous, college: "", collegeID: "" }));
+      return;
+    }
+
+    setFormData((previous) => ({
+      ...previous,
+      collegeID: collegeIdFromEmail(previous.email || session?.user?.email || "").toUpperCase(),
+    }));
+  }, [formData.college, formData.email, session?.user?.email]);
+
   const handleOtherCollegeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setOtherCollege(e.target.value);
   };
 
+  const filteredDepartmentSuggestions = DEPARTMENT_SUGGESTIONS.filter((department) =>
+    department.toLowerCase().includes(formData.dept.trim().toLowerCase())
+  );
+
   const handleProfileFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setProfileFile(e.target.files?.[0] || null);
+    const file = e.target.files?.[0];
+    e.target.value = "";
+
+    if (!file) return;
+
+    const allowedTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
+    if (!allowedTypes.has(file.type)) {
+      alert("Profile picture must be a JPEG, PNG, or WebP image");
+      return;
+    }
+
+    setProfileFileToCrop(file);
   };
 
   useEffect(() => {
@@ -157,29 +219,19 @@ const ProfileDetailsForm = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSaving(true);
 
-    const requiredFields = [
-      "name",
-      "gender",
-      "dob",
-      "college",
-      "collegeID",
-      "yearOfStudy",
-      "dept",
-      "email",
-      "phone",
-      "emergencyContact",
-    ];
-    const missingFields = requiredFields.filter(
-      (field) => !formData[field as keyof typeof formData]
-    );
-
-    if (missingFields.length > 0) {
-      alert(`Please fill all required fields: ${missingFields.join(", ")}`);
+    const validationResult = ProfileSchema.safeParse({
+      ...formData,
+      email: session?.user?.email || formData.email,
+      otherCollege,
+    });
+    if (!validationResult.success) {
+      setValidationMessage(validationResult.error.issues.map((issue) => issue.message).join("\n"));
       setSaving(false);
       return;
     }
+
+    setSaving(true);
 
     let profileImage = formData.image;
 
@@ -250,6 +302,11 @@ const ProfileDetailsForm = () => {
 
   return (
     <div className="min-h-[calc(100vh-64px)] flex items-center justify-center p-6 py-10 relative">
+      <ValidationDialog
+        open={Boolean(validationMessage)}
+        message={validationMessage}
+        onClose={() => setValidationMessage("")}
+      />
       {/* Fixed position for background to cover entire screen */}
       <div className="fixed inset-0">
         <NeonCursorBackground />
@@ -362,7 +419,7 @@ const ProfileDetailsForm = () => {
                 required
               >
                 <option value="">Select College</option>
-                <option value="National Institute of Technology, Meghalaya">
+                <option value={NIT_COLLEGE}>
                   National Institute of Technology, Meghalaya
                 </option>
                 <option value="Other">Other</option>
@@ -388,6 +445,7 @@ const ProfileDetailsForm = () => {
                 placeholder="Eg: B22CS0XX"
                 value={formData.collegeID}
                 onChange={handleChange}
+                readOnly={formData.college === NIT_COLLEGE}
                 className="input-style"
                 required
               />
@@ -396,29 +454,79 @@ const ProfileDetailsForm = () => {
               <label htmlFor="yearOfStudy" className="text-yellow-300">
                 Year of Study
               </label>
-              <input
-                type="text"
-                name="yearOfStudy"
-                placeholder="Eg: 3"
-                value={formData.yearOfStudy}
-                onChange={handleChange}
-                className="input-style"
-                required
-              />
+              <div className="flex items-center justify-between rounded-md border border-yellow-500 bg-gray-700 px-2 py-1">
+                <button
+                  type="button"
+                  aria-label="Decrease year of study"
+                  disabled={Number(formData.yearOfStudy || 1) <= 1}
+                  onClick={() =>
+                    setFormData((previous) => ({
+                      ...previous,
+                      yearOfStudy: String(Math.max(1, Number(previous.yearOfStudy || 1) - 1)),
+                    }))
+                  }
+                  className="h-10 w-10 rounded-md text-2xl text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  -
+                </button>
+                <span
+                  id="yearOfStudy"
+                  aria-live="polite"
+                  className="min-w-12 text-center text-lg font-semibold text-white"
+                >
+                  {formData.yearOfStudy || "1"}
+                </span>
+                <button
+                  type="button"
+                  aria-label="Increase year of study"
+                  disabled={Number(formData.yearOfStudy || 1) >= 5}
+                  onClick={() =>
+                    setFormData((previous) => ({
+                      ...previous,
+                      yearOfStudy: String(Math.min(5, Number(previous.yearOfStudy || 1) + 1)),
+                    }))
+                  }
+                  className="h-10 w-10 rounded-md text-2xl text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  +
+                </button>
+              </div>
             </div>
             <div className="space-y-2">
               <label htmlFor="dept" className="text-yellow-300">
-                Course and Department
+                Department
               </label>
-              <input
-                type="text"
-                name="dept"
-                placeholder="Eg: Mechanical Engineering"
-                value={formData.dept}
-                onChange={handleChange}
-                className="input-style"
-                required
-              />
+              <div className="relative">
+                <input
+                  type="text"
+                  name="dept"
+                  placeholder="Eg: Mechanical Engineering"
+                  value={formData.dept}
+                  onChange={handleChange}
+                  onFocus={() => setDepartmentFocused(true)}
+                  onBlur={() => setDepartmentFocused(false)}
+                  className="input-style"
+                  required
+                />
+                {departmentFocused && filteredDepartmentSuggestions.length > 0 && (
+                  <div className="absolute left-0 right-0 top-full z-20 mt-1 max-h-56 overflow-y-auto rounded-md border border-yellow-500/50 bg-gray-900 p-1 shadow-xl">
+                    {filteredDepartmentSuggestions.map((department) => (
+                      <button
+                        key={department}
+                        type="button"
+                        onMouseDown={(event) => event.preventDefault()}
+                        onClick={() => {
+                          setFormData((previous) => ({ ...previous, dept: department }));
+                          setDepartmentFocused(false);
+                        }}
+                        className="block w-full rounded px-3 py-2 text-left text-sm text-white hover:bg-yellow-500/20"
+                      >
+                        {department}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
             <div className="space-y-2">
               <label htmlFor="email" className="text-yellow-300">
@@ -505,7 +613,26 @@ const ProfileDetailsForm = () => {
         </form>
       </div>
 
-      {/* Confirmation Modal */}
+      <ValidationDialog
+        open={showCollegeEmailDialog}
+        title="Please use your college email"
+        message="National Institute of Technology, Meghalaya requires an email ending with @nitm.ac.in."
+        onClose={() => setShowCollegeEmailDialog(false)}
+      />
+
+      {profileFileToCrop && (
+        <ImageCropper
+          file={profileFileToCrop}
+          shape="circle"
+          maxSizeMb={MAX_IMAGE_SIZE_MB}
+          onComplete={(croppedFile) => {
+            setProfileFileToCrop(null);
+            setProfileFile(croppedFile);
+          }}
+          onCancel={() => setProfileFileToCrop(null)}
+        />
+      )}
+
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-gray-900 p-6 rounded-lg shadow-lg text-center w-80">

@@ -4,8 +4,10 @@ import Category from "@/models/Category";
 import Event from "@/models/Event";
 import {
   getCurrentUser,
+  hydrateEventPeople,
   isEventHead,
   resolveUsersByCollegeIDs,
+  resolveUsersByEmails,
 } from "@/lib/eventAuth";
 
 function normalizeCode(code) {
@@ -91,7 +93,9 @@ export async function GET(req, { params }) {
       );
     }
 
-    return NextResponse.json({ success: true, event }, { status: 200 });
+    const [eventWithImages] = await hydrateEventPeople(event);
+
+    return NextResponse.json({ success: true, event: eventWithImages }, { status: 200 });
   } catch (error) {
     console.error("Fetch event error:", error);
     return NextResponse.json(
@@ -157,6 +161,18 @@ export async function PATCH(req, { params }) {
       }
     }
 
+    const eventHeadEmails = Array.isArray(payload.eventHeadEmails)
+      ? [...new Set([...payload.eventHeadEmails, user.email])]
+      : null;
+    const eventHeads = eventHeadEmails
+      ? await resolveUsersByEmails(eventHeadEmails, "event heads")
+      : null;
+    const coordinators = Array.isArray(payload.coordinatorEmails)
+      ? await resolveUsersByEmails(payload.coordinatorEmails, "coordinators", true)
+      : null;
+    const coCoordinators = Array.isArray(payload.coCoordinatorEmails)
+      ? await resolveUsersByEmails(payload.coCoordinatorEmails, "co-coordinators", true)
+      : null;
     const eventHeadIDs = Array.isArray(payload.eventHeadCollegeIDs)
       ? payload.eventHeadCollegeIDs
       : event.eventHeads.map((head) => head.collegeID);
@@ -180,12 +196,12 @@ export async function PATCH(req, { params }) {
     event.paymentRequired = payload.paymentRequired || undefined;
     event.rulebookLink = payload.rulebookLink;
     event.posterLink = payload.posterLink;
-    event.eventHeads = await resolveUsersByCollegeIDs(eventHeadIDs, "event heads");
-    event.coordinators = await resolveUsersByCollegeIDs(
+    event.eventHeads = eventHeads || await resolveUsersByCollegeIDs(eventHeadIDs, "event heads");
+    event.coordinators = coordinators || await resolveUsersByCollegeIDs(
       Array.isArray(payload.coordinatorCollegeIDs) ? payload.coordinatorCollegeIDs : [],
       "coordinators"
     );
-    event.coCoordinators = await resolveUsersByCollegeIDs(
+    event.coCoordinators = coCoordinators || await resolveUsersByCollegeIDs(
       Array.isArray(payload.coCoordinatorCollegeIDs) ? payload.coCoordinatorCollegeIDs : [],
       "co-coordinators"
     );

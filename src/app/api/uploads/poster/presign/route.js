@@ -82,7 +82,7 @@ export async function POST(req) {
           { status: 403 }
         );
       }
-    } else if (!canCreateEvents(user)) {
+    } else if (!(await canCreateEvents(user))) {
       return NextResponse.json(
         { message: "You are not allowed to upload event posters" },
         { status: 403 }

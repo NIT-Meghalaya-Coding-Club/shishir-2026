@@ -20,8 +20,6 @@ import {
 //Components
 import Loading from "../components/Loading";
 import ImageCropper from "@/components/ImageCropper";
-import { canCreateEvents } from "./lib";
-import { canCreateCommittees } from "./lib";
 
 const configuredProfileSizeMb = Number(process.env.NEXT_PUBLIC_PROFILE_MAX_SIZE_MB);
 const PROFILE_MAX_SIZE_MB = Number.isFinite(configuredProfileSizeMb) && configuredProfileSizeMb > 0
@@ -44,6 +42,8 @@ type UserData = {
   emergencyContact: string;
   image: string;
   registered: boolean;
+  canCreateEvents?: boolean;
+  canCreateCommittees?: boolean;
 };
 
 type RegisteredEvent = {
@@ -84,7 +84,6 @@ const ProfileCard = () => {
   const router = useRouter();
   const [dataFetched, setDataFetched] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [showModal, setShowModal] = useState(false);
   const [showMoreInfo, setShowMoreInfo] = useState(false);
   const [isUploadingProfile, setIsUploadingProfile] = useState(false);
   const [registeredEvents, setRegisteredEvents] = useState<RegisteredEvent[]>([]);
@@ -131,18 +130,13 @@ const ProfileCard = () => {
             nonVeg: data.user?.nonVeg || false,
             emergencyContact: data.user?.emergencyContact || "+91 XXXXXXXXXX",
             image: data.user?.image || session.user?.image || "",
-            registered: data.user?.registered || false
+            registered: data.user?.registered || false,
+            canCreateEvents: data.canCreateEvents || false,
+            canCreateCommittees: data.canCreateCommittees || false,
           });
 
           setIsLoading(false);
           setDataFetched(true);
-
-          // If the user is not registered, prompt for registration
-          if (!data.user?.registered) {
-            setTimeout(() => {
-              setShowModal(true);
-            }, 1000);
-          }
 
         } else {
           console.error("Failed to fetch user data");
@@ -178,18 +172,6 @@ const ProfileCard = () => {
 
     fetchRegisteredEvents();
   }, [status]);
-
-  useEffect(() => {
-    if (showModal) {
-      document.body.style.overflow = "hidden"; // Lock scroll
-    } else {
-      document.body.style.overflow = "auto"; // Unlock scroll
-    }
-
-    return () => {
-      document.body.style.overflow = "auto"; // Ensure unlock on unmount
-    };
-  }, [showModal]);
 
   const uploadProfileImage = async (file: File) => {
     setIsUploadingProfile(true);
@@ -394,9 +376,9 @@ const ProfileCard = () => {
 
   return (
     <div>
-      <div className="min-h-screen h-fit relative px-3 sm:px-5 max-w-full py-10 sm:py-20 bg-gradient-to-b from-[#0a0b2e] via-[#1a1155] to-[#0c1339] overflow-x-hidden">
+      <div className="min-h-screen relative flex items-start justify-center px-3 sm:px-5 max-w-full py-10 sm:py-20 bg-gradient-to-b from-[#0a0b2e] via-[#1a1155] to-[#0c1339] overflow-x-hidden">
         {isLoading && <Loading />}
-        <div className="mx-auto md:absolute h-auto w-full sm:w-[90%] md:w-[75vw] lg:w-[65vw] xl:w-[55vw] md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 backdrop-blur-md bg-[#0d1445]/40 border border-indigo-500/30 text-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-2xl shadow-purple-900/30 pt-10 sm:pt-16 md:pt-20">
+        <div className="mx-auto h-auto w-full sm:w-[90%] md:w-[75vw] lg:w-[65vw] xl:w-[55vw] backdrop-blur-md bg-[#0d1445]/40 border border-indigo-500/30 text-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-2xl shadow-purple-900/30 pt-10 sm:pt-16 md:pt-20">
           <div className="flex flex-col md:flex-row items-center gap-6 md:gap-10 justify-center py-3 sm:py-5">
             <div>
               <div className="relative w-40 h-40 sm:w-48 sm:h-48 md:w-[14vw] md:h-[14vw] flex items-center justify-center">
@@ -491,11 +473,11 @@ const ProfileCard = () => {
           </div>
           <div className="mt-6 sm:mt-8 md:mt-10 flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-5">
             <CustomMoreButton />
-            {(canCreateEvents(userData))?
+            {(userData.canCreateEvents)?
               <CustomEventDashboardButton />
               : ''
             }
-            {(canCreateCommittees(userData))?
+            {(userData.canCreateCommittees)?
               <CustomCommitteDashboardButton />
               :''
             }
@@ -578,29 +560,6 @@ const ProfileCard = () => {
         </div>
       </div>
 
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50 backdrop-blur-sm p-4">
-          <div className="bg-gradient-to-b from-[#1a1c6b] to-[#0c0e33] p-5 sm:p-8 rounded-xl shadow-2xl text-center w-full max-w-xs sm:max-w-sm border border-indigo-500/30">
-            <h2 className="text-xl sm:text-3xl font-bold text-amber-400 mb-2">Complete Your Registration</h2>
-            <div className="w-16 h-1 bg-gradient-to-r from-amber-400 to-purple-500 mx-auto mb-4 rounded-full"></div>
-            <p className="mt-2 text-sm sm:text-base text-indigo-100">You have not completed your registration. Please proceed to set up your profile.</p>
-            <div className="flex flex-col mt-6 sm:mt-8 gap-3">
-              <button
-                className="bg-gradient-to-r from-amber-400 to-amber-600 text-blue-900 font-medium px-6 py-2 sm:py-3 rounded-lg hover:shadow-lg hover:shadow-amber-500/30 transition-all duration-300 transform hover:scale-105 text-sm sm:text-base"
-                onClick={() => router.push("/dashboard/profile-details")}
-              >
-                Proceed to Registration
-              </button>
-              <button
-                className="mt-2 bg-transparent border border-indigo-400/30 text-indigo-200 px-6 py-2 sm:py-3 rounded-lg hover:bg-indigo-900/20 transition-all duration-300 text-sm sm:text-base"
-                onClick={() => setShowModal(false)}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
       {profileFileToCrop && (
         <ImageCropper
           file={profileFileToCrop}

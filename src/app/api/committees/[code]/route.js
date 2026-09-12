@@ -4,6 +4,7 @@ import {
   getCurrentUser,
   isCommitteeHead,
   resolveUsersByCollegeIDs,
+  resolveUsersByEmails,
 } from "@/lib/eventAuth";
 
 function normalizeCode(code) {
@@ -11,7 +12,7 @@ function normalizeCode(code) {
 }
 
 function validateCommitteePayload(payload) {
-  const missing = ["name", "code"].filter(
+  const missing = ["name"].filter(
     (field) => !String(payload[field] || "").trim()
   );
 
@@ -58,15 +59,18 @@ export async function PATCH(req, { params }) {
       );
     }
 
-    const nextCode = normalizeCode(payload.code);
-
-    if (nextCode !== committee.code && (await Committee.findOne({ code: nextCode }))) {
-      return NextResponse.json(
-        { success: false, message: "Committee code already exists" },
-        { status: 409 }
-      );
-    }
-
+    const committeeHeadEmails = Array.isArray(payload.committeeHeadEmails)
+      ? [...new Set([...payload.committeeHeadEmails, user.email])]
+      : null;
+    const committeeHeads = committeeHeadEmails
+      ? await resolveUsersByEmails(committeeHeadEmails, "committee heads")
+      : null;
+    const coordinators = Array.isArray(payload.coordinatorEmails)
+      ? await resolveUsersByEmails(payload.coordinatorEmails, "coordinators", true)
+      : null;
+    const coCoordinators = Array.isArray(payload.coCoordinatorEmails)
+      ? await resolveUsersByEmails(payload.coCoordinatorEmails, "co-coordinators")
+      : null;
     const committeeHeadIDs = Array.isArray(payload.committeeHeadCollegeIDs)
       ? payload.committeeHeadCollegeIDs
       : committee.committeeHeads.map((head) => head.collegeID);
@@ -76,16 +80,15 @@ export async function PATCH(req, { params }) {
     }
 
     committee.name = payload.name;
-    committee.code = nextCode;
-    committee.committeeHeads = await resolveUsersByCollegeIDs(
+    committee.committeeHeads = committeeHeads || await resolveUsersByCollegeIDs(
       committeeHeadIDs,
       "committee heads"
     );
-    committee.coordinators = await resolveUsersByCollegeIDs(
+    committee.coordinators = coordinators || await resolveUsersByCollegeIDs(
       Array.isArray(payload.coordinatorCollegeIDs) ? payload.coordinatorCollegeIDs : [],
       "coordinators"
     );
-    committee.coCoordinators = await resolveUsersByCollegeIDs(
+    committee.coCoordinators = coCoordinators || await resolveUsersByCollegeIDs(
       Array.isArray(payload.coCoordinatorCollegeIDs)
         ? payload.coCoordinatorCollegeIDs
         : [],

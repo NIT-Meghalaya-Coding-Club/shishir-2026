@@ -8,25 +8,33 @@ export async function GET(req, { params }) {
 
     if (!collegeID) {
       return NextResponse.json(
-        { success: false, message: "College ID is required" },
+        { success: false, message: "College ID or email is required" },
         { status: 400 }
       );
     }
 
     await connectMongo();
 
-    const user = await User.findOne({ collegeID: decodeURIComponent(collegeID).trim() })
+    const searchTerm = decodeURIComponent(collegeID).trim();
+    const escapedSearchTerm = searchTerm.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const users = await User.find({
+      $or: [
+        { collegeID: searchTerm },
+        { email: { $regex: escapedSearchTerm, $options: "i" } },
+      ],
+    })
       .select("name email phone collegeID dept yearOfStudy image")
+      .limit(5)
       .lean();
 
-    if (!user) {
+    if (users.length === 0) {
       return NextResponse.json(
         { success: false, message: "User not found" },
         { status: 404 }
       );
     }
 
-    return NextResponse.json({ success: true, user }, { status: 200 });
+    return NextResponse.json({ success: true, user: users[0], users }, { status: 200 });
   } catch (error) {
     console.error("College ID lookup error:", error);
     return NextResponse.json(

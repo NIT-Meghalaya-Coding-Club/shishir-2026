@@ -16,8 +16,10 @@ import {
   Users,
 } from "lucide-react";
 import { toast } from "react-toastify";
+import { EventPayloadSchema } from "@/lib/validation/eventSchema";
 import EventParticipants from "@/components/event-head/EventParticipants";
 import ImageCropper, { MAX_IMAGE_SIZE_MB } from "@/components/ImageCropper";
+import ValidationDialog from "@/components/ui/ValidationDialog";
 
 type Person = {
   _id?: string;
@@ -101,6 +103,10 @@ function getPersonCollegeIDs(people: Person[]) {
   return people.map((person) => person.collegeID).filter(Boolean);
 }
 
+function getPersonEmails(people: Person[]) {
+  return people.map((person) => person.email).filter(Boolean);
+}
+
 export default function EventHeadDashboard() {
   const { data: session, status } = useSession();
   const [events, setEvents] = useState<EventRecord[]>([]);
@@ -109,11 +115,17 @@ export default function EventHeadDashboard() {
   const [editingCode, setEditingCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [validationMessage, setValidationMessage] = useState("");
   const [currentUser, setCurrentUser] = useState<Person | null>(null);
   const [lookupInputs, setLookupInputs] = useState<Record<PeopleField, string>>({
     eventHeads: "",
     coordinators: "",
     coCoordinators: "",
+  });
+  const [lookupResults, setLookupResults] = useState<Record<PeopleField, Person[]>>({
+    eventHeads: [],
+    coordinators: [],
+    coCoordinators: [],
   });
   const [lookupLoading, setLookupLoading] = useState<PeopleField | null>(null);
   const [newCategoryName, setNewCategoryName] = useState("");
@@ -272,17 +284,37 @@ export default function EventHeadDashboard() {
         return;
       }
 
-      setFormData((previous) => ({
-        ...previous,
-        [field]: [...previous[field], data.user],
-      }));
-      setLookupInputs((previous) => ({ ...previous, [field]: "" }));
+      const users = data.users || (data.user ? [data.user] : []);
+      if (users.length === 1) {
+        setFormData((previous) => ({
+          ...previous,
+          [field]: [...previous[field], users[0]],
+        }));
+        setLookupInputs((previous) => ({ ...previous, [field]: "" }));
+        setLookupResults((previous) => ({ ...previous, [field]: [] }));
+      } else {
+        setLookupResults((previous) => ({ ...previous, [field]: users }));
+      }
     } catch (error) {
       console.error("College ID lookup failed:", error);
       toast.error("Could not look up user");
     } finally {
       setLookupLoading(null);
     }
+  };
+
+  const selectLookupResult = (field: PeopleField, person: Person) => {
+    if (formData[field].some((existingPerson) => existingPerson.collegeID === person.collegeID)) {
+      toast.info("This user is already added");
+      return;
+    }
+
+    setFormData((previous) => ({
+      ...previous,
+      [field]: [...previous[field], person],
+    }));
+    setLookupInputs((previous) => ({ ...previous, [field]: "" }));
+    setLookupResults((previous) => ({ ...previous, [field]: [] }));
   };
 
   const removePerson = (field: PeopleField, collegeID: string) => {
@@ -310,6 +342,18 @@ export default function EventHeadDashboard() {
         toast.error("Add at least one event head");
         return;
       }
+    }
+
+    const validation = EventPayloadSchema.safeParse({
+      ...formData,
+      category: formData.categoryId === "new" ? newCategoryName : formData.category,
+      posterLink: formData.posterLink || (posterFile ? "pending" : ""),
+      minParticipants: Number(formData.minParticipants),
+      maxParticipants: Number(formData.maxParticipants),
+    });
+    if (!validation.success) {
+      setValidationMessage(validation.error.issues.map((issue) => issue.message).join("\n"));
+      return;
     }
 
     try {
@@ -382,6 +426,18 @@ export default function EventHeadDashboard() {
 
       const payload = {
         ...formData,
+        eventHeads: formData.eventHeads.map((person) => ({
+          ...person,
+          email: person.email,
+        })),
+        coordinators: formData.coordinators.map((person) => ({
+          ...person,
+          email: person.email,
+        })),
+        coCoordinators: formData.coCoordinators.map((person) => ({
+          ...person,
+          email: person.email,
+        })),
         posterLink,
         category: categoryName,
         categoryId,
@@ -391,6 +447,9 @@ export default function EventHeadDashboard() {
         eventHeadCollegeIDs: getPersonCollegeIDs(formData.eventHeads),
         coordinatorCollegeIDs: getPersonCollegeIDs(formData.coordinators),
         coCoordinatorCollegeIDs: getPersonCollegeIDs(formData.coCoordinators),
+        eventHeadEmails: getPersonEmails(formData.eventHeads),
+        coordinatorEmails: getPersonEmails(formData.coordinators),
+        coCoordinatorEmails: getPersonEmails(formData.coCoordinators),
       };
 
       const response = await fetch(
@@ -495,6 +554,11 @@ export default function EventHeadDashboard() {
 
   return (
     <>
+      <ValidationDialog
+        open={Boolean(validationMessage)}
+        message={validationMessage}
+        onClose={() => setValidationMessage("")}
+      />
       <main className="min-h-screen bg-zinc-950 px-4 py-24 text-white sm:px-6">
       <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[320px_1fr]">
         <aside className="space-y-4">
@@ -913,7 +977,7 @@ export default function EventHeadDashboard() {
                         [field]: event.target.value,
                       }))
                     }
-                    placeholder="College ID"
+                    placeholder="College ID or email"
                     className="min-w-0 flex-1 rounded-md border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-white outline-none focus:border-amber-400"
                   />
                   <button
@@ -929,6 +993,22 @@ export default function EventHeadDashboard() {
                     )}
                   </button>
                 </div>
+
+                {lookupResults[field].length > 0 && (
+                  <div className="mt-2 space-y-1">
+                    {lookupResults[field].map((person) => (
+                      <button
+                        key={`${field}-result-${person.collegeID}`}
+                        type="button"
+                        onClick={() => selectLookupResult(field, person)}
+                        className="block w-full rounded-md bg-zinc-900 px-3 py-2 text-left text-sm hover:bg-amber-400/10"
+                      >
+                        <span className="block text-white">{person.name}</span>
+                        <span className="block text-xs text-zinc-400">{person.email}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
 
                 <div className="mt-4 space-y-2">
                   {formData[field].length === 0 && (

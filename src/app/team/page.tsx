@@ -1,13 +1,45 @@
 "use client";
 import { defaultImageUrl, Teams } from "@/data/Teams";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { FaPhone, FaEnvelope, FaLinkedin } from "react-icons/fa6";
 import { Crown, Sparkles } from "lucide-react";
 
+type TeamMember = {
+  name: string;
+  contactNo: string;
+  email: string;
+  position: string;
+  imageLink?: string;
+};
+
 export default function Contact() {
+  const [teams, setTeams] = useState<Record<string, TeamMember[]>>(Teams);
   const teamRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
-  const teamNames = Object.keys(Teams);
+  const teamNames = Object.keys(teams);
+
+  useEffect(() => {
+    fetch("/api/teams")
+      .then((response) => response.json())
+      .then((data) => {
+        if (!data.success) return;
+
+        const databaseTeams = (data.teams || []).filter(
+          (team: { name: string }) => team.name !== "Student Activity Center (SAC)"
+        );
+
+        setTeams({
+          ...Teams,
+          ...Object.fromEntries(
+            databaseTeams.map((team: { name: string; members: TeamMember[] }) => [
+              team.name,
+              team.members,
+            ])
+          ),
+        });
+      })
+      .catch((error) => console.error("Failed to load teams:", error));
+  }, []);
 
   function scrollToTeam(team: string) {
     const teamElement = teamRefs.current[team];
@@ -111,7 +143,7 @@ export default function Contact() {
 
             {/* Team Members Grid */}
             <div className="flex flex-wrap justify-center gap-8">
-              {Teams[team].map((member, index) => (
+              {teams[team].map((member, index) => (
                 <div key={index} className="group relative w-[300px]">
                   {/* Member Card */}
                   <div className="relative">
@@ -160,16 +192,6 @@ export default function Contact() {
                             >
                               <FaEnvelope size={24} />
                             </a>
-                            {member.linkedinLink && (
-                              <a
-                                href={member.linkedinLink}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-gray-400 hover:text-yellow-400 transition-colors duration-300 relative z-20"
-                              >
-                                <FaLinkedin size={24} />
-                              </a>
-                            )}
                           </div>
                         </div>
                       </div>

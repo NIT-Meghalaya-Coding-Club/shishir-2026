@@ -6,7 +6,9 @@ import Event from "@/models/Event";
 import {
   canCreateEvents,
   getCurrentUser,
+  hydrateEventPeople,
   resolveUsersByCollegeIDs,
+  resolveUsersByEmails,
   snapshotUser,
 } from "@/lib/eventAuth";
 
@@ -116,12 +118,16 @@ export async function GET(req) {
     const query = scope === "mine" ? { "eventHeads.email": user.email } : {};
     const projection = user && scope === "mine"
       ? undefined
-      : "name code category location startsAt endsAt description rulebookLink posterLink";
+      : "name code category location startsAt endsAt description rulebookLink posterLink "
+        + "eventHeads.user eventHeads.collegeID eventHeads.name eventHeads.email eventHeads.phone eventHeads.image "
+        + "coordinators.user coordinators.collegeID coordinators.name coordinators.email coordinators.phone coordinators.image "
+        + "coCoordinators.user coCoordinators.collegeID coCoordinators.name coCoordinators.email coCoordinators.phone coCoordinators.image";
 
     const events = await Event.find(query, projection).sort({ startsAt: 1 }).lean();
+    const eventsWithImages = await hydrateEventPeople(events);
 
     return NextResponse.json(
-      { success: true, events, canCreateEvents: user ? canCreateEvents(user) : false },
+      { success: true, events: eventsWithImages, canCreateEvents: user ? await canCreateEvents(user) : false },
       { status: 200 }
     );
   } catch (error) {
@@ -144,7 +150,7 @@ export async function POST(req) {
       );
     }
 
-    if (!canCreateEvents(user)) {
+    if (!(await canCreateEvents(user))) {
       return NextResponse.json(
         {
           success: false,
@@ -184,14 +190,18 @@ export async function POST(req) {
     ];
 
     const eventHeads = await resolveUsersByCollegeIDs(eventHeadIDs, "event heads");
-    const coordinators = await resolveUsersByCollegeIDs(
-      Array.isArray(payload.coordinatorCollegeIDs) ? payload.coordinatorCollegeIDs : [],
-      "coordinators"
-    );
-    const coCoordinators = await resolveUsersByCollegeIDs(
-      Array.isArray(payload.coCoordinatorCollegeIDs) ? payload.coCoordinatorCollegeIDs : [],
-      "co-coordinators"
-    );
+    const coordinators = Array.isArray(payload.coordinatorEmails)
+      ? await resolveUsersByEmails(payload.coordinatorEmails, "coordinators", true)
+      : await resolveUsersByCollegeIDs(
+        Array.isArray(payload.coordinatorCollegeIDs) ? payload.coordinatorCollegeIDs : [],
+        "coordinators"
+      );
+    const coCoordinators = Array.isArray(payload.coCoordinatorEmails)
+      ? await resolveUsersByEmails(payload.coCoordinatorEmails, "co-coordinators", true)
+      : await resolveUsersByCollegeIDs(
+        Array.isArray(payload.coCoordinatorCollegeIDs) ? payload.coCoordinatorCollegeIDs : [],
+        "co-coordinators"
+      );
 
     const event = await Event.create({
       name: payload.name,

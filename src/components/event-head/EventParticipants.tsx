@@ -7,17 +7,18 @@ import { toast } from "react-toastify";
 
 type TeamMember = {
   name?: string;
-  rollNumber?: string;
+  collegeID?: string;
   phone?: string;
+  email?: string;
 };
 
 type Registration = {
   userId: string;
   teamData: TeamMember[];
+  leader?: TeamMember | null;
   metadata?: {
     dynamicEventType?: string;
     groupName?: string;
-    utensilsRequired?: string;
   };
 };
 
@@ -29,24 +30,23 @@ type EventParticipantsProps = {
 
 function getRows(registrations: Registration[]) {
   return registrations.map((registration, index) => {
-    const leader = registration.teamData?.[0] || {};
+    const leader = registration.leader || registration.teamData?.[0] || {};
     const members = registration.teamData?.slice(1) || [];
 
     return {
       "Sl No.": index + 1,
       "Leader Name": leader.name || "N/A",
-      "Leader Roll No.": leader.rollNumber || "N/A",
+      "Leader Roll No.": leader.collegeID || "N/A",
       "Leader Email": registration.userId,
       "Leader Phone": leader.phone || "N/A",
       "Team Members": members
         .map(
           (member, memberIndex) =>
-            `${memberIndex + 1}. ${member.name || "N/A"} (${member.rollNumber || "N/A"}, ${member.phone || "N/A"})`
+            `${memberIndex + 1}. ${member.name || "N/A"} (${member.collegeID || "N/A"}, ${member.phone || "N/A"})`
         )
         .join(", "),
       "Event Type": registration.metadata?.dynamicEventType || "N/A",
       "Group Name": registration.metadata?.groupName || "N/A",
-      "Utensils Required": registration.metadata?.utensilsRequired || "N/A",
     };
   });
 }
@@ -151,8 +151,8 @@ export default function EventParticipants({
             </thead>
             <tbody>
               {registrations.map((registration, index) => {
-                const leader = registration.teamData?.[0] || {};
-                return <tr key={`${registration.userId}-${index}`} className="border-b border-white/5 text-zinc-300"><td className="px-3 py-3">{leader.name || "N/A"}<span className="block text-xs text-zinc-500">{leader.rollNumber || "N/A"}</span></td><td className="px-3 py-3">{registration.userId}</td><td className="px-3 py-3">{leader.phone || "N/A"}</td><td className="px-3 py-3">{registration.teamData?.length || 0}</td><td className="px-3 py-3">{registration.metadata?.groupName || "N/A"}</td></tr>;
+                const leader = registration.leader || registration.teamData?.[0] || {};
+                return <tr key={`${registration.userId}-${index}`} className="border-b border-white/5 text-zinc-300"><td className="px-3 py-3">{leader.name || "N/A"}<span className="block text-xs text-zinc-500">{leader.collegeID || "N/A"}</span></td><td className="px-3 py-3">{registration.userId}</td><td className="px-3 py-3">{leader.phone || "N/A"}</td><td className="px-3 py-3">{registration.teamData?.length || 0}</td><td className="px-3 py-3">{registration.metadata?.groupName || "N/A"}</td></tr>;
               })}
             </tbody>
           </table>

@@ -54,7 +54,7 @@ export async function POST(req) {
       );
     }
 
-    if (!canCreateEvents(user)) {
+    if (!(await canCreateEvents(user))) {
       return NextResponse.json(
         { success: false, message: "You are not allowed to create categories" },
         { status: 403 }

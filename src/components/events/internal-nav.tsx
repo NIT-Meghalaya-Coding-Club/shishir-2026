@@ -1,9 +1,8 @@
 'use client';
 import React from 'react';
 import { motion } from 'framer-motion';
-import event_categories from '@/data/categoryData';
 
-export default function Inav() {
+export default function Inav({ categories }: { categories: string[] }) {
   const handleScroll = (category: string) => {
     const element = document.getElementById(category.toLowerCase().replace(/ /g, '-'));
     if (element) {
@@ -19,7 +18,7 @@ export default function Inav() {
   };
 
   // Duplicate the categories to create a seamless loop
-  const duplicatedCategories = [...event_categories, ...event_categories];
+  const duplicatedCategories = [...categories, ...categories];
 
   return (
     <div className="w-full mt-10 px-4 overflow-hidden">
