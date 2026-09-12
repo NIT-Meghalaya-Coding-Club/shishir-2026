@@ -7,6 +7,7 @@ import CountdownTimer from '@/components/homepage/countdownTimer'
 // import Announcement from '@/components/homepage/announcement'
 import FeaturedArtists from '@/components/homepage/featured-artists'
 import { SakuraLanding } from '@/components/homepage/SakuraLanding'
+import { Starfield } from '@/components/homepage/Starfield'
 
 export default function Home() {
   return (
@@ -20,6 +21,7 @@ export default function Home() {
 
         <CountdownTimer />
         <FeaturedArtists />
+        <Starfield/>
         {/* <Sponsors /> */}
         {/* <Announcement /> */}
         <About />
