@@ -5,6 +5,7 @@ import {
   canCreateCommittees,
   getCurrentUser,
   resolveUsersByCollegeIDs,
+  resolveUsersByEmails,
 } from "@/lib/eventAuth";
 
 function normalizeCode(code) {
@@ -117,10 +118,12 @@ export async function POST(req) {
       name: payload.name,
       code,
       committeeHeads: await resolveUsersByCollegeIDs(committeeHeadIDs, "committee heads"),
-      coordinators: await resolveUsersByCollegeIDs(
-        Array.isArray(payload.coordinatorCollegeIDs) ? payload.coordinatorCollegeIDs : [],
-        "coordinators"
-      ),
+      coordinators: Array.isArray(payload.coordinatorEmails)
+        ? await resolveUsersByEmails(payload.coordinatorEmails, "coordinators", true)
+        : await resolveUsersByCollegeIDs(
+          Array.isArray(payload.coordinatorCollegeIDs) ? payload.coordinatorCollegeIDs : [],
+          "coordinators"
+        ),
       coCoordinators: await resolveUsersByCollegeIDs(
         Array.isArray(payload.coCoordinatorCollegeIDs)
           ? payload.coCoordinatorCollegeIDs

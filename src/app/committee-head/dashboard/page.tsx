@@ -56,6 +56,10 @@ function getPersonCollegeIDs(people: Person[]) {
   return people.map((person) => person.collegeID).filter(Boolean);
 }
 
+function getPersonEmails(people: Person[]) {
+  return people.map((person) => person.email).filter(Boolean);
+}
+
 export default function CommitteeHeadDashboard() {
   const { data: session, status } = useSession();
   const [committees, setCommittees] = useState<CommitteeRecord[]>([]);
@@ -245,6 +249,9 @@ export default function CommitteeHeadDashboard() {
         committeeHeadCollegeIDs: getPersonCollegeIDs(formData.committeeHeads),
         coordinatorCollegeIDs: getPersonCollegeIDs(formData.coordinators),
         coCoordinatorCollegeIDs: getPersonCollegeIDs(formData.coCoordinators),
+        committeeHeadEmails: getPersonEmails(formData.committeeHeads),
+        coordinatorEmails: getPersonEmails(formData.coordinators),
+        coCoordinatorEmails: getPersonEmails(formData.coCoordinators),
       };
       const validation = CommitteePayloadSchema.safeParse(payload);
       if (!validation.success) {

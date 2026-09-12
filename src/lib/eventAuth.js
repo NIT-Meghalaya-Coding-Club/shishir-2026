@@ -46,11 +46,11 @@ export async function canCreateCommittees(user) {
   return settings.committeeHeadEmails.includes(user.email.toLowerCase());
 }
 
-export function snapshotUser(user) {
+export function snapshotUser(user, allowIncomplete = false) {
   return {
     user: user._id,
-    collegeID: user.collegeID,
-    name: user.name,
+    collegeID: user.collegeID || (allowIncomplete ? user.email : undefined),
+    name: user.name || (allowIncomplete ? user.email : undefined),
     email: user.email,
     phone: user.phone || "",
     image: user.image || "",
@@ -153,4 +153,39 @@ export async function resolveUsersByCollegeIDs(collegeIDs = [], label = "users")
   }
 
   return normalizedIDs.map((collegeID) => snapshotUser(byCollegeID.get(collegeID)));
+}
+
+export async function resolveUsersByEmails(
+  emails = [],
+  label = "users",
+  allowIncomplete = false
+) {
+  const normalizedEmails = [...new Set(
+    emails.map((email) => String(email || "").trim().toLowerCase()).filter(Boolean)
+  )];
+
+  if (normalizedEmails.length === 0) return [];
+
+  const users = await User.find({ email: { $in: normalizedEmails } });
+  const byEmail = new Map(users.map((user) => [user.email.toLowerCase(), user]));
+  const missing = normalizedEmails.filter((email) => !byEmail.has(email));
+
+  if (missing.length > 0) {
+    const error = new Error(`Could not find ${label}: ${missing.join(", ")}`);
+    error.status = 400;
+    throw error;
+  }
+
+  const incomplete = users.filter((user) => !user.name || !user.email || !user.collegeID);
+  if (!allowIncomplete && incomplete.length > 0) {
+    const error = new Error(
+      `${label} must have completed profiles: ${incomplete
+        .map((user) => user.collegeID || user.email)
+        .join(", ")}`
+    );
+    error.status = 400;
+    throw error;
+  }
+
+  return normalizedEmails.map((email) => snapshotUser(byEmail.get(email), allowIncomplete));
 }

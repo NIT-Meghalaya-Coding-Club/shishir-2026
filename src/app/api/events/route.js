@@ -8,6 +8,7 @@ import {
   getCurrentUser,
   hydrateEventPeople,
   resolveUsersByCollegeIDs,
+  resolveUsersByEmails,
   snapshotUser,
 } from "@/lib/eventAuth";
 
@@ -189,14 +190,18 @@ export async function POST(req) {
     ];
 
     const eventHeads = await resolveUsersByCollegeIDs(eventHeadIDs, "event heads");
-    const coordinators = await resolveUsersByCollegeIDs(
-      Array.isArray(payload.coordinatorCollegeIDs) ? payload.coordinatorCollegeIDs : [],
-      "coordinators"
-    );
-    const coCoordinators = await resolveUsersByCollegeIDs(
-      Array.isArray(payload.coCoordinatorCollegeIDs) ? payload.coCoordinatorCollegeIDs : [],
-      "co-coordinators"
-    );
+    const coordinators = Array.isArray(payload.coordinatorEmails)
+      ? await resolveUsersByEmails(payload.coordinatorEmails, "coordinators", true)
+      : await resolveUsersByCollegeIDs(
+        Array.isArray(payload.coordinatorCollegeIDs) ? payload.coordinatorCollegeIDs : [],
+        "coordinators"
+      );
+    const coCoordinators = Array.isArray(payload.coCoordinatorEmails)
+      ? await resolveUsersByEmails(payload.coCoordinatorEmails, "co-coordinators", true)
+      : await resolveUsersByCollegeIDs(
+        Array.isArray(payload.coCoordinatorCollegeIDs) ? payload.coCoordinatorCollegeIDs : [],
+        "co-coordinators"
+      );
 
     const event = await Event.create({
       name: payload.name,

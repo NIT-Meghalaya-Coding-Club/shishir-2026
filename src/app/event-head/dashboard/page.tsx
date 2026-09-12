@@ -103,6 +103,10 @@ function getPersonCollegeIDs(people: Person[]) {
   return people.map((person) => person.collegeID).filter(Boolean);
 }
 
+function getPersonEmails(people: Person[]) {
+  return people.map((person) => person.email).filter(Boolean);
+}
+
 export default function EventHeadDashboard() {
   const { data: session, status } = useSession();
   const [events, setEvents] = useState<EventRecord[]>([]);
@@ -422,6 +426,18 @@ export default function EventHeadDashboard() {
 
       const payload = {
         ...formData,
+        eventHeads: formData.eventHeads.map((person) => ({
+          ...person,
+          email: person.email,
+        })),
+        coordinators: formData.coordinators.map((person) => ({
+          ...person,
+          email: person.email,
+        })),
+        coCoordinators: formData.coCoordinators.map((person) => ({
+          ...person,
+          email: person.email,
+        })),
         posterLink,
         category: categoryName,
         categoryId,
@@ -431,6 +447,9 @@ export default function EventHeadDashboard() {
         eventHeadCollegeIDs: getPersonCollegeIDs(formData.eventHeads),
         coordinatorCollegeIDs: getPersonCollegeIDs(formData.coordinators),
         coCoordinatorCollegeIDs: getPersonCollegeIDs(formData.coCoordinators),
+        eventHeadEmails: getPersonEmails(formData.eventHeads),
+        coordinatorEmails: getPersonEmails(formData.coordinators),
+        coCoordinatorEmails: getPersonEmails(formData.coCoordinators),
       };
 
       const response = await fetch(
