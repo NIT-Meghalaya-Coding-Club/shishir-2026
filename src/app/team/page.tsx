@@ -192,16 +192,6 @@ export default function Contact() {
                             >
                               <FaEnvelope size={24} />
                             </a>
-                            {member.linkedinLink && (
-                              <a
-                                href={member.linkedinLink}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-gray-400 hover:text-yellow-400 transition-colors duration-300 relative z-20"
-                              >
-                                <FaLinkedin size={24} />
-                              </a>
-                            )}
                           </div>
                         </div>
                       </div>

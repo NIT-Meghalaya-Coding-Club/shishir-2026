@@ -10,7 +10,7 @@ export default function RegistrationPrompt() {
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    if (status !== "authenticated" || !session?.user?.email) {
+    if (status !== "authenticated" || !session?.user?.email || !session) {
       setShowModal(false);
       return;
     }
@@ -20,7 +20,7 @@ export default function RegistrationPrompt() {
     const checkRegistration = async () => {
       try {
         const response = await fetch(
-          `/api/user/get-info/${encodeURIComponent(session.user.email)}`,
+          `/api/user/get-info/${encodeURIComponent(session.user?.email as string)}`,
           { cache: "no-store" }
         );
         if (!response.ok || cancelled) return;
