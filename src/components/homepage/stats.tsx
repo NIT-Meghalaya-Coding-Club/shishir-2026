@@ -197,14 +197,14 @@ export const BentoCard = ({
 };
 
 const Events = () => (
-  <section className="min-h-screen bg-gradient-to-b from-blue-950 via-blue-950 to-black pb-20 sm:pb-24 lg:pb-40">
+  <section className="min-h-screen bg-gradient-to-b from-slate-100 via-slate-50 to-white dark:from-blue-950 dark:via-blue-950 dark:to-black pb-20 sm:pb-24 lg:pb-40 transition-colors duration-300">
     <div className="container mx-auto px-4 sm:px-6 lg:px-10">
       {/* Hero Text Section */}
       <div className="relative px-4 py-16 sm:py-24 lg:py-32 text-center">
         <div className="absolute inset-0 opacity-10" />
-        <p className="relative mx-auto max-w-3xl font-circular-web text-base sm:text-lg lg:text-2xl text-blue-50 leading-relaxed">
+        <p className="relative mx-auto max-w-3xl font-circular-web text-base sm:text-lg lg:text-2xl text-slate-800 dark:text-blue-50 leading-relaxed font-normal dark:font-light transition-colors duration-300">
           Experience the cultural extravaganza with{" "}
-          <span className="bg-gradient-to-r from-amber-300 to-amber-500 bg-clip-text font-bold text-transparent">
+          <span className="bg-gradient-to-r from-amber-600 to-amber-500 dark:from-amber-300 dark:to-amber-500 bg-clip-text font-bold text-transparent">
             30+ events
           </span>{" "}
           across clubs, featuring national and international artists, bringing

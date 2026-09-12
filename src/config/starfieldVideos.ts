@@ -191,7 +191,7 @@ export const RAW_STARFIELD_VIDEOS: VideoItemConfig[] = [
   },
   {
     filename: 'Modeling.mp4',
-    angleDeg: 35, // Quadrant 4: Bottom-Right
+    angleDeg: 50, // Quadrant 4: Bottom-Right
     phase: 2,
   },
   {
@@ -201,7 +201,7 @@ export const RAW_STARFIELD_VIDEOS: VideoItemConfig[] = [
   },
   {
     filename: 'Drama.mp4',
-    angleDeg: 115, // Quadrant 3: Bottom-Left (Down)
+    angleDeg: 120, // Quadrant 3: Bottom-Left (Down)
     phase: 2,
   },
   {

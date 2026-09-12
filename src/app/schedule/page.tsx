@@ -43,7 +43,7 @@ const SchedulePage = () => {
       style={{ backgroundImage: 'url("/img/brickwall.webp")' }}
     >
       {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 to-black-900/80" />
+      <div className="absolute inset-0 bg-gradient-to-br from-white/95 via-slate-100/90 to-white/95 dark:from-gray-900/80 dark:to-black/80 transition-colors duration-300" />
 
       <div className="relative max-w-7xl mx-auto px-4 py-16">
         {/* Header with decorative elements */}
@@ -70,7 +70,7 @@ const SchedulePage = () => {
                 ${
                   day === activeDay
                     ? "bg-gradient-to-r from-yellow-500 to-yellow-600 border-yellow-400 text-white shadow-xl shadow-yellow-500/20"
-                    : "bg-white/10 border-white/20 backdrop-blur-lg hover:bg-white/20 text-white"
+                    : "bg-white/80 dark:bg-white/10 border-slate-200 dark:border-white/20 backdrop-blur-lg hover:bg-white dark:hover:bg-white/20 text-slate-900 dark:text-white shadow-sm dark:shadow-none"
                 }`}
             >
               <div className="flex items-center justify-between">
@@ -91,8 +91,8 @@ const SchedulePage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Category Sidebar */}
           <div className="lg:col-span-1">
-            <div className="bg-white/10 backdrop-blur-xl rounded-xl p-6 border-2 border-white/20">
-              <h2 className="text-xl font-bold mb-6 text-yellow-400">
+            <div className="bg-white/80 dark:bg-white/10 backdrop-blur-xl rounded-xl p-6 border-2 border-slate-200 dark:border-white/20 shadow-md dark:shadow-none transition-colors duration-300">
+              <h2 className="text-xl font-bold mb-6 text-amber-600 dark:text-yellow-400">
                 Categories
               </h2>
               <div className="space-y-3">
@@ -102,7 +102,7 @@ const SchedulePage = () => {
                     ${
                       activeCategory === "All"
                         ? "bg-gradient-to-r from-blue-600 to-blue-700 border-blue-400 text-white"
-                        : "border-white/10 hover:border-blue-400/50 text-white/90 hover:bg-white/5"
+                        : "border-slate-200 dark:border-white/10 hover:border-blue-400/50 text-slate-800 dark:text-white/90 hover:bg-slate-100 dark:hover:bg-white/5"
                     }`}
                 >
                   <div className="flex items-center justify-between">
@@ -133,39 +133,39 @@ const SchedulePage = () => {
 
           {/* Event Cards */}
           <div className="lg:col-span-3">
-            <div className="bg-white/10 backdrop-blur-xl rounded-xl p-8 border-2 border-white/20">
-              <h2 className="text-3xl font-bold mb-8 text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
+            <div className="bg-white/85 dark:bg-white/10 backdrop-blur-xl rounded-xl p-8 border-2 border-slate-200 dark:border-white/20 shadow-lg dark:shadow-none transition-colors duration-300">
+              <h2 className="text-3xl font-bold mb-8 text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-yellow-600">
                 {activeCategory === "All" ? "All" : activeCategory} Sessions
               </h2>
               <div className="space-y-6">
                 {categoryEvents.map((event: EventType, index: number) => (
                   <div
                     key={index}
-                    className="border-2 border-white/20 rounded-xl p-6 hover:shadow-2xl transition-all duration-300 bg-white/5 backdrop-blur-xl hover:bg-white/10 group"
+                    className="border-2 border-slate-200 dark:border-white/20 rounded-xl p-6 hover:shadow-2xl transition-all duration-300 bg-slate-50/80 dark:bg-white/5 backdrop-blur-xl hover:bg-slate-100 dark:hover:bg-white/10 group"
                   >
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
-                      <h3 className="text-2xl font-bold text-yellow-400 group-hover:text-yellow-300 transition-colors duration-300">
+                      <h3 className="text-2xl font-bold text-amber-600 dark:text-yellow-400 group-hover:text-amber-700 dark:group-hover:text-yellow-300 transition-colors duration-300">
                         {event.name}
                       </h3>
-                      <div className="flex items-center space-x-2 text-white/80">
+                      <div className="flex items-center space-x-2 text-slate-700 dark:text-white/80">
                         <Clock className="w-5 h-5" />
                         <span>{event.time}</span>
                       </div>
                     </div>
 
-                    <p className="text-white/70 mb-6 text-lg">
+                    <p className="text-slate-700 dark:text-white/70 mb-6 text-lg">
                       {event.description}
                     </p>
 
                     <div className="flex flex-col md:flex-row md:items-center space-y-3 md:space-y-0 md:space-x-8">
-                      <div className="flex items-center space-x-3 text-white/80">
-                        <MapPin className="w-5 h-5 text-blue-400" />
+                      <div className="flex items-center space-x-3 text-slate-700 dark:text-white/80">
+                        <MapPin className="w-5 h-5 text-blue-500 dark:text-blue-400" />
                         <span>{event.place}</span>
                       </div>
 
                       {event.speakers && event.speakers.length > 0 && (
-                        <div className="flex items-center space-x-3 text-white/80">
-                          <Users className="w-5 h-5 text-blue-400" />
+                        <div className="flex items-center space-x-3 text-slate-700 dark:text-white/80">
+                          <Users className="w-5 h-5 text-blue-500 dark:text-blue-400" />
                           <span>{event.speakers.join(", ")}</span>
                         </div>
                       )}

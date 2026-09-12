@@ -18,7 +18,7 @@ const Mun: React.FC = () => {
       }}
       className="relative min-h-screen"
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 to-black-900/80 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-br from-white/95 via-slate-100/90 to-white/95 dark:from-gray-900/80 dark:to-black/80 pointer-events-none transition-colors duration-300" />
       <div className="flex flex-col items-center min-h-screen w-full relative z-10 px-4 sm:px-6 lg:px-8">
         <div className="relative flex items-center gap-4 mt-28">
           <Crown className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-yellow-400 animate-pulse" />

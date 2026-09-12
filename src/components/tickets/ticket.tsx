@@ -174,13 +174,13 @@ const ShishirTicketSeller: React.FC = () => {
   };
 
   return (
-    <div className="w-full min-h-screen flex flex-col justify-center items-center bg-indigo-950 font-sans text-white pt-16 mb-16">
+    <div className="w-full min-h-screen flex flex-col justify-center items-center bg-slate-100 dark:bg-indigo-950 font-sans text-slate-900 dark:text-white pt-16 mb-16 transition-colors duration-300">
       <ValidationDialog
         open={Boolean(validationMessage)}
         message={validationMessage}
         onClose={() => setValidationMessage("")}
       />
-      <div className="w-full max-w-4xl h-full bg-indigo-950 bg-opacity-95 shadow-2xl overflow-hidden relative">
+      <div className="w-full max-w-4xl h-full bg-white dark:bg-indigo-950 shadow-2xl rounded-2xl border border-slate-200 dark:border-indigo-900 overflow-hidden relative transition-colors duration-300">
         {/* Animated background elements */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0">
           <div className="absolute top-20 left-10 w-32 h-32 rounded-full bg-amber-500 opacity-10 blur-xl animate-pulse"></div>
@@ -195,20 +195,20 @@ const ShishirTicketSeller: React.FC = () => {
         </div>
 
         {/* Decorative ticket elements */}
-        <div className="absolute left-0 top-10 w-8 h-16 bg-indigo-950 rounded-r-full"></div>
-        <div className="absolute right-0 top-10 w-8 h-16 bg-indigo-950 rounded-l-full"></div>
-        <div className="absolute left-0 bottom-10 w-8 h-16 bg-indigo-950 rounded-r-full"></div>
-        <div className="absolute right-0 bottom-10 w-8 h-16 bg-indigo-950 rounded-l-full"></div>
+        <div className="absolute left-0 top-10 w-8 h-16 bg-slate-100 dark:bg-indigo-950 rounded-r-full border-r border-slate-200 dark:border-indigo-900"></div>
+        <div className="absolute right-0 top-10 w-8 h-16 bg-slate-100 dark:bg-indigo-950 rounded-l-full border-l border-slate-200 dark:border-indigo-900"></div>
+        <div className="absolute left-0 bottom-10 w-8 h-16 bg-slate-100 dark:bg-indigo-950 rounded-r-full border-r border-slate-200 dark:border-indigo-900"></div>
+        <div className="absolute right-0 bottom-10 w-8 h-16 bg-slate-100 dark:bg-indigo-950 rounded-l-full border-l border-slate-200 dark:border-indigo-900"></div>
 
         {/* Content container */}
         <div className="relative z-10 p-6 h-full overflow-y-auto overflow-x-hidden scrollbar-hide">
           {/* Header - Always visible */}
           <div className="flex flex-col items-center mb-8 animate-fadeIn">
-            <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 via-amber-300 to-yellow-500 mb-2">
+            <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-yellow-500 via-amber-400 to-yellow-600 mb-2">
               SHISHIR 2025
             </h1>
             <div className="relative">
-              <p className="text-xl text-amber-200">
+              <p className="text-xl text-amber-600 dark:text-amber-200 font-medium">
                 Annual College Fest Tickets
               </p>
               <div className="absolute -left-16 -right-16 top-1/2 border-t border-dashed border-amber-500 opacity-30 z-0"></div>
@@ -219,7 +219,7 @@ const ShishirTicketSeller: React.FC = () => {
             {isLoading ? (
               <div className="flex flex-col items-center justify-center py-32">
                 <div className="w-16 h-16 border-4 border-t-amber-400 border-b-amber-400 border-l-transparent border-r-transparent rounded-full animate-spin mb-4"></div>
-                <p className="text-amber-300 font-medium">
+                <p className="text-amber-500 dark:text-amber-300 font-medium">
                   {showQR && paymentVerified
                     ? "Preparing your ticket..."
                     : "Processing..."}
@@ -235,8 +235,8 @@ const ShishirTicketSeller: React.FC = () => {
                       : "scale-100 opacity-100"
                   }`}
                 >
-                  <h2 className="text-2xl font-bold text-amber-300 mb-4 flex items-center">
-                    <span className="w-8 h-8 flex items-center justify-center bg-amber-400 text-indigo-900 rounded-full mr-2 text-sm">
+                  <h2 className="text-2xl font-bold text-amber-600 dark:text-amber-300 mb-4 flex items-center">
+                    <span className="w-8 h-8 flex items-center justify-center bg-amber-400 text-slate-900 rounded-full mr-2 text-sm font-bold">
                       1
                     </span>
                     Select Your Event
@@ -247,22 +247,22 @@ const ShishirTicketSeller: React.FC = () => {
                         key={event.id}
                         className={`p-4 rounded-lg cursor-pointer transition-all duration-500 border relative overflow-hidden group ${
                           selectedEvent?.id === event.id
-                            ? "border-amber-400 bg-gradient-to-br from-indigo-900 to-indigo-800 transform scale-100"
-                            : "border-indigo-700 bg-indigo-800 hover:bg-indigo-900 hover:border-amber-300"
+                            ? "border-amber-500 bg-amber-50 dark:bg-gradient-to-br dark:from-indigo-900 dark:to-indigo-800 transform scale-100 shadow-md"
+                            : "border-slate-200 dark:border-indigo-700 bg-slate-50 dark:bg-indigo-800 hover:bg-slate-100 dark:hover:bg-indigo-900 hover:border-amber-400"
                         }`}
                         onClick={() => handleEventSelect(event)}
                       >
                         <div className="absolute inset-0 bg-gradient-to-r from-amber-500 to-amber-300 opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
-                        <h3 className="text-lg font-semibold text-amber-300">
+                        <h3 className="text-lg font-semibold text-slate-900 dark:text-amber-300">
                           {event.name}
                         </h3>
                         <div className="flex justify-between mt-2">
-                          <span className="text-indigo-200">{event.date}</span>
-                          <span className="font-bold text-amber-400">
+                          <span className="text-slate-600 dark:text-indigo-200">{event.date}</span>
+                          <span className="font-bold text-amber-600 dark:text-amber-400">
                             ₹{event.price}
                           </span>
                         </div>
-                        <div className="mt-1 text-sm text-indigo-300">
+                        <div className="mt-1 text-sm text-slate-500 dark:text-indigo-300">
                           Featuring: {event.artist}
                         </div>
                         {selectedEvent?.id === event.id && (
@@ -296,25 +296,24 @@ const ShishirTicketSeller: React.FC = () => {
                           : "translate-y-0 opacity-100"
                       }`}
                     >
-                      <h2 className="text-2xl font-bold text-amber-300 mb-4 flex items-center">
-                        <span className="w-8 h-8 flex items-center justify-center bg-amber-400 text-indigo-900 rounded-full mr-2 text-sm">
+                      <h2 className="text-2xl font-bold text-amber-600 dark:text-amber-300 mb-4 flex items-center">
+                        <span className="w-8 h-8 flex items-center justify-center bg-amber-400 text-slate-900 rounded-full mr-2 text-sm font-bold">
                           2
                         </span>
                         Ticket Quantity
                       </h2>
-                      <div className="flex items-center bg-indigo-800 rounded-lg p-4 relative overflow-hidden">
-                        <div className="absolute inset-0 bg-gradient-to-r from-indigo-800 via-indigo-700 to-indigo-800 opacity-50"></div>
+                      <div className="flex items-center bg-slate-100 dark:bg-indigo-800 rounded-lg p-4 relative overflow-hidden border border-slate-200 dark:border-indigo-700">
                         <button
-                          className="w-10 h-10 flex items-center justify-center rounded-full bg-indigo-700 text-amber-300 text-xl font-bold hover:bg-indigo-600 transition-all duration-300 relative z-10"
+                          className="w-10 h-10 flex items-center justify-center rounded-full bg-white dark:bg-indigo-700 text-amber-600 dark:text-amber-300 text-xl font-bold hover:bg-slate-200 dark:hover:bg-indigo-600 transition-all duration-300 relative z-10 shadow-sm"
                           onClick={() => setQuantity(Math.max(1, quantity - 1))}
                         >
                           -
                         </button>
-                        <div className="mx-6 text-xl font-bold text-white relative z-10 w-6 text-center">
+                        <div className="mx-6 text-xl font-bold text-slate-900 dark:text-white relative z-10 w-6 text-center">
                           {quantity}
                         </div>
                         <button
-                          className="w-10 h-10 flex items-center justify-center rounded-full bg-indigo-700 text-amber-300 text-xl font-bold hover:bg-indigo-600 transition-all duration-300 relative z-10"
+                          className="w-10 h-10 flex items-center justify-center rounded-full bg-white dark:bg-indigo-700 text-amber-600 dark:text-amber-300 text-xl font-bold hover:bg-slate-200 dark:hover:bg-indigo-600 transition-all duration-300 relative z-10 shadow-sm"
                           onClick={() =>
                             setQuantity(Math.min(10, quantity + 1))
                           }
@@ -322,10 +321,10 @@ const ShishirTicketSeller: React.FC = () => {
                           +
                         </button>
                         <div className="ml-auto text-right relative z-10">
-                          <div className="text-indigo-200">
+                          <div className="text-slate-600 dark:text-indigo-200">
                             Price per ticket
                           </div>
-                          <div className="text-xl font-bold text-amber-400">
+                          <div className="text-xl font-bold text-amber-600 dark:text-amber-400">
                             ₹{selectedEvent.price}
                           </div>
                         </div>

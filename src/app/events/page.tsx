@@ -101,23 +101,23 @@ function EventDetailsModal({ event, onClose }: { event: EventRecord; onClose: ()
   }, [onClose]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm" onMouseDown={onClose}>
-      <div role="dialog" aria-modal="true" aria-labelledby="event-details-title" className="relative max-h-[90vh] w-full max-w-5xl overflow-y-auto rounded-2xl border border-yellow-400/40 bg-gray-950 shadow-2xl shadow-black/60" onMouseDown={(eventMouseDown) => eventMouseDown.stopPropagation()}>
-        <button type="button" onClick={onClose} aria-label="Close event details" className="sticky left-4 top-4 z-20 -mb-10 mr-auto block rounded-full bg-black/70 p-2 text-yellow-300 transition hover:bg-yellow-400 hover:text-black">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 dark:bg-black/80 p-4 backdrop-blur-sm" onMouseDown={onClose}>
+      <div role="dialog" aria-modal="true" aria-labelledby="event-details-title" className="relative max-h-[90vh] w-full max-w-5xl overflow-y-auto rounded-2xl border border-yellow-500/40 bg-white dark:bg-gray-950 shadow-2xl" onMouseDown={(eventMouseDown) => eventMouseDown.stopPropagation()}>
+        <button type="button" onClick={onClose} aria-label="Close event details" className="sticky left-4 top-4 z-20 -mb-10 mr-auto block rounded-full bg-slate-100 dark:bg-black/70 p-2 text-yellow-600 dark:text-yellow-300 transition hover:bg-yellow-400 hover:text-black">
           <X size={20} />
         </button>
         <div className="grid min-h-[55vh] md:grid-cols-[1fr_0.9fr]">
           <div className="order-2 flex flex-col gap-6 p-6 sm:p-8 md:order-1">
             <div>
-              <p className="mb-2 text-sm font-bold uppercase tracking-[0.2em] text-yellow-400">{event.category.replace("_", " ")}</p>
-              <h2 id="event-details-title" className="text-3xl font-bold text-white sm:text-4xl">{event.name}</h2>
+              <p className="mb-2 text-sm font-bold uppercase tracking-[0.2em] text-yellow-600 dark:text-yellow-400">{event.category.replace("_", " ")}</p>
+              <h2 id="event-details-title" className="text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl">{event.name}</h2>
             </div>
-            <p className="whitespace-pre-wrap break-words leading-7 text-gray-300">{event.description}</p>
-            <div className="grid gap-3 text-sm text-gray-200 sm:grid-cols-2">
-              <p className="flex gap-2"><CalendarDays className="shrink-0 text-yellow-400" size={18} />{formatEventDate(event.startsAt)}</p>
-              <p className="flex gap-2"><MapPin className="shrink-0 text-yellow-400" size={18} />{event.location}</p>
-              <p><span className="text-yellow-400">Start:</span> {formatEventTime(event.startsAt)}</p>
-              <p><span className="text-yellow-400">End:</span> {formatEventTime(event.endsAt)}</p>
+            <p className="whitespace-pre-wrap break-words leading-7 text-slate-700 dark:text-gray-300">{event.description}</p>
+            <div className="grid gap-3 text-sm text-slate-800 dark:text-gray-200 sm:grid-cols-2">
+              <p className="flex gap-2"><CalendarDays className="shrink-0 text-yellow-500" size={18} />{formatEventDate(event.startsAt)}</p>
+              <p className="flex gap-2"><MapPin className="shrink-0 text-yellow-500" size={18} />{event.location}</p>
+              <p><span className="text-yellow-600 dark:text-yellow-400 font-semibold">Start:</span> {formatEventTime(event.startsAt)}</p>
+              <p><span className="text-yellow-600 dark:text-yellow-400 font-semibold">End:</span> {formatEventTime(event.endsAt)}</p>
             </div>
             <div className="space-y-4 border-t border-yellow-400/20 pt-5">
               <PeopleGroup label="Event Heads" people={event.eventHeads} />
@@ -190,7 +190,7 @@ export default function Events() {
         style={{ backgroundImage: `url('/img/brickwall.webp')` }}
       >
         {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 to-black-900/80 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-br from-white/95 via-slate-100/90 to-white/95 dark:from-gray-900/80 dark:to-black/80 pointer-events-none transition-colors duration-300" />
 
         {/* Content container */}
         <div className="relative w-full">
@@ -231,12 +231,12 @@ export default function Events() {
                 />
 
                 <div
-                  className="relative bg-gradient-to-r from-gray-900 to-black m-0.5 
+                  className="relative bg-gradient-to-r from-slate-100 to-white dark:from-gray-900 dark:to-black m-0.5 
     p-3 sm:p-4 md:p-5 lg:p-6
     rounded-tl-[18px] rounded-br-[18px]
     sm:rounded-tl-[23px] sm:rounded-br-[23px]
     md:rounded-tl-[28px] md:rounded-br-[28px]
-    lg:rounded-tl-[38px] lg:rounded-br-[38px]"
+    lg:rounded-tl-[38px] lg:rounded-br-[38px] transition-colors duration-300"
                 >
                   <div className="flex items-center justify-center gap-2 sm:gap-3 md:gap-4">
                     <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 lg:w-8 lg:h-8 text-yellow-400" />

@@ -20,11 +20,11 @@ export default function Home() {
         {/* <HeadliningEvents /> */}
 
         <CountdownTimer />
+        <About />
         <FeaturedArtists />
         <Starfield/>
         {/* <Sponsors /> */}
         {/* <Announcement /> */}
-        <About />
         <Events />
       </div>
       

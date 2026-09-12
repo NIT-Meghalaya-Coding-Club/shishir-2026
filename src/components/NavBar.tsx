@@ -2,11 +2,12 @@
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
-import { LuMenu } from "react-icons/lu";
+import { LuMenu, LuSun, LuMoon } from "react-icons/lu";
 import { motion, AnimatePresence } from "framer-motion";
 import NavBarItem from "./NavBarItem";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useTheme } from "@/context/ThemeContext";
 
 const NavBar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,6 +21,7 @@ const NavBar: React.FC = () => {
   const router = useRouter();
 
   const { status } = useSession();
+  const { theme, toggleTheme } = useTheme();
 
   const toggleMenu = () => {
     setIsOpen((prev) => !prev);
@@ -98,6 +100,8 @@ const NavBar: React.FC = () => {
   useEffect(() => {
     isOpenRef.current = isOpen;
     if (isOpen) {
+      // Keep navbar visible when menu is open
+      setIsVisible(true);
       if (inactivityTimerRef.current) {
         clearTimeout(inactivityTimerRef.current);
         inactivityTimerRef.current = null;
@@ -116,16 +120,13 @@ const NavBar: React.FC = () => {
     };
 
     const handleScroll = () => {
-      const currentScrollY = Math.max(0, window.scrollY);
+      const currentScrollY = window.scrollY;
 
-      if (currentScrollY > lastScrollY.current && currentScrollY > 30) {
-        // Scrolling down past threshold -> hide navbar immediately
-        if (inactivityTimerRef.current) {
-          clearTimeout(inactivityTimerRef.current);
-          inactivityTimerRef.current = null;
+      if (currentScrollY > lastScrollY.current && currentScrollY > 120) {
+        // Scrolling down -> hide navbar unless hovering or open
+        if (!isHoveredRef.current && !isOpenRef.current) {
+          setIsVisible(false);
         }
-        setIsVisible(false);
-        setIsOpen(false);
       } else if (currentScrollY < lastScrollY.current) {
         // Scrolling up -> show navbar and reset timer
         showNavbarAndResetTimer();
@@ -163,7 +164,7 @@ const NavBar: React.FC = () => {
         pointerEvents: isVisible ? "auto" : "none",
       }}
       transition={{ duration: 0.35, ease: "easeInOut" }}
-      className="fixed top-2 left-2 right-2 z-50 mx-auto rounded-xl backdrop-blur-md shadow-lg border border-white/10"
+      className="fixed top-2 left-2 right-2 z-50 mx-auto rounded-xl backdrop-blur-md shadow-lg border bg-white/80 dark:bg-black/80 border-slate-200/80 dark:border-white/10 transition-colors duration-300"
       ref={menuRef}
       onMouseEnter={() => {
         setIsHovered(true);
@@ -194,12 +195,29 @@ const NavBar: React.FC = () => {
           />
         </motion.div>
 
-        {/* Hamburger menu on the right */}
-        <div
-          className="cursor-pointer text-3xl text-white hover:text-yellow-300 transition-colors duration-200"
-          onClick={toggleMenu}
-        >
-          <LuMenu />
+        {/* Right action icons: Theme toggle & Hamburger menu */}
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={toggleTheme}
+            aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
+            title={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
+            className="flex items-center justify-center w-10 h-10 rounded-full bg-slate-100/90 dark:bg-white/[0.08] border border-slate-200 dark:border-white/15 text-slate-800 dark:text-amber-300 hover:bg-slate-200 dark:hover:bg-white/[0.15] transition-all duration-200 cursor-pointer shadow-sm hover:scale-105 active:scale-95"
+          >
+            {theme === "light" ? (
+              <LuMoon className="w-5 h-5 text-indigo-600 transition-transform duration-300" />
+            ) : (
+              <LuSun className="w-5 h-5 text-amber-400 transition-transform duration-300" />
+            )}
+          </button>
+
+          <div
+            className="cursor-pointer text-3xl text-slate-800 dark:text-white hover:text-amber-500 dark:hover:text-yellow-300 transition-colors duration-200 flex items-center justify-center p-1"
+            onClick={toggleMenu}
+            aria-label="Toggle Navigation Menu"
+          >
+            <LuMenu />
+          </div>
         </div>
       </div>
 
@@ -210,7 +228,7 @@ const NavBar: React.FC = () => {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="absolute right-4 top-16 w-48 rounded-xl backdrop-blur-md shadow-lg border border-white/10 p-4" // Glassmorphism effect for dropdown
+            className="absolute right-4 top-16 w-52 rounded-xl backdrop-blur-md shadow-2xl border bg-white/95 dark:bg-black/90 border-slate-200 dark:border-white/10 p-4 transition-colors duration-300"
           >
             <NavBarItem to="/" text="Home" onClick={closeMenu} />
             <NavBarItem to="/ticket" text="Ticket" onClick={closeMenu} />
@@ -225,6 +243,21 @@ const NavBar: React.FC = () => {
             {status === "authenticated" && (
               <NavBarItem to="/dashboard" text="Dashboard" onClick={closeMenu} />
             )}
+
+            {/* Quick theme switch inside menu */}
+            <li className="mt-3 pt-3 border-t border-slate-200 dark:border-white/10 flex items-center justify-between px-2">
+              <span className="text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-neutral-400">
+                Theme: <span className="font-bold text-slate-900 dark:text-white capitalize">{theme}</span>
+              </span>
+              <button
+                type="button"
+                onClick={toggleTheme}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-100 dark:bg-white/10 text-slate-800 dark:text-amber-300 hover:bg-slate-200 dark:hover:bg-white/20 transition-all duration-200"
+              >
+                {theme === "light" ? <LuMoon className="w-3.5 h-3.5 text-indigo-600" /> : <LuSun className="w-3.5 h-3.5 text-amber-400" />}
+                <span>Toggle</span>
+              </button>
+            </li>
           </motion.ul>
         )}
       </AnimatePresence>

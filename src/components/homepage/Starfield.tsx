@@ -71,7 +71,8 @@ export const Starfield: React.FC = () => {
     // Optimized, serene, and gently paced starlight
     const S = {
       count:    1100, // Balanced for lightweight rendering on weaker devices
-      palette:  ['#7CF5FF','#8CE0FF','#9D7CFF','#C77CFF','#FF7CE8','#FF6FB5'],
+      paletteDark:  ['#7CF5FF','#8CE0FF','#9D7CFF','#C77CFF','#FF7CE8','#FF6FB5'],
+      paletteLight: ['#1E40AF','#4338CA','#6D28D9','#9333EA','#BE185D','#D97706'],
       weights:  [0.45, 0.2, 0.15, 0.125, 0.1, 0.078],
       holeR:    6,   // Tight focal singularity point (no large black spot)
       reach:    1.35,
@@ -94,7 +95,7 @@ export const Starfield: React.FC = () => {
 
     interface Star {
       dx: number; dy: number; off: number; len: number;
-      wid: number; col: [number,number,number]; thr: number;
+      wid: number; colDark: [number,number,number]; colLight: [number,number,number]; thr: number;
     }
     let stars: Star[] = [];
 
@@ -103,10 +104,10 @@ export const Starfield: React.FC = () => {
       return [parseInt(c.slice(0,2),16), parseInt(c.slice(2,4),16), parseInt(c.slice(4,6),16)];
     };
     const rnd  = (a: number, b: number) => a + Math.random() * (b - a);
-    const pick = (): [number,number,number] => {
+    const pickColor = (palette: string[]): [number,number,number] => {
       let r = Math.random();
-      for (let i = 0; i < S.palette.length; i++) { r -= S.weights[i]; if (r <= 0) return hex(S.palette[i]); }
-      return hex(S.palette[0]);
+      for (let i = 0; i < palette.length; i++) { r -= S.weights[i]; if (r <= 0) return hex(palette[i]); }
+      return hex(palette[0]);
     };
 
     const initStars = () => {
@@ -114,7 +115,7 @@ export const Starfield: React.FC = () => {
         const a = Math.random() * Math.PI * 2;
         return { dx: Math.cos(a), dy: Math.sin(a), off: Math.random(),
                  len: rnd(S.minLen, S.maxLen), wid: rnd(S.minW, S.maxW),
-                 col: pick(), thr: Math.random() };
+                 colDark: pickColor(S.paletteDark), colLight: pickColor(S.paletteLight), thr: Math.random() };
       });
     };
 
@@ -140,14 +141,22 @@ export const Starfield: React.FC = () => {
       const thick   = (1 - starProgress) * 1.5 + starProgress * 0.6;
       const stretch = (1 - starProgress) * 0.4 + starProgress * 0.9;
 
+      const isDark = typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
+
       // Radiant central core: completely banishes any central black void
       if (starProgress > 0.02) {
         const coreOp = Math.min(0.55, starProgress * 0.55) * starGlobalFade * starExitFade;
         if (coreOp > 0.01) {
           const coreGr = ctx.createRadialGradient(cx, cy, 0, cx, cy, 40);
-          coreGr.addColorStop(0, `rgba(255, 255, 255, ${coreOp * 0.85})`);
-          coreGr.addColorStop(0.35, `rgba(124, 245, 255, ${coreOp * 0.45})`);
-          coreGr.addColorStop(1, 'rgba(0, 0, 0, 0)');
+          if (isDark) {
+            coreGr.addColorStop(0, `rgba(255, 255, 255, ${coreOp * 0.85})`);
+            coreGr.addColorStop(0.35, `rgba(124, 245, 255, ${coreOp * 0.45})`);
+            coreGr.addColorStop(1, 'rgba(0, 0, 0, 0)');
+          } else {
+            coreGr.addColorStop(0, `rgba(217, 119, 6, ${coreOp * 0.65})`);
+            coreGr.addColorStop(0.35, `rgba(79, 70, 229, ${coreOp * 0.45})`);
+            coreGr.addColorStop(1, 'rgba(255, 255, 255, 0)');
+          }
           ctx.fillStyle = coreGr;
           ctx.beginPath();
           ctx.arc(cx, cy, 40, 0, Math.PI * 2);
@@ -175,7 +184,7 @@ export const Starfield: React.FC = () => {
         }
         if (op <= 0.01) continue;
 
-        const [r, g, b] = s.col;
+        const [r, g, b] = isDark ? s.colDark : s.colLight;
         const gr = ctx.createLinearGradient(tx, ty, hx, hy);
         gr.addColorStop(0,          `rgba(${r},${g},${b},0)`);
         gr.addColorStop(S.tailFade, `rgba(${r},${g},${b},${op})`);
@@ -268,7 +277,7 @@ export const Starfield: React.FC = () => {
           opacity: 0,
           x: 0,
           y: 0,
-          scale: STARFIELD_VISUAL.initialScale, // 👈 Starting scale at center
+          scale: STARFIELD_VISUAL.initialScale,
           xPercent: -50,
           yPercent: -50,
           rotateX: 0,
@@ -288,11 +297,11 @@ export const Starfield: React.FC = () => {
     // Fade in portal smoothly as expansion begins
     tl.to(portal, { opacity: 1, duration: 0.4 }, 0);
 
-    // Portal expands from 0px circle to fullscreen rectangle
+    // Portal expands from 0px as a TRUE PERFECT CIRCLE to cover fullscreen
     tl.to(portal, {
-      width: () => window.innerWidth,
-      height: () => window.innerHeight,
-      borderRadius: '0%',
+      width: () => Math.hypot(window.innerWidth, window.innerHeight) * 1.05,
+      height: () => Math.hypot(window.innerWidth, window.innerHeight) * 1.05,
+      borderRadius: '50%',
       ease: 'power2.inOut',
       duration: STARFIELD_TIMING.portalOpenDuration,
     }, 0);
@@ -507,11 +516,11 @@ export const Starfield: React.FC = () => {
 
   return (
     <>
-      <section ref={sectionRef} className="starfield-section relative w-screen h-screen overflow-hidden bg-black">
+      <section ref={sectionRef} className="starfield-section relative w-screen h-screen overflow-hidden bg-white dark:bg-black transition-colors duration-300">
 
         {/* THE PORTAL: starts at 0px circle, expands to fill screen.
             The starfield canvas lives inside it and is clipped by it. */}
-        <div ref={portalRef} className="portal absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-0 h-0 rounded-full overflow-hidden z-[1] pointer-events-none">
+        <div ref={portalRef} className="portal absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-0 h-0 rounded-full overflow-hidden z-[1] pointer-events-none bg-white dark:bg-black">
           <canvas ref={canvasRef} className="portal-canvas absolute w-screen h-screen top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 block" />
         </div>
 
@@ -525,7 +534,7 @@ export const Starfield: React.FC = () => {
               style={{ transformOrigin: 'center center' }}
             >
               <div
-                className={`relative group overflow-hidden rounded-2xl border border-white/30 bg-black/75 backdrop-blur-md shadow-[0_0_40px_rgba(124,245,255,0.32),inset_0_0_15px_rgba(255,255,255,0.08)] aspect-video ${STARFIELD_VISUAL.cardWidthClass}`}
+                className={`relative group overflow-hidden rounded-2xl border border-slate-200/80 dark:border-white/30 bg-white/95 dark:bg-black/75 backdrop-blur-md shadow-[0_10px_40px_rgba(0,0,0,0.15)] dark:shadow-[0_0_40px_rgba(124,245,255,0.32),inset_0_0_15px_rgba(255,255,255,0.08)] aspect-video ${STARFIELD_VISUAL.cardWidthClass} transition-colors duration-300`}
               >
                 <video
                   ref={(el) => {
@@ -545,7 +554,7 @@ export const Starfield: React.FC = () => {
                   <span className="text-[clamp(0.75rem,1.2vw,0.95rem)] font-bold tracking-wider text-white uppercase font-mono drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] truncate mr-2">
                     {evt.name}
                   </span>
-                  <span className="inline-block w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_10px_#7CF5FF] shrink-0" />
+                  {/* <span className="inline-block w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_10px_#7CF5FF] shrink-0" /> */}
                 </div>
               </div>
             </div>
@@ -557,11 +566,12 @@ export const Starfield: React.FC = () => {
           <div ref={logoWrapRef} className="logo-wrapper [transform-style:preserve-3d] will-change-transform opacity-100 scale-100 flex justify-center items-center">
             <div ref={logoInnerRef} className="logo-inner [transform-style:preserve-3d] will-change-transform">
               <img
-                src="/shishir.png"
+                src="/assets/logo.png"
                 alt="SHISHIR 2026 - NIT Meghalaya"
                 className="logo-image w-[clamp(160px,22vw,320px)] h-auto object-contain select-none pointer-events-none"
                 draggable={false}
               />
+              
             </div>
           </div>
         </div>

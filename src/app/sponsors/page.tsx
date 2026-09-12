@@ -13,7 +13,7 @@ const Sponsors: React.FC = () => {
       style={{ backgroundImage: 'url("/img/brickwall.webp")' }}
     >
       {/* Main gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 to-black-900/80" />
+      <div className="absolute inset-0 bg-gradient-to-br from-white/95 via-slate-100/90 to-white/95 dark:from-gray-900/80 dark:to-black/80 transition-colors duration-300" />
 
       <div className="relative min-h-screen py-24">
         {/* Header Section */}
@@ -64,10 +64,9 @@ const Sponsors: React.FC = () => {
                       <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 rounded-3xl animate-gradient-x" />
 
                       {/* Card Content */}
-                      <div className="relative m-0.5 bg-gradient-to-br from-gray-900 to-black rounded-3xl p-8 backdrop-blur-xl transform hover:scale-105 transition-all duration-500 group-hover:shadow-2xl group-hover:shadow-yellow-500/20">
+                      <div className="relative m-0.5 bg-gradient-to-br from-white to-slate-100 dark:from-gray-900 dark:to-black rounded-3xl p-8 backdrop-blur-xl transform hover:scale-105 transition-all duration-500 shadow-md dark:shadow-none group-hover:shadow-2xl group-hover:shadow-yellow-500/20">
                         {/* Image Container */}
-                        <div className="aspect-square relative mb-6 overflow-hidden rounded-2xl bg-white/5">
-                          <div className="absolute inset-0 bg-gradient-to-br from-gray-800/50 to-black/50 group-hover:opacity-0 transition-opacity duration-300" />
+                        <div className="aspect-square relative mb-6 overflow-hidden rounded-2xl bg-slate-100 dark:bg-white/5 p-4">
                           <Image
                             src={sponsor.imageLink ?? defaultSponsorImageUrl}
                             alt={`${sponsor.name}'s logo`}

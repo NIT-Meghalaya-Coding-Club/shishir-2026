@@ -62,7 +62,7 @@ export default function Contact() {
       style={{ backgroundImage: 'url("/img/brickwall.webp")' }}
     >
       {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 to-black-900/80" />
+      <div className="absolute inset-0 bg-gradient-to-br from-white/95 via-slate-100/90 to-white/95 dark:from-gray-900/80 dark:to-black/80 transition-colors duration-300" />
 
       {/* Sidebar Navigation */}
       <div className="relative z-10 pb-20 sm:pb-0 sm:sticky sm:top-0 sm:h-screen basis-1/3 p-8 ">
@@ -98,8 +98,8 @@ export default function Contact() {
                         >
                           {/* Updated button styling */}
                           <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 rounded-lg opacity-30 group-hover:opacity-100 transition-opacity blur-sm group-hover:blur-none" />
-                          <div className="relative bg-black/50 backdrop-blur-lg rounded-lg px-6 py-3 border border-yellow-500/10 group-hover:border-transparent transition-all duration-300">
-                            <h1 className="text-lg font-medium text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 group-hover:from-yellow-200 group-hover:to-yellow-400">
+                          <div className="relative bg-white/80 dark:bg-black/50 backdrop-blur-lg rounded-lg px-6 py-3 border border-yellow-500/20 dark:border-yellow-500/10 group-hover:border-transparent transition-all duration-300 shadow-sm dark:shadow-none">
+                            <h1 className="text-lg font-medium text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 via-amber-500 to-yellow-600 dark:from-yellow-400 dark:via-yellow-500 dark:to-yellow-600 group-hover:from-yellow-500 group-hover:to-amber-600">
                               {team}
                             </h1>
                           </div>
@@ -151,7 +151,7 @@ export default function Contact() {
                     <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 rounded-2xl animate-gradient-x" />
 
                     {/* Card Content */}
-                    <div className="relative m-0.5 bg-gradient-to-br from-gray-900 to-black rounded-2xl p-8 backdrop-blur-xl transform hover:scale-95 transition-all duration-500">
+                    <div className="relative m-0.5 bg-gradient-to-br from-white to-slate-100 dark:from-gray-900 dark:to-black rounded-2xl p-8 backdrop-blur-xl transform hover:scale-95 transition-all duration-500 shadow-md dark:shadow-none">
                       {/* Spotlight effect */}
                       <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-32 h-32 bg-yellow-400/10 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
@@ -159,7 +159,7 @@ export default function Contact() {
                         {/* Profile Image */}
                         <div className="relative w-32 h-32">
                           <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 rounded-full animate-gradient-x" />
-                          <div className="absolute inset-0.5 bg-gray-900 rounded-full overflow-hidden">
+                          <div className="absolute inset-0.5 bg-slate-100 dark:bg-gray-900 rounded-full overflow-hidden">
                             <Image
                               src={member.imageLink ?? defaultImageUrl}
                               alt={`${member.name}'s photo`}
@@ -171,10 +171,10 @@ export default function Contact() {
 
                         {/* Member Info */}
                         <div className="text-center">
-                          <h3 className="text-base font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600 ">
+                          <h3 className="text-base font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 to-amber-600 dark:from-yellow-400 dark:to-yellow-600">
                             {member.name}
                           </h3>
-                          <span className="text-sm text-transparent bg-clip-text text-white ">
+                          <span className="text-sm text-slate-600 dark:text-white font-medium dark:font-normal">
                             {member.position}
                           </span>
 
@@ -182,13 +182,13 @@ export default function Contact() {
                           <div className="flex gap-6 justify-center pt-3">
                             <a
                               href={`tel:${member.contactNo}`}
-                              className="text-gray-400 hover:text-yellow-400 transition-colors duration-300 relative z-20"
+                              className="text-slate-500 dark:text-gray-400 hover:text-amber-600 dark:hover:text-yellow-400 transition-colors duration-300 relative z-20"
                             >
                               <FaPhone size={24} />
                             </a>
                             <a
                               href={`mailto:${member.email}`}
-                              className="text-gray-400 hover:text-yellow-400 transition-colors duration-300 relative z-20"
+                              className="text-slate-500 dark:text-gray-400 hover:text-amber-600 dark:hover:text-yellow-400 transition-colors duration-300 relative z-20"
                             >
                               <FaEnvelope size={24} />
                             </a>
