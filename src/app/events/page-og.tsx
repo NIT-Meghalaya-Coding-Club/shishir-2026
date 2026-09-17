@@ -5,11 +5,6 @@ import Inav from "@/components/events/internal-nav";
 import { useEffect, useState } from "react";
 import { CalendarDays, Crown, ExternalLink, Mail, MapPin, Phone, Sparkles, X } from "lucide-react";
 import Head from "next/head";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { EffectCoverflow, Pagination } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/effect-coverflow";
-import "swiper/css/pagination";
 
 type EventRecord = {
   _id: string;
@@ -156,69 +151,6 @@ function EventDetailsModal({ event, onClose }: { event: EventRecord; onClose: ()
   );
 }
 
-const dummyEvents: EventRecord[] = [
-  {
-    _id: "1",
-    name: "Mock Hackathon",
-    code: "mock-hack",
-    category: "Technical",
-    location: "Computer Center",
-    startsAt: new Date(Date.now() + 86400000).toISOString(), // Tomorrow
-    endsAt: new Date(Date.now() + 172800000).toISOString(), // Day after tomorrow
-    description: "A 48-hour coding marathon to solve real-world problems.",
-    rulebookLink: "#",
-    posterLink: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800&q=80",
-    eventHeads: [{ name: "Alice Johnson", collegeID: "B21001", phone: "9876543210", email: "alice@example.com" }],
-    coordinators: [{ name: "Bob Smith", collegeID: "B21002" }],
-    coCoordinators: []
-  },
-  {
-    _id: "2",
-    name: "Dance Battle",
-    code: "dance-battle",
-    category: "Technical",
-    location: "Main Stage",
-    startsAt: new Date(Date.now() + 259200000).toISOString(),
-    endsAt: new Date(Date.now() + 270000000).toISOString(),
-    description: "Show off your best moves in this solo dance competition.",
-    rulebookLink: "#",
-    posterLink: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800&q=80",
-    eventHeads: [{ name: "Charlie Davis", email: "charlie@example.com" }],
-    coordinators: [],
-    coCoordinators: []
-  },
-  {
-    _id: "3",
-    name: "Robo Wars",
-    code: "robo-wars",
-    category: "Technical",
-    location: "Mechanical Workshop Arena",
-    startsAt: new Date(Date.now() + 120000000).toISOString(),
-    endsAt: new Date(Date.now() + 150000000).toISOString(),
-    description: "Battle of bots! Design and control your combat robot to knock opponents out of the arena.",
-    rulebookLink: "#",
-    posterLink: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&q=80",
-    eventHeads: [{ name: "Rahul Sharma", collegeID: "B21045", phone: "9876543222", email: "rahul.s@example.com" }],
-    coordinators: [{ name: "Priya Roy", collegeID: "B21078" }],
-    coCoordinators: []
-  },
-  {
-    _id: "4",
-    name: "Code Clash",
-    code: "code-clash",
-    category: "Technical",
-    location: "Lab 3, CSE Dept",
-    startsAt: new Date(Date.now() + 180000000).toISOString(),
-    endsAt: new Date(Date.now() + 200000000).toISOString(),
-    description: "Fast-paced competitive programming contest testing algorithms, speed, and problem-solving prowess.",
-    rulebookLink: "#",
-    posterLink: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&q=80",
-    eventHeads: [{ name: "Ananya Sen", collegeID: "B21012", phone: "9876543233", email: "ananya@example.com" }],
-    coordinators: [{ name: "Dev Patel", collegeID: "B21089" }],
-    coCoordinators: []
-  }
-];
-
 export default function Events() {
   const [events, setEvents] = useState<EventRecord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -228,11 +160,6 @@ export default function Events() {
   useEffect(() => {
     async function fetchEvents() {
       try {
-
-        await new Promise(resolve => setTimeout(resolve, 500));
-        setEvents(dummyEvents);
-
-        /*
         const response = await fetch("/api/events");
         const data = await response.json();
 
@@ -241,7 +168,6 @@ export default function Events() {
         }
 
         setEvents(data.events);
-        */
       } catch (fetchError) {
         setError(fetchError instanceof Error ? fetchError.message : "Unable to load events");
       } finally {
@@ -328,84 +254,61 @@ export default function Events() {
                 </div>
               </div>
 
-              {/* Events Swiper */}
+              {/* Events Grid */}
               <div className="w-[90vw] mx-auto">
-                <Swiper
-                  effect={'coverflow'}
-                  grabCursor={true}
-                  centeredSlides={true}
-                  slidesPerView={'auto'}
-                  initialSlide={1}
-                  coverflowEffect={{
-                    rotate: 50,
-                    stretch: 0,
-                    depth: 100,
-                    modifier: 1,
-                    slideShadows: true,
-                  }}
-                  pagination={{ clickable: true }}
-                  modules={[EffectCoverflow, Pagination]}
-                  className="w-full pb-24 pt-12 !overflow-visible"
-                  style={{
-                    "--swiper-pagination-bottom": "0px",
-                    "--swiper-pagination-color": "#facc15",
-                    "--swiper-pagination-bullet-inactive-color": "#475569",
-                  } as React.CSSProperties}
-                >
+                <div className="flex flex-wrap justify-center gap-8">
                   {events
                     .filter((event) => event.category === category)
                     .map((event, index) => (
-                      <SwiperSlide
-                        key={event._id || event.code}
-                        className="!w-[280px] sm:!w-[340px] md:!w-[400px] aspect-square !overflow-visible"
-                      >
-                        <div className="w-full h-full rounded-xl shadow-2xl relative overflow-hidden group transform transition-all duration-500 hover:scale-105">
-                          {/* Decorative border */}
-                          <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 animate-gradient-x rounded-tl-[20px] rounded-br-[20px]" />
+                    <div
+                      key={event._id || event.code}
+                      className="w-full max-w-[400px] aspect-square rounded-xl shadow-2xl relative overflow-hidden group transform transition-all duration-500 hover:scale-105"
+                    >
+                      {/* Decorative border */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 animate-gradient-x rounded-tl-[20px] rounded-br-[20px]" />
 
-                          {/* Content container */}
-                          <div className="absolute inset-0.5 rounded-xl overflow-hidden bg-gradient-to-br from-gray-900 to-black rounded-tl-[18px] rounded-br-[18px]">
-                            {/* Image */}
-                            <Image
-                              src={event.posterLink}
-                              alt={event.name}
-                              fill
-                              style={{ objectFit: "cover" }}
-                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                              quality={75}
-                              priority={index < 4}
-                              className="transition-transform duration-500 group-hover:scale-110"
-                            />
+                      {/* Content container */}
+                      <div className="absolute inset-0.5 rounded-xl overflow-hidden bg-gradient-to-br from-gray-900 to-black rounded-tl-[18px] rounded-br-[18px]">
+                        {/* Image */}
+                        <Image
+                          src={event.posterLink}
+                          alt={event.name}
+                          fill
+                          style={{ objectFit: "cover" }}
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          quality={75}
+                          priority={index < 4}
+                          className="transition-transform duration-500 group-hover:scale-110"
+                        />
 
-                            {/* Event Name Overlay */}
-                            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/90 to-transparent text-white p-4 transform transition-transform duration-500 translate-y-full group-hover:translate-y-0 rounded-b-xl">
-                              <p className="font-bold text-2xl text-yellow-400 mb-2">
-                                {event.name}
-                              </p>
+                        {/* Event Name Overlay */}
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/90 to-transparent text-white p-4 transform transition-transform duration-500 translate-y-full group-hover:translate-y-0 rounded-b-xl">
+                          <p className="font-bold text-2xl text-yellow-400 mb-2">
+                            {event.name}
+                          </p>
 
-                              {/* Links */}
-                              <div className="flex flex-col gap-3">
-                                <a
-                                  href={`/register/${event.code}`}
-                                  className="inline-block bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-bold py-2 px-4 rounded-lg text-center transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-yellow-500/25"
-                                >
-                                  Register Now
-                                </a>
+                          {/* Links */}
+                          <div className="flex flex-col gap-3">
+                            <a
+                              href={`/register/${event.code}`}
+                              className="inline-block bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-bold py-2 px-4 rounded-lg text-center transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-yellow-500/25"
+                            >
+                              Register Now
+                            </a>
 
-                                <button
-                                  type="button"
-                                  onClick={() => setSelectedEvent(event)}
-                                  className="inline-block bg-gradient-to-r from-gray-800 to-gray-900 text-yellow-400 border border-yellow-400/30 font-bold py-2 px-4 rounded-lg text-center transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-yellow-500/10"
-                                >
-                                  View Event
-                                </button>
-                              </div>
-                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setSelectedEvent(event)}
+                                className="inline-block bg-gradient-to-r from-gray-800 to-gray-900 text-yellow-400 border border-yellow-400/30 font-bold py-2 px-4 rounded-lg text-center transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-yellow-500/10"
+                              >
+                                View Event
+                              </button>
                           </div>
                         </div>
-                      </SwiperSlide>
-                    ))}
-                </Swiper>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </React.Fragment>
           ))}
