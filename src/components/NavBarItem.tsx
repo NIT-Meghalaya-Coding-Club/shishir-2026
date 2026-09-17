@@ -20,12 +20,19 @@ const NavBarItem: React.FC<Props> = ({ to, text, onClick }) => {
 
   return (
     <motion.li
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-      className="cursor-pointer mb-2 last:mb-0" // Added margin between items
       onClick={navigateTo}
+      whileHover={{ scale: 1.03 }}
+      whileTap={{ scale: 0.97 }}
+      transition={{
+        type: "spring",
+        stiffness: 400,
+        damping: 20,
+      }}
+      className="group relative mb-2 cursor-pointer overflow-hidden rounded-lg last:mb-0"
     >
-      <div className="relative h-12 flex items-center justify-center">
+      <motion.div
+        className="relative h-12 flex items-center justify-center"
+      >
         <Image
           src="/assets/scroll-banner.webp"
           alt="Scroll Banner"
@@ -33,14 +40,56 @@ const NavBarItem: React.FC<Props> = ({ to, text, onClick }) => {
           priority
           quality={100}
           style={{ objectFit: "cover" }}
-          className="absolute inset-0 z-0"
+          className="
+            absolute inset-0 z-0
+            transition-transform duration-500
+            group-hover:scale-110
+          "
         />
-        <h1 className="text-lg font-medium text-black special-font relative z-10">
+
+        {/* Hover overlay */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileHover={{ opacity: 1 }}
+          transition={{ duration: 0.25 }}
+          className="absolute inset-0 z-[1] bg-white/15 dark:bg-black/15"
+        />
+
+        {/* Sliding shine */}
+        <motion.div
+          initial={{ x: "-120%" }}
+          whileHover={{ x: "120%" }}
+          transition={{
+            duration: 0.6,
+            ease: "easeInOut",
+          }}
+          className="
+            absolute inset-y-0 z-[2]
+            w-1/3
+            bg-gradient-to-r
+            from-transparent
+            via-white/30
+            to-transparent
+            skew-x-[-20deg]
+          "
+        />
+
+        <h1
+          className="
+            relative z-[3]
+            text-lg font-medium
+            text-black
+            special-font
+            transition-all duration-300
+            group-hover:tracking-wider
+            group-hover:scale-105
+          "
+        >
           {text}
         </h1>
-      </div>
+      </motion.div>
     </motion.li>
   );
 };
 
-export default NavBarItem;
+export default NavBarItem; 
