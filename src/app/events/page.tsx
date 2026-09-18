@@ -6,10 +6,11 @@ import { useEffect, useRef, useState } from "react";
 import { CalendarDays, Crown, ExternalLink, Mail, MapPin, Phone, Sparkles, X } from "lucide-react";
 import Head from "next/head";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { EffectCoverflow, Pagination } from "swiper/modules";
+import { EffectCoverflow, Pagination, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/effect-coverflow";
 import "swiper/css/pagination";
+import "swiper/css/navigation";
 
 type EventRecord = {
   _id: string;
@@ -325,12 +326,15 @@ export default function Events() {
                     slideShadows: true,
                   }}
                   pagination={{ clickable: true }}
-                  modules={[EffectCoverflow, Pagination]}
+                  navigation={events.filter((event) => event.category === category).length > 1}
+                  modules={[EffectCoverflow, Pagination, Navigation]}
                   className="w-full pb-24 pt-12 !overflow-visible"
                   style={{
                     "--swiper-pagination-bottom": "0px",
                     "--swiper-pagination-color": "#facc15",
                     "--swiper-pagination-bullet-inactive-color": "#475569",
+                    "--swiper-navigation-color": "#facc15",
+                    "--swiper-navigation-size": "28px",
                   } as React.CSSProperties}
                 >
                   {events

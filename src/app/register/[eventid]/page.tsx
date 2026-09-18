@@ -229,8 +229,8 @@ export default function EventPage() {
                 <h3 className="text-lg font-extrabold uppercase tracking-widest text-slate-800 dark:text-slate-100 mb-2">Got Questions?</h3>
                 <p className="text-slate-600 dark:text-slate-300 font-medium">
                   For any queries, please contact:<br />
-                  <span className="font-bold text-slate-900 dark:text-white mt-1 block text-lg">Gaurav Joshi</span>
-                  <span className="text-amber-600 dark:text-amber-400 font-bold">+91 84150 31939</span>
+                  <span className="font-bold text-slate-900 dark:text-white mt-1 block text-lg">[TODO: ADD NAME]</span>
+                  <span className="text-amber-600 dark:text-amber-400 font-bold">[TODO: ADD NUMBER]</span>
                 </p>
               </motion.div>
             </div>
