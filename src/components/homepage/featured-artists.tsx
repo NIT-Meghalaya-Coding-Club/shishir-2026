@@ -1,9 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 const artists = [
   {
@@ -20,6 +22,13 @@ const artists = [
     image: "/artists/tushar_joshi.webp",
     color: "#22BABB",
   },
+  {
+    id: 3,
+    name: "Demo Artist",
+    genre: "Coming Soon",
+    image: "/artists/tushar_joshi.webp",
+    color: "#7C3AED",
+  },
 ];
 
 const FeaturedArtists = () => {
@@ -27,6 +36,9 @@ const FeaturedArtists = () => {
   const [decorativeElements, setDecorativeElements] = useState<
     { key: number; style: React.CSSProperties }[]
   >([]);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const cardsRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -43,12 +55,73 @@ const FeaturedArtists = () => {
     setDecorativeElements(elements);
   }, []);
 
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+
+    const section = sectionRef.current;
+    const cardsContainer = cardsRef.current;
+    const button = buttonRef.current;
+    if (!section || !cardsContainer || !button) return;
+
+    const ctx = gsap.context(() => {
+      const cards = gsap.utils.toArray<HTMLElement>("[data-artist-card]");
+      if (!cards.length) return;
+
+      const setCompressedState = () => {
+        gsap.set(cards, { x: 0, y: 0, scale: 1, opacity: 1 });
+        const buttonRect = button.getBoundingClientRect();
+        const buttonCenterX = buttonRect.left + buttonRect.width / 2;
+        const buttonCenterY = buttonRect.top + buttonRect.height / 2;
+
+        cards.forEach((card) => {
+          const cardRect = card.getBoundingClientRect();
+          gsap.set(card, {
+            x: buttonCenterX - (cardRect.left + cardRect.width / 2),
+            y: buttonCenterY - (cardRect.top + cardRect.height / 2),
+            scale: 0.12,
+            opacity: 0.45,
+            transformOrigin: "center center",
+          });
+        });
+      };
+
+      const timeline = gsap.timeline({
+        scrollTrigger: {
+          trigger: section,
+          start: "top top",
+          end: "+=240%",
+          pin: true,
+          scrub: 1.1,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+          onRefreshInit: setCompressedState,
+        },
+      });
+
+      setCompressedState();
+      timeline.to(cards, {
+        x: 0,
+        y: 0,
+        scale: 1,
+        opacity: 1,
+        duration: 2,
+        stagger: 0.12,
+        ease: "power3.out",
+      });
+    }, section);
+
+    return () => ctx.revert();
+  }, []);
+
   const handleRedirect = () => {
     router.push("/ticket");
   };
 
   return (
-    <div className="w-full bg-slate-50 dark:bg-gray-900 py-16 px-4 md:px-8 relative overflow-hidden transition-colors duration-300">
+    <div
+      ref={sectionRef}
+      className="w-full min-h-screen flex flex-col justify-center bg-slate-50 dark:bg-gray-900 py-16 px-4 md:px-8 relative overflow-hidden transition-colors duration-300"
+    >
       {/* Background decorative elements */}
       <div className="absolute inset-0 overflow-hidden">
         {decorativeElements.map((element) => (
@@ -97,12 +170,16 @@ const FeaturedArtists = () => {
         </p>
       </motion.div>
 
-      {/* Artists Grid - Centered for 2 artists */}
+      {/* Artists Grid */}
       <div className="flex justify-center">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-3xl w-full">
+        <div
+          ref={cardsRef}
+          className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl w-full"
+        >
           {artists.map((artist) => (
             <motion.div
               key={artist.id}
+              data-artist-card
               className="relative rounded-xl overflow-hidden cursor-pointer group w-full aspect-square"
               whileHover={{
                 scale: 1.05,
@@ -138,6 +215,7 @@ const FeaturedArtists = () => {
         transition={{ delay: 0.5 }}
       >
         <motion.button
+          ref={buttonRef}
           className="px-8 py-3 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full text-white font-bold text-lg"
           whileHover={{
             scale: 1.05,
