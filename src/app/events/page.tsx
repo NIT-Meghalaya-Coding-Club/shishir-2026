@@ -2,7 +2,7 @@
 import React from "react";
 import Image from "next/image";
 import Inav from "@/components/events/internal-nav";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CalendarDays, Crown, ExternalLink, Mail, MapPin, Phone, Sparkles, X } from "lucide-react";
 import Head from "next/head";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -92,63 +92,116 @@ function PeopleGroup({ label, people }: { label: string; people: Person[] }) {
 }
 
 function EventDetailsModal({ event, onClose }: { event: EventRecord; onClose: () => void }) {
+  const scrollableRef = useRef<HTMLDivElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const handleKeyDown = (keyboardEvent: KeyboardEvent) => {
       if (keyboardEvent.key === "Escape") onClose();
     };
 
+    // Lock background scroll via CSS
     document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
     document.addEventListener("keydown", handleKeyDown);
+
+    // Attach at document level (non-passive) so every wheel event anywhere
+    // on the page is caught. preventDefault() stops the page from scrolling;
+    // scrollTop assignment drives the left column instead.
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      if (scrollableRef.current) {
+        scrollableRef.current.scrollTop += e.deltaY;
+      }
+    };
+    document.addEventListener("wheel", handleWheel, { passive: false });
+
     return () => {
       document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
       document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("wheel", handleWheel);
     };
   }, [onClose]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 dark:bg-black/80 p-4 backdrop-blur-sm" onMouseDown={onClose}>
-      <div role="dialog" aria-modal="true" aria-labelledby="event-details-title" className="relative max-h-[90vh] w-full max-w-5xl overflow-y-auto rounded-2xl border border-yellow-500/40 bg-white dark:bg-gray-950 shadow-2xl" onMouseDown={(eventMouseDown) => eventMouseDown.stopPropagation()}>
-        <button type="button" onClick={onClose} aria-label="Close event details" className="sticky left-4 top-4 z-20 -mb-10 mr-auto block rounded-full bg-slate-100 dark:bg-black/70 p-2 text-yellow-600 dark:text-yellow-300 transition hover:bg-yellow-400 hover:text-black">
-          <X size={20} />
+    <div ref={overlayRef} className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 dark:bg-black/80 p-4 sm:p-8 backdrop-blur-sm" onMouseDown={onClose}>
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="event-details-title"
+        className="relative h-[85vh] max-h-[800px] w-full max-w-[1000px] rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#121212] shadow-2xl flex flex-col md:flex-row md:gap-4 overflow-visible"
+        onMouseDown={(eventMouseDown) => eventMouseDown.stopPropagation()}
+      >
+        {/* Floating Close Button */}
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close event details"
+          className="absolute -right-3 -top-3 z-30 flex items-center justify-center h-10 w-10 rounded-full bg-black border-2 border-neutral-700 text-white shadow-xl transition-all duration-200 hover:scale-110 hover:bg-red-600 hover:border-red-600 hover:text-white"
+        >
+          <X size={20} strokeWidth={2.5} />
         </button>
-        <div className="grid min-h-[55vh] md:grid-cols-[1fr_0.9fr]">
-          <div className="order-2 flex flex-col gap-6 p-6 sm:p-8 md:order-1">
-            <div>
-              <p className="mb-2 text-sm font-bold uppercase tracking-[0.2em] text-yellow-600 dark:text-yellow-400">{event.category.replace("_", " ")}</p>
-              <h2 id="event-details-title" className="text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl">{event.name}</h2>
+
+        {/* Left Column (Strictly Scrollable Details) */}
+        <div className="flex-1 relative min-h-[40vh] md:min-h-0 rounded-l-3xl">
+          <div ref={scrollableRef} className="absolute inset-0 p-6 sm:p-8 md:p-10 overflow-y-auto overscroll-contain hide-scrollbar flex flex-col">
+            <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-amber-500">{event.category.replace("_", " ")}</p>
+            <h2 id="event-details-title" className="text-3xl sm:text-4xl font-serif font-bold text-slate-900 dark:text-white mb-4">{event.name}</h2>
+            <p className="whitespace-pre-wrap break-words leading-relaxed text-slate-700 dark:text-gray-300 text-sm mb-6 shrink-0">{event.description}</p>
+
+            <div className="grid gap-3 text-sm text-slate-800 dark:text-gray-300 sm:grid-cols-2 mb-6 pb-6 border-b border-black/10 dark:border-white/10 shrink-0">
+              <p className="flex items-center gap-2"><CalendarDays className="shrink-0 text-amber-500" size={16} />{formatEventDate(event.startsAt)}</p>
+              <p className="flex items-center gap-2"><MapPin className="shrink-0 text-amber-500" size={16} />{event.location}</p>
+              <p className="flex items-center gap-2"><span className="text-amber-500 font-semibold">Start:</span> {formatEventTime(event.startsAt)}</p>
+              <p className="flex items-center gap-2"><span className="text-amber-500 font-semibold">End:</span> {formatEventTime(event.endsAt)}</p>
             </div>
-            <p className="whitespace-pre-wrap break-words leading-7 text-slate-700 dark:text-gray-300">{event.description}</p>
-            <div className="grid gap-3 text-sm text-slate-800 dark:text-gray-200 sm:grid-cols-2">
-              <p className="flex gap-2"><CalendarDays className="shrink-0 text-yellow-500" size={18} />{formatEventDate(event.startsAt)}</p>
-              <p className="flex gap-2"><MapPin className="shrink-0 text-yellow-500" size={18} />{event.location}</p>
-              <p><span className="text-yellow-600 dark:text-yellow-400 font-semibold">Start:</span> {formatEventTime(event.startsAt)}</p>
-              <p><span className="text-yellow-600 dark:text-yellow-400 font-semibold">End:</span> {formatEventTime(event.endsAt)}</p>
-            </div>
-            <div className="space-y-4 border-t border-yellow-400/20 pt-5">
+
+            <div className="space-y-4 shrink-0 pb-4">
               <PeopleGroup label="Event Heads" people={event.eventHeads} />
               <PeopleGroup label="Coordinators" people={event.coordinators} />
               <PeopleGroup label="Co-coordinators" people={event.coCoordinators} />
             </div>
-            <div className="mt-auto flex flex-col gap-3 border-t border-yellow-400/20 pt-5 sm:flex-row">
-              <a
-                href={event.rulebookLink}
-                target="_blank"
-                rel="noreferrer"
-                className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-yellow-400/40 px-4 py-3 text-center font-semibold text-yellow-300 transition hover:bg-yellow-400/10"
-              >
-                <ExternalLink size={18} />
-                View Rulebook
-              </a>
-              <a
-                href={`/register/${event.code}`}
-                className="flex flex-1 items-center justify-center rounded-lg bg-gradient-to-r from-yellow-400 to-yellow-600 px-4 py-3 text-center font-bold text-black transition hover:shadow-lg hover:shadow-yellow-500/25"
-              >
-                Register Now
-              </a>
-            </div>
           </div>
-          <div className="relative order-1 flex min-h-[280px] items-center justify-center bg-black md:order-2 md:min-h-0">
-            <Image src={event.posterLink} alt={`${event.name} poster`} fill className="object-contain object-center" sizes="(max-width: 768px) 100vw, 45vw" />
+        </div>
+
+        {/* Right Column (Image & Buttons) */}
+        <div className="flex flex-col md:w-[45%] shrink-0 p-6 sm:p-8 md:pl-4 border-t md:border-t-0 md:border-l border-slate-200 dark:border-white/10 h-full overflow-y-auto custom-scrollbar md:overflow-hidden">
+          <div className="relative w-full rounded-2xl overflow-hidden bg-black/5 dark:bg-white/5 flex-1 min-h-[250px] md:min-h-[300px] mb-6">
+            <Image src={event.posterLink} alt={`${event.name} poster`} fill className="object-cover object-center" sizes="(max-width: 768px) 100vw, 45vw" />
+          </div>
+
+          {/* Buttons Row */}
+          <div className="flex flex-col sm:flex-row gap-4 mt-auto">
+            <a
+              href={event.rulebookLink}
+              target="_blank"
+              rel="noreferrer"
+              className="btn-53 flex flex-1 items-center justify-center rounded-xl border border-slate-300 dark:border-white/20 bg-slate-100 dark:bg-[#1a1a1c] px-2 h-14 text-center font-semibold text-slate-700 dark:text-gray-200 transition hover:bg-slate-200 dark:hover:bg-[#252528] shadow-sm"
+            >
+              <div className="original flex items-center justify-center gap-2 text-[13px] sm:text-sm">
+                <ExternalLink size={16} /> View Rulebook
+              </div>
+              <div className="letters text-[13px] sm:text-sm">
+                {"View Rulebook".split("").map((char, index) => (
+                  <span key={index} style={{ transitionDelay: `${index * 0.03}s` }}>
+                    {char === " " ? "\u00A0" : char}
+                  </span>
+                ))}
+              </div>
+            </a>
+            <a
+              href={`/register/${event.code}`}
+              className="btn-53 flex flex-1 items-center justify-center rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 px-2 h-14 text-center font-bold transition hover:shadow-lg hover:shadow-amber-500/25"
+            >
+              <div className="original text-[13px] sm:text-sm">Register Now</div>
+              <div className="letters text-[13px] sm:text-sm">
+                {"Register Now".split("").map((char, index) => (
+                  <span key={index} style={{ transitionDelay: `${index * 0.03}s` }}>
+                    {char === " " ? "\u00A0" : char}
+                  </span>
+                ))}
+              </div>
+            </a>
           </div>
         </div>
       </div>
@@ -233,10 +286,10 @@ export default function Events() {
                 className="relative flex flex-col items-center justify-center mx-4 sm:mx-6 md:mx-8 lg:mx-10 my-12 sm:my-16"
               >
                 {/* Soft, Elegant Glassmorphic Design */}
-                <div className="relative group flex items-center justify-center cursor-default">
+                <div className="relative group flex items-center justify-center cursor-default rounded-full transition-all duration-300 hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[8px_8px_0px_#facc15] hover:scale-[1.03]">
 
                   {/* Soft Background Layer */}
-                  <div className="absolute inset-0 bg-white/70 dark:bg-black/40 backdrop-blur-md rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:shadow-[0_8px_30px_rgb(255,255,255,0.03)] transition-transform duration-500 group-hover:scale-[1.02]" />
+                  <div className="absolute inset-0 bg-white/70 dark:bg-black/40 backdrop-blur-md rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:shadow-[0_8px_30px_rgb(255,255,255,0.03)] transition-transform duration-300" />
 
                   {/* Border Layer */}
                   <div className="absolute inset-0 border border-slate-200/60 dark:border-white/10 rounded-full" />

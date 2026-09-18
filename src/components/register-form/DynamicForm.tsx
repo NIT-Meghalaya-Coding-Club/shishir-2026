@@ -495,27 +495,48 @@ const DynamicForm = ({
   if (submitted) {
     return (
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="max-w-md mx-auto mt-10 p-6 bg-white/10 rounded-lg shadow-lg text-center"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="w-full flex flex-col items-center justify-center py-10 sm:py-16 px-4"
       >
-        <h2 className="text-2xl font-bold text-green-600 mb-4">
+        <div className="w-24 h-24 mb-8 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shadow-[0_0_40px_rgba(16,185,129,0.2)]">
+          <svg className="w-12 h-12 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        
+        <h2 className="text-2xl sm:text-3xl font-extrabold uppercase tracking-widest text-slate-800 dark:text-slate-100 mb-4 text-center">
           {hasExistingRegistration ? "Registration Updated!" : "Registration Successful!"}
         </h2>
-        <p className="text-white">Your registration details have been saved.</p>
-        <button
-          type="button"
-          onClick={startNewRegistration}
-          className="mt-4 px-4 py-2 bg-amber-500 text-white rounded hover:bg-amber-600 transition"
-        >
-          Submit another registration
-        </button>
-        <button
-          onClick={() => router.push("/")}
-          className="mt-4 px-4 py-2 bg-amber-500 text-white rounded hover:bg-amber-600 transition"
-        >
-          Go back to Shishir
-        </button>
+        
+        <p className="text-slate-600 dark:text-slate-300 font-medium text-lg mb-10 text-center max-w-md">
+          Your registration details have been saved securely.
+        </p>
+
+        <div className="flex flex-col sm:flex-row gap-4 w-full max-w-lg mx-auto">
+          <button
+            type="button"
+            onClick={startNewRegistration}
+            className="w-full sm:w-1/2 bg-slate-800 hover:bg-slate-900 dark:bg-white/10 dark:hover:bg-white/20 text-white font-extrabold uppercase tracking-widest h-[60px] px-4 rounded-2xl text-center backdrop-blur-sm shadow-sm transition-all duration-300 hover:shadow-md border border-slate-700 dark:border-white/20 text-sm sm:text-base flex items-center justify-center"
+          >
+            Register Another
+          </button>
+          
+          <button
+            type="button"
+            onClick={() => router.push("/")}
+            className="btn-53 w-full sm:w-1/2 bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-slate-950 font-extrabold uppercase tracking-widest h-[60px] px-4 rounded-2xl shadow-lg hover:shadow-amber-500/20 transition-all duration-200 text-sm sm:text-base flex items-center justify-center cursor-pointer"
+          >
+            <div className="original">Go to Home</div>
+            <div className="letters">
+              {"Go to Home".split("").map((char, index) => (
+                <span key={index} style={{ transitionDelay: `${index * 0.03}s` }}>
+                  {char === " " ? "\u00A0" : char}
+                </span>
+              ))}
+            </div>
+          </button>
+        </div>
       </motion.div>
     );
   }
@@ -640,8 +661,8 @@ const DynamicForm = ({
                 type="button"
                 onClick={() => populateRegistration(registration)}
                 className={`w-full rounded-md border p-4 text-left transition ${selectedRegistrationId === registration._id
-                    ? "border-amber-400 bg-amber-400/10"
-                    : "border-white/15 bg-black/10 hover:border-amber-300/60"
+                  ? "border-amber-400 bg-amber-400/10"
+                  : "border-white/15 bg-black/10 hover:border-amber-300/60"
                   }`}
               >
                 {content}
@@ -916,11 +937,9 @@ const DynamicForm = ({
                         value={formData[field.id] || ""}
                         onChange={handleChange}
                         placeholder="member@example.com"
-                        className={`w-full bg-black/10 px-3 py-2 border ${
-                          field.memberIndex > 0 ? "rounded-l-md border-r-0" : "rounded-md"
-                        } ${errors[field.id] ? "border-red-500" : "border-gray-300"} ${
-                          field.memberIndex === 0 ? "cursor-not-allowed opacity-75" : ""
-                        } focus:outline-none focus:ring-2 focus:ring-amber-500`}
+                        className={`w-full bg-black/10 px-3 py-2 border ${field.memberIndex > 0 ? "rounded-l-md border-r-0" : "rounded-md"
+                          } ${errors[field.id] ? "border-red-500" : "border-gray-300"} ${field.memberIndex === 0 ? "cursor-not-allowed opacity-75" : ""
+                          } focus:outline-none focus:ring-2 focus:ring-amber-500`}
                       />
                       {field.memberIndex > 0 && (
                         <button
@@ -997,9 +1016,16 @@ const DynamicForm = ({
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             type="submit"
-            className="w-full bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-slate-950 font-extrabold uppercase tracking-widest py-3.5 px-6 rounded-2xl shadow-lg hover:shadow-amber-500/20 transition-all duration-200 text-base sm:text-lg flex items-center justify-center gap-2 cursor-pointer"
+            className="btn-53 w-full bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-slate-950 font-extrabold uppercase tracking-widest h-20 px-6 rounded-2xl shadow-lg hover:shadow-amber-500/20 transition-all duration-200 text-base sm:text-lg flex items-center justify-center gap-2 cursor-pointer"
           >
-            {paymentRequired ? "Proceed to Payment" : "Submit Registration"}
+            <div className="original">{paymentRequired ? "Proceed to Payment" : "Submit Registration"}</div>
+            <div className="letters">
+              {(paymentRequired ? "Proceed to Payment" : "Submit Registration").split("").map((char, index) => (
+                <span key={index} style={{ transitionDelay: `${index * 0.03}s` }}>
+                  {char === " " ? "\u00A0" : char}
+                </span>
+              ))}
+            </div>
           </motion.button>
         </div>
       </form>

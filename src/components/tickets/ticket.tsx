@@ -150,9 +150,9 @@ const ShishirTicketSeller: React.FC = () => {
     setSelectedEvent((prev) =>
       prev
         ? {
-            ...prev,
-            remaining: Math.max(0, prev.remaining - quantity),
-          }
+          ...prev,
+          remaining: Math.max(0, prev.remaining - quantity),
+        }
         : null
     );
   };
@@ -236,11 +236,10 @@ const ShishirTicketSeller: React.FC = () => {
                 <>
                   {/* Step 01 */}
                   <section
-                    className={`transition-all duration-500 ${
-                      animationPhase > 0
+                    className={`transition-all duration-500 ${animationPhase > 0
                         ? "scale-[0.995] opacity-95"
                         : "scale-100 opacity-100"
-                    }`}
+                      }`}
                   >
                     <SectionHeading number="01" title="Select Your Event" />
 
@@ -255,13 +254,11 @@ const ShishirTicketSeller: React.FC = () => {
                             type="button"
                             disabled={isSoldOut}
                             onClick={() => handleEventSelect(event)}
-                            className={`event-card group text-left ${
-                              isSelected ? "event-card-selected" : ""
-                            } ${
-                              isSoldOut
+                            className={`event-card group text-left ${isSelected ? "event-card-selected" : ""
+                              } ${isSoldOut
                                 ? "cursor-not-allowed opacity-50"
                                 : ""
-                            }`}
+                              }`}
                             style={{ animationDelay: `${index * 70}ms` }}
                           >
                             <div className="relative z-10 flex items-start justify-between gap-4">
@@ -402,9 +399,8 @@ const ShishirTicketSeller: React.FC = () => {
                       >
                         <label
                           htmlFor="terms"
-                          className={`terms-card ${
-                            termsAccepted ? "terms-card-active" : ""
-                          }`}
+                          className={`terms-card ${termsAccepted ? "terms-card-active" : ""
+                            }`}
                         >
                           <input
                             id="terms"
@@ -532,18 +528,16 @@ const ShishirTicketSeller: React.FC = () => {
                     <div className="ticket-body p-6 sm:p-7">
                       <div className="text-center">
                         <span
-                          className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] ${
-                            paymentVerified
+                          className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] ${paymentVerified
                               ? "border-emerald-400/20 bg-emerald-400/10 text-emerald-300"
                               : "border-amber-400/20 bg-amber-400/10 text-amber-300"
-                          }`}
+                            }`}
                         >
                           <span
-                            className={`h-1.5 w-1.5 rounded-full ${
-                              paymentVerified
+                            className={`h-1.5 w-1.5 rounded-full ${paymentVerified
                                 ? "bg-emerald-400"
                                 : "bg-amber-400 animate-pulse"
-                            }`}
+                              }`}
                           />
                           {paymentVerified ? "Payment Verified" : "Scan to Pay"}
                         </span>
@@ -602,9 +596,8 @@ const ShishirTicketSeller: React.FC = () => {
                         <TicketRow label="Artist" value={selectedEvent?.artist || "N/A"} />
                         <TicketRow
                           label="Quantity"
-                          value={`${quantity} ${
-                            quantity === 1 ? "ticket" : "tickets"
-                          }`}
+                          value={`${quantity} ${quantity === 1 ? "ticket" : "tickets"
+                            }`}
                         />
                         <TicketRow label="Name" value={name || "N/A"} />
                       </div>

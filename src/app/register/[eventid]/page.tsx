@@ -168,9 +168,16 @@ export default function EventPage() {
                         href={event.rulebook}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="block w-full bg-slate-800 hover:bg-slate-900 dark:bg-white/10 dark:hover:bg-white/20 text-white font-extrabold uppercase tracking-widest py-3 px-4 rounded-xl text-center backdrop-blur-sm shadow-sm transition-all duration-300 hover:shadow-md border border-slate-700 dark:border-white/20"
+                        className="btn-53 block w-full bg-slate-800 hover:bg-slate-900 dark:bg-white/10 dark:hover:bg-white/20 text-white font-extrabold uppercase tracking-widest py-3 px-4 rounded-xl text-center backdrop-blur-sm shadow-sm transition-all duration-300 hover:shadow-md border border-slate-700 dark:border-white/20"
                       >
-                        View Rulebook
+                        <div className="original">View Rulebook</div>
+                        <div className="letters">
+                          {"View Rulebook".split("").map((char, index) => (
+                            <span key={index} style={{ transitionDelay: `${index * 0.03}s` }}>
+                              {char === " " ? "\u00A0" : char}
+                            </span>
+                          ))}
+                        </div>
                       </a>
                     </div>
                   )}
