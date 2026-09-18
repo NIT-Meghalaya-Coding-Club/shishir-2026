@@ -61,27 +61,27 @@ function PeopleGroup({ label, people }: { label: string; people: Person[] }) {
       <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-yellow-400">{label}</p>
       <div className="grid gap-3 sm:grid-cols-2">
         {people.map((person) => (
-          <div key={`${label}-${person.collegeID || person.email || person.name}`} className="flex min-w-0 items-start gap-3 rounded-lg border border-yellow-400/20 bg-black/30 p-3">
+          <div key={`${label}-${person.collegeID || person.email || person.name}`} className="flex flex-col min-w-0 items-center justify-center gap-3 rounded-lg border border-yellow-400/20 bg-black/30 p-4 text-center">
             <Image
               src={person.image || fallbackProfileImage}
               alt=""
-              width={30}
-              height={30}
-              className="h-7 w-7 rounded-full object-cover"
+              width={56}
+              height={56}
+              className="my-2 h-14 w-14 rounded-full border-2 border-yellow-400/50 object-cover"
             />
-            <div className="min-w-0 space-y-1 text-sm">
+            <div className="flex flex-col items-center min-w-0 space-y-1 text-sm">
               <p className="break-words font-semibold text-gray-100">{person.name}</p>
               {person.collegeID && <p className="break-words text-gray-400">Roll no: {person.collegeID}</p>}
               {person.phone && (
-                <a href={`tel:${person.phone}`} className="flex break-all items-center gap-1 text-yellow-300 hover:text-yellow-200">
+                <a href={`tel:${person.phone}`} className="flex break-all items-center justify-center gap-1 text-yellow-300 hover:text-yellow-200">
                   <Phone size={13} />
                   {person.phone}
                 </a>
               )}
               {person.email && (
-                <a href={`mailto:${person.email}`} className="flex break-all items-center gap-1 text-yellow-300 hover:text-yellow-200">
-                  <Mail size={13} />
-                  {person.email}
+                <a href={`mailto:${person.email}`} className="flex break-all items-start justify-center gap-1 text-yellow-300 hover:text-yellow-200">
+                  <Mail size={13} className="mt-[4px] shrink-0" />
+                  <span>{person.email}</span>
                 </a>
               )}
             </div>
@@ -180,10 +180,10 @@ function EventDetailsModal({ event, onClose }: { event: EventRecord; onClose: ()
               className="btn-53 flex flex-1 items-center justify-center rounded-xl border border-slate-300 dark:border-white/20 bg-slate-100 dark:bg-[#1a1a1c] px-2 h-14 text-center font-semibold text-slate-700 dark:text-gray-200 transition hover:bg-slate-200 dark:hover:bg-[#252528] shadow-sm"
             >
               <div className="original flex items-center justify-center gap-2 text-[13px] sm:text-sm">
-                <ExternalLink size={16} /> View Rulebook
+                <ExternalLink size={16} /> VIEW RULEBOOK
               </div>
               <div className="letters text-[13px] sm:text-sm">
-                {"View Rulebook".split("").map((char, index) => (
+                {"VIEW RULEBOOK".split("").map((char, index) => (
                   <span key={index} style={{ transitionDelay: `${index * 0.03}s` }}>
                     {char === " " ? "\u00A0" : char}
                   </span>
@@ -194,9 +194,9 @@ function EventDetailsModal({ event, onClose }: { event: EventRecord; onClose: ()
               href={`/register/${event.code}`}
               className="btn-53 flex flex-1 items-center justify-center rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 px-2 h-14 text-center font-bold transition hover:shadow-lg hover:shadow-amber-500/25"
             >
-              <div className="original text-[13px] sm:text-sm">Register Now</div>
+              <div className="original text-[13px] sm:text-sm">REGISTER NOW</div>
               <div className="letters text-[13px] sm:text-sm">
-                {"Register Now".split("").map((char, index) => (
+                {"REGISTER NOW".split("").map((char, index) => (
                   <span key={index} style={{ transitionDelay: `${index * 0.03}s` }}>
                     {char === " " ? "\u00A0" : char}
                   </span>
