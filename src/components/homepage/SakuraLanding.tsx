@@ -15,6 +15,59 @@ const MARQUEE_EVENTS = [
   'COSPLAY ARENA',
 ];
 
+export const NumberCounter = ({
+  end,
+  duration = 1000,
+}: {
+  end: number;
+  duration?: number;
+}) => {
+  const [count, setCount] = useState(2010);
+  const countRef = useRef(null);
+  const hasAnimated = useRef(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !hasAnimated.current) {
+          hasAnimated.current = true;
+          let start = 2010;
+          const step = (end-start) / (duration / 16);
+          const timer = setInterval(() => {
+            start += step;
+            if (start > end) {
+              setCount(end);
+              clearInterval(timer);
+            } else {
+              setCount(Math.floor(start));
+            }
+          }, 16);
+        }
+      },
+      { threshold: 0.5 }
+    );
+
+    if (countRef.current) {
+      observer.observe(countRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [end, duration]);
+
+  // Calculate the maximum width needed
+  const maxDigits = end.toString().length+1; // +1 for the '+' sign
+
+  return (
+    <span
+      ref={countRef}
+      className=" text-amber-400 inline-block"
+      
+    >
+      {count}<span className="font-bold"></span>
+    </span>
+  );
+};
+
 export const SakuraLanding: React.FC = () => {
   const sectionRef   = useRef<HTMLDivElement>(null);
   const canvasRef    = useRef<HTMLCanvasElement>(null);
@@ -343,10 +396,11 @@ export const SakuraLanding: React.FC = () => {
         }}
         className="flex-1 md:flex-initial flex flex-col items-center justify-center md:justify-start pt-24 md:pt-28 px-4 md:px-12 text-center z-[4] pointer-events-none"
       >
-        <h1 className="text-[clamp(4.2rem,15vw,10.5rem)] font-[900] uppercase tracking-[-0.03em] leading-[0.88] text-neutral-900 dark:text-white drop-shadow-[0_4px_30px_rgba(244,63,94,0.18)] dark:drop-shadow-[0_0_40px_rgba(255,255,255,0.25)] transition-colors duration-300">
-          SHISHIR
+        <h1 className="text-[clamp(4.2rem,15vw,10.5rem)] font-[900] uppercase tracking-[-0.03em] leading-[0.88] text-neutral-900 dark:text-white drop-shadow-[0_4px_30px_rgba(244,63,94,0.18)] dark:drop-shadow-[0_0_40px_rgba(255,255,255,0.25)] transition-colors duration-300 flex-1">
+          SHISHIR <span className=" text-orange-700 dark:text-yellow-700 "><NumberCounter end={2026}/></span>
         </h1>
-        <div className="mt-2.5 md:mt-3 text-[0.7rem] md:text-sm tracking-[0.35em] md:tracking-[0.4em] text-neutral-600 dark:text-neutral-300 font-semibold uppercase transition-colors duration-300">
+        
+        <div className="mt-2.5 md:mt-3 text-[1.7rem] md:text-sm tracking-[0.35em] md:tracking-[0.4em] text-neutral-600 dark:text-neutral-300 font-semibold uppercase transition-colors duration-300">
           CULTURAL FEST OF NIT MEGHALAYA
         </div>
 
@@ -373,18 +427,17 @@ export const SakuraLanding: React.FC = () => {
         </div>
       </div>
 
-      {/* ─── Bottom Area: Botanical Tree Description (Right Side next to Cherry Tree) ─── */}
-      <div className="hidden md:flex pb-6 lg:pb-8 px-8 lg:px-14 items-end justify-end z-[4] pointer-events-none relative flex-1 min-h-0">
-        {/* Right: Botanical Tree Description */}
+      {/* ─── Bottom Area: Botanical Tree Description (Anchored on Bottom Left) ─── */}
+      <div className="hidden md:flex pb-6 lg:pb-8 px-8 lg:px-14 items-end justify-start z-[4] pointer-events-none relative flex-1 min-h-0">
         <div
           ref={treeDescRef}
-          className="flex flex-col items-end text-right gap-1 max-w-xs pointer-events-none z-[4] mb-3 ml-auto"
+          className="flex flex-col items-start text-left gap-1 max-w-xs pointer-events-none z-[4] mb-3 mr-auto"
         >
           <div className="text-[0.72rem] tracking-[0.22em] uppercase text-neutral-700 dark:text-neutral-300 font-semibold transition-colors duration-300">
-            Prunus cerasoides · Wild Himalayan Cherry
+            Prunus cerasoides: Wild Himalayan Cherry
           </div>
           <p className="text-[0.68rem] tracking-[0.05em] text-neutral-500 dark:text-neutral-400 font-light transition-colors duration-300">
-            Local to Meghalaya · Blooms in November
+            Blooms in November, Reason behind cherry blossom fest in Shillong
           </p>
         </div>
       </div>
