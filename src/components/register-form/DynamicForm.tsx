@@ -46,7 +46,7 @@ interface DynamicFormProps {
   max?: number;
   allowPerformanceTypes?: boolean;
   eventCode?: string;
-  paymentRequired?: {  
+  paymentRequired?: {
     amount: number;    // Amount in rupees
     qrCodeUrl: string; // URL to the event-specific QR code image
   };
@@ -102,11 +102,11 @@ const DynamicForm = ({
   const [hasExistingRegistration, setHasExistingRegistration] = useState(false);
   const { data: session, status } = useSession();
   const router = useRouter();
-  
+
 
   // Check if this is an event that needs dynamic configuration
   const isDynamicEvent =
-    !!eventCode && 
+    !!eventCode &&
     (eventCode === "dance_comp" || eventCode === "drama_comp" || eventCode === "food_fest");
 
   const participantMin = isDynamicEvent ? dynamicMin : Math.max(1, Number(min) || 1);
@@ -185,7 +185,7 @@ const DynamicForm = ({
       }, 1000);
     }
   }, [status, router]);
-    // Event selection handler for dynamic events
+  // Event selection handler for dynamic events
   const handleEventChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const eventValue = e.target.value;
     setSelectedEvent(eventValue);
@@ -397,7 +397,7 @@ const DynamicForm = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
+
     if (validateForm()) {
       const teamData = [];
       let effectiveMax = isDynamicEvent ? dynamicMax : max;
@@ -448,7 +448,7 @@ const DynamicForm = ({
           body: JSON.stringify(requestBody),
         });
         const data = await res.json();
-  
+
         if (res.ok) {
           if (paymentRequired) { // Add this condition
             setPaymentPending(true);
@@ -519,7 +519,7 @@ const DynamicForm = ({
       </motion.div>
     );
   }
-  
+
   // Add this new block
   if (paymentPending && paymentRequired) {
     return (
@@ -608,7 +608,7 @@ const DynamicForm = ({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="max-w-lg mx-auto mt-10 p-6 rounded-lg shadow-lg bg-white/5 text-white"
+      className="w-full"
     >
       {(status === "loading" || loading) && <Loading />}
       {registrations.length > 0 && (
@@ -639,11 +639,10 @@ const DynamicForm = ({
                 key={registration._id}
                 type="button"
                 onClick={() => populateRegistration(registration)}
-                className={`w-full rounded-md border p-4 text-left transition ${
-                  selectedRegistrationId === registration._id
+                className={`w-full rounded-md border p-4 text-left transition ${selectedRegistrationId === registration._id
                     ? "border-amber-400 bg-amber-400/10"
                     : "border-white/15 bg-black/10 hover:border-amber-300/60"
-                }`}
+                  }`}
               >
                 {content}
               </button>
@@ -651,9 +650,7 @@ const DynamicForm = ({
           })}
         </section>
       )}
-      <h2 className="text-2xl font-bold text-center mb-6">
-        Registration Form for {eventName || eventId}
-      </h2>
+
       {!isIndividualEvent && (
         <div className="mb-6 rounded-md border border-amber-400/50 bg-amber-400/10 p-4 text-sm text-amber-100">
           You are the group leader because you are filling out this form. Your account is added automatically as the first participant. Add other members using the email address registered on Shishir.
@@ -670,10 +667,10 @@ const DynamicForm = ({
       )}
 
       {paymentRequired && (
-            <p className="text-amber-400 mb-4">
-              Note: A payment of ₹{paymentRequired.amount} is required to complete registration.
-            </p>
-          )}
+        <p className="text-amber-400 mb-4">
+          Note: A payment of ₹{paymentRequired.amount} is required to complete registration.
+        </p>
+      )}
 
       <form onSubmit={handleSubmit}>
         {eventType === "team" && participantMax > 1 && (
@@ -815,9 +812,8 @@ const DynamicForm = ({
                       value={formData[field.id] || ""}
                       onChange={handleChange}
                       rows={4}
-                      className={`w-full bg-black/10 px-3 py-2 border rounded-md ${
-                        errors[field.id] ? "border-red-500" : "border-gray-300"
-                      } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                      className={`w-full bg-black/10 px-3 py-2 border rounded-md ${errors[field.id] ? "border-red-500" : "border-gray-300"
+                        } focus:outline-none focus:ring-2 focus:ring-blue-500`}
                       placeholder="List all utensils you'll need for the food fest (e.g., pans, spatulas, serving plates)"
                     ></textarea>
                     {errors[field.id] && (
@@ -848,9 +844,8 @@ const DynamicForm = ({
                       id={field.id}
                       value={formData[field.id] || ""}
                       onChange={handleChange}
-                      className={`w-full bg-black/10 px-3 py-2 border rounded-md ${
-                        errors[field.id] ? "border-red-500" : "border-gray-300"
-                      } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                      className={`w-full bg-black/10 px-3 py-2 border rounded-md ${errors[field.id] ? "border-red-500" : "border-gray-300"
+                        } focus:outline-none focus:ring-2 focus:ring-blue-500`}
                     />
                     {errors[field.id] && (
                       <motion.p
@@ -914,46 +909,50 @@ const DynamicForm = ({
                         <span className="text-red-500">*</span>
                       )}
                     </label>
-                    <input
-                      type={field.type}
-                      id={field.id}
-                      value={formData[field.id] || ""}
-                      onChange={handleChange}
-                      placeholder="member@example.com"
-                      className={`w-full bg-black/10 px-3 py-2 border rounded-md ${
-                        errors[field.id] ? "border-red-500" : "border-gray-300"
-                      } ${field.memberIndex === 0 ? "cursor-not-allowed opacity-75" : ""} focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                    />
-                    {field.memberIndex > 0 && (
-                      <button
-                        type="button"
-                        onClick={async () => {
-                          const query = formData[field.id]?.trim();
-                          if (!query) {
-                            setErrors((previous) => ({ ...previous, [field.id]: "Enter an email address first" }));
-                            return;
-                          }
-                          try {
-                            const response = await fetch(`/api/users/search?query=${encodeURIComponent(query)}`);
-                            const data = await response.json();
-                            if (!response.ok) throw new Error(data.message || "User search failed");
-                            setSearchResults((previous) => ({ ...previous, [field.memberIndex]: data.users || [] }));
-                            if (!data.users?.length) throw new Error("No registered users found \n\n(Please ask the member to register on the Shishir Website otherwise it won't appear)");
-                            setErrors((previous) => {
-                              const next = { ...previous };
-                              delete next[field.id];
-                              return next;
-                            });
-                          } catch (error) {
-                            setSearchResults((previous) => ({ ...previous, [field.memberIndex]: [] }));
-                            setErrors((previous) => ({ ...previous, [field.id]: error instanceof Error ? error.message : "User not found" }));
-                          }
-                        }}
-                        className="mt-2 rounded-md bg-amber-500 px-3 py-2 font-medium text-blue-950 hover:bg-amber-400"
-                      >
-                        Find member
-                      </button>
-                    )}
+                    <div className="flex w-full items-stretch">
+                      <input
+                        type={field.type}
+                        id={field.id}
+                        value={formData[field.id] || ""}
+                        onChange={handleChange}
+                        placeholder="member@example.com"
+                        className={`w-full bg-black/10 px-3 py-2 border ${
+                          field.memberIndex > 0 ? "rounded-l-md border-r-0" : "rounded-md"
+                        } ${errors[field.id] ? "border-red-500" : "border-gray-300"} ${
+                          field.memberIndex === 0 ? "cursor-not-allowed opacity-75" : ""
+                        } focus:outline-none focus:ring-2 focus:ring-amber-500`}
+                      />
+                      {field.memberIndex > 0 && (
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            const query = formData[field.id]?.trim();
+                            if (!query) {
+                              setErrors((previous) => ({ ...previous, [field.id]: "Enter an email address first" }));
+                              return;
+                            }
+                            try {
+                              const response = await fetch(`/api/users/search?query=${encodeURIComponent(query)}`);
+                              const data = await response.json();
+                              if (!response.ok) throw new Error(data.message || "User search failed");
+                              setSearchResults((previous) => ({ ...previous, [field.memberIndex]: data.users || [] }));
+                              if (!data.users?.length) throw new Error("No registered users found \n\n(Please ask the member to register on the Shishir Website otherwise it won't appear)");
+                              setErrors((previous) => {
+                                const next = { ...previous };
+                                delete next[field.id];
+                                return next;
+                              });
+                            } catch (error) {
+                              setSearchResults((previous) => ({ ...previous, [field.memberIndex]: [] }));
+                              setErrors((previous) => ({ ...previous, [field.id]: error instanceof Error ? error.message : "User not found" }));
+                            }
+                          }}
+                          className="flex items-center justify-center rounded-r-md bg-amber-500 px-4 hover:bg-amber-400 transition-colors border border-amber-500"
+                        >
+                          <img src="/img/search.svg" alt="Search" className="w-5 h-5" />
+                        </button>
+                      )}
+                    </div>
                     {searchResults[field.memberIndex]?.length > 0 && (
                       <div className="mt-2 space-y-1 rounded-md border border-white/15 bg-blue-950/80 p-2">
                         {searchResults[field.memberIndex].map((user) => (
@@ -993,16 +992,16 @@ const DynamicForm = ({
             );
           })}
 
-        <div className="sticky bottom-0 w-full to-transparent">
-        <motion.button
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.98 }}
-          type="submit"
-          className="w-full bg-amber-500 text-white font-semibold py-2 px-4 rounded-t-xl hover:bg-amber-600 transition duration-200 mt-6"
-        >
-          {paymentRequired ? "Proceed to Payment" : "Submit"} {/* Update this */}
-        </motion.button>
-      </div>
+        <div className="relative pt-6 mt-8 mb-2 border-t border-slate-200/60 dark:border-white/10">
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            type="submit"
+            className="w-full bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-slate-950 font-extrabold uppercase tracking-widest py-3.5 px-6 rounded-2xl shadow-lg hover:shadow-amber-500/20 transition-all duration-200 text-base sm:text-lg flex items-center justify-center gap-2 cursor-pointer"
+          >
+            {paymentRequired ? "Proceed to Payment" : "Submit Registration"}
+          </motion.button>
+        </div>
       </form>
     </motion.div>
   );

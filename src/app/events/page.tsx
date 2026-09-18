@@ -156,69 +156,6 @@ function EventDetailsModal({ event, onClose }: { event: EventRecord; onClose: ()
   );
 }
 
-const dummyEvents: EventRecord[] = [
-  {
-    _id: "1",
-    name: "Mock Hackathon",
-    code: "mock-hack",
-    category: "Technical",
-    location: "Computer Center",
-    startsAt: new Date(Date.now() + 86400000).toISOString(), // Tomorrow
-    endsAt: new Date(Date.now() + 172800000).toISOString(), // Day after tomorrow
-    description: "A 48-hour coding marathon to solve real-world problems.",
-    rulebookLink: "#",
-    posterLink: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800&q=80",
-    eventHeads: [{ name: "Alice Johnson", collegeID: "B21001", phone: "9876543210", email: "alice@example.com" }],
-    coordinators: [{ name: "Bob Smith", collegeID: "B21002" }],
-    coCoordinators: []
-  },
-  {
-    _id: "2",
-    name: "Dance Battle",
-    code: "dance-battle",
-    category: "Technical",
-    location: "Main Stage",
-    startsAt: new Date(Date.now() + 259200000).toISOString(),
-    endsAt: new Date(Date.now() + 270000000).toISOString(),
-    description: "Show off your best moves in this solo dance competition.",
-    rulebookLink: "#",
-    posterLink: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800&q=80",
-    eventHeads: [{ name: "Charlie Davis", email: "charlie@example.com" }],
-    coordinators: [],
-    coCoordinators: []
-  },
-  {
-    _id: "3",
-    name: "Robo Wars",
-    code: "robo-wars",
-    category: "Technical",
-    location: "Mechanical Workshop Arena",
-    startsAt: new Date(Date.now() + 120000000).toISOString(),
-    endsAt: new Date(Date.now() + 150000000).toISOString(),
-    description: "Battle of bots! Design and control your combat robot to knock opponents out of the arena.",
-    rulebookLink: "#",
-    posterLink: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&q=80",
-    eventHeads: [{ name: "Rahul Sharma", collegeID: "B21045", phone: "9876543222", email: "rahul.s@example.com" }],
-    coordinators: [{ name: "Priya Roy", collegeID: "B21078" }],
-    coCoordinators: []
-  },
-  {
-    _id: "4",
-    name: "Code Clash",
-    code: "code-clash",
-    category: "Technical",
-    location: "Lab 3, CSE Dept",
-    startsAt: new Date(Date.now() + 180000000).toISOString(),
-    endsAt: new Date(Date.now() + 200000000).toISOString(),
-    description: "Fast-paced competitive programming contest testing algorithms, speed, and problem-solving prowess.",
-    rulebookLink: "#",
-    posterLink: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&q=80",
-    eventHeads: [{ name: "Ananya Sen", collegeID: "B21012", phone: "9876543233", email: "ananya@example.com" }],
-    coordinators: [{ name: "Dev Patel", collegeID: "B21089" }],
-    coCoordinators: []
-  }
-];
-
 export default function Events() {
   const [events, setEvents] = useState<EventRecord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -229,10 +166,6 @@ export default function Events() {
     async function fetchEvents() {
       try {
 
-        await new Promise(resolve => setTimeout(resolve, 500));
-        setEvents(dummyEvents);
-
-        /*
         const response = await fetch("/api/events");
         const data = await response.json();
 
@@ -241,7 +174,7 @@ export default function Events() {
         }
 
         setEvents(data.events);
-        */
+
       } catch (fetchError) {
         setError(fetchError instanceof Error ? fetchError.message : "Unable to load events");
       } finally {
@@ -257,14 +190,18 @@ export default function Events() {
   return (
     <>
       <Head>
-        <link rel="preload" href="/img/brickwall.webp" as="image" />
+        <link rel="preload" href="/img/pattern-floral.png" as="image" />
       </Head>
       <div
         className="relative flex flex-col items-center w-full h-auto min-h-screen overflow-x-hidden pb-16"
-        style={{ backgroundImage: `url('/img/brickwall.webp')` }}
+        style={{
+          backgroundImage: `url('/img/pattern-floral.png')`,
+          backgroundSize: '700px',
+          backgroundRepeat: 'repeat',
+        }}
       >
         {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-white/95 via-slate-100/90 to-white/95 dark:from-gray-900/80 dark:to-black/80 pointer-events-none transition-colors duration-300" />
+        <div className="absolute inset-0 backdrop-invert bg-gradient-to-br from-white/95 via-slate-100/90 to-white/95 dark:from-gray-900/80 dark:to-black/80 pointer-events-none transition-colors duration-300" />
 
         {/* Content container */}
         <div className="relative w-full">
@@ -293,37 +230,28 @@ export default function Events() {
               {/* Category Header */}
               <div
                 id={category.toLowerCase().replace(/ /g, "-")}
-                className="relative mx-4 sm:mx-6 md:mx-8 lg:mx-10 my-4 sm:my-6 md:my-8 lg:my-10 overflow-hidden"
+                className="relative flex flex-col items-center justify-center mx-4 sm:mx-6 md:mx-8 lg:mx-10 my-12 sm:my-16"
               >
-                {/* Outer rounded design with responsive border radius */}
-                <div
-                  className="absolute inset-0 bg-gradient-to-r from-yellow-500 via-yellow-400 to-yellow-500 animate-gradient-x 
-    rounded-tl-[20px] rounded-br-[20px] 
-    sm:rounded-tl-[25px] sm:rounded-br-[25px]
-    md:rounded-tl-[30px] md:rounded-br-[30px]
-    lg:rounded-tl-[40px] lg:rounded-br-[40px]"
-                />
+                {/* Soft, Elegant Glassmorphic Design */}
+                <div className="relative group flex items-center justify-center cursor-default">
 
-                <div
-                  className="relative bg-gradient-to-r from-slate-100 to-white dark:from-gray-900 dark:to-black m-0.5 
-    p-3 sm:p-4 md:p-5 lg:p-6
-    rounded-tl-[18px] rounded-br-[18px]
-    sm:rounded-tl-[23px] sm:rounded-br-[23px]
-    md:rounded-tl-[28px] md:rounded-br-[28px]
-    lg:rounded-tl-[38px] lg:rounded-br-[38px] transition-colors duration-300"
-                >
-                  <div className="flex items-center justify-center gap-2 sm:gap-3 md:gap-4">
-                    <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 lg:w-8 lg:h-8 text-yellow-400" />
+                  {/* Soft Background Layer */}
+                  <div className="absolute inset-0 bg-white/70 dark:bg-black/40 backdrop-blur-md rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:shadow-[0_8px_30px_rgb(255,255,255,0.03)] transition-transform duration-500 group-hover:scale-[1.02]" />
+
+                  {/* Border Layer */}
+                  <div className="absolute inset-0 border border-slate-200/60 dark:border-white/10 rounded-full" />
+
+                  {/* Content */}
+                  <div className="relative px-10 sm:px-20 py-4 sm:py-6 flex items-center justify-center gap-4 sm:gap-8 z-10">
+                    <div className="h-[2px] w-6 sm:w-12 bg-amber-400 rounded-full opacity-80" />
 
                     <h2
-                      className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold 
-        text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600
-        whitespace-nowrap"
+                      className="text-2xl sm:text-3xl md:text-5xl font-extrabold text-slate-800 dark:text-slate-100 uppercase tracking-widest whitespace-nowrap drop-shadow-sm"
                     >
                       {category.replace("_", " ")}
                     </h2>
 
-                    <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 lg:w-8 lg:h-8 text-yellow-400" />
+                    <div className="h-[2px] w-6 sm:w-12 bg-amber-400 rounded-full opacity-80" />
                   </div>
                 </div>
               </div>
@@ -377,17 +305,17 @@ export default function Events() {
                               className="transition-transform duration-500 group-hover:scale-110"
                             />
 
-                            {/* Event Name Overlay */}
-                            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/90 to-transparent text-white p-4 transform transition-transform duration-500 translate-y-full group-hover:translate-y-0 rounded-b-xl">
-                              <p className="font-bold text-2xl text-yellow-400 mb-2">
+                            {/* Event Name Overlay (Gradient) */}
+                            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/80 to-transparent pt-16 pb-5 px-5 transform transition-transform duration-500 translate-y-full group-hover:translate-y-0 rounded-b-xl flex flex-col gap-4">
+                              <p className="text-2xl sm:text-3xl font-extrabold text-white uppercase tracking-widest whitespace-nowrap drop-shadow-sm truncate">
                                 {event.name}
                               </p>
 
                               {/* Links */}
-                              <div className="flex flex-col gap-3">
+                              <div className="flex flex-col gap-2.5">
                                 <a
                                   href={`/register/${event.code}`}
-                                  className="inline-block bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-bold py-2 px-4 rounded-lg text-center transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-yellow-500/25"
+                                  className="w-full bg-amber-400/90 hover:bg-amber-400 text-slate-900 font-extrabold uppercase tracking-widest drop-shadow-sm py-2.5 px-4 rounded-xl text-center backdrop-blur-sm shadow-sm transition-all duration-300 hover:shadow-md"
                                 >
                                   Register Now
                                 </a>
@@ -395,7 +323,7 @@ export default function Events() {
                                 <button
                                   type="button"
                                   onClick={() => setSelectedEvent(event)}
-                                  className="inline-block bg-gradient-to-r from-gray-800 to-gray-900 text-yellow-400 border border-yellow-400/30 font-bold py-2 px-4 rounded-lg text-center transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-yellow-500/10"
+                                  className="w-full bg-white/20 hover:bg-white/30 text-white border border-white/30 font-extrabold uppercase tracking-widest drop-shadow-sm py-2.5 px-4 rounded-xl text-center backdrop-blur-sm shadow-sm transition-all duration-300 hover:shadow-md"
                                 >
                                   View Event
                                 </button>

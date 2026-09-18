@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import Loading from "@/app/components/Loading";
 import Image from "next/image";
+import { Crown, Info, Users, Phone } from "lucide-react";
 
 const DynamicForm = dynamic(
   () => import("@/components/register-form/DynamicForm"),
@@ -13,7 +14,7 @@ const DynamicForm = dynamic(
     ssr: false,
     loading: () => (
       <div className="flex justify-center items-center min-h-64">
-        <div className="h-16 w-16 border-t-4 border-blue-500 border-solid rounded-full animate-spin"></div>
+        <div className="h-16 w-16 border-t-4 border-amber-400 border-solid rounded-full animate-spin"></div>
       </div>
     ),
   }
@@ -31,7 +32,7 @@ export default function EventPage() {
     min: 1,
     max: 1,
     allowPerformanceTypes: false,
-    paymentRequired: undefined as { amount: number; qrCodeUrl: string } | undefined, // Add this
+    paymentRequired: undefined as { amount: number; qrCodeUrl: string } | undefined,
   });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -72,117 +73,163 @@ export default function EventPage() {
   if (isLoading) return <Loading />;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-950 via-blue-950 to-black py-12 pt-24">
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="container mx-auto px-4"
-      >
-        <h1 className="text-3xl font-bold text-center text-amber-500 mb-8">
-          Event Registration:{" "}
-          <span className="text-white">{event?.name || eventId}</span>
-        </h1>
+    <div
+      className="min-h-screen relative overflow-x-hidden"
+      style={{
+        backgroundImage: `url('/img/pattern-floral.png')`,
+        backgroundSize: '700px',
+        backgroundRepeat: 'repeat',
+      }}
+    >
+      {/* Background Overlay */}
+      <div className="absolute inset-0 backdrop-invert bg-gradient-to-br from-white/95 via-slate-100/90 to-white/95 dark:from-gray-900/80 dark:to-black/80 pointer-events-none transition-colors duration-300 fixed" />
 
-        {event?.image && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="max-w-md mx-auto mb-8"
-          >
-            <Image
-              src={event.image.startsWith("http") ? event.image : `https://shishir.nitm.ac.in${event.image}`}
-              width="0"
-              height="0"
-              sizes="100svw"
-              alt={`${event.name} poster`}
-              className="w-full h-auto rounded-lg shadow-md"
-            />
-          </motion.div>
-        )}
-
-        {/* Event Info Section */}
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="max-w-md mx-auto mb-8 bg-blue-900/50 p-5 rounded-lg shadow-lg"
+      {/* Main Content */}
+      <div className="relative w-full z-10 pt-24 pb-16">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="container mx-auto px-4 sm:px-6 md:px-8 max-w-7xl"
         >
-          <h2 className="text-xl font-semibold text-amber-400 mb-3">Event Details</h2>
-          <div className="space-y-2 text-white">
-            <div className="flex justify-between">
-              <span>Participation:</span>
-              <span className="font-medium">
-                {event.eventType === "individual" ? "Individual" : 
-                 event.eventType === "team" ? "Team" : 
-                 event.eventType === "performance" ? "Performance" : "—"}
+          {/* Header Section */}
+          <div className="text-center mb-12">
+            <div className="flex justify-center items-center gap-3 sm:gap-4 mb-4">
+              <Crown className="w-8 h-8 sm:w-10 sm:h-10 text-amber-400 animate-pulse" />
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold uppercase tracking-widest text-slate-800 dark:text-slate-100 drop-shadow-sm pt-2">
+                REGISTER
+              </h1>
+              <Crown className="w-8 h-8 sm:w-10 sm:h-10 text-amber-400 animate-pulse" />
+            </div>
+
+            <div className="inline-block bg-white/70 dark:bg-black/40 backdrop-blur-md rounded-full px-8 py-3 border border-slate-200/60 dark:border-white/10 shadow-[0_4px_20px_rgb(0,0,0,0.04)] dark:shadow-none">
+              <span className="text-xl sm:text-2xl font-bold text-amber-500 uppercase tracking-widest drop-shadow-sm">
+                {event?.name || eventId}
               </span>
             </div>
-            <div className="flex justify-between">
-              <span>Team Size:</span>
-              <span className="font-medium">
-                {event.min === event.max 
-                  ? `${event.min} ${event.min > 1 ? 'participants' : 'participant'}`
-                  : `${event.min} - ${event.max} participants`}
-              </span>
-            </div>
-            {event.rulebook && (
-              <div className="pt-2">
-                <a 
-                  href={event.rulebook}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block bg-amber-500 hover:bg-amber-600 text-blue-950 font-medium py-2 px-4 rounded-md transition-colors duration-200 w-full text-center"
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start lg:[grid-template-rows:auto_auto_auto_1fr]">
+
+            {/* Event Poster */}
+            {event?.image && (
+              <div className="order-1 lg:order-none lg:col-span-5 lg:col-start-8 lg:row-start-1">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.1 }}
+                  className="w-full overflow-hidden rounded-2xl shadow-xl border-[3px] border-amber-400/80 dark:border-white/10"
                 >
-                  View Rulebook
-                </a>
+                  <Image
+                    src={event.image.startsWith("http") ? event.image : `https://shishir.nitm.ac.in${event.image}`}
+                    width={500}
+                    height={500}
+                    alt={`${event.name} poster`}
+                    className="w-full aspect-square object-cover"
+                    priority
+                  />
+                </motion.div>
               </div>
             )}
+
+            {/* Event Info Section */}
+            <div className="order-2 lg:order-none lg:col-span-5 lg:col-start-8 lg:row-start-2">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="w-full bg-white/60 dark:bg-black/40 backdrop-blur-xl p-6 sm:p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:shadow-[0_8px_30px_rgb(255,255,255,0.03)] border border-slate-200/60 dark:border-white/10"
+              >
+                <div className="flex items-center gap-3 mb-6">
+                  <Info className="w-6 h-6 text-amber-500" />
+                  <h2 className="text-xl font-extrabold uppercase tracking-widest text-slate-800 dark:text-slate-100">Event Details</h2>
+                </div>
+
+                <div className="space-y-4 text-slate-700 dark:text-slate-300 font-medium text-lg">
+                  <div className="flex justify-between items-center bg-white/50 dark:bg-white/5 p-3 rounded-xl border border-slate-200/50 dark:border-white/5">
+                    <span className="flex items-center gap-2"><Users className="w-4 h-4" /> Participation</span>
+                    <span className="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-sm">
+                      {event.eventType === "individual" ? "Individual" :
+                        event.eventType === "team" ? "Team" :
+                          event.eventType === "performance" ? "Performance" : "—"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center bg-white/50 dark:bg-white/5 p-3 rounded-xl border border-slate-200/50 dark:border-white/5">
+                    <span>Team Size</span>
+                    <span className="font-bold text-slate-900 dark:text-white">
+                      {event.min === event.max
+                        ? `${event.min} ${event.min > 1 ? 'participants' : 'participant'}`
+                        : `${event.min} - ${event.max} participants`}
+                    </span>
+                  </div>
+
+                  {event.rulebook && (
+                    <div className="pt-4">
+                      <a
+                        href={event.rulebook}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block w-full bg-slate-800 hover:bg-slate-900 dark:bg-white/10 dark:hover:bg-white/20 text-white font-extrabold uppercase tracking-widest py-3 px-4 rounded-xl text-center backdrop-blur-sm shadow-sm transition-all duration-300 hover:shadow-md border border-slate-700 dark:border-white/20"
+                      >
+                        View Rulebook
+                      </a>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Registration Form Wrapper */}
+            <div className="order-3 lg:order-none lg:col-span-7 lg:col-start-1 lg:row-start-1 lg:row-span-4">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="w-full bg-white/60 dark:bg-black/40 backdrop-blur-xl p-6 sm:p-10 pb-10 sm:pb-12 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:shadow-[0_8px_30px_rgb(255,255,255,0.03)] border border-slate-200/60 dark:border-white/10"
+              >
+                <h2 className="text-2xl font-extrabold uppercase tracking-widest text-center text-slate-800 dark:text-slate-100 mb-8 pb-4 border-b border-slate-200/80 dark:border-white/10">
+                  Registration Form
+                </h2>
+                <DynamicForm
+                  eventId={event?.code}
+                  eventName={event?.name}
+                  min={event?.min}
+                  max={event?.max}
+                  eventType={
+                    event?.eventType as
+                    | "individual"
+                    | "team"
+                    | "performance"
+                    | undefined
+                  }
+                  allowPerformanceTypes={event?.allowPerformanceTypes}
+                  eventCode={event?.code}
+                  paymentRequired={event?.paymentRequired}
+                />
+              </motion.div>
+            </div>
+
+            {/* Contact Information */}
+            <div className="order-4 lg:order-none lg:col-span-5 lg:col-start-8 lg:row-start-3">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4 }}
+                className="w-full text-center p-6 bg-white/50 dark:bg-white/5 backdrop-blur-md rounded-2xl border border-slate-200/50 dark:border-white/10 shadow-sm"
+              >
+                <div className="flex justify-center mb-3">
+                  <Phone className="w-6 h-6 text-amber-500" />
+                </div>
+                <h3 className="text-lg font-extrabold uppercase tracking-widest text-slate-800 dark:text-slate-100 mb-2">Got Questions?</h3>
+                <p className="text-slate-600 dark:text-slate-300 font-medium">
+                  For any queries, please contact:<br />
+                  <span className="font-bold text-slate-900 dark:text-white mt-1 block text-lg">Gaurav Joshi</span>
+                  <span className="text-amber-600 dark:text-amber-400 font-bold">+91 84150 31939</span>
+                </p>
+              </motion.div>
+            </div>
           </div>
         </motion.div>
-
-        {/* Terms and Conditions Section
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="max-w-md mx-auto mb-8 bg-red-900/30 p-4 rounded-lg border border-red-500/50"
-        >
-          <h3 className="text-lg font-semibold text-red-300 mb-2">Important Notice:</h3>
-          <p className="text-white text-sm">
-            Each participant can register for only one event using their account. 
-            If you wish to participate in additional events, please register using a different account.
-          </p>
-        </motion.div> */}
-
-        <DynamicForm
-          eventId={event?.code}
-          eventName={event?.name}
-          min={event?.min}
-          max={event?.max}
-          eventType={
-            event?.eventType as
-              | "individual"
-              | "team"
-              | "performance"
-              | undefined
-          }
-          allowPerformanceTypes={event?.allowPerformanceTypes}
-          eventCode={event?.code}
-          paymentRequired={event?.paymentRequired}
-        />
-        
-        {/* Contact Information */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="max-w-md mx-auto mt-8 p-4 text-center text-white/80 bg-blue-900/20 rounded-lg"
-        >
-          <h3 className="text-md font-medium text-amber-400 mb-2">Got Questions?</h3>
-            <p className="text-sm">
-            For any queries, please contact:<br />
-            <span className="font-medium text-white">Gaurav Joshi</span><br />
-            <span className="font-medium text-white">+91 84150 31939</span><br />
-            </p>
-        </motion.div>
-      </motion.div>
+      </div>
     </div>
   );
 }
