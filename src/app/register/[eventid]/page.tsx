@@ -168,20 +168,6 @@ export default function EventPage() {
           eventCode={event?.code}
           paymentRequired={event?.paymentRequired}
         />
-        
-        {/* Contact Information */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="max-w-md mx-auto mt-8 p-4 text-center text-white/80 bg-blue-900/20 rounded-lg"
-        >
-          <h3 className="text-md font-medium text-amber-400 mb-2">Got Questions?</h3>
-            <p className="text-sm">
-            For any queries, please contact:<br />
-            <span className="font-medium text-white">Gaurav Joshi</span><br />
-            <span className="font-medium text-white">+91 84150 31939</span><br />
-            </p>
-        </motion.div>
       </motion.div>
     </div>
   );
