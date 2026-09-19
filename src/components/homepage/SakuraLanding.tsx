@@ -343,12 +343,22 @@ export const SakuraLanding: React.FC = () => {
 
       {/* ─── Wild Himalayan Cherry Tree (Responsive on Mobile & Desktop, Anchored Bottom-Right) ─── */}
       <div className="flex absolute right-0 bottom-0 h-[48vh] sm:h-[60vh] md:h-[80vh] w-full max-w-[85vw] sm:max-w-[75vw] md:max-w-[65vw] lg:max-w-[58vw] pointer-events-none justify-end items-end z-[2]">
-        <img
-          ref={treeRef}
-          src="/images/himalayan_cherry_transparent.png"
-          alt="Wild Himalayan Cherry Tree (Prunus cerasoides) - Meghalaya"
-          className="h-auto max-h-[46vh] sm:max-h-[58vh] md:max-h-[74vh] w-auto object-contain object-right-bottom select-none pointer-events-none opacity-90 md:opacity-95 [mask-image:linear-gradient(to_left,black_70%,transparent_100%)] will-change-transform origin-bottom-right"
-          draggable={false}
+        <Image
+          src="/images/cherry_blossom.webp"
+          alt="Welcome"
+          width={1000}
+          height={1000}
+          quality={50}
+          sizes="(max-width: 640px) 85vw, (max-width: 768px) 75vw, (max-width: 1024px) 65vw, 58vw"
+          className="
+            h-auto
+            max-h-[46vh] sm:max-h-[58vh] md:max-h-[74vh]
+            w-auto object-contain object-right-bottom
+            select-none pointer-events-none
+            opacity-90 md:opacity-95
+            [mask-image:linear-gradient(to_left,black_70%,transparent_100%)]
+            will-change-transform origin-bottom-right
+          "
         />
       </div>
 
@@ -362,15 +372,38 @@ export const SakuraLanding: React.FC = () => {
         }}
         className="flex-1 md:flex-initial flex flex-col items-center justify-center md:justify-start pt-24 md:pt-28 px-4 md:px-12 text-center z-[4] pointer-events-none"
       >
-        <Image
-          src="/Shishir_EE6C4D.svg"
-          alt="SHISHIR"
-          width={1000}
-          height={300}
-          priority
-          className="w-[clamp(18rem,55vw,70rem)] h-auto drop-shadow-[0_4px_30px_rgba(238,108,77,0.25)]"
-        />
+      <div className="relative flex h-fit w-full justify-center">
+          {/* Small flower in the corner */}
+          <Image
+            src="/welcome_flower.svg"
+            alt="Welcome"
+            width={200}
+            height={200}
+            priority
+            className="
+              absolute
+              left-0
+              top-0
+              w-[clamp(4rem,8vw,8rem)]
+              h-auto
+              drop-shadow-[0_4px_30px_rgba(238,108,77,0.25)]
+            "
+          />
 
+          {/* SHISHIR */}
+          <Image
+            src="/Shishir_EE6C4D.svg"
+            alt="SHISHIR"
+            width={1000}
+            height={300}
+            priority
+            className="
+              w-[clamp(18rem,55vw,70rem)]
+              h-auto
+              drop-shadow-[0_4px_30px_rgba(238,108,77,0.25)]
+            "
+          />
+        </div>
         <div className="mt-2.5 md:mt-3 text-[0.7rem] md:text-sm tracking-[0.35em] md:tracking-[0.4em] text-[#3D5A80] dark:text-[#98C1D9] font-bold uppercase transition-colors duration-300">
           CULTURAL FEST OF NIT MEGHALAYA
         </div>
