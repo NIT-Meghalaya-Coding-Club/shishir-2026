@@ -12,8 +12,8 @@ export const NumberCounter = ({
   end: number;
   duration?: number;
 }) => {
-  const [count, setCount] = useState(0);
-  const countRef = useRef(null);
+  const spanRef = useRef<HTMLSpanElement>(null);
+  const countRef = useRef<HTMLSpanElement>(null);
   const hasAnimated = useRef(false);
 
   useEffect(() => {
@@ -21,24 +21,28 @@ export const NumberCounter = ({
       (entries) => {
         if (entries[0].isIntersecting && !hasAnimated.current) {
           hasAnimated.current = true;
-          let start = 0;
-          const step = end / (duration / 16);
-          const timer = setInterval(() => {
-            start += step;
-            if (start > end) {
-              setCount(end);
-              clearInterval(timer);
-            } else {
-              setCount(Math.floor(start));
+          const startTime = performance.now();
+          const updateCount = (currentTime: number) => {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(1, elapsed / duration);
+            const currentVal = Math.floor(progress * end);
+            if (countRef.current) {
+              countRef.current.textContent = currentVal.toString();
             }
-          }, 16);
+            if (progress < 1) {
+              requestAnimationFrame(updateCount);
+            } else if (countRef.current) {
+              countRef.current.textContent = end.toString();
+            }
+          };
+          requestAnimationFrame(updateCount);
         }
       },
       { threshold: 0.5 }
     );
 
-    if (countRef.current) {
-      observer.observe(countRef.current);
+    if (spanRef.current) {
+      observer.observe(spanRef.current);
     }
 
     return () => observer.disconnect();
@@ -49,19 +53,19 @@ export const NumberCounter = ({
 
   return (
     <span
-      ref={countRef}
+      ref={spanRef}
       className="text-amber-400 inline-block"
       style={{
         minWidth: `${maxDigits}ch`,
         textAlign: 'left',
       }}
     >
-      {count}<span className="font-bold"> +</span>
+      <span ref={countRef}>0</span><span className="font-bold"> +</span>
     </span>
   );
 };
 
-// Enhanced BentoTilt with more dramatic effects
+// Enhanced BentoTilt with direct DOM style updates (zero React re-renders on mousemove)
 export const BentoTilt = ({
   children,
   className = "",
@@ -69,11 +73,10 @@ export const BentoTilt = ({
   children: ReactNode;
   className?: string;
 }) => {
-  const [transformStyle, setTransformStyle] = useState("");
-  const [glowPosition, setGlowPosition] = useState({ x: 0, y: 0 });
   const itemRef = useRef<HTMLDivElement>(null);
+  const rafId = useRef<number | null>(null);
 
-  const handleMouseMove = (event: { clientX: number; clientY: number }) => {
+  const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
     if (!itemRef.current) return;
 
     const { left, top, width, height } =
@@ -82,28 +85,34 @@ export const BentoTilt = ({
     const relativeX = (event.clientX - left) / width;
     const relativeY = (event.clientY - top) / height;
 
-    const tiltX = (relativeY - 0.5) * 7; // Increased tilt effect
+    const tiltX = (relativeY - 0.5) * 7;
     const tiltY = (relativeX - 0.5) * -7;
+    const glowX = relativeX * 100;
+    const glowY = relativeY * 100;
 
-    setGlowPosition({ x: relativeX * 100, y: relativeY * 100 });
-    const newTransform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale3d(0.98, 0.98, 0.98)`;
-    setTransformStyle(newTransform);
+    if (rafId.current) cancelAnimationFrame(rafId.current);
+    rafId.current = requestAnimationFrame(() => {
+      if (itemRef.current) {
+        itemRef.current.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale3d(0.98, 0.98, 0.98)`;
+        itemRef.current.style.background = `radial-gradient(circle at ${glowX}% ${glowY}%, rgba(234, 179, 8, 0.15), transparent 25%)`;
+      }
+    });
   };
 
   const handleMouseLeave = () => {
-    setTransformStyle("");
+    if (rafId.current) cancelAnimationFrame(rafId.current);
+    if (itemRef.current) {
+      itemRef.current.style.transform = "";
+      itemRef.current.style.background = "";
+    }
   };
 
   return (
     <div
       ref={itemRef}
-      className={`relative ${className} transition-transform duration-300 ease-out`}
+      className={`relative ${className} transition-transform duration-300 ease-out will-change-transform`}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      style={{
-        transform: transformStyle,
-        background: `radial-gradient(circle at ${glowPosition.x}% ${glowPosition.y}%, rgba(234, 179, 8, 0.15), transparent 25%)`,
-      }}
     >
       {children}
     </div>
@@ -122,18 +131,17 @@ export const BentoCard = ({
   description?: string;
   isComingSoon?: boolean;
 }) => {
-  const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
   const [hoverOpacity, setHoverOpacity] = useState(0);
   const hoverButtonRef = useRef<HTMLDivElement | null>(null);
+  const glowRef = useRef<HTMLDivElement | null>(null);
 
-  const handleMouseMove = (event: { clientX: number; clientY: number }) => {
-    if (!hoverButtonRef.current) return;
+  const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (!hoverButtonRef.current || !glowRef.current) return;
     const rect = hoverButtonRef.current.getBoundingClientRect();
 
-    setCursorPosition({
-      x: event.clientX - rect.left,
-      y: event.clientY - rect.top,
-    });
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    glowRef.current.style.background = `radial-gradient(100px circle at ${x}px ${y}px, rgba(251, 191, 36, 0.4), transparent)`;
   };
 
   const handleMouseEnter = () => setHoverOpacity(1);
@@ -181,10 +189,10 @@ export const BentoCard = ({
             className="relative flex w-fit cursor-pointer items-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-amber-500 to-amber-700 px-6 py-3 text-sm uppercase text-white shadow-lg transition-all duration-300 hover:shadow-amber-500/20"
           >
             <div
+              ref={glowRef}
               className="pointer-events-none absolute -inset-px opacity-0 transition duration-300"
               style={{
                 opacity: hoverOpacity,
-                background: `radial-gradient(100px circle at ${cursorPosition.x}px ${cursorPosition.y}px, rgba(251, 191, 36, 0.4), transparent)`,
               }}
             />
             <TiLocationArrow className="relative z-20" />

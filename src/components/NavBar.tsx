@@ -18,6 +18,7 @@ const NavBar: React.FC = () => {
   const inactivityTimerRef = useRef<NodeJS.Timeout | null>(null);
   const isHoveredRef = useRef(false);
   const isOpenRef = useRef(false);
+  const isVisibleRef = useRef(true);
   const router = useRouter();
 
   const { status } = useSession();
@@ -74,6 +75,10 @@ const NavBar: React.FC = () => {
     isHoveredRef.current = isHovered;
   }, [isHovered]);
 
+  useEffect(() => {
+    isVisibleRef.current = isVisible;
+  }, [isVisible]);
+
   const resetInactivityTimer = useCallback(() => {
     if (inactivityTimerRef.current) {
       clearTimeout(inactivityTimerRef.current);
@@ -93,7 +98,9 @@ const NavBar: React.FC = () => {
   }, []);
 
   const showNavbarAndResetTimer = useCallback(() => {
-    setIsVisible(true);
+    if (!isVisibleRef.current) {
+      setIsVisible(true);
+    }
     resetInactivityTimer();
   }, [resetInactivityTimer]);
 
@@ -124,14 +131,11 @@ const NavBar: React.FC = () => {
 
       if (currentScrollY > lastScrollY.current && currentScrollY > 120) {
         // Scrolling down -> hide navbar unless hovering or open
-        if (!isHoveredRef.current && !isOpenRef.current) {
+        if (!isHoveredRef.current && !isOpenRef.current && isVisibleRef.current) {
           setIsVisible(false);
         }
-      } else if (currentScrollY < lastScrollY.current) {
-        // Scrolling up -> show navbar and reset timer
-        showNavbarAndResetTimer();
-      } else if (currentScrollY <= 10) {
-        // Top of page -> show navbar and reset timer
+      } else if (currentScrollY < lastScrollY.current || currentScrollY <= 10) {
+        // Scrolling up or top of page -> show navbar and reset timer
         showNavbarAndResetTimer();
       }
 

@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import LiquidGlass from "liquid-glass-react";
 
 const artists = [
   {
@@ -38,7 +39,7 @@ const FeaturedArtists = () => {
   >([]);
   const sectionRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
+  const buttonRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -91,7 +92,7 @@ const FeaturedArtists = () => {
           start: "top top",
           end: "+=240%",
           pin: true,
-          scrub: 1.1,
+          scrub: 0.15, // Immediately responsive to scroll velocity
           anticipatePin: 1,
           invalidateOnRefresh: true,
           onRefreshInit: setCompressedState,
@@ -104,9 +105,9 @@ const FeaturedArtists = () => {
         y: 0,
         scale: 1,
         opacity: 1,
-        duration: 2,
-        stagger: 0.12,
-        ease: "power3.out",
+        duration: 1.6,
+        stagger: 0.08,
+        ease: "power2.out",
       });
     }, section);
 
@@ -122,23 +123,13 @@ const FeaturedArtists = () => {
       ref={sectionRef}
       className="w-full min-h-screen flex flex-col justify-center bg-slate-50 dark:bg-gray-900 py-16 px-4 md:px-8 relative overflow-hidden transition-colors duration-300"
     >
-      {/* Background decorative elements */}
-      <div className="absolute inset-0 overflow-hidden">
+      {/* Background decorative elements with zero-JS overhead */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {decorativeElements.map((element) => (
-          <motion.div
+          <div
             key={element.key}
-            className="absolute rounded-full opacity-20"
+            className="absolute rounded-full opacity-15 blur-xl pointer-events-none transition-transform duration-700"
             style={element.style}
-            animate={{
-              x: [0, Math.random() * 50 - 25],
-              y: [0, Math.random() * 50 - 25],
-              scale: [1, Math.random() * 0.5 + 0.8, 1],
-            }}
-            transition={{
-              duration: Math.random() * 10 + 5,
-              repeat: Infinity,
-              repeatType: "reverse",
-            }}
           />
         ))}
       </div>
@@ -180,16 +171,10 @@ const FeaturedArtists = () => {
             <motion.div
               key={artist.id}
               data-artist-card
-              className="relative rounded-xl overflow-hidden cursor-pointer group w-full aspect-square"
-              whileHover={{
-                scale: 1.05,
-                zIndex: 20,
-                boxShadow: `0 0 30px ${artist.color}`,
-              }}
+              className="relative rounded-xl overflow-hidden cursor-pointer group w-full aspect-square will-change-transform"
               onClick={() =>
                 setActiveArtist(activeArtist === artist.id ? null : artist.id)
               }
-              layout
             >
               <motion.div
                 className="absolute inset-0 opacity-90"
@@ -210,22 +195,42 @@ const FeaturedArtists = () => {
       {/* Animated call to action */}
       <motion.div
         className="mt-12 text-center relative z-10"
-        initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
       >
-        <motion.button
+        <motion.div
           ref={buttonRef}
-          className="px-8 py-3 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full text-white font-bold text-lg"
+          className="relative inline-block h-fit w-fit will-change-transform"
           whileHover={{
-            scale: 1.05,
-            boxShadow: "0 0 20px rgba(131, 56, 236, 0.7)",
+            scale: 1.05 
           }}
           whileTap={{ scale: 0.95 }}
-          onClick={handleRedirect}
         >
-          Grab Your Tickets!
-        </motion.button>
+          <LiquidGlass
+            displacementScale={64}
+            blurAmount={0.08}
+            saturation={140}
+            aberrationIntensity={2}
+            elasticity={0.35}
+            cornerRadius={999}
+            padding="12px 32px"
+            mode="standard"
+            className="text-lg font-bold"
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+            }}
+          >
+            <button
+              type="button"
+              className="block w-max cursor-pointer whitespace-nowrap font-bold text-[#EE6C4D]"
+              onClick={handleRedirect}
+            >
+              Grab Your Tickets!
+            </button>
+          </LiquidGlass>
+        </motion.div>
       </motion.div>
     </div>
   );

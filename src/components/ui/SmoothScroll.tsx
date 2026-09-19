@@ -29,23 +29,13 @@ export const SmoothScroll: React.FC = () => {
       window.history.scrollRestoration = 'manual';
     }
 
-    // 1. Initialize Lenis with tuned inertia and velocity limiter
+    // 1. Initialize Lenis with tuned inertia for immediate, responsive scrolling
     const lenis = new Lenis({
-      lerp: 0.085,             // Silky physics-based deceleration curve
+      lerp: 0.12,              // Snappy, silky deceleration without sluggish drag
       wheelMultiplier: 1.0,    // Natural 1:1 wheel sensitivity
       touchMultiplier: 1.2,    // Responsive mobile touch scrolling
       smoothWheel: true,       // Enable smooth wheel interpolation
       syncTouch: false,        // Native touch scroll feeling on mobile
-      virtualScroll: (data) => {
-        // Prevent aggressive mousewheel flicking from blowing past pinned sections
-        const MAX_DELTA = 48;
-        if (data.deltaY > MAX_DELTA) {
-          data.deltaY = MAX_DELTA;
-        } else if (data.deltaY < -MAX_DELTA) {
-          data.deltaY = -MAX_DELTA;
-        }
-        return true;
-      },
     });
 
     lenisRef.current = lenis;

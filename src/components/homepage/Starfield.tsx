@@ -3,7 +3,6 @@
 import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import Lenis from 'lenis';
 import {
   getResolvedStarfieldVideos,
   STARFIELD_TIMING,
@@ -19,7 +18,6 @@ export const Starfield: React.FC = () => {
   const canvasRef         = useRef<HTMLCanvasElement>(null);
   const logoWrapRef       = useRef<HTMLDivElement>(null);
   const logoInnerRef      = useRef<HTMLDivElement>(null);
-  const lenisRef          = useRef<Lenis | null>(null);
   const videoRefs         = useRef<(HTMLVideoElement | null)[]>([]);
 
   useEffect(() => {
@@ -29,56 +27,18 @@ export const Starfield: React.FC = () => {
       window.history.scrollRestoration = 'manual';
     }
 
-    // ─── Smooth Scroll Coordination ─────────────────────────────────────
-    // If a global smooth scroll instance (e.g. from ClientProviders / SmoothScroll.tsx)
-    // already exists on window.lenis, reuse it to prevent duplicate scroll listeners!
-    const existingLenis = (window as unknown as { lenis?: Lenis; __lenis?: Lenis }).lenis || null;
-    let lenis = existingLenis;
-    let createdLocalLenis = false;
-
-    let tick: ((time: number) => void) | null = null;
-
-    if (!lenis) {
-      lenis = new Lenis({
-        lerp: 0.08,
-        wheelMultiplier: 1.0,
-        touchMultiplier: 1.3,
-        smoothWheel: true,
-        syncTouch: true,
-        virtualScroll: (data) => {
-          const MAX_DELTA = 48;
-          if (data.deltaY > MAX_DELTA) {
-            data.deltaY = MAX_DELTA;
-          } else if (data.deltaY < -MAX_DELTA) {
-            data.deltaY = -MAX_DELTA;
-          }
-          return true;
-        },
-      });
-      createdLocalLenis = true;
-      (window as unknown as { __lenis?: Lenis | null }).__lenis = lenis;
-
-      lenis.on('scroll', () => {
-        ScrollTrigger.update();
-      });
-
-      tick = (time: number) => lenis!.raf(time * 1000);
-      gsap.ticker.add(tick);
-    }
-    lenisRef.current = lenis;
-
     // ─── Starfield engine ───────────────────────────────────────────────
-    // Optimized, serene, and gently paced starlight
+    // Optimized, serene, and gently paced starlight with zero GC stutter
     const S = {
-      count:    1100, // Balanced for lightweight rendering on weaker devices
+      count:    850, // Balanced for lightweight 60fps rendering on all devices
       paletteDark:  ['#7CF5FF','#8CE0FF','#9D7CFF','#C77CFF','#FF7CE8','#FF6FB5'],
       paletteLight: ['#1E40AF','#4338CA','#6D28D9','#9333EA','#BE185D','#D97706'],
       weights:  [0.45, 0.2, 0.15, 0.125, 0.1, 0.078],
-      holeR:    6,   // Tight focal singularity point (no large black spot)
+      holeR:    6,   // Tight focal singularity point
       reach:    1.35,
-      minLen:   10,  maxLen:  75,  // Shorter, elegant celestial streaks (no rushed blur)
+      minLen:   10,  maxLen:  75,
       minW:     2.0, maxW:    3.5,
-      glowR:    55,  // Fades in quickly near center (no hollow void)
+      glowR:    55,  // Fades in quickly near center
       glowSoft: 1.2, // Gentle linear fade-in
       tailFade: 0.25,
       startDen: 0.22,
@@ -95,27 +55,31 @@ export const Starfield: React.FC = () => {
 
     interface Star {
       dx: number; dy: number; off: number; len: number;
-      wid: number; colDark: [number,number,number]; colLight: [number,number,number]; thr: number;
+      wid: number; colDarkRgb: string; colLightRgb: string; thr: number;
     }
     let stars: Star[] = [];
 
-    const hex = (h: string): [number,number,number] => {
+    const hexToRgbStr = (h: string): string => {
       const c = h.replace('#','');
-      return [parseInt(c.slice(0,2),16), parseInt(c.slice(2,4),16), parseInt(c.slice(4,6),16)];
+      return `${parseInt(c.slice(0,2),16)},${parseInt(c.slice(2,4),16)},${parseInt(c.slice(4,6),16)}`;
     };
     const rnd  = (a: number, b: number) => a + Math.random() * (b - a);
-    const pickColor = (palette: string[]): [number,number,number] => {
+    const pickColorStr = (palette: string[]): string => {
       let r = Math.random();
-      for (let i = 0; i < palette.length; i++) { r -= S.weights[i]; if (r <= 0) return hex(palette[i]); }
-      return hex(palette[0]);
+      for (let i = 0; i < palette.length; i++) { r -= S.weights[i]; if (r <= 0) return hexToRgbStr(palette[i]); }
+      return hexToRgbStr(palette[0]);
     };
 
     const initStars = () => {
       stars = Array.from({ length: S.count }, () => {
         const a = Math.random() * Math.PI * 2;
-        return { dx: Math.cos(a), dy: Math.sin(a), off: Math.random(),
-                 len: rnd(S.minLen, S.maxLen), wid: rnd(S.minW, S.maxW),
-                 colDark: pickColor(S.paletteDark), colLight: pickColor(S.paletteLight), thr: Math.random() };
+        return {
+          dx: Math.cos(a), dy: Math.sin(a), off: Math.random(),
+          len: rnd(S.minLen, S.maxLen), wid: rnd(S.minW, S.maxW),
+          colDarkRgb: pickColorStr(S.paletteDark),
+          colLightRgb: pickColorStr(S.paletteLight),
+          thr: Math.random(),
+        };
       });
     };
 
@@ -166,7 +130,7 @@ export const Starfield: React.FC = () => {
 
       for (const s of stars) {
         if (s.thr > density) continue;
-        let fade = s.thr > S.startDen ? Math.min(1, (density - s.thr) / 0.08) : 1;
+        const fade = s.thr > S.startDen ? Math.min(1, (density - s.thr) / 0.08) : 1;
 
         // Monotonic outward travel: strictly advances forward with starDist, never reverses
         const travel = ((starDist + s.off) % 1 + 1) % 1;
@@ -184,13 +148,8 @@ export const Starfield: React.FC = () => {
         }
         if (op <= 0.01) continue;
 
-        const [r, g, b] = isDark ? s.colDark : s.colLight;
-        const gr = ctx.createLinearGradient(tx, ty, hx, hy);
-        gr.addColorStop(0,          `rgba(${r},${g},${b},0)`);
-        gr.addColorStop(S.tailFade, `rgba(${r},${g},${b},${op})`);
-        gr.addColorStop(1,          `rgba(${r},${g},${b},${op})`);
-
-        ctx.strokeStyle = gr;
+        const rgb = isDark ? s.colDarkRgb : s.colLightRgb;
+        ctx.strokeStyle = `rgba(${rgb},${op.toFixed(2)})`;
         ctx.lineWidth   = s.wid * thick * (0.6 + travel * 0.8);
         ctx.beginPath();
         ctx.moveTo(tx, ty);
@@ -218,28 +177,13 @@ export const Starfield: React.FC = () => {
     window.addEventListener('mousemove', onMouse);
 
     // ─── Timeline Architecture ──────────────────────────────────────────
-    // Total duration: 14 units
-    // Phase A (0.0 → 2.2): Portal grows from 0px (0 → 0.157 scroll)
-    //   - Starlight accelerates gently inside growing div
-    //   - Logo zooms (1.0 → 3.8), rotates in the XY plane (rotateZ: -28 deg), fades out cleanly by 2.2
-    //
-    // Phase B (2.2 → 11.0): Fullscreen starfield + 10 Shishir Events (0.157 → 0.786 scroll)
-    //   - Each wave is 1.9 units long
-    //   - Slower typing cadence (stagger: 0.044) with ample rest time where text is 100% typed out
-    //   - While exiting: texts fly outward with the stars along radial hyperspace trajectories
-    //
-    // Phase C (11.2 → 14.0): Portal shrinks to 0px & Logo zoom-out (0.786 → 1.000 scroll)
-    //   - Starlight CONTINUES TO STREAM OUTWARD (never reverses direction) while gently fading
-    //   - Portal shrinks back to 0px circle
-    //   - Logo appears with zoom-out feeling and smooth XY un-rotation (scale 3.8 → 1.0, rotateZ: -28 → 0)
-    //
     const PA = STARFIELD_TIMING.portalOpenDuration / STARFIELD_TIMING.totalTimelineDuration;
     const PC = STARFIELD_TIMING.flightPhaseEnd / STARFIELD_TIMING.totalTimelineDuration;
 
     const portal = portalRef.current!;
 
-    // Initial state: ZERO pixels and zero opacity so no circle is visible behind the image
-    gsap.set(portal, { width: 0, height: 0, borderRadius: '50%', opacity: 0 });
+    // Initial state: 0% circle clip-path and zero opacity (no reflow layout changes!)
+    gsap.set(portal, { clipPath: 'circle(0% at 50% 50%)', opacity: 0 });
     if (logoWrapRef.current) {
       gsap.set(logoWrapRef.current, {
         scale: 1, rotateX: 0, rotateY: 0, rotateZ: 0,
@@ -265,10 +209,6 @@ export const Starfield: React.FC = () => {
     // =========================================================================
     // 💡 VIDEO INITIALIZATION
     // All videos start hidden at the center vanishing point (0, 0)
-    //
-    // 🔍 SCALE PARAMETER 1: Initial Scale (at center singularity)
-    // Defined in src/config/starfieldVideos.ts -> STARFIELD_VISUAL.initialScale
-    // (Default: 0.08. Lower = tinier starting point, Higher = larger starting point)
     // =========================================================================
     STARFIELD_VIDEOS.forEach((_, idx) => {
       const el = document.getElementById(`event-video-${idx}`);
@@ -288,207 +228,179 @@ export const Starfield: React.FC = () => {
       }
     });
 
-    const tl = gsap.timeline();
+    const ctxTimeline = gsap.context(() => {
+      const tl = gsap.timeline();
 
-    // ═══════════════════════════════════════════════════════════════════════
-    // PHASE A: Portal opens from 0px, Logo zooms in & rotates in XY plane
-    // ═══════════════════════════════════════════════════════════════════════
+      // ═══════════════════════════════════════════════════════════════════════
+      // PHASE A: Portal opens via clipPath, Logo zooms in & rotates in XY plane
+      // ═══════════════════════════════════════════════════════════════════════
 
-    // Fade in portal smoothly as expansion begins
-    tl.to(portal, { opacity: 1, duration: 0.4 }, 0);
+      // Fade in portal smoothly as expansion begins
+      tl.to(portal, { opacity: 1, duration: 0.4 }, 0);
 
-    // Portal expands from 0px as a TRUE PERFECT CIRCLE to cover fullscreen
-    tl.to(portal, {
-      width: () => Math.hypot(window.innerWidth, window.innerHeight) * 1.05,
-      height: () => Math.hypot(window.innerWidth, window.innerHeight) * 1.05,
-      borderRadius: '50%',
-      ease: 'power2.inOut',
-      duration: STARFIELD_TIMING.portalOpenDuration,
-    }, 0);
+      // Portal expands from 0% circle to 120% circle (GPU composited, zero reflow!)
+      tl.to(portal, {
+        clipPath: 'circle(120% at 50% 50%)',
+        ease: 'power2.inOut',
+        duration: STARFIELD_TIMING.portalOpenDuration,
+      }, 0);
 
-    // Logo zooms in with rotation in the XY plane (no 3D tilt)
-    tl.to(logoWrapRef.current, {
-      scale: 3.8, rotateZ: -28, rotateX: 0, rotateY: 0,
-      ease: 'power1.inOut',
-      duration: STARFIELD_TIMING.portalOpenDuration,
-    }, 0);
+      // Logo zooms in with rotation in the XY plane (no 3D tilt)
+      tl.to(logoWrapRef.current, {
+        scale: 3.8, rotateZ: -28, rotateX: 0, rotateY: 0,
+        ease: 'power1.inOut',
+        duration: STARFIELD_TIMING.portalOpenDuration,
+      }, 0);
 
-    // Logo fades out cleanly as portal reaches fullscreen
-    tl.to(logoWrapRef.current, {
-      opacity: 0,
-      ease: 'power2.in',
-      duration: 1.2,
-    }, 1.0);
+      // Logo fades out cleanly as portal reaches fullscreen
+      tl.to(logoWrapRef.current, {
+        opacity: 0,
+        ease: 'power2.in',
+        duration: 1.2,
+      }, 1.0);
 
-    // ═══════════════════════════════════════════════════════════════════════
-    // PHASE B: Continuous Stream of Shishir Event Videos
-    //
-    // 🔍 WHERE TO CHANGE TIMING, FLIGHT DURATION & SCROLL LENGTH:
-    //    All controls are in `src/config/starfieldVideos.ts`:
-    //
-    //  ⏱️ 1. VIDEO FLIGHT DURATION (how long each video card is on screen):
-    //     -> `STARFIELD_TIMING.videoFlightDuration` (Default: 4.2s)
-    //
-    //  ⏱️ 2. TIME GAP BETWEEN VIDEOS (time before next video emerges):
-    //     -> `STARFIELD_TIMING.timeBetweenVideos` (Default: 1.35s)
-    //     (4.2 / 1.35 ≈ 3.1 -> exactly 3 concurrent videos on screen at any time)
-    //
-    //  📜 3. SCROLL RUNWAY (how much scrolling is required for the whole section):
-    //     -> `STARFIELD_TIMING.scrollRunway` (Default: '+=2000%')
-    //
-    //  🔍 WHERE TO CHANGE VIDEO SCALING & SIZING:
-    //  1. BASE CARD DIMENSIONS: `STARFIELD_VISUAL.cardWidthClass`
-    //  2. STARTING SCALE (at center): `STARFIELD_VISUAL.initialScale` (Default: 0.06)
-    //  3. MAXIMUM / EXIT SCALE: `STARFIELD_VISUAL.exitScale` (Default: 2.7)
-    //  4. FLIGHT DISTANCE: `STARFIELD_VISUAL.distanceFactor` (Default: 0.85)
-    // ═══════════════════════════════════════════════════════════════════════
+      // ═══════════════════════════════════════════════════════════════════════
+      // PHASE B: Continuous Stream of Shishir Event Videos
+      // ═══════════════════════════════════════════════════════════════════════
+      STARFIELD_VIDEOS.forEach((evt, idx) => {
+        const videoEl = document.getElementById(`event-video-${idx}`);
+        if (!videoEl) return;
 
-    STARFIELD_VIDEOS.forEach((evt, idx) => {
-      const videoEl = document.getElementById(`event-video-${idx}`);
-      if (!videoEl) return;
+        const rad = (evt.angleDeg * Math.PI) / 180;
+        const dx = Math.cos(rad);
+        const dy = Math.sin(rad);
 
-      const rad = (evt.angleDeg * Math.PI) / 180;
-      const dx = Math.cos(rad);
-      const dy = Math.sin(rad);
+        // 3D Tilt angles along trajectory of movement (dynamic banking)
+        const rotX = -dy * 26;
+        const rotY = dx * 28;
+        const rotZ = Math.max(-22, Math.min(22, evt.angleDeg * 0.16));
 
-      // 3D Tilt angles along trajectory of movement (dynamic banking)
-      const rotX = -dy * 26;
-      const rotY = dx * 28;
-      const rotZ = Math.max(-22, Math.min(22, evt.angleDeg * 0.16));
+        const duration = evt.end - evt.start;
+        const fadeInDuration = Math.min(0.5, duration * 0.14);
+        const fadeOutDuration = Math.min(0.6, duration * 0.16);
 
-      const duration = evt.end - evt.start;
-      const fadeInDuration = Math.min(0.5, duration * 0.14);
-      const fadeOutDuration = Math.min(0.6, duration * 0.16);
+        // Continuous radial flight: starts right at center (0,0)
+        tl.fromTo(
+          videoEl,
+          {
+            x: 0,
+            y: 0,
+            scale: STARFIELD_VISUAL.initialScale,
+            rotateX: 0,
+            rotateY: 0,
+            rotateZ: 0,
+          },
+          {
+            x: () => dx * Math.hypot(window.innerWidth, window.innerHeight) * STARFIELD_VISUAL.distanceFactor,
+            y: () => dy * Math.hypot(window.innerWidth, window.innerHeight) * STARFIELD_VISUAL.distanceFactor,
+            scale: STARFIELD_VISUAL.exitScale,
+            rotateX: rotX,
+            rotateY: rotY,
+            rotateZ: rotZ,
+            duration: duration,
+            ease: 'power1.inOut',
+          },
+          evt.start
+        );
 
-      // Continuous radial flight: starts right at center (0,0), giving maximum run-time on screen
-      tl.fromTo(
-        videoEl,
+        // Quick fade-in as it leaves center
+        tl.fromTo(
+          videoEl,
+          { opacity: 0 },
+          { opacity: 1, duration: fadeInDuration, ease: 'power1.out' },
+          evt.start
+        );
+
+        // Smooth fade-out as it zooms past screen edges
+        tl.to(
+          videoEl,
+          { opacity: 0, duration: fadeOutDuration, ease: 'power1.in' },
+          evt.end - fadeOutDuration
+        );
+      });
+
+      // ═══════════════════════════════════════════════════════════════════════
+      // PHASE C: Portal shrinks to 0% circle, logo reappears with zoom-out
+      // ═══════════════════════════════════════════════════════════════════════
+
+      // Portal shrinks back to 0% circle (zero reflow!)
+      tl.to(portal, {
+        clipPath: 'circle(0% at 50% 50%)',
+        ease: 'power2.inOut',
+        duration: STARFIELD_TIMING.portalCloseDuration,
+      }, STARFIELD_TIMING.portalCloseStart);
+
+      tl.to(portal, {
+        opacity: 0,
+        duration: 0.4,
+      }, STARFIELD_TIMING.portalCloseStart + STARFIELD_TIMING.portalCloseDuration - 0.2);
+
+      // Logo appears again with zoom-out feeling and un-rotation in the XY plane
+      tl.fromTo(logoWrapRef.current,
+        { scale: 3.8, rotateZ: -28, rotateX: 0, rotateY: 0, opacity: 0 },
         {
-          x: 0,
-          y: 0,
-          scale: STARFIELD_VISUAL.initialScale, // 👈 [SCALE PARAMETER 1] Starting scale at center
-          rotateX: 0,
-          rotateY: 0,
-          rotateZ: 0,
+          scale: 1, rotateZ: 0, rotateX: 0, rotateY: 0, opacity: 1,
+          ease: 'power2.out',
+          duration: 2.4,
+          immediateRender: false,
         },
-        {
-          x: () => dx * Math.hypot(window.innerWidth, window.innerHeight) * STARFIELD_VISUAL.distanceFactor,
-          y: () => dy * Math.hypot(window.innerWidth, window.innerHeight) * STARFIELD_VISUAL.distanceFactor,
-          scale: STARFIELD_VISUAL.exitScale,     // 👈 [SCALE PARAMETER 2] Maximum exit scale as it zooms past screen!
-          rotateX: rotX,
-          rotateY: rotY,
-          rotateZ: rotZ,
-          duration: duration,
-          ease: 'power1.inOut',                  // Organic acceleration from center to outer edges
-        },
-        evt.start
+        STARFIELD_TIMING.portalCloseStart + 0.1,
       );
 
-      // Quick fade-in as it leaves the center singularity
-      tl.fromTo(
-        videoEl,
-        { opacity: 0 },
-        { opacity: 1, duration: fadeInDuration, ease: 'power1.out' },
-        evt.start
-      );
+      // ═══════════════════════════════════════════════════════════════════════
+      // ScrollTrigger with STRICTLY MONOTONIC OUTWARD STAR MOVEMENT
+      // ═══════════════════════════════════════════════════════════════════════
+      ScrollTrigger.create({
+        trigger: sectionRef.current,
+        start:   'top top',
+        end:     STARFIELD_TIMING.scrollRunway,
+        pin:     true,
+        scrub:   0.15, // Immediately responsive to scroll speed without lagging catch-up
+        animation: tl,
+        onUpdate: (self) => {
+          const p = self.progress;
 
-      // Smooth fade-out as it zooms past the screen edges
-      tl.to(
-        videoEl,
-        { opacity: 0, duration: fadeOutDuration, ease: 'power1.in' },
-        evt.end - fadeOutDuration
-      );
-    });
-
-    // ═══════════════════════════════════════════════════════════════════════
-    // PHASE C: Portal shrinks to 0px, logo reappears with zoom-out
-    // ═══════════════════════════════════════════════════════════════════════
-
-    // Portal shrinks all the way back to 0px circle (no residual circle!)
-    tl.to(portal, {
-      width: 0, height: 0, borderRadius: '50%',
-      ease: 'power2.inOut',
-      duration: STARFIELD_TIMING.portalCloseDuration,
-    }, STARFIELD_TIMING.portalCloseStart);
-
-    tl.to(portal, {
-      opacity: 0,
-      duration: 0.4,
-    }, STARFIELD_TIMING.portalCloseStart + STARFIELD_TIMING.portalCloseDuration - 0.2);
-
-    // Logo appears again with zoom-out feeling and un-rotation in the XY plane
-    tl.fromTo(logoWrapRef.current,
-      { scale: 3.8, rotateZ: -28, rotateX: 0, rotateY: 0, opacity: 0 },
-      {
-        scale: 1, rotateZ: 0, rotateX: 0, rotateY: 0, opacity: 1,
-        ease: 'power2.out',
-        duration: 2.4,
-        immediateRender: false,
-      },
-      STARFIELD_TIMING.portalCloseStart + 0.1,
-    );
-
-    // ═══════════════════════════════════════════════════════════════════════
-    // ScrollTrigger with STRICTLY MONOTONIC OUTWARD STAR MOVEMENT
-    // ═══════════════════════════════════════════════════════════════════════
-
-    const trigger = ScrollTrigger.create({
-      trigger: sectionRef.current,
-      start:   'top top',
-      end:     STARFIELD_TIMING.scrollRunway, // Doubled scroll runway for spacious, unhurried pacing
-      pin:     true,
-      scrub:   0.25, // Tightly coupled with Lenis lerp: 0.08 for zero-lag professional glide
-      animation: tl,
-      onUpdate: (self) => {
-        const p = self.progress;
-
-        // STRICTLY MONOTONIC OUTWARD DISTANCE:
-        // Paced gently and serenely so stars drift smoothly outward without rushing.
-        if (p <= 0.002) {
-          starProgress = 0;
-          starDist = 0;
-          starGlobalFade = 0;
-          starExitFade = 1;
-        } else if (p <= PA) {
-          const u = p / PA;
-          starProgress = u * 0.35;
-          starDist = 0.08 * Math.pow(u, 1.3);
-          starGlobalFade = Math.min(1, u / 0.2);
-          starExitFade = 1;
-        } else if (p <= PC) {
-          const u = (p - PA) / (PC - PA);
-          starProgress = 0.35 + 0.65 * u;
-          starDist = 0.08 + 0.48 * u;
-          starGlobalFade = 1;
-          starExitFade = 1;
-        } else {
-          // Phase C: p > PC (0.786 → 1.0)
-          const u = (p - PC) / (1 - PC);
-          starProgress = 1.0;
-          // Starlight CONTINUES TO FLOW OUTWARD gently at half speed, never reverses
-          starDist = 0.56 + 0.16 * (1 - Math.pow(1 - u, 1.5));
-          starGlobalFade = 1;
-          // Exit fade smoothly dims the stars
-          starExitFade = Math.max(0, 1 - Math.pow(u, 1.4));
-        }
-
-        // Efficient video playback management:
-        // Only active videos currently streaming decode & play; inactive ones pause to keep 60+ FPS
-        const currentTime = tl.time();
-        STARFIELD_VIDEOS.forEach((evt, idx) => {
-          const isActive = currentTime >= evt.start - 0.15 && currentTime <= evt.end + 0.15;
-          const v = videoRefs.current[idx];
-          if (!v) return;
-          if (isActive) {
-            if (v.paused) safePlay(v);
+          if (p <= 0.002) {
+            starProgress = 0;
+            starDist = 0;
+            starGlobalFade = 0;
+            starExitFade = 1;
+          } else if (p <= PA) {
+            const u = p / PA;
+            starProgress = u * 0.35;
+            starDist = 0.08 * Math.pow(u, 1.3);
+            starGlobalFade = Math.min(1, u / 0.2);
+            starExitFade = 1;
+          } else if (p <= PC) {
+            const u = (p - PA) / (PC - PA);
+            starProgress = 0.35 + 0.65 * u;
+            starDist = 0.08 + 0.48 * u;
+            starGlobalFade = 1;
+            starExitFade = 1;
           } else {
-            if (!v.paused) safePause(v);
+            const u = (p - PC) / (1 - PC);
+            starProgress = 1.0;
+            starDist = 0.56 + 0.16 * (1 - Math.pow(1 - u, 1.5));
+            starGlobalFade = 1;
+            starExitFade = Math.max(0, 1 - Math.pow(u, 1.4));
           }
-        });
 
-        drawStarfield();
-      },
-    });
+          const currentTime = tl.time();
+          STARFIELD_VIDEOS.forEach((evt, idx) => {
+            const isActive = currentTime >= evt.start - 0.15 && currentTime <= evt.end + 0.15;
+            const v = videoRefs.current[idx];
+            if (!v) return;
+            if (isActive) {
+              if (v.paused) safePlay(v);
+            } else {
+              if (!v.paused) safePause(v);
+            }
+          });
+
+          drawStarfield();
+        },
+      });
+    }, sectionRef);
 
     return () => {
       window.removeEventListener('resize', onResize);
@@ -499,18 +411,7 @@ export const Starfield: React.FC = () => {
         }
       });
       videoRefs.current = [];
-      trigger.kill();
-      tl.kill();
-      if (tick) {
-        gsap.ticker.remove(tick);
-      }
-      if (createdLocalLenis && lenis) {
-        lenis.destroy();
-      }
-      lenisRef.current = null;
-      if (typeof window !== 'undefined' && createdLocalLenis) {
-        (window as unknown as { __lenis?: Lenis | null }).__lenis = null;
-      }
+      ctxTimeline.revert();
     };
   }, []);
 
@@ -518,10 +419,9 @@ export const Starfield: React.FC = () => {
     <>
       <section ref={sectionRef} className="starfield-section relative w-screen h-screen overflow-hidden bg-white dark:bg-black transition-colors duration-300">
 
-        {/* THE PORTAL: starts at 0px circle, expands to fill screen.
-            The starfield canvas lives inside it and is clipped by it. */}
-        <div ref={portalRef} className="portal absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-0 h-0 rounded-full overflow-hidden z-[1] pointer-events-none bg-white dark:bg-black">
-          <canvas ref={canvasRef} className="portal-canvas absolute w-screen h-screen top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 block" />
+        {/* THE PORTAL: starts at 0% circle clip-path, expands to fill screen without reflow */}
+        <div ref={portalRef} className="portal absolute inset-0 w-screen h-screen overflow-hidden z-[1] pointer-events-none bg-white dark:bg-black" style={{ clipPath: 'circle(0% at 50% 50%)' }}>
+          <canvas ref={canvasRef} className="portal-canvas absolute inset-0 w-full h-full block" />
         </div>
 
         {/* Shishir Event Videos: continuous stream configured via src/config/starfieldVideos.ts */}

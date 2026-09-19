@@ -1,4 +1,3 @@
-import MainScene from '@/components/homepage/main-scene'
 import About from '@/components/homepage/about'
 import Events from '@/components/homepage/stats'
 import CountdownTimer from '@/components/homepage/countdownTimer'

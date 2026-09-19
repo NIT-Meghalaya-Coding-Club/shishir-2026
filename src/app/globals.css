@@ -302,13 +302,13 @@ h3 {
 }
 
 html {
-  background: #ffffff;
-  color: #0f172a;
+  background: #E0FBFC;
+  color: #293241;
 }
 
 html.dark {
-  background: #000000;
-  color: #ffffff;
+  background: #293241;
+  color: #E0FBFC;
 }
 
 html.lenis,
@@ -325,8 +325,8 @@ html.lenis body {
 }
 
 body {
-  background: #ffffff;
-  color: #0f172a;
+  background: #E0FBFC;
+  color: #293241;
   font-family: system-ui, -apple-system, sans-serif;
   overflow-x: hidden;
   transition: background-color 0.3s ease, color 0.3s ease;
@@ -334,8 +334,8 @@ body {
 
 html.dark body,
 body.dark {
-  background: #000000;
-  color: #ffffff;
+  background: #293241;
+  color: #E0FBFC;
 }
 
 /* Hide default browser scrollbar for a seamless luxury experience */
@@ -572,4 +572,4 @@ body::-webkit-scrollbar {
     height: 2px;
   }
 }
-
+

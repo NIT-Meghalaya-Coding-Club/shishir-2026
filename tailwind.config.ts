@@ -104,7 +104,12 @@ export default {
   			gold: {
   				'500': '#D4AF37',
   				'600': '#B8860B'
-  			}
+  			},
+  			'burnt-peach': '#EE6C4D',
+  			'powder-blue': '#98C1D9',
+  			'jet-black': '#293241',
+  			'light-cyan': '#E0FBFC',
+  			'dusk-blue': '#3D5A80'
   		}
   	}
   },

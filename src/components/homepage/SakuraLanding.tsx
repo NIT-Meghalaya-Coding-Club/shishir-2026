@@ -2,6 +2,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import Image from "next/image";
 
 const MARQUEE_EVENTS = [
   'PRANATYA',
@@ -160,6 +161,8 @@ export const SakuraLanding: React.FC = () => {
       c.closePath();
     };
 
+    let isSectionVisible = true;
+
     const render = () => {
       ctx.clearRect(0, 0, W, H);
       scrollBoost *= 0.92; // Decay wind gust gradually
@@ -181,6 +184,8 @@ export const SakuraLanding: React.FC = () => {
         }
         previousActiveCount = activeCount;
       }
+
+      const isDark = typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
 
       for (let i = 0; i < activeCount; i++) {
         const p = petals[i];
@@ -204,26 +209,18 @@ export const SakuraLanding: React.FC = () => {
         ctx.rotate(p.angle);
         ctx.scale(Math.cos(p.flip), 1);
 
-        const isDark = typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
-        const grad = ctx.createLinearGradient(0, -p.size * 0.6, 0, p.size * 0.6);
-        if (isDark) {
-          grad.addColorStop(0, `hsla(${p.hue}, 90%, 94%, ${p.opacity})`);
-          grad.addColorStop(0.5, `hsla(${p.hue}, 85%, 80%, ${p.opacity * 0.95})`);
-          grad.addColorStop(1, `hsla(${p.hue}, 80%, 68%, ${p.opacity * 0.8})`);
-        } else {
-          // Vivid, elegant petal shades for crisp white background
-          grad.addColorStop(0, `hsla(${p.hue}, 92%, 84%, ${Math.min(1, p.opacity * 1.15)})`);
-          grad.addColorStop(0.5, `hsla(${p.hue}, 88%, 70%, ${Math.min(1, p.opacity * 1.1)})`);
-          grad.addColorStop(1, `hsla(${p.hue}, 84%, 56%, ${p.opacity})`);
-        }
+        ctx.fillStyle = isDark
+          ? `hsla(${p.hue}, 85%, 82%, ${p.opacity * 0.9})`
+          : `hsla(${p.hue}, 88%, 68%, ${p.opacity})`;
 
-        ctx.fillStyle = grad;
         drawPetalShape(ctx, p.size);
         ctx.fill();
         ctx.restore();
       }
 
-      animId = requestAnimationFrame(render);
+      if (isSectionVisible) {
+        animId = requestAnimationFrame(render);
+      }
     };
 
     render();
@@ -275,9 +272,21 @@ export const SakuraLanding: React.FC = () => {
 
       // 3. Tree stays visible throughout petal flow, then dissolves gracefully near section end (1.3 -> 2.0)
       if (tree) {
+        // Gentle ambient wind-sway breathing loop
+        gsap.to(tree, {
+          rotation: 1.2,
+          x: 4,
+          y: -3,
+          duration: 4.5,
+          ease: 'sine.inOut',
+          repeat: -1,
+          yoyo: true,
+        });
+
         tl.to(tree, {
           scale: 1.04,
           opacity: 0,
+          y: 20,
           ease: 'power2.inOut',
           duration: 0.7,
         }, 1.3);
@@ -295,10 +304,20 @@ export const SakuraLanding: React.FC = () => {
         start: 'top top',
         end: '+=120%',
         pin: true,
-        scrub: 0.5,
+        scrub: 0.15, // Immediately responsive to scroll velocity
         animation: tl,
         onUpdate: (self) => {
           landingScrollProgress = self.progress;
+        },
+        onLeave: () => {
+          isSectionVisible = false;
+          if (animId) cancelAnimationFrame(animId);
+        },
+        onEnterBack: () => {
+          if (!isSectionVisible) {
+            isSectionVisible = true;
+            animId = requestAnimationFrame(render);
+          }
         },
       });
     }, sectionRef);
@@ -314,7 +333,7 @@ export const SakuraLanding: React.FC = () => {
   return (
     <section
       ref={sectionRef}
-      className="sakura-section relative w-screen h-screen overflow-hidden bg-white dark:bg-black select-none z-10 flex flex-col justify-between transition-colors duration-300"
+      className="sakura-section relative w-screen h-screen overflow-hidden bg-[#E0FBFC] dark:bg-[#293241] select-none z-10 flex flex-col justify-between transition-colors duration-300"
     >
       {/* ─── Drifting Petals Canvas ────────────────────────────────────────── */}
       <canvas
@@ -322,13 +341,13 @@ export const SakuraLanding: React.FC = () => {
         className="absolute inset-0 w-full h-full pointer-events-none z-[3]"
       />
 
-      {/* ─── Wild Himalayan Cherry Tree (Anchored on Right Side, Desktop Only, Clean Below Banner) ─── */}
-      <div className="hidden md:flex absolute right-0 bottom-0 h-[80vh] w-full max-w-[65vw] lg:max-w-[58vw] pointer-events-none justify-end items-end z-[2]">
+      {/* ─── Wild Himalayan Cherry Tree (Responsive on Mobile & Desktop, Anchored Bottom-Right) ─── */}
+      <div className="flex absolute right-0 bottom-0 h-[48vh] sm:h-[60vh] md:h-[80vh] w-full max-w-[85vw] sm:max-w-[75vw] md:max-w-[65vw] lg:max-w-[58vw] pointer-events-none justify-end items-end z-[2]">
         <img
           ref={treeRef}
           src="/images/himalayan_cherry_transparent.png"
           alt="Wild Himalayan Cherry Tree (Prunus cerasoides) - Meghalaya"
-          className="h-auto max-h-[74vh] w-auto object-contain object-right-bottom select-none pointer-events-none opacity-95 [mask-image:linear-gradient(to_left,black_75%,transparent_100%)]"
+          className="h-auto max-h-[46vh] sm:max-h-[58vh] md:max-h-[74vh] w-auto object-contain object-right-bottom select-none pointer-events-none opacity-90 md:opacity-95 [mask-image:linear-gradient(to_left,black_70%,transparent_100%)] will-change-transform origin-bottom-right"
           draggable={false}
         />
       </div>
@@ -343,51 +362,56 @@ export const SakuraLanding: React.FC = () => {
         }}
         className="flex-1 md:flex-initial flex flex-col items-center justify-center md:justify-start pt-24 md:pt-28 px-4 md:px-12 text-center z-[4] pointer-events-none"
       >
-        <h1 className="text-[clamp(4.2rem,15vw,10.5rem)] font-[900] uppercase tracking-[-0.03em] leading-[0.88] text-neutral-900 dark:text-white drop-shadow-[0_4px_30px_rgba(244,63,94,0.18)] dark:drop-shadow-[0_0_40px_rgba(255,255,255,0.25)] transition-colors duration-300">
-          SHISHIR
-        </h1>
-        <div className="mt-2.5 md:mt-3 text-[0.7rem] md:text-sm tracking-[0.35em] md:tracking-[0.4em] text-neutral-600 dark:text-neutral-300 font-semibold uppercase transition-colors duration-300">
+        <Image
+          src="/Shishir_EE6C4D.svg"
+          alt="SHISHIR"
+          width={1000}
+          height={300}
+          priority
+          className="w-[clamp(18rem,55vw,70rem)] h-auto drop-shadow-[0_4px_30px_rgba(238,108,77,0.25)]"
+        />
+
+        <div className="mt-2.5 md:mt-3 text-[0.7rem] md:text-sm tracking-[0.35em] md:tracking-[0.4em] text-[#3D5A80] dark:text-[#98C1D9] font-bold uppercase transition-colors duration-300">
           CULTURAL FEST OF NIT MEGHALAYA
         </div>
 
         {/* Moving Event Names Marquee Banner */}
         <div
           ref={marqueeRef}
-          className="w-screen overflow-hidden border-y border-neutral-200 dark:border-white/20 bg-neutral-100/80 dark:bg-white/[0.03] py-2 md:py-3 mt-5 md:mt-4 pointer-events-none transition-colors duration-300"
+          className="w-screen overflow-hidden border-y border-[#98C1D9]/30 dark:border-[#98C1D9]/20 bg-[#E0FBFC]/80 dark:bg-[#293241]/80 py-2 md:py-3 mt-5 md:mt-4 pointer-events-none transition-colors duration-300 backdrop-blur-sm"
         >
-          <div className="animate-marquee flex items-center gap-6 md:gap-8 font-black uppercase tracking-[0.16em] text-lg md:text-2xl text-neutral-800 dark:text-white">
+          <div className="animate-marquee flex items-center gap-6 md:gap-8 font-black uppercase tracking-[0.16em] text-lg md:text-2xl text-[#293241] dark:text-[#E0FBFC]">
             {MARQUEE_EVENTS.map((evt, idx) => (
               <span key={`m1-${idx}`} className="flex items-center gap-6 md:gap-8 shrink-0">
-                <span className="text-pink-500 dark:text-white text-sm md:text-lg font-bold">•</span>
+                <span className="text-[#EE6C4D] text-sm md:text-lg font-bold">•</span>
                 <span>{evt}</span>
               </span>
             ))}
             {/* Duplicate set for seamless infinite loop */}
             {MARQUEE_EVENTS.map((evt, idx) => (
               <span key={`m2-${idx}`} className="flex items-center gap-6 md:gap-8 shrink-0">
-                <span className="text-pink-500 dark:text-white text-sm md:text-lg font-bold">•</span>
-                <span>{evt}</span>
+                <span className="text-[#EE6C4D] text-sm md:text-lg font-bold">•</span>
+                <span className='text-[#293241]'>{evt}</span>
               </span>
             ))}
           </div>
         </div>
       </div>
 
-      {/* ─── Bottom Area: Botanical Tree Description (Right Side next to Cherry Tree) ─── */}
-      <div className="hidden md:flex pb-6 lg:pb-8 px-8 lg:px-14 items-end justify-end z-[4] pointer-events-none relative flex-1 min-h-0">
-        {/* Right: Botanical Tree Description */}
+      {/* ─── Bottom Area: Botanical Tree Description ─── */}
+      {/* <div className="flex pb-4 sm:pb-6 lg:pb-8 px-4 sm:px-8 lg:px-14 items-end justify-end z-[4] pointer-events-none relative flex-1 min-h-0">
         <div
           ref={treeDescRef}
-          className="flex flex-col items-end text-right gap-1 max-w-xs pointer-events-none z-[4] mb-3 ml-auto"
+          className="flex flex-col items-end text-right gap-0.5 sm:gap-1 max-w-[200px] sm:max-w-xs pointer-events-none z-[4] mb-2 sm:mb-3 ml-auto"
         >
-          <div className="text-[0.72rem] tracking-[0.22em] uppercase text-neutral-700 dark:text-neutral-300 font-semibold transition-colors duration-300">
+          <div className="text-[0.62rem] sm:text-[0.72rem] tracking-[0.18em] sm:tracking-[0.22em] uppercase text-[#EE6C4D] dark:text-[#98C1D9] font-semibold transition-colors duration-300">
             Prunus cerasoides · Wild Himalayan Cherry
           </div>
-          <p className="text-[0.68rem] tracking-[0.05em] text-neutral-500 dark:text-neutral-400 font-light transition-colors duration-300">
+          <p className="text-[0.58rem] sm:text-[0.68rem] tracking-[0.05em] text-[#3D5A80] dark:text-[#E0FBFC]/70 font-light transition-colors duration-300">
             Local to Meghalaya · Blooms in November
           </p>
         </div>
-      </div>
+      </div> */}
     </section>
   );
 };
