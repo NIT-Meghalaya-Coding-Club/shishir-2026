@@ -4,6 +4,13 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Image from "next/image";
 
+import localFont from 'next/font/local';
+
+const samanFont = localFont({
+  src: '../../app/fonts/saman_font.ttf',
+  display: 'swap',         
+});
+
 const MARQUEE_EVENTS = [
   'PRANATYA',
   'BATTLE OF THE BANDS',
@@ -372,39 +379,31 @@ export const SakuraLanding: React.FC = () => {
         }}
         className="flex-1 md:flex-initial flex flex-col items-center justify-center md:justify-start pt-24 md:pt-28 px-4 md:px-12 text-center z-[4] pointer-events-none"
       >
-      <div className="relative flex h-fit w-full justify-center">
-          {/* Small flower in the corner */}
+        {/* Small branch in the corner */}
           <Image
-            src="/welcome_flower.svg"
+            src="/images/tree_branch.webp"
             alt="Welcome"
-            width={200}
-            height={200}
+            width={1500}
+            height={900}
             priority
             className="
               absolute
+              w-[clamp(300px,40vw,500px)]
               left-0
               top-0
-              w-[clamp(4rem,8vw,8rem)]
               h-auto
               drop-shadow-[0_4px_30px_rgba(238,108,77,0.25)]
             "
           />
-
+      <div className="relative flex h-fit w-full justify-center">
           {/* SHISHIR */}
-          <Image
-            src="/Shishir_EE6C4D.svg"
-            alt="SHISHIR"
-            width={1000}
-            height={300}
-            priority
-            className="
-              w-[clamp(18rem,55vw,70rem)]
-              h-auto
-              drop-shadow-[0_4px_30px_rgba(238,108,77,0.25)]
-            "
-          />
+          <div
+            className={`z-20 pt-5 text-[20vw] md:text-[12vw] text-[#293241] drop-shadow-[0_0_6px_rgba(61,90,128,0.8)] ${samanFont.className}`}
+          >
+            SHISHIR
+          </div>
         </div>
-        <div className="mt-2.5 md:mt-3 text-[0.7rem] md:text-sm tracking-[0.35em] md:tracking-[0.4em] text-[#3D5A80] dark:text-[#98C1D9] font-bold uppercase transition-colors duration-300">
+        <div className="mt-0 md:mt-0 text-[0.7rem] md:text-sm tracking-[0.35em] md:tracking-[0.4em] text-[#3D5A80] dark:text-[#98C1D9] font-bold uppercase transition-colors duration-300">
           CULTURAL FEST OF NIT MEGHALAYA
         </div>
 
