@@ -43,7 +43,6 @@ export const metadata: Metadata = {
 // import { SessionProvider } from "next-auth/react";
 
 import { ClientProviders } from "@/app/components/ClientProviders";
-import GlassFilters from "@/components/GlassFilters";
 
 export default function RootLayout({
   children,
@@ -56,7 +55,6 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Analytics/>
-        <GlassFilters />
         <ClientProviders>
           {children}
         </ClientProviders>
