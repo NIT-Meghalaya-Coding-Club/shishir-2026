@@ -141,7 +141,35 @@
   text-align: center;
 }
 
+.teams-title-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
 
+.teams-icon {
+  width: 1.6rem;
+  height: 1.6rem;
+  color: var(--powder-blue);
+
+  animation: floatIcon 3s ease-in-out infinite;
+}
+
+.teams-icon:last-child {
+  animation-delay: 1.5s;
+}
+
+@keyframes floatIcon {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-5px);
+  }
+}
 
 /* =============== CARD THEME COLORS =============== */
 
@@ -207,7 +235,7 @@
 
 .team-index__item:hover {
   color: var(--powder-blue);
-  transform: translateX(4px);
+  transform: translateX(-3px);
 }
 
 .team-index__item--active {
@@ -279,13 +307,13 @@
   background:
     radial-gradient(
       circle at 50% 20%,
-      rgba(238, 108, 77, 0.08),
-      transparent 55%
+      rgba(152, 193, 217, 0.16),
+      transparent 60%
     ),
     linear-gradient(
       145deg,
-      #202938,
-      #151a22
+      #3d5a80,
+      #293241
     );
 
   transition:
@@ -295,7 +323,10 @@
 
 .card__article:hover {
   transform: translateY(-6px);
-}
+
+  box-shadow:
+    0 12px 30px rgba(61, 90, 128, 0.25);
+} 
 
 
 /* =============== CARD IMAGE =============== */
@@ -407,7 +438,7 @@
 
   color: var(--white-color);
 
-  background: rgba(8, 6, 5, 0.82);
+  background: rgba(41, 50, 65, 0.94);
 
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);

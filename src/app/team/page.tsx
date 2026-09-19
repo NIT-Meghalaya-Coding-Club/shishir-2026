@@ -7,7 +7,10 @@ import { FaPhone, FaEnvelope } from "react-icons/fa6";
 import {
   RiMenu4Line,
   RiArrowUpLine,
+  RiSparkling2Fill,
 } from "@remixicon/react";
+
+import "animate.css";
 
 import "./team_style.css";
 
@@ -189,9 +192,23 @@ export default function Contact() {
       {/* =============== PAGE TITLE =============== */}
 
       <header className="teams-header">
-        <h1 className="teams-title">
-          Teams
-        </h1>
+        <div className="teams-title-wrapper">
+          <RiSparkling2Fill className="teams-icon" />
+
+          <h1
+            className="teams-title animate__animated"
+            onMouseEnter={(event) => {
+              event.currentTarget.classList.add("animate__rubberBand");
+            }}
+            onAnimationEnd={(event) => {
+              event.currentTarget.classList.remove("animate__rubberBand");
+            }}
+          >
+            Teams
+          </h1>
+
+          <RiSparkling2Fill className="teams-icon" />
+        </div>
       </header>
 
       {/* =============== CONTENT AREA =============== */}
@@ -208,13 +225,10 @@ export default function Contact() {
               <button
                 key={team}
                 ref={(el) => {
-                  indexRefs.current[team] =
-                    el;
+                  indexRefs.current[team] = el;
                 }}
                 type="button"
-                onClick={() =>
-                  scrollToTeam(team)
-                }
+                onClick={() => scrollToTeam(team)}
                 className={`team-index__item ${
                   activeTeam === team
                     ? "team-index__item--active"
