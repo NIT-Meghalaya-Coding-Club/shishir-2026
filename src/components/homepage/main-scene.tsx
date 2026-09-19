@@ -48,7 +48,7 @@ const ResponsiveScene = () => {
         <div style={{ width: bannerWidth }}>
           <Image
             src="/img/banner.gif"
-            alt="Shishir 2025"
+            alt="Shishir"
             width={1000}
             height={250}
             priority

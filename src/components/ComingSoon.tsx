@@ -85,8 +85,8 @@ const ComingSoon = () => {
   }, []);
 
   useEffect(() => {
-    // Set target date to February 15, 2025
-    const targetDate = new Date("March 02, 2025").getTime();
+    // Set target date
+    const targetDate = new Date("November 05, 2026").getTime();
 
     const interval = setInterval(() => {
       const now = new Date().getTime();
@@ -286,7 +286,7 @@ const ComingSoon = () => {
         >
           <Image
             src="/assets/logo.png"
-            alt="Shishir 2025 Logo"
+            alt="Shishir Logo"
             width={256}
             height={256}
             className="w-48 h-48 sm:w-64 sm:h-64"
@@ -311,7 +311,7 @@ const ComingSoon = () => {
             }}
             transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
           >
-            SHISHIR 2025
+            SHISHIR 2026
           </motion.span>
         </motion.h1>
 

@@ -246,7 +246,7 @@ const Events = () => (
                   <NumberCounter end={15} /> Artists
                 </>
               }
-              description="Witness spectacular performances by national and international artists live at SHISHIR 2025."
+              description="Witness spectacular performances by national and international artists live at SHISHIR 2026."
             />
           </BentoTilt>
         </div>

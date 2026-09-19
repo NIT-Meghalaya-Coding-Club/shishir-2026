@@ -9,6 +9,7 @@ import {
   ChevronRight,
   Crown,
 } from "lucide-react";
+import ComingSoon from "@/components/ComingSoon";
 
 const SchedulePage = () => {
   const days = Object.keys(Schedule);
@@ -36,6 +37,12 @@ const SchedulePage = () => {
     activeCategory === "All"
       ? sortedAllEvents
       : sortEventsByTime(Schedule[activeDay][activeCategory]);
+
+  if (process.env.NEXT_PUBLIC_LAUNCH) {
+    return (
+      <ComingSoon />
+    )
+  }
 
   return (
     <div

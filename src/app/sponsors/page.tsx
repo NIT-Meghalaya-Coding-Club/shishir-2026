@@ -3,9 +3,16 @@
 import { defaultSponsorImageUrl, sponsors } from "@/data/sponsors";
 import Image from "next/image";
 import { Crown, Gem } from "lucide-react";
+import ComingSoon from "@/components/ComingSoon";
 
 const Sponsors: React.FC = () => {
   const sponsorTypes = Object.keys(sponsors);
+
+  if (process.env.NEXT_PUBLIC_LAUNCH) {
+    return (
+      <ComingSoon />
+    )
+  }
 
   return (
     <div

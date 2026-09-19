@@ -205,7 +205,7 @@ const ShishirTicketSeller: React.FC = () => {
           {/* Header - Always visible */}
           <div className="flex flex-col items-center mb-8 animate-fadeIn">
             <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-yellow-500 via-amber-400 to-yellow-600 mb-2">
-              SHISHIR 2025
+              SHISHIR 2026
             </h1>
             <div className="relative">
               <p className="text-xl text-amber-600 dark:text-amber-200 font-medium">
@@ -406,7 +406,7 @@ const ShishirTicketSeller: React.FC = () => {
                             htmlFor="terms"
                             className="text-indigo-200 text-sm"
                           >
-                            I agree to the Terms and Conditions of SHISHIR 2025.
+                            I agree to the Terms and Conditions of SHISHIR 2026.
                             I understand that:
                             <ul className="list-disc pl-5 mt-1 space-y-1">
                               <li>
@@ -523,7 +523,7 @@ const ShishirTicketSeller: React.FC = () => {
                         />
                     </div>
                     <h2 className="text-2xl font-bold text-indigo-900">
-                      SHISHIR 2025
+                      SHISHIR 2026
                     </h2>
                     <p className="text-indigo-800 font-medium">
                       Annual College Fest E-Ticket
@@ -703,7 +703,7 @@ const ShishirTicketSeller: React.FC = () => {
 
             {/* Footer */}
             <div className="mt-8 pt-4 border-t border-indigo-800 text-center text-indigo-400 text-sm">
-              <p>SHISHIR 2025 | NITM | Annual Cultural Fest</p>
+              <p>SHISHIR 2026 | NITM | Annual Cultural Fest</p>
               {/* <p className="text-xs mt-1 text-indigo-500">
                 
               </p> */}

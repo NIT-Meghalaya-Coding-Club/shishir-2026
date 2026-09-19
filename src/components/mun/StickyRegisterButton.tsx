@@ -103,7 +103,7 @@ export default function StickyRegisterButton() {
                 animate={{ x: [0, 3, 0] }}
                 transition={{ duration: 0.8, repeat: Infinity }}
               >
-                Register for NITM-MUN 2025
+                Register for NITM-MUN 2026
               </motion.span>
               <motion.span
                 className="ml-2 text-lg"

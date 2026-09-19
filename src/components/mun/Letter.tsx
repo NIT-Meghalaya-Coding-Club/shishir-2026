@@ -9,7 +9,7 @@ const SACLetter: React.FC = () => {
       </p>
       <p className="py-3">
         Welcome to the third edition of the National Institute of Technology
-        Meghalaya Model United Nations (NITMMUN) 2025. It is my profound honor
+        Meghalaya Model United Nations (NITMMUN) 2026. It is my profound honor
         to address such a vibrant assembly of young diplomats, eager to debate,
         negotiate, and craft resolutions that reflect the complexities of our
         global landscape.
@@ -53,7 +53,7 @@ const SACLetter: React.FC = () => {
         advocating for peace, equity, and sustainability.
       </p>
       <p className="py-3">
-        Thank you for joining us at NITMMUN 2025. Engage, deliberate, and enjoy
+        Thank you for joining us at NITMMUN 2026. Engage, deliberate, and enjoy
         your journey at this confluence of culture and diplomacy.
       </p>
       <p>Warm regards,</p>

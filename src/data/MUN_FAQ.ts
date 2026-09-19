@@ -10,8 +10,8 @@ export const MUN_FAQ_Data: {
   },
   {
     id: 2,
-    question: "What is the venue for the 2025 MUN conference?",
-    answer: "The 2025 Model United Nations conference will be hosted at our prestigious permanent campus located in Sohra. The venue has been carefully chosen to provide delegates with an optimal environment for meaningful debate and discussion while offering modern facilities to ensure a comfortable conference experience."
+    question: "What is the venue for the 2026 MUN conference?",
+    answer: "The 2026 Model United Nations conference will be hosted at our prestigious permanent campus located in Sohra. The venue has been carefully chosen to provide delegates with an optimal environment for meaningful debate and discussion while offering modern facilities to ensure a comfortable conference experience."
   },
   {
     id: 3,
