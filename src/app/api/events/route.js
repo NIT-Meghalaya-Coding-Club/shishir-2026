@@ -3,10 +3,13 @@ import { NextResponse } from "next/server";
 import connectMongo from "@/lib/mongodb";
 import Category from "@/models/Category";
 import Event from "@/models/Event";
+import Registration from "@/models/Registration";
+import mongoose from "mongoose";
 import {
   canCreateEvents,
   getCurrentUser,
   hydrateEventPeople,
+  isEventHead,
   resolveUsersByCollegeIDs,
   resolveUsersByEmails,
   snapshotUser,
@@ -230,6 +233,75 @@ export async function POST(req) {
     return NextResponse.json(
       { success: false, message: error.message || "Server Error" },
       { status: error.status || 500 }
+    );
+  }
+}
+
+export async function DELETE(req) {
+  try {
+    const { user } = await getCurrentUser();
+
+    if (!user) {
+      return NextResponse.json(
+        { success: false, message: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
+    const { searchParams } = new URL(req.url);
+    let code = searchParams.get("code") || searchParams.get("id");
+
+    if (!code) {
+      try {
+        const body = await req.json();
+        code = body?.code || body?.id || body?.eventId;
+      } catch {}
+    }
+
+    if (!code) {
+      return NextResponse.json(
+        { success: false, message: "Event code or ID is required" },
+        { status: 400 }
+      );
+    }
+
+    await connectMongo();
+
+    const normalizedCode = String(code).trim().toLowerCase();
+    const event = await Event.findOne({
+      $or: [
+        { code: normalizedCode },
+        ...(mongoose.Types.ObjectId.isValid(code) ? [{ _id: code }] : []),
+      ],
+    });
+
+    if (!event) {
+      return NextResponse.json(
+        { success: false, message: "Event not found" },
+        { status: 404 }
+      );
+    }
+
+    const canDelete = isEventHead(event, user.email) || (await canCreateEvents(user));
+    if (!canDelete) {
+      return NextResponse.json(
+        { success: false, message: "Only event heads or event administrators can delete this event" },
+        { status: 403 }
+      );
+    }
+
+    await Registration.deleteMany({ eventId: event.code });
+    await event.deleteOne();
+
+    return NextResponse.json(
+      { success: true, message: "Event deleted successfully" },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Delete event error:", error);
+    return NextResponse.json(
+      { success: false, message: error.message || "Server Error" },
+      { status: 500 }
     );
   }
 }

@@ -480,26 +480,32 @@ export default function EventHeadDashboard() {
     }
   };
 
-  const deleteEvent = async () => {
-    if (!editingCode) return;
+  const deleteEvent = async (codeToDelete?: string) => {
+    const targetCode = codeToDelete || editingCode;
+    if (!targetCode) return;
 
-    const confirmed = window.confirm("Delete this event?");
+    const confirmed = window.confirm(`Are you sure you want to delete event "${targetCode}"?`);
     if (!confirmed) return;
 
     try {
       setSaving(true);
-      const response = await fetch(`/api/events/${editingCode}`, {
+      const response = await fetch(`/api/events/${encodeURIComponent(targetCode)}`, {
         method: "DELETE",
       });
-      const data = await response.json();
+      const data = await response.json().catch(() => null);
 
       if (!response.ok) {
-        toast.error(data.message || "Could not delete event");
+        toast.error(data?.message || "Could not delete event");
         return;
       }
 
-      setEvents((previous) => previous.filter((event) => event.code !== editingCode));
-      resetForm();
+      setEvents((previous) => previous.filter((event) => event.code !== targetCode));
+      if (editingCode === targetCode) {
+        resetForm();
+      }
+      if (participantsCode === targetCode) {
+        setParticipantsCode("");
+      }
       toast.success("Event deleted");
     } catch (error) {
       console.error("Delete event failed:", error);
@@ -606,6 +612,15 @@ export default function EventHeadDashboard() {
                     </button>
                     <button type="button" onClick={() => { setParticipantsCode(event.code); setEditingCode(""); }} className="inline-flex flex-1 items-center justify-center gap-2 rounded-md border border-white/10 px-3 py-2 text-sm text-zinc-200 hover:bg-white/10">
                       <Users className="h-4 w-4" /> Participants
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => deleteEvent(event.code)}
+                      disabled={saving}
+                      className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-red-500/30 text-red-300 hover:border-red-400 hover:bg-red-500/20 disabled:opacity-50 transition"
+                      title="Delete event"
+                    >
+                      <Trash2 className="h-4 w-4" />
                     </button>
                   </div>
                 </div>

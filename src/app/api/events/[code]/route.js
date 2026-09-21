@@ -2,7 +2,9 @@ import { NextResponse } from "next/server";
 import connectMongo from "@/lib/mongodb";
 import Category from "@/models/Category";
 import Event from "@/models/Event";
+import Registration from "@/models/Registration";
 import {
+  canCreateEvents,
   getCurrentUser,
   hydrateEventPeople,
   isEventHead,
@@ -241,16 +243,18 @@ export async function DELETE(req, { params }) {
       );
     }
 
-    if (!isEventHead(event, user.email)) {
+    const canDelete = isEventHead(event, user.email) || (await canCreateEvents(user));
+    if (!canDelete) {
       return NextResponse.json(
-        { success: false, message: "Only event heads can delete event details" },
+        { success: false, message: "Only event heads or event administrators can delete this event" },
         { status: 403 }
       );
     }
 
+    await Registration.deleteMany({ eventId: event.code });
     await event.deleteOne();
 
-    return NextResponse.json({ success: true }, { status: 200 });
+    return NextResponse.json({ success: true, message: "Event deleted successfully" }, { status: 200 });
   } catch (error) {
     console.error("Delete event error:", error);
     return NextResponse.json(
