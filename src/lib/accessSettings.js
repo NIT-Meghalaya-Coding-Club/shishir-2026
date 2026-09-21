@@ -11,7 +11,7 @@ function envEmails(name) {
 function normalizeEmails(emails) {
   return [...new Set((Array.isArray(emails) ? emails : [])
     .map((email) => String(email || "").trim().toLowerCase())
-    .filter(Boolean))];
+    .filter(Boolean))].sort((a, b) => a.localeCompare(b));
 }
 
 export async function getAccessSettings() {

@@ -7,7 +7,14 @@ function toLines(values: string[]) {
 }
 
 function toEmails(value: string) {
-  return value.split(/[\n,]+/).map((email) => email.trim()).filter(Boolean);
+  return [
+    ...new Set(
+      value
+        .split(/[\n,]+/)
+        .map((email) => email.trim().toLowerCase())
+        .filter(Boolean)
+    ),
+  ].sort((a, b) => a.localeCompare(b));
 }
 
 export default function AdminPage() {
@@ -66,7 +73,16 @@ export default function AdminPage() {
       }),
     });
 
-    setMessage(response.ok ? "Settings saved" : "Could not save settings");
+    if (response.ok) {
+      const data = await response.json();
+      if (data.settings) {
+        setEventCreators(toLines(data.settings.eventCreatorEmails || []));
+        setCommitteeHeads(toLines(data.settings.committeeHeadEmails || []));
+      }
+      setMessage("Settings saved");
+    } else {
+      setMessage("Could not save settings");
+    }
   };
 
   const logout = async () => {
