@@ -21,8 +21,22 @@ export async function getCurrentUser() {
 export function isEventHead(event, email) {
   if (!event || !email) return false;
 
-  return event.eventHeads.some(
+  return (event.eventHeads || []).some(
     (head) => head.email?.toLowerCase() === email.toLowerCase()
+  );
+}
+
+export function isEventHeadOrCoordinator(event, email) {
+  if (!event || !email) return false;
+
+  const normalized = email.toLowerCase();
+  const inHeads = (event.eventHeads || []).some(
+    (head) => head.email?.toLowerCase() === normalized
+  );
+  if (inHeads) return true;
+
+  return (event.coordinators || []).some(
+    (coord) => coord.email?.toLowerCase() === normalized
   );
 }
 
@@ -35,8 +49,22 @@ export async function canCreateEvents(user) {
 export function isCommitteeHead(committee, email) {
   if (!committee || !email) return false;
 
-  return committee.committeeHeads.some(
+  return (committee.committeeHeads || []).some(
     (head) => head.email?.toLowerCase() === email.toLowerCase()
+  );
+}
+
+export function isCommitteeHeadOrCoordinator(committee, email) {
+  if (!committee || !email) return false;
+
+  const normalized = email.toLowerCase();
+  const inHeads = (committee.committeeHeads || []).some(
+    (head) => head.email?.toLowerCase() === normalized
+  );
+  if (inHeads) return true;
+
+  return (committee.coordinators || []).some(
+    (coord) => coord.email?.toLowerCase() === normalized
   );
 }
 

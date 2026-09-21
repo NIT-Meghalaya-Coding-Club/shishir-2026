@@ -3,6 +3,7 @@ import Committee from "@/models/Committee";
 import {
   getCurrentUser,
   isCommitteeHead,
+  isCommitteeHeadOrCoordinator,
   resolveUsersByCollegeIDs,
   resolveUsersByEmails,
 } from "@/lib/eventAuth";
@@ -42,9 +43,9 @@ export async function PATCH(req, { params }) {
       );
     }
 
-    if (!isCommitteeHead(committee, user.email)) {
+    if (!isCommitteeHeadOrCoordinator(committee, user.email)) {
       return NextResponse.json(
-        { success: false, message: "Only committee heads can edit committee details" },
+        { success: false, message: "Only committee heads or coordinators can edit committee details" },
         { status: 403 }
       );
     }
@@ -59,24 +60,40 @@ export async function PATCH(req, { params }) {
       );
     }
 
+    const userIsHead = isCommitteeHead(committee, user.email);
+
     const committeeHeadEmails = Array.isArray(payload.committeeHeadEmails)
-      ? [...new Set([...payload.committeeHeadEmails, user.email])]
+      ? (userIsHead ? [...new Set([...payload.committeeHeadEmails, user.email])] : payload.committeeHeadEmails)
       : null;
     const committeeHeads = committeeHeadEmails
       ? await resolveUsersByEmails(committeeHeadEmails, "committee heads")
       : null;
-    const coordinators = Array.isArray(payload.coordinatorEmails)
-      ? await resolveUsersByEmails(payload.coordinatorEmails, "coordinators", true)
+
+    const coordinatorEmails = Array.isArray(payload.coordinatorEmails)
+      ? (!userIsHead ? [...new Set([...payload.coordinatorEmails, user.email])] : payload.coordinatorEmails)
       : null;
+    const coordinators = coordinatorEmails
+      ? await resolveUsersByEmails(coordinatorEmails, "coordinators", true)
+      : null;
+
     const coCoordinators = Array.isArray(payload.coCoordinatorEmails)
       ? await resolveUsersByEmails(payload.coCoordinatorEmails, "co-coordinators")
       : null;
+
     const committeeHeadIDs = Array.isArray(payload.committeeHeadCollegeIDs)
       ? payload.committeeHeadCollegeIDs
       : committee.committeeHeads.map((head) => head.collegeID);
 
-    if (!committeeHeadIDs.includes(user.collegeID)) {
+    if (userIsHead && user.collegeID && !committeeHeadIDs.includes(user.collegeID)) {
       committeeHeadIDs.push(user.collegeID);
+    }
+
+    const coordinatorIDs = Array.isArray(payload.coordinatorCollegeIDs)
+      ? payload.coordinatorCollegeIDs
+      : committee.coordinators.map((c) => c.collegeID);
+
+    if (!userIsHead && user.collegeID && !coordinatorIDs.includes(user.collegeID)) {
+      coordinatorIDs.push(user.collegeID);
     }
 
     committee.name = payload.name;
@@ -85,7 +102,7 @@ export async function PATCH(req, { params }) {
       "committee heads"
     );
     committee.coordinators = coordinators || await resolveUsersByCollegeIDs(
-      Array.isArray(payload.coordinatorCollegeIDs) ? payload.coordinatorCollegeIDs : [],
+      coordinatorIDs,
       "coordinators"
     );
     committee.coCoordinators = coCoordinators || await resolveUsersByCollegeIDs(
@@ -128,9 +145,9 @@ export async function DELETE(req, { params }) {
       );
     }
 
-    if (!isCommitteeHead(committee, user.email)) {
+    if (!isCommitteeHeadOrCoordinator(committee, user.email)) {
       return NextResponse.json(
-        { success: false, message: "Only committee heads can delete committees" },
+        { success: false, message: "Only committee heads or coordinators can delete committees" },
         { status: 403 }
       );
     }

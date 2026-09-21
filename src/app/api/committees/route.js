@@ -48,7 +48,10 @@ export async function GET() {
     }
 
     const committees = await Committee.find({
-      "committeeHeads.email": user.email.toLowerCase(),
+      $or: [
+        { "committeeHeads.email": user.email.toLowerCase() },
+        { "coordinators.email": user.email.toLowerCase() },
+      ],
     })
       .sort({ name: 1 })
       .lean();

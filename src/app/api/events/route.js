@@ -10,6 +10,7 @@ import {
   getCurrentUser,
   hydrateEventPeople,
   isEventHead,
+  isEventHeadOrCoordinator,
   resolveUsersByCollegeIDs,
   resolveUsersByEmails,
   snapshotUser,
@@ -118,7 +119,14 @@ export async function GET(req) {
 
     await connectMongo();
 
-    const query = scope === "mine" ? { "eventHeads.email": user.email } : {};
+    const query = scope === "mine"
+      ? {
+        $or: [
+          { "eventHeads.email": user.email },
+          { "coordinators.email": user.email },
+        ],
+      }
+      : {};
     const projection = user && scope === "mine"
       ? undefined
       : "name code category location startsAt endsAt description rulebookLink posterLink "
@@ -282,10 +290,10 @@ export async function DELETE(req) {
       );
     }
 
-    const canDelete = isEventHead(event, user.email) || (await canCreateEvents(user));
+    const canDelete = isEventHeadOrCoordinator(event, user.email) || (await canCreateEvents(user));
     if (!canDelete) {
       return NextResponse.json(
-        { success: false, message: "Only event heads or event administrators can delete this event" },
+        { success: false, message: "Only event heads, coordinators, or event administrators can delete this event" },
         { status: 403 }
       );
     }

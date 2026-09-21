@@ -8,6 +8,7 @@ import {
   getCurrentUser,
   hydrateEventPeople,
   isEventHead,
+  isEventHeadOrCoordinator,
   resolveUsersByCollegeIDs,
   resolveUsersByEmails,
 } from "@/lib/eventAuth";
@@ -130,9 +131,9 @@ export async function PATCH(req, { params }) {
       );
     }
 
-    if (!isEventHead(event, user.email)) {
+    if (!isEventHeadOrCoordinator(event, user.email)) {
       return NextResponse.json(
-        { success: false, message: "Only event heads can edit event details" },
+        { success: false, message: "Only event heads or coordinators can edit event details" },
         { status: 403 }
       );
     }
@@ -163,24 +164,40 @@ export async function PATCH(req, { params }) {
       }
     }
 
+    const userIsHead = isEventHead(event, user.email);
+
     const eventHeadEmails = Array.isArray(payload.eventHeadEmails)
-      ? [...new Set([...payload.eventHeadEmails, user.email])]
+      ? (userIsHead ? [...new Set([...payload.eventHeadEmails, user.email])] : payload.eventHeadEmails)
       : null;
     const eventHeads = eventHeadEmails
       ? await resolveUsersByEmails(eventHeadEmails, "event heads")
       : null;
-    const coordinators = Array.isArray(payload.coordinatorEmails)
-      ? await resolveUsersByEmails(payload.coordinatorEmails, "coordinators", true)
+
+    const coordinatorEmails = Array.isArray(payload.coordinatorEmails)
+      ? (!userIsHead ? [...new Set([...payload.coordinatorEmails, user.email])] : payload.coordinatorEmails)
       : null;
+    const coordinators = coordinatorEmails
+      ? await resolveUsersByEmails(coordinatorEmails, "coordinators", true)
+      : null;
+
     const coCoordinators = Array.isArray(payload.coCoordinatorEmails)
       ? await resolveUsersByEmails(payload.coCoordinatorEmails, "co-coordinators", true)
       : null;
+
     const eventHeadIDs = Array.isArray(payload.eventHeadCollegeIDs)
       ? payload.eventHeadCollegeIDs
       : event.eventHeads.map((head) => head.collegeID);
 
-    if (!eventHeadIDs.includes(user.collegeID)) {
+    if (userIsHead && user.collegeID && !eventHeadIDs.includes(user.collegeID)) {
       eventHeadIDs.push(user.collegeID);
+    }
+
+    const coordinatorIDs = Array.isArray(payload.coordinatorCollegeIDs)
+      ? payload.coordinatorCollegeIDs
+      : event.coordinators.map((c) => c.collegeID);
+
+    if (!userIsHead && user.collegeID && !coordinatorIDs.includes(user.collegeID)) {
+      coordinatorIDs.push(user.collegeID);
     }
 
     event.name = payload.name;
@@ -200,7 +217,7 @@ export async function PATCH(req, { params }) {
     event.posterLink = payload.posterLink;
     event.eventHeads = eventHeads || await resolveUsersByCollegeIDs(eventHeadIDs, "event heads");
     event.coordinators = coordinators || await resolveUsersByCollegeIDs(
-      Array.isArray(payload.coordinatorCollegeIDs) ? payload.coordinatorCollegeIDs : [],
+      coordinatorIDs,
       "coordinators"
     );
     event.coCoordinators = coCoordinators || await resolveUsersByCollegeIDs(
@@ -243,10 +260,10 @@ export async function DELETE(req, { params }) {
       );
     }
 
-    const canDelete = isEventHead(event, user.email) || (await canCreateEvents(user));
+    const canDelete = isEventHeadOrCoordinator(event, user.email) || (await canCreateEvents(user));
     if (!canDelete) {
       return NextResponse.json(
-        { success: false, message: "Only event heads or event administrators can delete this event" },
+        { success: false, message: "Only event heads, coordinators, or event administrators can delete this event" },
         { status: 403 }
       );
     }

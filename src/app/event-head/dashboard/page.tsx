@@ -133,14 +133,19 @@ export default function EventHeadDashboard() {
   const [posterFile, setPosterFile] = useState<File | null>(null);
   const [posterToCrop, setPosterToCrop] = useState<File | null>(null);
 
+  const [canCreate, setCanCreate] = useState(false);
   const isEditing = Boolean(editingCode);
 
-  const currentUserIsInHeads = useMemo(() => {
+  const currentUserIsInStaff = useMemo(() => {
     if (!currentUser?.collegeID) return false;
-    return formData.eventHeads.some(
+    const inHeads = formData.eventHeads.some(
       (head) => head.collegeID === currentUser.collegeID
     );
-  }, [currentUser, formData.eventHeads]);
+    if (inHeads) return true;
+    return formData.coordinators.some(
+      (coord) => coord.collegeID === currentUser.collegeID
+    );
+  }, [currentUser, formData.eventHeads, formData.coordinators]);
 
   useEffect(() => {
     if (status !== "authenticated" || !session?.user?.email) return;
@@ -178,6 +183,7 @@ export default function EventHeadDashboard() {
         if (eventsResponse.ok) {
           const eventsData = await eventsResponse.json();
           setEvents(eventsData.events || []);
+          setCanCreate(Boolean(eventsData.canCreateEvents));
         } else {
           toast.error("Could not load your events");
         }
@@ -198,7 +204,7 @@ export default function EventHeadDashboard() {
   }, [session, status]);
 
   useEffect(() => {
-    if (!currentUser || isEditing || currentUserIsInHeads || !currentUser.collegeID) {
+    if (!currentUser || isEditing || currentUserIsInStaff || !currentUser.collegeID || !canCreate) {
       return;
     }
 
@@ -206,7 +212,7 @@ export default function EventHeadDashboard() {
       ...previous,
       eventHeads: [currentUser, ...previous.eventHeads],
     }));
-  }, [currentUser, currentUserIsInHeads, isEditing]);
+  }, [currentUser, currentUserIsInStaff, isEditing, canCreate]);
 
   const handleInputChange = (
     field: keyof Omit<EventRecord, "eventHeads" | "coordinators" | "coCoordinators">,
@@ -223,7 +229,7 @@ export default function EventHeadDashboard() {
     setPosterToCrop(null);
     setFormData({
       ...emptyEvent,
-      eventHeads: currentUser?.collegeID ? [currentUser] : [],
+      eventHeads: currentUser?.collegeID && canCreate ? [currentUser] : [],
     });
   };
 
@@ -318,9 +324,13 @@ export default function EventHeadDashboard() {
   };
 
   const removePerson = (field: PeopleField, collegeID: string) => {
-    if (field === "eventHeads" && currentUser?.collegeID === collegeID) {
-      toast.info("You must remain an event head to edit this event");
-      return;
+    if (currentUser?.collegeID === collegeID) {
+      const isHead = field === "eventHeads";
+      const isCoord = field === "coordinators";
+      if (isHead || isCoord) {
+        toast.info("You cannot remove yourself from the event you are editing");
+        return;
+      }
     }
 
     setFormData((previous) => ({
@@ -567,14 +577,16 @@ export default function EventHeadDashboard() {
                   {currentUser?.name || session?.user?.email}
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={resetForm}
-                className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-amber-400 text-zinc-950 hover:bg-amber-300"
-                title="Create event"
-              >
-                <Plus className="h-5 w-5" />
-              </button>
+              {canCreate && (
+                <button
+                  type="button"
+                  onClick={resetForm}
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-amber-400 text-zinc-950 hover:bg-amber-300"
+                  title="Create event"
+                >
+                  <Plus className="h-5 w-5" />
+                </button>
+              )}
             </div>
 
             <div className="space-y-3">
@@ -637,6 +649,13 @@ export default function EventHeadDashboard() {
               }
               onClose={() => setParticipantsCode("")}
             />
+          ) : !isEditing && !canCreate ? (
+            <section className="flex flex-col items-center justify-center border border-white/10 bg-white/[0.04] p-12 text-center">
+              <h2 className="text-xl font-semibold text-amber-300">Event Dashboard</h2>
+              <p className="mt-2 max-w-md text-sm text-zinc-300">
+                Select an event from the list on the left to edit its details or manage participants.
+              </p>
+            </section>
           ) : (
             <form
               onSubmit={submitEvent}
@@ -648,14 +667,14 @@ export default function EventHeadDashboard() {
                     {isEditing ? "Edit Event" : "Create Event"}
                   </h2>
                   <p className="mt-1 text-sm text-zinc-400">
-                    Only event heads can update these details.
+                    Only event heads and coordinators can update these details.
                   </p>
                 </div>
                 <div className="flex gap-2">
                   {isEditing && (
                     <button
                       type="button"
-                      onClick={deleteEvent}
+                      onClick={() => deleteEvent()}
                       disabled={saving}
                       className="inline-flex items-center gap-2 rounded-md border border-red-400/40 px-4 py-2 text-sm font-medium text-red-200 hover:bg-red-500/10 disabled:opacity-60"
                     >

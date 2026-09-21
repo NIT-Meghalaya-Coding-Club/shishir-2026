@@ -4,7 +4,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { NextResponse } from "next/server";
 import connectMongo from "@/lib/mongodb";
 import Event from "@/models/Event";
-import { canCreateEvents, getCurrentUser, isEventHead } from "@/lib/eventAuth";
+import { canCreateEvents, getCurrentUser, isEventHeadOrCoordinator } from "@/lib/eventAuth";
 
 export const runtime = "nodejs";
 
@@ -76,9 +76,9 @@ export async function POST(req) {
         return NextResponse.json({ message: "Event not found" }, { status: 404 });
       }
 
-      if (!isEventHead(event, user.email)) {
+      if (!isEventHeadOrCoordinator(event, user.email)) {
         return NextResponse.json(
-          { message: "Only event heads can upload this poster" },
+          { message: "Only event heads or coordinators can upload this poster" },
           { status: 403 }
         );
       }

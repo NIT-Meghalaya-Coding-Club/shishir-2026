@@ -3,7 +3,7 @@ import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { NextResponse } from "next/server";
 import connectMongo from "@/lib/mongodb";
 import Event from "@/models/Event";
-import { canCreateEvents, getCurrentUser, isEventHead } from "@/lib/eventAuth";
+import { canCreateEvents, getCurrentUser, isEventHeadOrCoordinator } from "@/lib/eventAuth";
 
 export const runtime = "nodejs";
 
@@ -87,9 +87,9 @@ export async function POST(req) {
         );
       }
 
-      if (!isEventHead(event, user.email)) {
+      if (!isEventHeadOrCoordinator(event, user.email)) {
         return NextResponse.json(
-          { success: false, message: "Only event heads can upload this poster" },
+          { success: false, message: "Only event heads or coordinators can upload this poster" },
           { status: 403 }
         );
       }

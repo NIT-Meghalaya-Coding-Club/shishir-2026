@@ -81,14 +81,19 @@ export default function CommitteeHeadDashboard() {
     coCoordinators: [],
   });
 
+  const [canCreate, setCanCreate] = useState(false);
   const isEditing = Boolean(editingCode);
 
-  const currentUserIsInHeads = useMemo(() => {
+  const currentUserIsInStaff = useMemo(() => {
     if (!currentUser?.collegeID) return false;
-    return formData.committeeHeads.some(
+    const inHeads = formData.committeeHeads.some(
       (head) => head.collegeID === currentUser.collegeID
     );
-  }, [currentUser, formData.committeeHeads]);
+    if (inHeads) return true;
+    return formData.coordinators.some(
+      (coord) => coord.collegeID === currentUser.collegeID
+    );
+  }, [currentUser, formData.committeeHeads, formData.coordinators]);
 
   useEffect(() => {
     if (status !== "authenticated" || !session?.user?.email) return;
@@ -125,6 +130,7 @@ export default function CommitteeHeadDashboard() {
         if (committeesResponse.ok) {
           const committeesData = await committeesResponse.json();
           setCommittees(committeesData.committees || []);
+          setCanCreate(Boolean(committeesData.canCreateCommittees));
         } else {
           toast.error("Could not load your committees");
         }
@@ -140,7 +146,7 @@ export default function CommitteeHeadDashboard() {
   }, [session, status]);
 
   useEffect(() => {
-    if (!currentUser || isEditing || currentUserIsInHeads || !currentUser.collegeID) {
+    if (!currentUser || isEditing || currentUserIsInStaff || !currentUser.collegeID || !canCreate) {
       return;
     }
 
@@ -148,7 +154,7 @@ export default function CommitteeHeadDashboard() {
       ...previous,
       committeeHeads: [currentUser, ...previous.committeeHeads],
     }));
-  }, [currentUser, currentUserIsInHeads, isEditing]);
+  }, [currentUser, currentUserIsInStaff, isEditing, canCreate]);
 
   const handleInputChange = (
     field: keyof Omit<CommitteeRecord, "committeeHeads" | "coordinators" | "coCoordinators">,
@@ -161,7 +167,7 @@ export default function CommitteeHeadDashboard() {
     setEditingCode("");
     setFormData({
       ...emptyCommittee,
-      committeeHeads: currentUser?.collegeID ? [currentUser] : [],
+      committeeHeads: currentUser?.collegeID && canCreate ? [currentUser] : [],
     });
   };
 
@@ -171,7 +177,7 @@ export default function CommitteeHeadDashboard() {
       ...committee,
       committeeHeads: committee.committeeHeads || [],
       coordinators: committee.coordinators || [],
-      coCoordinators: committee .coCoordinators || [],
+      coCoordinators: committee.coCoordinators || [],
     });
   };
 
@@ -222,9 +228,13 @@ export default function CommitteeHeadDashboard() {
   };
 
   const removePerson = (field: PeopleField, collegeID: string) => {
-    if (field === "committeeHeads" && currentUser?.collegeID === collegeID) {
-      toast.info("You must remain a committee head to edit this committee");
-      return;
+    if (currentUser?.collegeID === collegeID) {
+      const isHead = field === "committeeHeads";
+      const isCoord = field === "coordinators";
+      if (isHead || isCoord) {
+        toast.info("You cannot remove yourself from the committee you are editing");
+        return;
+      }
     }
 
     setFormData((previous) => ({
@@ -374,15 +384,17 @@ export default function CommitteeHeadDashboard() {
                 {currentUser?.name || session?.user?.email}
               </p>
             </div>
-            <button
-              type="button"
-              onClick={resetForm}
-              className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-amber-400 text-zinc-950 hover:bg-amber-300"
-              title="Create committee"
-            >
-              <Plus className="h-5 w-5" />
-            </button>
-          </div>
+              {canCreate && (
+                <button
+                  type="button"
+                  onClick={resetForm}
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-amber-400 text-zinc-950 hover:bg-amber-300"
+                  title="Create committee"
+                >
+                  <Plus className="h-5 w-5" />
+                </button>
+              )}
+            </div>
 
           <div className="space-y-3">
             {committees.length === 0 && (
@@ -415,19 +427,27 @@ export default function CommitteeHeadDashboard() {
           </div>
         </aside>
 
-        <form
-          onSubmit={submitCommittee}
-          className="space-y-6 border border-white/10 bg-white/[0.04] p-4 sm:p-6"
-        >
-          <div className="flex flex-col gap-4 border-b border-white/10 pb-5 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h2 className="text-xl font-semibold text-white">
-                {isEditing ? "Edit Committee" : "Create Committee"}
-              </h2>
-              <p className="mt-1 text-sm text-zinc-400">
-                Only Committee heads can update these details.
-              </p>
-            </div>
+        {!isEditing && !canCreate ? (
+          <section className="flex flex-col items-center justify-center border border-white/10 bg-white/[0.04] p-12 text-center">
+            <h2 className="text-xl font-semibold text-amber-300">Committee Dashboard</h2>
+            <p className="mt-2 max-w-md text-sm text-zinc-300">
+              Select a committee from the list on the left to edit its details.
+            </p>
+          </section>
+        ) : (
+          <form
+            onSubmit={submitCommittee}
+            className="space-y-6 border border-white/10 bg-white/[0.04] p-4 sm:p-6"
+          >
+            <div className="flex flex-col gap-4 border-b border-white/10 pb-5 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h2 className="text-xl font-semibold text-white">
+                  {isEditing ? "Edit Committee" : "Create Committee"}
+                </h2>
+                <p className="mt-1 text-sm text-zinc-400">
+                  Only committee heads and coordinators can update these details.
+                </p>
+              </div>
             <div className="flex gap-2">
               {isEditing && (
                 <button
@@ -556,6 +576,7 @@ export default function CommitteeHeadDashboard() {
             ))}
           </section>
         </form>
+        )}
       </div>
     </main>
   );

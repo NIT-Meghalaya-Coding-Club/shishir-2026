@@ -44,6 +44,8 @@ type UserData = {
   registered: boolean;
   canCreateEvents?: boolean;
   canCreateCommittees?: boolean;
+  hasEventAccess?: boolean;
+  hasCommitteeAccess?: boolean;
 };
 
 type RegisteredEvent = {
@@ -133,6 +135,8 @@ const ProfileCard = () => {
             registered: data.user?.registered || false,
             canCreateEvents: data.canCreateEvents || false,
             canCreateCommittees: data.canCreateCommittees || false,
+            hasEventAccess: data.hasEventAccess || false,
+            hasCommitteeAccess: data.hasCommitteeAccess || false,
           });
 
           setIsLoading(false);
@@ -473,11 +477,11 @@ const ProfileCard = () => {
           </div>
           <div className="mt-6 sm:mt-8 md:mt-10 flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-5">
             <CustomMoreButton />
-            {(userData.canCreateEvents)?
+            {(userData.canCreateEvents || userData.hasEventAccess)?
               <CustomEventDashboardButton />
               : ''
             }
-            {(userData.canCreateCommittees)?
+            {(userData.canCreateCommittees || userData.hasCommitteeAccess)?
               <CustomCommitteDashboardButton />
               :''
             }

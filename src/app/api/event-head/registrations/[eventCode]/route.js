@@ -3,7 +3,7 @@ import connectMongo from "@/lib/mongodb";
 import Event from "@/models/Event";
 import Registration from "@/models/Registration";
 import User from "@/models/User";
-import { getCurrentUser, isEventHead } from "@/lib/eventAuth";
+import { getCurrentUser, isEventHeadOrCoordinator } from "@/lib/eventAuth";
 
 export async function GET(req, { params }) {
   try {
@@ -26,9 +26,9 @@ export async function GET(req, { params }) {
       );
     }
 
-    if (!isEventHead(event, user.email)) {
+    if (!isEventHeadOrCoordinator(event, user.email)) {
       return NextResponse.json(
-        { success: false, message: "Only event heads can view participants" },
+        { success: false, message: "Only event heads or coordinators can view participants" },
         { status: 403 }
       );
     }
