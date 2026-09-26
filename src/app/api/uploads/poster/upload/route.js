@@ -65,7 +65,7 @@ export async function POST(req) {
         );
       }
 
-      if (!isEventHeadOrCoordinator(event, user.email)) {
+      if (!isEventHeadOrCoordinator(event, user)) {
         return NextResponse.json(
           { success: false, message: "Only event heads or coordinators can upload this poster" },
           { status: 403 }

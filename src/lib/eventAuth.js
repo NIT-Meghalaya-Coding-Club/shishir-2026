@@ -18,26 +18,50 @@ export async function getCurrentUser() {
   return { session, user };
 }
 
-export function isEventHead(event, email) {
-  if (!event || !email) return false;
+function userMatches(personRef, userOrEmail) {
+  if (!personRef || !userOrEmail) return false;
 
-  return (event.eventHeads || []).some(
-    (head) => head.email?.toLowerCase() === email.toLowerCase()
-  );
+  const refId = String(personRef?._id || personRef?.user || personRef || "").trim();
+  const refEmail = String(personRef?.email || "").trim().toLowerCase();
+
+  if (typeof userOrEmail === "object" && userOrEmail !== null) {
+    const targetId = String(userOrEmail._id || userOrEmail.id || "").trim();
+    const targetEmail = String(userOrEmail.email || "").trim().toLowerCase();
+
+    if (targetId && refId && targetId === refId) return true;
+    if (targetEmail && refEmail && targetEmail === refEmail) return true;
+    return false;
+  }
+
+  const targetStr = String(userOrEmail || "").trim();
+  if (!targetStr) return false;
+
+  if (targetStr.includes("@")) {
+    const targetEmail = targetStr.toLowerCase();
+    if (refEmail && refEmail === targetEmail) return true;
+  }
+
+  if (refId && targetStr === refId) return true;
+
+  return false;
 }
 
-export function isEventHeadOrCoordinator(event, email) {
-  if (!event || !email) return false;
+export function isEventHead(event, userOrEmail) {
+  if (!event || !userOrEmail) return false;
 
-  const normalized = email.toLowerCase();
-  const inHeads = (event.eventHeads || []).some(
-    (head) => head.email?.toLowerCase() === normalized
-  );
+  return (event.eventHeads || []).some((head) => userMatches(head, userOrEmail));
+}
+
+export function isEventHeadOrCoordinator(event, userOrEmail) {
+  if (!event || !userOrEmail) return false;
+
+  const inHeads = (event.eventHeads || []).some((head) => userMatches(head, userOrEmail));
   if (inHeads) return true;
 
-  return (event.coordinators || []).some(
-    (coord) => coord.email?.toLowerCase() === normalized
-  );
+  const inCoords = (event.coordinators || []).some((coord) => userMatches(coord, userOrEmail));
+  if (inCoords) return true;
+
+  return (event.coCoordinators || []).some((coCoord) => userMatches(coCoord, userOrEmail));
 }
 
 export async function canCreateEvents(user) {
@@ -46,26 +70,22 @@ export async function canCreateEvents(user) {
   return settings.eventCreatorEmails.includes(user.email.toLowerCase());
 }
 
-export function isCommitteeHead(committee, email) {
-  if (!committee || !email) return false;
+export function isCommitteeHead(committee, userOrEmail) {
+  if (!committee || !userOrEmail) return false;
 
-  return (committee.committeeHeads || []).some(
-    (head) => head.email?.toLowerCase() === email.toLowerCase()
-  );
+  return (committee.committeeHeads || []).some((head) => userMatches(head, userOrEmail));
 }
 
-export function isCommitteeHeadOrCoordinator(committee, email) {
-  if (!committee || !email) return false;
+export function isCommitteeHeadOrCoordinator(committee, userOrEmail) {
+  if (!committee || !userOrEmail) return false;
 
-  const normalized = email.toLowerCase();
-  const inHeads = (committee.committeeHeads || []).some(
-    (head) => head.email?.toLowerCase() === normalized
-  );
+  const inHeads = (committee.committeeHeads || []).some((head) => userMatches(head, userOrEmail));
   if (inHeads) return true;
 
-  return (committee.coordinators || []).some(
-    (coord) => coord.email?.toLowerCase() === normalized
-  );
+  const inCoords = (committee.coordinators || []).some((coord) => userMatches(coord, userOrEmail));
+  if (inCoords) return true;
+
+  return (committee.coCoordinators || []).some((coCoord) => userMatches(coCoord, userOrEmail));
 }
 
 export async function canCreateCommittees(user) {
@@ -74,81 +94,13 @@ export async function canCreateCommittees(user) {
   return settings.committeeHeadEmails.includes(user.email.toLowerCase());
 }
 
-export function snapshotUser(user, allowIncomplete = false) {
-  return {
-    user: user._id,
-    collegeID: user.collegeID || (allowIncomplete ? user.email : undefined),
-    name: user.name || (allowIncomplete ? user.email : undefined),
-    email: user.email,
-    phone: user.phone || "",
-    image: user.image || "",
-  };
-}
-
 export async function hydrateEventPeople(events) {
   const eventList = Array.isArray(events) ? events : [events];
-  const people = eventList.flatMap((event) => [
-    ...(event?.eventHeads || []),
-    ...(event?.coordinators || []),
-    ...(event?.coCoordinators || []),
-  ]);
-
-  const validUserIDs = [...new Set(
-    people
-      .map((person) => String(person?.user || ""))
-      .filter((userID) => mongoose.Types.ObjectId.isValid(userID))
-  )];
-  const emails = [...new Set(
-    people
-      .map((person) => String(person?.email || "").trim().toLowerCase())
-      .filter(Boolean)
-  )];
-  const collegeIDs = [...new Set(
-    people
-      .map((person) => String(person?.collegeID || "").trim())
-      .filter(Boolean)
-  )];
-
-  if (validUserIDs.length === 0 && emails.length === 0 && collegeIDs.length === 0) {
-    return eventList.map((event) => ({
-      ...event,
-      eventHeads: event.eventHeads || [],
-      coordinators: event.coordinators || [],
-      coCoordinators: event.coCoordinators || [],
-    }));
-  }
-
-  const users = await User.find({
-    $or: [
-      ...(validUserIDs.length > 0 ? [{ _id: { $in: validUserIDs } }] : []),
-      ...(emails.length > 0 ? [{ email: { $in: emails } }] : []),
-      ...(collegeIDs.length > 0 ? [{ collegeID: { $in: collegeIDs } }] : []),
-    ],
-  }).select("image email collegeID").lean();
-
-  const usersByKey = new Map();
-  users.forEach((user) => {
-    usersByKey.set(`id:${String(user._id)}`, user);
-    if (user.email) usersByKey.set(`email:${user.email.toLowerCase()}`, user);
-    if (user.collegeID) usersByKey.set(`collegeID:${user.collegeID}`, user);
-  });
-
-  const addImages = (group = []) => group.map((person) => {
-    const user = usersByKey.get(`id:${String(person.user || "")}`)
-      || usersByKey.get(`email:${String(person.email || "").trim().toLowerCase()}`)
-      || usersByKey.get(`collegeID:${String(person.collegeID || "").trim()}`);
-
-    return {
-      ...person,
-      image: user?.image || person.image || "",
-    };
-  });
-
   return eventList.map((event) => ({
     ...event,
-    eventHeads: addImages(event.eventHeads),
-    coordinators: addImages(event.coordinators),
-    coCoordinators: addImages(event.coCoordinators),
+    eventHeads: event.eventHeads || [],
+    coordinators: event.coordinators || [],
+    coCoordinators: event.coCoordinators || [],
   }));
 }
 
@@ -180,7 +132,7 @@ export async function resolveUsersByCollegeIDs(collegeIDs = [], label = "users")
     throw error;
   }
 
-  return normalizedIDs.map((collegeID) => snapshotUser(byCollegeID.get(collegeID)));
+  return normalizedIDs.map((collegeID) => byCollegeID.get(collegeID));
 }
 
 export async function resolveUsersByEmails(
@@ -215,5 +167,5 @@ export async function resolveUsersByEmails(
     throw error;
   }
 
-  return normalizedEmails.map((email) => snapshotUser(byEmail.get(email), allowIncomplete));
+  return normalizedEmails.map((email) => byEmail.get(email));
 }

@@ -137,13 +137,13 @@ export default function EventHeadDashboard() {
   const isEditing = Boolean(editingCode);
 
   const currentUserIsInStaff = useMemo(() => {
-    if (!currentUser?.collegeID) return false;
+    if (!currentUser) return false;
     const inHeads = formData.eventHeads.some(
-      (head) => head.collegeID === currentUser.collegeID
+      (head) => (head._id && currentUser._id && head._id === currentUser._id) || (head.collegeID && currentUser.collegeID && head.collegeID === currentUser.collegeID) || (head.email && currentUser.email && head.email.toLowerCase() === currentUser.email.toLowerCase())
     );
     if (inHeads) return true;
     return formData.coordinators.some(
-      (coord) => coord.collegeID === currentUser.collegeID
+      (coord) => (coord._id && currentUser._id && coord._id === currentUser._id) || (coord.collegeID && currentUser.collegeID && coord.collegeID === currentUser.collegeID) || (coord.email && currentUser.email && coord.email.toLowerCase() === currentUser.email.toLowerCase())
     );
   }, [currentUser, formData.eventHeads, formData.coordinators]);
 
@@ -426,18 +426,6 @@ export default function EventHeadDashboard() {
 
       const payload = {
         ...formData,
-        eventHeads: formData.eventHeads.map((person) => ({
-          ...person,
-          email: person.email,
-        })),
-        coordinators: formData.coordinators.map((person) => ({
-          ...person,
-          email: person.email,
-        })),
-        coCoordinators: formData.coCoordinators.map((person) => ({
-          ...person,
-          email: person.email,
-        })),
         posterLink,
         category: categoryName,
         categoryId,

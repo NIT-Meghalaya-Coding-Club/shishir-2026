@@ -1,5 +1,6 @@
 import { randomBytes } from "node:crypto";
 import { NextResponse } from "next/server";
+import connectMongo from "@/lib/mongodb";
 import Committee from "@/models/Committee";
 import {
   canCreateCommittees,
@@ -47,12 +48,18 @@ export async function GET() {
       );
     }
 
+    await connectMongo();
+
     const committees = await Committee.find({
       $or: [
-        { "committeeHeads.email": user.email.toLowerCase() },
-        { "coordinators.email": user.email.toLowerCase() },
+        { committeeHeads: user._id },
+        { coordinators: user._id },
+        { coCoordinators: user._id },
       ],
     })
+      .populate("committeeHeads", "name email phone collegeID image dept yearOfStudy")
+      .populate("coordinators", "name email phone collegeID image dept yearOfStudy")
+      .populate("coCoordinators", "name email phone collegeID image dept yearOfStudy")
       .sort({ name: 1 })
       .lean();
 
@@ -108,6 +115,8 @@ export async function POST(req) {
       );
     }
 
+    await connectMongo();
+
     const code = await generateUniqueCode();
 
     const committeeHeadIDs = [
@@ -117,23 +126,35 @@ export async function POST(req) {
         : []),
     ];
 
-    const committee = await Committee.create({
-      name: payload.name,
-      code,
-      committeeHeads: await resolveUsersByCollegeIDs(committeeHeadIDs, "committee heads"),
-      coordinators: Array.isArray(payload.coordinatorEmails)
-        ? await resolveUsersByEmails(payload.coordinatorEmails, "coordinators", true)
-        : await resolveUsersByCollegeIDs(
-          Array.isArray(payload.coordinatorCollegeIDs) ? payload.coordinatorCollegeIDs : [],
-          "coordinators"
-        ),
-      coCoordinators: await resolveUsersByCollegeIDs(
+    const committeeHeadUsers = await resolveUsersByCollegeIDs(committeeHeadIDs, "committee heads");
+    const coordinatorUsers = Array.isArray(payload.coordinatorEmails)
+      ? await resolveUsersByEmails(payload.coordinatorEmails, "coordinators", true)
+      : await resolveUsersByCollegeIDs(
+        Array.isArray(payload.coordinatorCollegeIDs) ? payload.coordinatorCollegeIDs : [],
+        "coordinators"
+      );
+    const coCoordinatorUsers = Array.isArray(payload.coCoordinatorEmails)
+      ? await resolveUsersByEmails(payload.coCoordinatorEmails, "co-coordinators", true)
+      : await resolveUsersByCollegeIDs(
         Array.isArray(payload.coCoordinatorCollegeIDs)
           ? payload.coCoordinatorCollegeIDs
           : [],
         "co-coordinators"
-      ),
+      );
+
+    const createdCommittee = await Committee.create({
+      name: payload.name,
+      code,
+      committeeHeads: committeeHeadUsers.map((u) => u._id),
+      coordinators: coordinatorUsers.map((u) => u._id),
+      coCoordinators: coCoordinatorUsers.map((u) => u._id),
     });
+
+    const committee = await Committee.findById(createdCommittee._id)
+      .populate("committeeHeads", "name email phone collegeID image dept yearOfStudy")
+      .populate("coordinators", "name email phone collegeID image dept yearOfStudy")
+      .populate("coCoordinators", "name email phone collegeID image dept yearOfStudy")
+      .lean();
 
     return NextResponse.json({ success: true, committee }, { status: 201 });
   } catch (error) {

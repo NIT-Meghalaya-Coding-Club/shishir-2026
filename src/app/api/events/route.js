@@ -9,11 +9,9 @@ import {
   canCreateEvents,
   getCurrentUser,
   hydrateEventPeople,
-  isEventHead,
   isEventHeadOrCoordinator,
   resolveUsersByCollegeIDs,
   resolveUsersByEmails,
-  snapshotUser,
 } from "@/lib/eventAuth";
 
 async function resolveCategory(payload) {
@@ -122,23 +120,24 @@ export async function GET(req) {
     const query = scope === "mine"
       ? {
         $or: [
-          { "eventHeads.email": user.email },
-          { "coordinators.email": user.email },
+          { eventHeads: user._id },
+          { coordinators: user._id },
+          { coCoordinators: user._id },
         ],
       }
       : {};
-    const projection = user && scope === "mine"
-      ? undefined
-      : "name code category location startsAt endsAt description rulebookLink posterLink "
-      + "eventHeads.user eventHeads.collegeID eventHeads.name eventHeads.email eventHeads.phone eventHeads.image "
-      + "coordinators.user coordinators.collegeID coordinators.name coordinators.email coordinators.phone coordinators.image "
-      + "coCoordinators.user coCoordinators.collegeID coCoordinators.name coCoordinators.email coCoordinators.phone coCoordinators.image";
 
-    const events = await Event.find(query, projection).sort({ startsAt: 1 }).lean();
-    const eventsWithImages = await hydrateEventPeople(events);
+    const events = await Event.find(query)
+      .populate("eventHeads", "name email phone collegeID image dept yearOfStudy")
+      .populate("coordinators", "name email phone collegeID image dept yearOfStudy")
+      .populate("coCoordinators", "name email phone collegeID image dept yearOfStudy")
+      .sort({ startsAt: 1 })
+      .lean();
+
+    const eventsWithPeople = await hydrateEventPeople(events);
 
     return NextResponse.json(
-      { success: true, events: eventsWithImages, canCreateEvents: user ? await canCreateEvents(user) : false },
+      { success: true, events: eventsWithPeople, canCreateEvents: user ? await canCreateEvents(user) : false },
       { status: 200 }
     );
   } catch (error) {
@@ -200,21 +199,21 @@ export async function POST(req) {
       ...(Array.isArray(payload.eventHeadCollegeIDs) ? payload.eventHeadCollegeIDs : []),
     ];
 
-    const eventHeads = await resolveUsersByCollegeIDs(eventHeadIDs, "event heads");
-    const coordinators = Array.isArray(payload.coordinatorEmails)
+    const eventHeadUsers = await resolveUsersByCollegeIDs(eventHeadIDs, "event heads");
+    const coordinatorUsers = Array.isArray(payload.coordinatorEmails)
       ? await resolveUsersByEmails(payload.coordinatorEmails, "coordinators", true)
       : await resolveUsersByCollegeIDs(
         Array.isArray(payload.coordinatorCollegeIDs) ? payload.coordinatorCollegeIDs : [],
         "coordinators"
       );
-    const coCoordinators = Array.isArray(payload.coCoordinatorEmails)
+    const coCoordinatorUsers = Array.isArray(payload.coCoordinatorEmails)
       ? await resolveUsersByEmails(payload.coCoordinatorEmails, "co-coordinators", true)
       : await resolveUsersByCollegeIDs(
         Array.isArray(payload.coCoordinatorCollegeIDs) ? payload.coCoordinatorCollegeIDs : [],
         "co-coordinators"
       );
 
-    const event = await Event.create({
+    const createdEvent = await Event.create({
       name: payload.name,
       code,
       category: category.name,
@@ -230,10 +229,16 @@ export async function POST(req) {
       paymentRequired: payload.paymentRequired || undefined,
       rulebookLink: payload.rulebookLink,
       posterLink: payload.posterLink,
-      eventHeads: eventHeads.length > 0 ? eventHeads : [snapshotUser(user)],
-      coordinators,
-      coCoordinators,
+      eventHeads: eventHeadUsers.length > 0 ? eventHeadUsers.map((u) => u._id) : [user._id],
+      coordinators: coordinatorUsers.map((u) => u._id),
+      coCoordinators: coCoordinatorUsers.map((u) => u._id),
     });
+
+    const event = await Event.findById(createdEvent._id)
+      .populate("eventHeads", "name email phone collegeID image dept yearOfStudy")
+      .populate("coordinators", "name email phone collegeID image dept yearOfStudy")
+      .populate("coCoordinators", "name email phone collegeID image dept yearOfStudy")
+      .lean();
 
     return NextResponse.json({ success: true, event }, { status: 201 });
   } catch (error) {
@@ -290,7 +295,7 @@ export async function DELETE(req) {
       );
     }
 
-    const canDelete = isEventHeadOrCoordinator(event, user.email) || (await canCreateEvents(user));
+    const canDelete = isEventHeadOrCoordinator(event, user) || (await canCreateEvents(user));
     if (!canDelete) {
       return NextResponse.json(
         { success: false, message: "Only event heads, coordinators, or event administrators can delete this event" },

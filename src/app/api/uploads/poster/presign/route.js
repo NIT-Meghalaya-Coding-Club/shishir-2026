@@ -53,7 +53,7 @@ export async function POST(req) {
         return NextResponse.json({ message: "Event not found" }, { status: 404 });
       }
 
-      if (!isEventHeadOrCoordinator(event, user.email)) {
+      if (!isEventHeadOrCoordinator(event, user)) {
         return NextResponse.json(
           { message: "Only event heads or coordinators can upload this poster" },
           { status: 403 }

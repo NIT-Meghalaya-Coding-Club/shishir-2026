@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import connectMongo from "@/lib/mongodb";
 import Committee from "@/models/Committee";
-import User from "@/models/User";
 
 const memberGroups = [
   ["committeeHeads", "Head"],
@@ -14,31 +13,24 @@ export async function GET() {
     await connectMongo();
 
     const committees = await Committee.find({})
+      .populate("committeeHeads", "name phone email image")
+      .populate("coordinators", "name phone email image")
+      .populate("coCoordinators", "name phone email image")
       .sort({ name: 1 })
       .lean();
-    const emails = committees.flatMap((committee) =>
-      memberGroups.flatMap(([field]) =>
-        (committee[field] || []).map((person) => person.email).filter(Boolean)
-      )
-    );
-    const users = await User.find({ email: { $in: emails } })
-      .select("email image")
-      .lean();
-    const imagesByEmail = new Map(
-      users.map((user) => [user.email.toLowerCase(), user.image])
-    );
 
     const teams = committees.map((committee) => ({
       name: committee.name,
       members: memberGroups.flatMap(([field, position]) =>
-        (committee[field] || []).map((person) => ({
-          name: person.name,
-          contactNo: person.phone || "",
-          email: person.email,
-          position,
-          imageLink:
-            person.image || imagesByEmail.get(person.email.toLowerCase()) || undefined,
-        }))
+        (committee[field] || [])
+          .filter((person) => person && typeof person === "object" && person.name)
+          .map((person) => ({
+            name: person.name,
+            contactNo: person.phone || "",
+            email: person.email || "",
+            position,
+            imageLink: person.image || undefined,
+          }))
       ),
     }));
 
