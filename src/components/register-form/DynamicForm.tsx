@@ -504,11 +504,11 @@ const DynamicForm = ({
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        
+
         <h2 className="text-2xl sm:text-3xl font-extrabold uppercase tracking-widest text-slate-800 dark:text-slate-100 mb-4 text-center">
           {hasExistingRegistration ? "Registration Updated!" : "Registration Successful!"}
         </h2>
-        
+
         <p className="text-slate-600 dark:text-slate-300 font-medium text-lg mb-10 text-center max-w-md">
           Your registration details have been saved securely.
         </p>
@@ -521,7 +521,7 @@ const DynamicForm = ({
           >
             Register Another
           </button>
-          
+
           <button
             type="button"
             onClick={() => router.push("/")}
