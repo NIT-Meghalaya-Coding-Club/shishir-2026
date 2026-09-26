@@ -2,9 +2,15 @@
 import React from "react";
 import Image from "next/image";
 import Inav from "@/components/events/internal-nav";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CalendarDays, Crown, ExternalLink, Mail, MapPin, Phone, Sparkles, X } from "lucide-react";
 import Head from "next/head";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { EffectCoverflow, Pagination, Navigation } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/effect-coverflow";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
 
 type EventRecord = {
   _id: string;
@@ -55,27 +61,27 @@ function PeopleGroup({ label, people }: { label: string; people: Person[] }) {
       <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-yellow-400">{label}</p>
       <div className="grid gap-3 sm:grid-cols-2">
         {people.map((person) => (
-          <div key={`${label}-${person.collegeID || person.email || person.name}`} className="flex min-w-0 items-start gap-3 rounded-lg border border-yellow-400/20 bg-black/30 p-3">
+          <div key={`${label}-${person.collegeID || person.email || person.name}`} className="flex flex-col min-w-0 items-center justify-center gap-3 rounded-lg border border-yellow-400/20 bg-black/30 p-4 text-center">
             <Image
               src={person.image || fallbackProfileImage}
               alt=""
-              width={30}
-              height={30}
-              className="h-7 w-7 rounded-full object-cover"
+              width={56}
+              height={56}
+              className="my-2 h-14 w-14 rounded-full border-2 border-yellow-400/50 object-cover"
             />
-            <div className="min-w-0 space-y-1 text-sm">
+            <div className="flex flex-col items-center min-w-0 space-y-1 text-sm">
               <p className="break-words font-semibold text-gray-100">{person.name}</p>
               {person.collegeID && <p className="break-words text-gray-400">Roll no: {person.collegeID}</p>}
               {person.phone && (
-                <a href={`tel:${person.phone}`} className="flex break-all items-center gap-1 text-yellow-300 hover:text-yellow-200">
+                <a href={`tel:${person.phone}`} className="flex break-all items-center justify-center gap-1 text-yellow-300 hover:text-yellow-200">
                   <Phone size={13} />
                   {person.phone}
                 </a>
               )}
               {person.email && (
-                <a href={`mailto:${person.email}`} className="flex break-all items-center gap-1 text-yellow-300 hover:text-yellow-200">
-                  <Mail size={13} />
-                  {person.email}
+                <a href={`mailto:${person.email}`} className="flex break-all items-start justify-center gap-1 text-yellow-300 hover:text-yellow-200">
+                  <Mail size={13} className="mt-[4px] shrink-0" />
+                  <span>{person.email}</span>
                 </a>
               )}
             </div>
@@ -87,63 +93,116 @@ function PeopleGroup({ label, people }: { label: string; people: Person[] }) {
 }
 
 function EventDetailsModal({ event, onClose }: { event: EventRecord; onClose: () => void }) {
+  const scrollableRef = useRef<HTMLDivElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const handleKeyDown = (keyboardEvent: KeyboardEvent) => {
       if (keyboardEvent.key === "Escape") onClose();
     };
 
+    // Lock background scroll via CSS
     document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
     document.addEventListener("keydown", handleKeyDown);
+
+    // Attach at document level (non-passive) so every wheel event anywhere
+    // on the page is caught. preventDefault() stops the page from scrolling;
+    // scrollTop assignment drives the left column instead.
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      if (scrollableRef.current) {
+        scrollableRef.current.scrollTop += e.deltaY;
+      }
+    };
+    document.addEventListener("wheel", handleWheel, { passive: false });
+
     return () => {
       document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
       document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("wheel", handleWheel);
     };
   }, [onClose]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 dark:bg-black/80 p-4 backdrop-blur-sm" onMouseDown={onClose}>
-      <div role="dialog" aria-modal="true" aria-labelledby="event-details-title" className="relative max-h-[90vh] w-full max-w-5xl overflow-y-auto rounded-2xl border border-yellow-500/40 bg-white dark:bg-gray-950 shadow-2xl" onMouseDown={(eventMouseDown) => eventMouseDown.stopPropagation()}>
-        <button type="button" onClick={onClose} aria-label="Close event details" className="sticky left-4 top-4 z-20 -mb-10 mr-auto block rounded-full bg-slate-100 dark:bg-black/70 p-2 text-yellow-600 dark:text-yellow-300 transition hover:bg-yellow-400 hover:text-black">
-          <X size={20} />
+    <div ref={overlayRef} className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 dark:bg-black/80 p-4 sm:p-8 backdrop-blur-sm" onMouseDown={onClose}>
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="event-details-title"
+        className="relative h-[85vh] max-h-[800px] w-full max-w-[1000px] rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#121212] shadow-2xl flex flex-col md:flex-row md:gap-4 overflow-visible"
+        onMouseDown={(eventMouseDown) => eventMouseDown.stopPropagation()}
+      >
+        {/* Floating Close Button */}
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close event details"
+          className="absolute -right-3 -top-3 z-30 flex items-center justify-center h-10 w-10 rounded-full bg-black border-2 border-neutral-700 text-white shadow-xl transition-all duration-200 hover:scale-110 hover:bg-red-600 hover:border-red-600 hover:text-white"
+        >
+          <X size={20} strokeWidth={2.5} />
         </button>
-        <div className="grid min-h-[55vh] md:grid-cols-[1fr_0.9fr]">
-          <div className="order-2 flex flex-col gap-6 p-6 sm:p-8 md:order-1">
-            <div>
-              <p className="mb-2 text-sm font-bold uppercase tracking-[0.2em] text-yellow-600 dark:text-yellow-400">{event.category.replace("_", " ")}</p>
-              <h2 id="event-details-title" className="text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl">{event.name}</h2>
+
+        {/* Left Column (Strictly Scrollable Details) */}
+        <div className="flex-1 relative min-h-[40vh] md:min-h-0 rounded-l-3xl">
+          <div ref={scrollableRef} className="absolute inset-0 p-6 sm:p-8 md:p-10 overflow-y-auto overscroll-contain hide-scrollbar flex flex-col">
+            <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-amber-500">{event.category.replace("_", " ")}</p>
+            <h2 id="event-details-title" className="text-3xl sm:text-4xl font-serif font-bold text-slate-900 dark:text-white mb-4">{event.name}</h2>
+            <p className="whitespace-pre-wrap break-words leading-relaxed text-slate-700 dark:text-gray-300 text-sm mb-6 shrink-0">{event.description}</p>
+
+            <div className="grid gap-3 text-sm text-slate-800 dark:text-gray-300 sm:grid-cols-2 mb-6 pb-6 border-b border-black/10 dark:border-white/10 shrink-0">
+              <p className="flex items-center gap-2"><CalendarDays className="shrink-0 text-amber-500" size={16} />{formatEventDate(event.startsAt)}</p>
+              <p className="flex items-center gap-2"><MapPin className="shrink-0 text-amber-500" size={16} />{event.location}</p>
+              <p className="flex items-center gap-2"><span className="text-amber-500 font-semibold">Start:</span> {formatEventTime(event.startsAt)}</p>
+              <p className="flex items-center gap-2"><span className="text-amber-500 font-semibold">End:</span> {formatEventTime(event.endsAt)}</p>
             </div>
-            <p className="whitespace-pre-wrap break-words leading-7 text-slate-700 dark:text-gray-300">{event.description}</p>
-            <div className="grid gap-3 text-sm text-slate-800 dark:text-gray-200 sm:grid-cols-2">
-              <p className="flex gap-2"><CalendarDays className="shrink-0 text-yellow-500" size={18} />{formatEventDate(event.startsAt)}</p>
-              <p className="flex gap-2"><MapPin className="shrink-0 text-yellow-500" size={18} />{event.location}</p>
-              <p><span className="text-yellow-600 dark:text-yellow-400 font-semibold">Start:</span> {formatEventTime(event.startsAt)}</p>
-              <p><span className="text-yellow-600 dark:text-yellow-400 font-semibold">End:</span> {formatEventTime(event.endsAt)}</p>
-            </div>
-            <div className="space-y-4 border-t border-yellow-400/20 pt-5">
+
+            <div className="space-y-4 shrink-0 pb-4">
               <PeopleGroup label="Event Heads" people={event.eventHeads} />
               <PeopleGroup label="Coordinators" people={event.coordinators} />
               <PeopleGroup label="Co-coordinators" people={event.coCoordinators} />
             </div>
-            <div className="mt-auto flex flex-col gap-3 border-t border-yellow-400/20 pt-5 sm:flex-row">
-              <a
-                href={event.rulebookLink}
-                target="_blank"
-                rel="noreferrer"
-                className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-yellow-400/40 px-4 py-3 text-center font-semibold text-yellow-300 transition hover:bg-yellow-400/10"
-              >
-                <ExternalLink size={18} />
-                View Rulebook
-              </a>
-              <a
-                href={`/register/${event.code}`}
-                className="flex flex-1 items-center justify-center rounded-lg bg-gradient-to-r from-yellow-400 to-yellow-600 px-4 py-3 text-center font-bold text-black transition hover:shadow-lg hover:shadow-yellow-500/25"
-              >
-                Register Now
-              </a>
-            </div>
           </div>
-          <div className="relative order-1 flex min-h-[280px] items-center justify-center bg-black md:order-2 md:min-h-0">
-            <Image src={event.posterLink} alt={`${event.name} poster`} fill className="object-contain object-center" sizes="(max-width: 768px) 100vw, 45vw" />
+        </div>
+
+        {/* Right Column (Image & Buttons) */}
+        <div className="flex flex-col md:w-[45%] shrink-0 p-6 sm:p-8 md:pl-4 border-t md:border-t-0 md:border-l border-slate-200 dark:border-white/10 h-full overflow-y-auto custom-scrollbar md:overflow-hidden">
+          <div className="relative w-full rounded-2xl overflow-hidden bg-black/5 dark:bg-white/5 flex-1 min-h-[250px] md:min-h-[300px] mb-6">
+            <Image src={event.posterLink} alt={`${event.name} poster`} fill className="object-cover object-center" sizes="(max-width: 768px) 100vw, 45vw" />
+          </div>
+
+          {/* Buttons Row */}
+          <div className="flex flex-col sm:flex-row gap-4 mt-auto">
+            <a
+              href={event.rulebookLink}
+              target="_blank"
+              rel="noreferrer"
+              className="btn-53 flex flex-1 items-center justify-center rounded-xl border border-slate-300 dark:border-white/20 bg-slate-100 dark:bg-[#1a1a1c] px-2 h-14 text-center font-semibold text-slate-700 dark:text-gray-200 transition hover:bg-slate-200 dark:hover:bg-[#252528] shadow-sm"
+            >
+              <div className="original flex items-center justify-center gap-2 text-[13px] sm:text-sm">
+                <ExternalLink size={16} /> VIEW RULEBOOK
+              </div>
+              <div className="letters text-[13px] sm:text-sm">
+                {"VIEW RULEBOOK".split("").map((char, index) => (
+                  <span key={index} style={{ transitionDelay: `${index * 0.03}s` }}>
+                    {char === " " ? "\u00A0" : char}
+                  </span>
+                ))}
+              </div>
+            </a>
+            <a
+              href={`/register/${event.code}`}
+              className="btn-53 flex flex-1 items-center justify-center rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 px-2 h-14 text-center font-bold transition hover:shadow-lg hover:shadow-amber-500/25"
+            >
+              <div className="original text-[13px] sm:text-sm">REGISTER NOW</div>
+              <div className="letters text-[13px] sm:text-sm">
+                {"REGISTER NOW".split("").map((char, index) => (
+                  <span key={index} style={{ transitionDelay: `${index * 0.03}s` }}>
+                    {char === " " ? "\u00A0" : char}
+                  </span>
+                ))}
+              </div>
+            </a>
           </div>
         </div>
       </div>
@@ -160,6 +219,7 @@ export default function Events() {
   useEffect(() => {
     async function fetchEvents() {
       try {
+
         const response = await fetch("/api/events");
         const data = await response.json();
 
@@ -168,6 +228,7 @@ export default function Events() {
         }
 
         setEvents(data.events);
+
       } catch (fetchError) {
         setError(fetchError instanceof Error ? fetchError.message : "Unable to load events");
       } finally {
@@ -183,14 +244,18 @@ export default function Events() {
   return (
     <>
       <Head>
-        <link rel="preload" href="/img/brickwall.webp" as="image" />
+        <link rel="preload" href="/img/pattern-floral.png" as="image" />
       </Head>
       <div
         className="relative flex flex-col items-center w-full h-auto min-h-screen overflow-x-hidden pb-16"
-        style={{ backgroundImage: `url('/img/brickwall.webp')` }}
+        style={{
+          backgroundImage: `url('/img/pattern-floral.png')`,
+          backgroundSize: '700px',
+          backgroundRepeat: 'repeat',
+        }}
       >
         {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-white/95 via-slate-100/90 to-white/95 dark:from-gray-900/80 dark:to-black/80 pointer-events-none transition-colors duration-300" />
+        <div className="absolute inset-0 backdrop-invert bg-gradient-to-br from-white/95 via-slate-100/90 to-white/95 dark:from-gray-900/80 dark:to-black/80 pointer-events-none transition-colors duration-300" />
 
         {/* Content container */}
         <div className="relative w-full">
@@ -219,96 +284,113 @@ export default function Events() {
               {/* Category Header */}
               <div
                 id={category.toLowerCase().replace(/ /g, "-")}
-                className="relative mx-4 sm:mx-6 md:mx-8 lg:mx-10 my-4 sm:my-6 md:my-8 lg:my-10 overflow-hidden"
+                className="relative flex flex-col items-center justify-center mx-4 sm:mx-6 md:mx-8 lg:mx-10 my-12 sm:my-16"
               >
-                {/* Outer rounded design with responsive border radius */}
-                <div
-                  className="absolute inset-0 bg-gradient-to-r from-yellow-500 via-yellow-400 to-yellow-500 animate-gradient-x 
-    rounded-tl-[20px] rounded-br-[20px] 
-    sm:rounded-tl-[25px] sm:rounded-br-[25px]
-    md:rounded-tl-[30px] md:rounded-br-[30px]
-    lg:rounded-tl-[40px] lg:rounded-br-[40px]"
-                />
+                {/* Soft, Elegant Glassmorphic Design */}
+                <div className="relative group flex items-center justify-center cursor-default rounded-full transition-all duration-300 hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[8px_8px_0px_#facc15] hover:scale-[1.03]">
 
-                <div
-                  className="relative bg-gradient-to-r from-slate-100 to-white dark:from-gray-900 dark:to-black m-0.5 
-    p-3 sm:p-4 md:p-5 lg:p-6
-    rounded-tl-[18px] rounded-br-[18px]
-    sm:rounded-tl-[23px] sm:rounded-br-[23px]
-    md:rounded-tl-[28px] md:rounded-br-[28px]
-    lg:rounded-tl-[38px] lg:rounded-br-[38px] transition-colors duration-300"
-                >
-                  <div className="flex items-center justify-center gap-2 sm:gap-3 md:gap-4">
-                    <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 lg:w-8 lg:h-8 text-yellow-400" />
+                  {/* Soft Background Layer */}
+                  <div className="absolute inset-0 bg-white/70 dark:bg-black/40 backdrop-blur-md rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:shadow-[0_8px_30px_rgb(255,255,255,0.03)] transition-transform duration-300" />
+
+                  {/* Border Layer */}
+                  <div className="absolute inset-0 border border-slate-200/60 dark:border-white/10 rounded-full" />
+
+                  {/* Content */}
+                  <div className="relative px-10 sm:px-20 py-4 sm:py-6 flex items-center justify-center gap-4 sm:gap-8 z-10">
+                    <div className="h-[2px] w-6 sm:w-12 bg-amber-400 rounded-full opacity-80" />
 
                     <h2
-                      className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold 
-        text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600
-        whitespace-nowrap"
+                      className="text-2xl sm:text-3xl md:text-5xl font-extrabold text-slate-800 dark:text-slate-100 uppercase tracking-widest whitespace-nowrap drop-shadow-sm"
                     >
                       {category.replace("_", " ")}
                     </h2>
 
-                    <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 lg:w-8 lg:h-8 text-yellow-400" />
+                    <div className="h-[2px] w-6 sm:w-12 bg-amber-400 rounded-full opacity-80" />
                   </div>
                 </div>
               </div>
 
-              {/* Events Grid */}
+              {/* Events Swiper */}
               <div className="w-[90vw] mx-auto">
-                <div className="flex flex-wrap justify-center gap-8">
+                <Swiper
+                  effect={'coverflow'}
+                  grabCursor={true}
+                  centeredSlides={true}
+                  slidesPerView={'auto'}
+                  initialSlide={1}
+                  coverflowEffect={{
+                    rotate: 50,
+                    stretch: 0,
+                    depth: 100,
+                    modifier: 1,
+                    slideShadows: true,
+                  }}
+                  pagination={{ clickable: true }}
+                  navigation={events.filter((event) => event.category === category).length > 1}
+                  modules={[EffectCoverflow, Pagination, Navigation]}
+                  className="w-full pb-24 pt-12 !overflow-visible"
+                  style={{
+                    "--swiper-pagination-bottom": "0px",
+                    "--swiper-pagination-color": "#facc15",
+                    "--swiper-pagination-bullet-inactive-color": "#475569",
+                    "--swiper-navigation-color": "#facc15",
+                    "--swiper-navigation-size": "28px",
+                  } as React.CSSProperties}
+                >
                   {events
                     .filter((event) => event.category === category)
                     .map((event, index) => (
-                    <div
-                      key={event._id || event.code}
-                      className="w-full max-w-[400px] aspect-square rounded-xl shadow-2xl relative overflow-hidden group transform transition-all duration-500 hover:scale-105"
-                    >
-                      {/* Decorative border */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 animate-gradient-x rounded-tl-[20px] rounded-br-[20px]" />
+                      <SwiperSlide
+                        key={event._id || event.code}
+                        className="!w-[280px] sm:!w-[340px] md:!w-[400px] aspect-square !overflow-visible"
+                      >
+                        <div className="w-full h-full rounded-xl shadow-2xl relative overflow-hidden group transform transition-all duration-500 hover:scale-105">
+                          {/* Decorative border */}
+                          <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 animate-gradient-x rounded-tl-[20px] rounded-br-[20px]" />
 
-                      {/* Content container */}
-                      <div className="absolute inset-0.5 rounded-xl overflow-hidden bg-gradient-to-br from-gray-900 to-black rounded-tl-[18px] rounded-br-[18px]">
-                        {/* Image */}
-                        <Image
-                          src={event.posterLink}
-                          alt={event.name}
-                          fill
-                          style={{ objectFit: "cover" }}
-                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                          quality={75}
-                          priority={index < 4}
-                          className="transition-transform duration-500 group-hover:scale-110"
-                        />
+                          {/* Content container */}
+                          <div className="absolute inset-0.5 rounded-xl overflow-hidden bg-gradient-to-br from-gray-900 to-black rounded-tl-[18px] rounded-br-[18px]">
+                            {/* Image */}
+                            <Image
+                              src={event.posterLink}
+                              alt={event.name}
+                              fill
+                              style={{ objectFit: "cover" }}
+                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                              quality={75}
+                              priority={index < 4}
+                              className="transition-transform duration-500 group-hover:scale-110"
+                            />
 
-                        {/* Event Name Overlay */}
-                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/90 to-transparent text-white p-4 transform transition-transform duration-500 translate-y-full group-hover:translate-y-0 rounded-b-xl">
-                          <p className="font-bold text-2xl text-yellow-400 mb-2">
-                            {event.name}
-                          </p>
+                            {/* Event Name Overlay (Gradient) */}
+                            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/80 to-transparent pt-16 pb-5 px-5 transform transition-transform duration-500 translate-y-full group-hover:translate-y-0 rounded-b-xl flex flex-col gap-4">
+                              <p className="text-2xl sm:text-3xl font-extrabold text-white uppercase tracking-widest whitespace-nowrap drop-shadow-sm truncate">
+                                {event.name}
+                              </p>
 
-                          {/* Links */}
-                          <div className="flex flex-col gap-3">
-                            <a
-                              href={`/register/${event.code}`}
-                              className="inline-block bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-bold py-2 px-4 rounded-lg text-center transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-yellow-500/25"
-                            >
-                              Register Now
-                            </a>
+                              {/* Links */}
+                              <div className="flex flex-col gap-2.5">
+                                <a
+                                  href={`/register/${event.code}`}
+                                  className="w-full bg-amber-400/90 hover:bg-amber-400 text-slate-900 font-extrabold uppercase tracking-widest drop-shadow-sm py-2.5 px-4 rounded-xl text-center backdrop-blur-sm shadow-sm transition-all duration-300 hover:shadow-md"
+                                >
+                                  Register Now
+                                </a>
 
-                            <button
-                                type="button"
-                                onClick={() => setSelectedEvent(event)}
-                                className="inline-block bg-gradient-to-r from-gray-800 to-gray-900 text-yellow-400 border border-yellow-400/30 font-bold py-2 px-4 rounded-lg text-center transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-yellow-500/10"
-                              >
-                                View Event
-                              </button>
+                                <button
+                                  type="button"
+                                  onClick={() => setSelectedEvent(event)}
+                                  className="w-full bg-white/20 hover:bg-white/30 text-white border border-white/30 font-extrabold uppercase tracking-widest drop-shadow-sm py-2.5 px-4 rounded-xl text-center backdrop-blur-sm shadow-sm transition-all duration-300 hover:shadow-md"
+                                >
+                                  View Event
+                                </button>
+                              </div>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                      </SwiperSlide>
+                    ))}
+                </Swiper>
               </div>
             </React.Fragment>
           ))}

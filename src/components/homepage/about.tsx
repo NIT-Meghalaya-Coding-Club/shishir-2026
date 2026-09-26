@@ -189,7 +189,7 @@ export default function About() {
             {/* Left Column: Swan Crest / Logo */}
             <div
               ref={logoColumnRef}
-              className="w-full lg:w-5/12 flex items-center justify-center relative py-0.5 sm:py-1 lg:py-0 shrink-0"
+              className=" w-full lg:w-5/12 flex items-center justify-center relative py-0.5 sm:py-1 lg:py-0 shrink-0"
             >
               <div
                 ref={logoRef}

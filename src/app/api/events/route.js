@@ -130,9 +130,9 @@ export async function GET(req) {
     const projection = user && scope === "mine"
       ? undefined
       : "name code category location startsAt endsAt description rulebookLink posterLink "
-        + "eventHeads.user eventHeads.collegeID eventHeads.name eventHeads.email eventHeads.phone eventHeads.image "
-        + "coordinators.user coordinators.collegeID coordinators.name coordinators.email coordinators.phone coordinators.image "
-        + "coCoordinators.user coCoordinators.collegeID coCoordinators.name coCoordinators.email coCoordinators.phone coCoordinators.image";
+      + "eventHeads.user eventHeads.collegeID eventHeads.name eventHeads.email eventHeads.phone eventHeads.image "
+      + "coordinators.user coordinators.collegeID coordinators.name coordinators.email coordinators.phone coordinators.image "
+      + "coCoordinators.user coCoordinators.collegeID coCoordinators.name coCoordinators.email coCoordinators.phone coCoordinators.image";
 
     const events = await Event.find(query, projection).sort({ startsAt: 1 }).lean();
     const eventsWithImages = await hydrateEventPeople(events);

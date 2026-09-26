@@ -23,6 +23,59 @@ const MARQUEE_EVENTS = [
   'COSPLAY ARENA',
 ];
 
+export const NumberCounter = ({
+  end,
+  duration = 1000,
+}: {
+  end: number;
+  duration?: number;
+}) => {
+  const [count, setCount] = useState(2010);
+  const countRef = useRef(null);
+  const hasAnimated = useRef(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !hasAnimated.current) {
+          hasAnimated.current = true;
+          let start = 2010;
+          const step = (end-start) / (duration / 16);
+          const timer = setInterval(() => {
+            start += step;
+            if (start > end) {
+              setCount(end);
+              clearInterval(timer);
+            } else {
+              setCount(Math.floor(start));
+            }
+          }, 16);
+        }
+      },
+      { threshold: 0.5 }
+    );
+
+    if (countRef.current) {
+      observer.observe(countRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [end, duration]);
+
+  // Calculate the maximum width needed
+  const maxDigits = end.toString().length+1; // +1 for the '+' sign
+
+  return (
+    <span
+      ref={countRef}
+      className=" text-amber-400 inline-block"
+      
+    >
+      {count}<span className="font-bold"></span>
+    </span>
+  );
+};
+
 export const SakuraLanding: React.FC = () => {
   const sectionRef   = useRef<HTMLDivElement>(null);
   const canvasRef    = useRef<HTMLCanvasElement>(null);
