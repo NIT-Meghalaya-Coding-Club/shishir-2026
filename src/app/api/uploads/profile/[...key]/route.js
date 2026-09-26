@@ -1,18 +1,7 @@
-import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { NextResponse } from "next/server";
+import { getR2Object } from "@/lib/r2";
 
 export const runtime = "nodejs";
-
-function getR2Client() {
-  return new S3Client({
-    region: "auto",
-    endpoint: process.env.R2_ENDPOINT,
-    credentials: {
-      accessKeyId: process.env.R2_ACCESS_KEY_ID,
-      secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
-    },
-  });
-}
 
 export async function GET(_request, { params }) {
   try {
@@ -23,20 +12,15 @@ export async function GET(_request, { params }) {
       return NextResponse.json({ message: "Invalid profile image" }, { status: 400 });
     }
 
-    const response = await getR2Client().send(
-      new GetObjectCommand({
-        Bucket: process.env.R2_BUCKET_NAME,
-        Key: objectKey,
-      })
-    );
+    const object = await getR2Object(objectKey);
 
-    if (!response.Body) {
+    if (!object) {
       return NextResponse.json({ message: "Profile image not found" }, { status: 404 });
     }
 
-    return new Response(response.Body, {
+    return new Response(object.body, {
       headers: {
-        "Content-Type": response.ContentType || "image/jpeg",
+        "Content-Type": object.contentType,
         "Cache-Control": "public, max-age=3600",
       },
     });
