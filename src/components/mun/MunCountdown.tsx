@@ -1,7 +1,8 @@
-"use client"
-import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
-import Image from 'next/image';
+"use client";
+
+import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import Image from "next/image";
 
 interface TimeLeft {
   days: number;
@@ -19,114 +20,157 @@ const CountdownTimer = () => {
   });
 
   useEffect(() => {
-    const targetDate = new Date('2025-04-05T00:00:00');
+    // Change this to your actual MUN 3.0 date
+    const targetDate = new Date("2026-11-05T00:00:00");
 
     const calculateTimeLeft = () => {
-      const difference = +targetDate - +new Date();
-      
+      const difference = targetDate.getTime() - new Date().getTime();
+
       if (difference > 0) {
         setTimeLeft({
           days: Math.floor(difference / (1000 * 60 * 60 * 24)),
           hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-          minutes: Math.floor((difference / 1000 / 60) % 60),
+          minutes: Math.floor((difference / (1000 * 60)) % 60),
           seconds: Math.floor((difference / 1000) % 60),
+        });
+      } else {
+        setTimeLeft({
+          days: 0,
+          hours: 0,
+          minutes: 0,
+          seconds: 0,
         });
       }
     };
 
-    const timer = setInterval(calculateTimeLeft, 1000);
     calculateTimeLeft();
+
+    const timer = setInterval(calculateTimeLeft, 1000);
 
     return () => clearInterval(timer);
   }, []);
 
   const containerVariants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: {
+      opacity: 0,
+      y: 20,
+    },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 0.8,
-        staggerChildren: 0.15
-      }
-    }
+        duration: 0.6,
+      },
+    },
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, scale: 0.8 },
-    visible: { 
-      opacity: 1, 
-      scale: 1,
+    hidden: {
+      opacity: 0,
+      y: 15,
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
       transition: {
-        type: "spring",
-        stiffness: 120,
-        damping: 10
-      }
-    }
+        duration: 0.4,
+      },
+    },
   };
 
+  const countdownItems = [
+    { label: "Days", value: timeLeft.days },
+    { label: "Hours", value: timeLeft.hours },
+    { label: "Minutes", value: timeLeft.minutes },
+    { label: "Seconds", value: timeLeft.seconds },
+  ];
+
   return (
-    <div className="relative w-full min-h-[400px] flex flex-col items-center justify-center py-12 px-4">
-      <div className="absolute inset-0 bg-black/20 backdrop-blur-sm rounded-3xl" />
-      
+    <section className="w-full max-w-5xl mx-auto py-10 px-4 sm:px-0">
       <motion.div
         initial="hidden"
         animate="visible"
         variants={containerVariants}
-        className="relative z-10 w-full max-w-4xl bg-white/10 backdrop-blur-md rounded-2xl p-8 shadow-2xl border border-yellow-500/20"
+        className="relative overflow-hidden rounded-xl border border-[#3D5A80] bg-[#98C1D9] px-5 py-8 sm:px-8 md:px-10"
       >
-        
-        <div className="flex justify-center mb-6">
-          <Image src="/img/mun_logo.webp" alt="Conference" width={100} height={100} className=" rounded-lg " />
-        </div>
-        
-        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-center text-yellow-400 font-semibold mb-4">
-          Shaping Tomorrow&apos;s Diplomatic Leaders
-        </h2>
+        {/* Small decorative line */}
+        {/* <div className="absolute top-0 left-0 h-1 w-24 bg-[#EE6C4D]" /> */}
 
-        <div className="w-24 h-0.5 bg-yellow-500/50 mx-auto mb-8" />
-        
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 md:gap-8 lg:gap-12 justify-center">
-          {[
-            { label: 'Days', value: timeLeft.days },
-            { label: 'Hours', value: timeLeft.hours },
-            { label: 'Minutes', value: timeLeft.minutes },
-            { label: 'Seconds', value: timeLeft.seconds }
-          ].map((item) => (
+        {/* Header */}
+        <div className="flex flex-col items-center text-center">
+          <Image
+            src="/img/mun_logo.webp"
+            alt="NITM MUN"
+            width={90}
+            height={90}
+            className="mb-5 rounded-lg"
+          />
+
+          <p className="mb-2 text-sm uppercase tracking-[0.25em] text-[#98C1D9]">
+            NIT Meghalaya Model United Nations
+          </p>
+
+          <h2 className="text-2xl font-semibold text-[#EE6C4D] sm:text-3xl md:text-4xl">
+            Shaping Tomorrow&apos;s Diplomatic Leaders
+          </h2>
+
+          <div className="mt-4 h-[2px] w-16 bg-[#3D5A80]" />
+
+          <p className="mt-4 max-w-2xl text-sm leading-6 text-[#E0FBFC]/75 sm:text-base">
+            The countdown begins. Prepare to debate, negotiate, and represent
+            your nation on the global stage.
+          </p>
+        </div>
+
+        {/* Countdown */}
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          transition={{ staggerChildren: 0.1 }}
+          className="mt-9 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-5"
+        >
+          {countdownItems.map((item) => (
             <motion.div
               key={item.label}
               variants={itemVariants}
-              className="flex flex-col items-center"
+              className="group text-center"
             >
-              <motion.div
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.98 }}
-          className="relative w-20 h-20 md:w-28 md:h-28 lg:w-32 lg:h-32 bg-white/5 backdrop-blur-lg rounded-lg flex items-center justify-center shadow-xl border border-yellow-500/20"
-              >
-          <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/10 to-transparent rounded-lg" />
-          <span className="text-3xl md:text-4xl lg:text-5xl font-semibold text-yellow-400 relative z-10 font-mono">
-            {String(item.value).padStart(2, '0')}
-          </span>
-              </motion.div>
-              <span className="mt-3 text-sm md:text-base lg:text-lg text-yellow-100 font-medium uppercase tracking-wider">
-          {item.label}
-              </span>
+              <div className="relative flex h-24 items-center justify-center rounded-lg border border-[#3D5A80]/80 bg-[#3D5A80]/10 transition-colors duration-300 group-hover:border-[#EE6C4D]/70 group-hover:bg-[#3D5A80]/20 sm:h-28 md:h-32">
+                <span className="font-mono text-4xl font-semibold tabular-nums text-[#EE6C4D] sm:text-5xl">
+                  {String(item.value).padStart(2, "0")}
+                </span>
+              </div>
+
+              <p className="mt-3 text-xs font-medium uppercase tracking-[0.18em] text-[#98C1D9] sm:text-sm">
+                {item.label}
+              </p>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
 
-        <div className="mt-12 text-center">
-          <a 
-            href="https://docs.google.com/forms/d/1vbrhrbnte5RRreJOnH3nQlgewDCuSv2aLWFw_czVg4c/edit?ts=67bde88f" 
-            target="_blank" 
+        {/* Bottom information */}
+        <div className="mt-9 flex flex-col items-center gap-3 text-center sm:flex-row sm:justify-between sm:text-left">
+          <div>
+            <p className="text-sm font-medium text-[#E0FBFC]">
+              November 5th, 2026
+            </p>
+
+            <p className="mt-1 text-xs text-[#98C1D9]">
+              Join us for a transformative diplomatic experience.
+            </p>
+          </div>
+
+          <a
+            href="https://docs.google.com/forms/d/1vbrhrbnte5RRreJOnH3nQlgewDCuSv2aLWFw_czVg4c/edit?ts=67bde88f"
+            target="_blank"
             rel="noopener noreferrer"
-            className="inline-block text-yellow-100/80 rounded-lg text-sm md:text-base backdrop-blur-sm py-2 px-4 bg-yellow-500/20 hover:bg-yellow-500/30 transition-colors"
+            className="rounded-md border border-[#EE6C4D]/70 px-4 py-2 text-sm font-medium text-[#EE6C4D] transition-colors duration-300 hover:bg-[#EE6C4D] hover:text-[#293241]"
           >
-            April 5th, 2026 | Join us for this transformative event
+            Register Now
           </a>
         </div>
       </motion.div>
-    </div>
+    </section>
   );
 };
 
