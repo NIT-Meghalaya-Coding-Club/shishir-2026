@@ -145,7 +145,7 @@ export default function EventPage() {
                 </div>
 
                 <div className="space-y-4 text-slate-700 dark:text-slate-300 font-medium text-lg">
-                  <div className="flex justify-between items-center bg-white/50 dark:bg-white/5 p-3 rounded-xl border border-slate-200/50 dark:border-white/5">
+                  <div className="flex justify-between items-center bg-white/50 dark:bg-white/5 p-3 px-6 rounded-full border border-slate-200/50 dark:border-white/5">
                     <span className="flex items-center gap-2"><Users className="w-4 h-4" /> Participation</span>
                     <span className="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-sm">
                       {event.eventType === "individual" ? "Individual" :
@@ -153,7 +153,7 @@ export default function EventPage() {
                           event.eventType === "performance" ? "Performance" : "—"}
                     </span>
                   </div>
-                  <div className="flex justify-between items-center bg-white/50 dark:bg-white/5 p-3 rounded-xl border border-slate-200/50 dark:border-white/5">
+                  <div className="flex justify-between items-center bg-white/50 dark:bg-white/5 p-3 px-6 rounded-full border border-slate-200/50 dark:border-white/5">
                     <span>Team Size</span>
                     <span className="font-bold text-slate-900 dark:text-white">
                       {event.min === event.max
@@ -168,7 +168,7 @@ export default function EventPage() {
                         href={event.rulebook}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="btn-53 block w-full bg-slate-800 hover:bg-slate-900 dark:bg-white/10 dark:hover:bg-white/20 text-white font-extrabold uppercase tracking-widest py-3 px-4 rounded-xl text-center backdrop-blur-sm shadow-sm transition-all duration-300 hover:shadow-md border border-slate-700 dark:border-white/20"
+                        className="btn-53 block w-full bg-slate-800 hover:bg-slate-900 dark:bg-white/10 dark:hover:bg-white/20 text-white font-extrabold uppercase tracking-widest py-3 px-4 rounded-full text-center backdrop-blur-sm shadow-sm transition-all duration-300 hover:shadow-md border border-slate-700 dark:border-white/20"
                       >
                         <div className="original">View Rulebook</div>
                         <div className="letters">
