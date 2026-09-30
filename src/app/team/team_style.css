@@ -893,7 +893,7 @@
   color: rgba(224, 251, 252, 0.45);
 
   font-family: var(--body-font);
-  font-size: 0.95rem;
+  font-size: 1.05rem;
   font-weight: var(--font-semi-bold);
 
   text-align: left;
@@ -1211,7 +1211,7 @@
   );
 
   /* Hidden below the card */
-  clip-path: circle(8px at 88% 9%);
+  clip-path: circle(8px at calc(100% - 2rem) 2rem);
 
   transition: clip-path 0.5s ease-in-out;
 }
@@ -1486,6 +1486,10 @@
 
   .info {
     padding: 4rem 2rem 2.5rem;
+
+    clip-path: circle(
+      8px at calc(100% - 2.5rem) 2.5rem
+    );
   }
 
   .info__description {
@@ -1562,26 +1566,41 @@
     margin: 0;
     padding: 0;
   }
-  .team-index-sidebar {
+  
+ .team-index-sidebar {
     position: sticky;
     top: 0;
 
     width: 100%;
     max-width: 100%;
 
-    flex: none;
-
+    margin: 0;
     padding: 0.4rem 0;
 
     z-index: 20;
 
-    background: rgba(41, 50, 65, 0.88);
+    background: rgba(224, 251, 252, 0.82);
 
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+
+    box-shadow:
+      0 6px 18px rgba(41, 50, 65, 0.10);
 
     overflow: hidden;
+
+    transition:
+      top 0.45s cubic-bezier(0.22, 1, 0.36, 1);
   }
+
+  .mobile-nav-visible .team-index-sidebar {
+    top: 72px;
+  }
+
+  .mobile-nav-hidden .team-index-sidebar {
+    top: 0;
+  }
+
 
   .dark .team-index-sidebar {
     background: rgba(8, 12, 20, 0.90);
@@ -1620,7 +1639,7 @@
   .team-index__item {
     flex-shrink: 0;
 
-    font-size: 0.82rem;
+    font-size: 0.9rem;
 
     transform-origin: center;
 
@@ -1632,7 +1651,7 @@
   }
 
   .team-index__item--active {
-    font-size: 1rem;
+    font-size: 1.05rem;
 
     transform: scale(1.03);
   }
@@ -1780,6 +1799,10 @@
     padding: 1.5rem;
 
     border-radius: inherit;
+
+    clip-path: circle(
+      8px at calc(100% - 1.85rem) 1.85rem
+    );
   }
 
   .info__name {
