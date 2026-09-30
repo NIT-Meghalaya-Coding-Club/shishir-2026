@@ -82,7 +82,7 @@ export default function EventPage() {
       }}
     >
       {/* Background Overlay */}
-      <div className="absolute inset-0 backdrop-invert bg-gradient-to-br from-white/95 via-slate-100/90 to-white/95 dark:from-gray-900/80 dark:to-black/80 pointer-events-none transition-colors duration-300 fixed" />
+      <div className="absolute inset-0 bg-white/75 dark:bg-black/75 pointer-events-none transition-colors duration-300 fixed" />
 
       {/* Main Content */}
       <div className="relative w-full z-10 pt-24 pb-16">

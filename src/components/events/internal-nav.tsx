@@ -31,7 +31,7 @@ export default function Inav({ categories }: { categories: string[] }) {
               whileTap={{ scale: 0.9 }}
               transition={{ type: 'spring', stiffness: 300 }}
               onClick={() => handleScroll(category)}
-              className="flex-shrink-0 cursor-pointer px-6 py-3 text-lg font-medium text-gold-500 hover:text-gold-600 transition-colors duration-300 bg-black bg-opacity-50 rounded-lg shadow-lg border border-gold-500 hover:border-gold-600"
+              className="flex-shrink-0 cursor-pointer px-6 py-3 text-lg font-medium text-gold-500 hover:text-gold-600 transition-colors duration-300 bg-black bg-opacity-50 rounded-full shadow-lg border border-gold-500 hover:border-gold-600"
             >
               {category.replace('_', ' ')}
             </motion.div>

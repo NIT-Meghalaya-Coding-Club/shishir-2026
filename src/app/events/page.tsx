@@ -255,7 +255,7 @@ export default function Events() {
         }}
       >
         {/* Gradient overlay */}
-        <div className="absolute inset-0 backdrop-invert bg-gradient-to-br from-white/95 via-slate-100/90 to-white/95 dark:from-gray-900/80 dark:to-black/80 pointer-events-none transition-colors duration-300" />
+        <div className="absolute inset-0 bg-white/75 dark:bg-black/75 pointer-events-none transition-colors duration-300" />
 
         {/* Content container */}
         <div className="relative w-full">
@@ -372,7 +372,7 @@ export default function Events() {
                               <div className="flex flex-col gap-2.5">
                                 <a
                                   href={`/register/${event.code}`}
-                                  className="w-full bg-amber-400/90 hover:bg-amber-400 text-slate-900 font-extrabold uppercase tracking-widest drop-shadow-sm py-2.5 px-4 rounded-xl text-center backdrop-blur-sm shadow-sm transition-all duration-300 hover:shadow-md"
+                                  className="w-full bg-amber-400/90 hover:bg-amber-400 text-slate-900 font-extrabold uppercase tracking-widest drop-shadow-sm py-2.5 px-4 rounded-full text-center backdrop-blur-sm shadow-sm transition-all duration-300 hover:shadow-md"
                                 >
                                   Register Now
                                 </a>
@@ -380,7 +380,7 @@ export default function Events() {
                                 <button
                                   type="button"
                                   onClick={() => setSelectedEvent(event)}
-                                  className="w-full bg-white/20 hover:bg-white/30 text-white border border-white/30 font-extrabold uppercase tracking-widest drop-shadow-sm py-2.5 px-4 rounded-xl text-center backdrop-blur-sm shadow-sm transition-all duration-300 hover:shadow-md"
+                                  className="w-full bg-white/20 hover:bg-white/30 text-white border border-white/30 font-extrabold uppercase tracking-widest drop-shadow-sm py-2.5 px-4 rounded-full text-center backdrop-blur-sm shadow-sm transition-all duration-300 hover:shadow-md"
                                 >
                                   View Event
                                 </button>
