@@ -32,6 +32,10 @@ export default function Contact() {
 
   const [showTopButton, setShowTopButton] = useState(false);
 
+  const [mobileNavVisible, setMobileNavVisible] = useState(true);
+
+  const lastScrollY = useRef(0);
+
   const teamRefs = useRef<{
     [key: string]: HTMLDivElement | null;
   }>({});
@@ -187,8 +191,55 @@ export default function Contact() {
     });
   }
 
+  /* =============== MOBILE INDEX POSITION =============== */
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.innerWidth >= 768) return;
+
+      const currentScrollY = window.scrollY;
+      const scrollDifference =
+        currentScrollY - lastScrollY.current;
+
+      // Always show the navbar offset near the top
+      if (currentScrollY <= 10) {
+        setMobileNavVisible(true);
+        lastScrollY.current = currentScrollY;
+        return;
+      }
+
+      // Ignore tiny movements
+      if (Math.abs(scrollDifference) < 10) {
+        return;
+      }
+
+      if (scrollDifference > 0) {
+        // Scrolling down
+        setMobileNavVisible(false);
+      } else {
+        // Scrolling up
+        setMobileNavVisible(true);
+      }
+
+      lastScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener("scroll", handleScroll, {
+      passive: true,
+    });
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
   return (
-    <div className="teams-page w-full min-h-screen">
+    <div
+      className={`teams-page w-full min-h-screen ${
+        mobileNavVisible
+          ? "mobile-nav-visible"
+          : "mobile-nav-hidden"
+      }`}
+    >
       {/* =============== PAGE TITLE =============== */}
 
       <header className="teams-header">
