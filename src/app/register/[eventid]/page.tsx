@@ -235,9 +235,9 @@ export default function EventPage() {
               </motion.div>
             </div>
           </div>
-        {/* </motion.div> */}
+          {/* </motion.div> */}
 
-        {/* Terms and Conditions Section
+          {/* Terms and Conditions Section
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -249,7 +249,7 @@ export default function EventPage() {
             If you wish to participate in additional events, please register using a different account.
           </p>
         </motion.div> */}
-
+          {/*
         <DynamicForm
           eventId={event?.code}
           eventName={event?.name}
@@ -266,8 +266,9 @@ export default function EventPage() {
           eventCode={event?.code}
           paymentRequired={event?.paymentRequired}
         />
-      </motion.div>
-    </div>
+        */}
+        </motion.div>
+      </div>
     </div>
   );
 }
