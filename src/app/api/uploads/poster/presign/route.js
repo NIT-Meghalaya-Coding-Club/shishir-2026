@@ -1,7 +1,5 @@
-import { randomUUID } from "node:crypto";
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { NextResponse } from "next/server";
+import { presignPosterUpload } from "@/lib/r2";
 import connectMongo from "@/lib/mongodb";
 import Event from "@/models/Event";
 import { canCreateEvents, getCurrentUser, isEventHeadOrCoordinator } from "@/lib/eventAuth";
@@ -19,27 +17,6 @@ const allowedContentTypes = new Set([
   "image/png",
   "image/webp",
 ]);
-
-function getR2Client() {
-  const requiredVariables = [
-    "R2_ENDPOINT",
-    "R2_ACCESS_KEY_ID",
-    "R2_SECRET_ACCESS_KEY",
-  ];
-
-  if (requiredVariables.some((name) => !process.env[name])) {
-    throw new Error("R2 storage is not configured");
-  }
-
-  return new S3Client({
-    region: "auto",
-    endpoint: process.env.R2_ENDPOINT,
-    credentials: {
-      accessKeyId: process.env.R2_ACCESS_KEY_ID,
-      secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
-    },
-  });
-}
 
 export async function POST(req) {
   try {
@@ -76,7 +53,7 @@ export async function POST(req) {
         return NextResponse.json({ message: "Event not found" }, { status: 404 });
       }
 
-      if (!isEventHeadOrCoordinator(event, user.email)) {
+      if (!isEventHeadOrCoordinator(event, user)) {
         return NextResponse.json(
           { message: "Only event heads or coordinators can upload this poster" },
           { status: 403 }
@@ -89,26 +66,15 @@ export async function POST(req) {
       );
     }
 
-    const bucket = process.env.R2_BUCKET_NAME;
-    const publicBaseUrl = process.env.R2_PUBLIC_BASE_URL?.replace(/\/$/, "");
-    if (!bucket || !publicBaseUrl) {
-      throw new Error("R2 bucket or public URL is not configured");
-    }
-
-    const extension = contentType.split("/")[1];
-    const key = `posters/${user._id}/${randomUUID()}.${extension}`;
-    const client = getR2Client();
-    const command = new PutObjectCommand({
-      Bucket: bucket,
-      Key: key,
-      ContentType: contentType,
-      ContentLength: fileSize,
+    const { uploadUrl, publicUrl } = await presignPosterUpload({
+      userId: String(user._id),
+      contentType,
+      fileSize,
     });
-    const uploadUrl = await getSignedUrl(client, command, { expiresIn: 600 });
 
     return NextResponse.json({
       uploadUrl,
-      publicUrl: `${publicBaseUrl}/${key}`,
+      publicUrl,
     });
   } catch (error) {
     console.error("Poster presign error:", error);

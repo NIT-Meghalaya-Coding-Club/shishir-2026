@@ -45,8 +45,13 @@ importers:
         specifier: ^5.1.36
         version: 5.1.36
       '@vercel/analytics':
+<<<<<<< HEAD
         specifier: ^1.6.1
         version: 1.6.1(next@16.3.6(@types/node@20.19.43)(babel-plugin-macros@3.1.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react@19.3.0)
+=======
+        specifier: ^1.5.0
+        version: 1.6.1(next@16.3.5(@types/node@20.19.43)(babel-plugin-macros@3.1.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react@19.3.0)
+>>>>>>> f609ee05ad17ff0113e3dad86f9d0a282748328a
       animate.css:
         specifier: ^4.1.1
         version: 4.1.1

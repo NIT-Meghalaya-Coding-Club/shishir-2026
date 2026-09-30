@@ -87,7 +87,11 @@ export async function GET(req, { params }) {
 
     await connectMongo();
 
-    const event = await Event.findOne({ code: normalizeCode(code) }).lean();
+    const event = await Event.findOne({ code: normalizeCode(code) })
+      .populate("eventHeads", "name email phone collegeID image dept yearOfStudy")
+      .populate("coordinators", "name email phone collegeID image dept yearOfStudy")
+      .populate("coCoordinators", "name email phone collegeID image dept yearOfStudy")
+      .lean();
 
     if (!event) {
       return NextResponse.json(
@@ -96,9 +100,9 @@ export async function GET(req, { params }) {
       );
     }
 
-    const [eventWithImages] = await hydrateEventPeople(event);
+    const [eventWithPeople] = await hydrateEventPeople(event);
 
-    return NextResponse.json({ success: true, event: eventWithImages }, { status: 200 });
+    return NextResponse.json({ success: true, event: eventWithPeople }, { status: 200 });
   } catch (error) {
     console.error("Fetch event error:", error);
     return NextResponse.json(
@@ -122,7 +126,10 @@ export async function PATCH(req, { params }) {
 
     await connectMongo();
 
-    const event = await Event.findOne({ code: normalizeCode(code) });
+    const event = await Event.findOne({ code: normalizeCode(code) })
+      .populate("eventHeads", "name email phone collegeID image dept yearOfStudy")
+      .populate("coordinators", "name email phone collegeID image dept yearOfStudy")
+      .populate("coCoordinators", "name email phone collegeID image dept yearOfStudy");
 
     if (!event) {
       return NextResponse.json(
@@ -131,7 +138,7 @@ export async function PATCH(req, { params }) {
       );
     }
 
-    if (!isEventHeadOrCoordinator(event, user.email)) {
+    if (!isEventHeadOrCoordinator(event, user)) {
       return NextResponse.json(
         { success: false, message: "Only event heads or coordinators can edit event details" },
         { status: 403 }
@@ -164,29 +171,32 @@ export async function PATCH(req, { params }) {
       }
     }
 
-    const userIsHead = isEventHead(event, user.email);
+    const userIsHead = isEventHead(event, user);
 
     const eventHeadEmails = Array.isArray(payload.eventHeadEmails)
       ? (userIsHead ? [...new Set([...payload.eventHeadEmails, user.email])] : payload.eventHeadEmails)
       : null;
-    const eventHeads = eventHeadEmails
+    const eventHeadUsers = eventHeadEmails
       ? await resolveUsersByEmails(eventHeadEmails, "event heads")
       : null;
 
     const coordinatorEmails = Array.isArray(payload.coordinatorEmails)
       ? (!userIsHead ? [...new Set([...payload.coordinatorEmails, user.email])] : payload.coordinatorEmails)
       : null;
-    const coordinators = coordinatorEmails
+    const coordinatorUsers = coordinatorEmails
       ? await resolveUsersByEmails(coordinatorEmails, "coordinators", true)
       : null;
 
-    const coCoordinators = Array.isArray(payload.coCoordinatorEmails)
+    const coCoordinatorEmails = Array.isArray(payload.coCoordinatorEmails)
       ? await resolveUsersByEmails(payload.coCoordinatorEmails, "co-coordinators", true)
+      : null;
+    const coCoordinatorUsers = coCoordinatorEmails
+      ? await resolveUsersByEmails(coCoordinatorEmails, "co-coordinators", true)
       : null;
 
     const eventHeadIDs = Array.isArray(payload.eventHeadCollegeIDs)
       ? payload.eventHeadCollegeIDs
-      : event.eventHeads.map((head) => head.collegeID);
+      : (event.eventHeads || []).map((head) => head.collegeID).filter(Boolean);
 
     if (userIsHead && user.collegeID && !eventHeadIDs.includes(user.collegeID)) {
       eventHeadIDs.push(user.collegeID);
@@ -194,11 +204,21 @@ export async function PATCH(req, { params }) {
 
     const coordinatorIDs = Array.isArray(payload.coordinatorCollegeIDs)
       ? payload.coordinatorCollegeIDs
-      : event.coordinators.map((c) => c.collegeID);
+      : (event.coordinators || []).map((c) => c.collegeID).filter(Boolean);
 
     if (!userIsHead && user.collegeID && !coordinatorIDs.includes(user.collegeID)) {
       coordinatorIDs.push(user.collegeID);
     }
+
+    const resolvedHeads = eventHeadUsers || await resolveUsersByCollegeIDs(eventHeadIDs, "event heads");
+    const resolvedCoords = coordinatorUsers || await resolveUsersByCollegeIDs(
+      coordinatorIDs,
+      "coordinators"
+    );
+    const resolvedCoCoords = coCoordinatorUsers || await resolveUsersByCollegeIDs(
+      Array.isArray(payload.coCoordinatorCollegeIDs) ? payload.coCoordinatorCollegeIDs : [],
+      "co-coordinators"
+    );
 
     event.name = payload.name;
     event.code = nextCode;
@@ -215,19 +235,19 @@ export async function PATCH(req, { params }) {
     event.paymentRequired = payload.paymentRequired || undefined;
     event.rulebookLink = payload.rulebookLink;
     event.posterLink = payload.posterLink;
-    event.eventHeads = eventHeads || await resolveUsersByCollegeIDs(eventHeadIDs, "event heads");
-    event.coordinators = coordinators || await resolveUsersByCollegeIDs(
-      coordinatorIDs,
-      "coordinators"
-    );
-    event.coCoordinators = coCoordinators || await resolveUsersByCollegeIDs(
-      Array.isArray(payload.coCoordinatorCollegeIDs) ? payload.coCoordinatorCollegeIDs : [],
-      "co-coordinators"
-    );
+    event.eventHeads = resolvedHeads.map((u) => u._id);
+    event.coordinators = resolvedCoords.map((u) => u._id);
+    event.coCoordinators = resolvedCoCoords.map((u) => u._id);
 
     await event.save();
 
-    return NextResponse.json({ success: true, event }, { status: 200 });
+    const populatedEvent = await Event.findById(event._id)
+      .populate("eventHeads", "name email phone collegeID image dept yearOfStudy")
+      .populate("coordinators", "name email phone collegeID image dept yearOfStudy")
+      .populate("coCoordinators", "name email phone collegeID image dept yearOfStudy")
+      .lean();
+
+    return NextResponse.json({ success: true, event: populatedEvent }, { status: 200 });
   } catch (error) {
     console.error("Update event error:", error);
     return NextResponse.json(
@@ -260,7 +280,7 @@ export async function DELETE(req, { params }) {
       );
     }
 
-    const canDelete = isEventHeadOrCoordinator(event, user.email) || (await canCreateEvents(user));
+    const canDelete = isEventHeadOrCoordinator(event, user) || (await canCreateEvents(user));
     if (!canDelete) {
       return NextResponse.json(
         { success: false, message: "Only event heads, coordinators, or event administrators can delete this event" },

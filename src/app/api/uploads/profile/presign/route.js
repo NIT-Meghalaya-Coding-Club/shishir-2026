@@ -1,7 +1,5 @@
-import { randomUUID } from "node:crypto";
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { NextResponse } from "next/server";
+import { presignProfileUpload } from "@/lib/r2";
 import { getCurrentUser } from "@/lib/eventAuth";
 
 export const runtime = "nodejs";
@@ -17,27 +15,6 @@ const allowedContentTypes = new Set([
   "image/png",
   "image/webp",
 ]);
-
-function getR2Client() {
-  const requiredVariables = [
-    "R2_ENDPOINT",
-    "R2_ACCESS_KEY_ID",
-    "R2_SECRET_ACCESS_KEY",
-  ];
-
-  if (requiredVariables.some((name) => !process.env[name])) {
-    throw new Error("R2 storage is not configured");
-  }
-
-  return new S3Client({
-    region: "auto",
-    endpoint: process.env.R2_ENDPOINT,
-    credentials: {
-      accessKeyId: process.env.R2_ACCESS_KEY_ID,
-      secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
-    },
-  });
-}
 
 export async function POST(req) {
   try {
@@ -65,26 +42,15 @@ export async function POST(req) {
       );
     }
 
-    const bucket = process.env.R2_BUCKET_NAME;
-    if (!bucket) {
-      throw new Error("R2 bucket is not configured");
-    }
-
-    const extension = contentType.split("/")[1];
-    const key = `profiles/${user._id}/${randomUUID()}.${extension}`;
-    const command = new PutObjectCommand({
-      Bucket: bucket,
-      Key: key,
-      ContentType: contentType,
-      ContentLength: fileSize,
-    });
-    const uploadUrl = await getSignedUrl(getR2Client(), command, {
-      expiresIn: 600,
+    const { uploadUrl, publicUrl } = await presignProfileUpload({
+      userId: String(user._id),
+      contentType,
+      fileSize,
     });
 
     return NextResponse.json({
       uploadUrl,
-      publicUrl: `/api/uploads/profile/${key}`,
+      publicUrl,
     });
   } catch (error) {
     console.error("Profile image presign error:", error);

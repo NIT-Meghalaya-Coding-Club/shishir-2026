@@ -1,85 +1,100 @@
-'use client'
+"use client";
+
 import { NumberCounter } from "@/components/homepage/stats";
 import Title from "./Title";
 import { MUN_LegacyData } from "@/data/MUN_Legacy";
 import { motion } from "framer-motion";
-import { FaCrown } from "react-icons/fa";
 import Link from "next/link";
 
 const LegacySection: React.FC = () => {
-  const isCurrentYear = (year: string) => year === "2025";
+  const isCurrentYear = (year: string) => year === "2026";
 
   return (
-    <div className="relative py-16">
-      <div className="absolute inset-0 opacity-10 bg-repeat" />
-      
+    <section className="relative w-full max-w-5xl mx-auto py-12 px-4 sm:px-6">
       <Title text="Legacy" />
-      
-      <div className="absolute top-0 left-1/2 -translate-x-1/2">
-        <FaCrown className="text-yellow-500 text-4xl animate-bounce" />
-      </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {Object.keys(MUN_LegacyData).map((year, index) => (
+      {/* Legacy Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        {Object.keys(MUN_LegacyData).map((year, index) => {
+          const currentYear = isCurrentYear(year);
+
+          return (
             <motion.div
+              key={year}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              whileHover={{ scale: 1.02 }}
-              key={year}
-              className="relative group"
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{
+                duration: 0.5,
+                delay: index * 0.08,
+              }}
+              whileHover={{ y: -4 }}
+              className="group"
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-900 to-yellow-900 rounded-2xl opacity-50 group-hover:opacity-70 transition-opacity" />
-              
-              <div className="relative p-4 sm:p-6 lg:p-8 bg-gray-900/90 rounded-2xl border-2 border-yellow-500/30 backdrop-blur-sm shadow-[0_0_15px_rgba(234,179,8,0.2)]">
-                <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-yellow-500 rounded-tl" />
-                <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-yellow-500 rounded-tr" />
-                <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-yellow-500 rounded-bl" />
-                <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-yellow-500 rounded-br" />
+              <div className="relative h-full bg-[#98C1D9] border border-[#3D5A80] rounded-lg p-5 sm:p-6 transition-colors duration-300 group-hover:border-[#EE6C4D]/70">
 
-                <h2 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-yellow-200 to-yellow-500 bg-clip-text text-transparent">
-                  {year}
-                </h2>
+                {/* Card Header */}
+                <div className="mb-6 flex items-start justify-between">
+                  <div>
+                    <div className="relative mt-1">
+                      <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-[#E0FBFC]">
+                        {year}
+                      </h2>
 
-                {isCurrentYear(year) ? (
-                  <div className="mt-4">
-                    <div className="flex items-baseline gap-2">
-                      <div className="text-3xl sm:text-4xl font-bold text-yellow-400">
-                        <NumberCounter end={200} />
-                        <span className="text-3xl sm:text-4xl"></span>
-                      </div>
-                      <div className="text-xl sm:text-2xl font-semibold text-yellow-400 animate-pulse">
-                        Registrations
-                      </div>
-                    </div>
-                    <div className="text-xl sm:text-2xl font-semibold text-yellow-400 animate-pulse">
-                      and Counting...
+                      <span className="absolute -bottom-1 left-0 h-[3px] w-12 bg-[#EE6C4D]" />
                     </div>
                   </div>
-                ) : (
-                  MUN_LegacyData[parseInt(year)].delegatesNo && (
-                    <div className="mt-4 flex items-center gap-2">
-                      <span className="text-3xl sm:text-4xl font-bold text-yellow-400">
-                        <NumberCounter end={MUN_LegacyData[parseInt(year)].delegatesNo ?? 0} />
-                      </span>
-                      <span className="text-xl sm:text-2xl font-semibold text-yellow-400">Delegates</span>
-                    </div>
-                  )
-                )}
 
-                <p className="mt-4 text-base sm:text-lg leading-relaxed text-gray-200">
-                  {isCurrentYear(year) ? 
-                    "Registration is ongoing! Join us for another spectacular conference." :
-                    MUN_LegacyData[parseInt(year)].description
-                  }
+                  <span
+                    className={`mt-1 text-xs uppercase tracking-[0.2em] ${
+                      currentYear
+                        ? "text-[#EE6C4D]"
+                        : "text-[#98C1D9]/70"
+                    }`}
+                  >
+                    {currentYear ? "Current" : "Edition"}
+                  </span>
+                </div>
+
+                {/* Delegate Count / Registrations */}
+                <div className="mt-6">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-3xl sm:text-4xl font-bold text-[#E0FBFC]">
+                      <NumberCounter
+                        end={
+                          currentYear
+                            ? 300
+                            : MUN_LegacyData[parseInt(year)].delegatesNo ?? 0
+                        }
+                      />
+                    </span>
+
+                    <span className="text-base sm:text-lg font-medium text-[#98C1D9]">
+                      {currentYear ? "registrations" : "delegates"}
+                    </span>
+                  </div>
+
+                  {/* Current Year Additional Text */}
+                  {currentYear && (
+                    <p className="mt-1 text-sm text-[#98C1D9]">
+                      and counting...
+                    </p>
+                  )}
+                </div>
+
+                {/* Description */}
+                <p className="mt-5 text-sm sm:text-base leading-7 text-[#E0FBFC]/80">
+                  {currentYear
+                    ? "Registration is ongoing! Join us for another spectacular conference."
+                    : MUN_LegacyData[parseInt(year)].description}
                 </p>
 
-                {isCurrentYear(year) && (
-                  <div className="mt-8">
+                {/* Register Button - Only for Current Year */}
+                {currentYear && (
+                  <div className="mt-6 pt-5 border-t border-[#3D5A80]/60">
                     <Link
                       href="/register"
-                      className="inline-block px-4 py-2 sm:px-6 sm:py-3 text-base sm:text-lg font-semibold text-white bg-yellow-500 rounded-lg shadow hover:bg-yellow-600 transition-colors"
+                      className="inline-flex items-center border border-[#EE6C4D] px-4 py-2 rounded-md text-sm font-medium text-[#EE6C4D] transition-all duration-300 hover:bg-[#EE6C4D] hover:text-[#293241]"
                     >
                       Register Now
                     </Link>
@@ -87,10 +102,10 @@ const LegacySection: React.FC = () => {
                 )}
               </div>
             </motion.div>
-          ))}
-        </div>
+          );
+        })}
       </div>
-    </div>
+    </section>
   );
 };
 

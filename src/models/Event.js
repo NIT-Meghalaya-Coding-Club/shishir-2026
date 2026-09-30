@@ -1,40 +1,5 @@
 import mongoose from "mongoose";
 
-const PersonSnapshotSchema = new mongoose.Schema(
-  {
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
-    collegeID: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    name: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    email: {
-      type: String,
-      required: true,
-      trim: true,
-      lowercase: true,
-    },
-    phone: {
-      type: String,
-      trim: true,
-    },
-    image: {
-      type: String,
-      trim: true,
-    },
-  },
-  { _id: false }
-);
-
 const EventSchema = new mongoose.Schema(
   {
     name: {
@@ -122,7 +87,13 @@ const EventSchema = new mongoose.Schema(
       trim: true,
     },
     eventHeads: {
-      type: [PersonSnapshotSchema],
+      type: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+          required: true,
+        },
+      ],
       required: true,
       validate: {
         validator: (heads) => Array.isArray(heads) && heads.length > 0,
@@ -130,18 +101,37 @@ const EventSchema = new mongoose.Schema(
       },
     },
     coordinators: {
-      type: [PersonSnapshotSchema],
+      type: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+      ],
       default: [],
     },
     coCoordinators: {
-      type: [PersonSnapshotSchema],
+      type: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+      ],
       default: [],
     },
   },
   { timestamps: true }
 );
 
-EventSchema.index({ "eventHeads.email": 1 });
-EventSchema.index({ "eventHeads.collegeID": 1 });
+EventSchema.index({ eventHeads: 1 });
+EventSchema.index({ coordinators: 1 });
+EventSchema.index({ coCoordinators: 1 });
+
+const cachedEvent = mongoose.models.Event;
+const cachedEventHeadsSchema = cachedEvent?.schema.path("eventHeads")?.caster?.schema;
+
+// Drop a development-process model created from the previous embedded snapshot schema.
+if (cachedEventHeadsSchema?.path("name")) {
+  delete mongoose.models.Event;
+}
 
 export default mongoose.models.Event || mongoose.model("Event", EventSchema);

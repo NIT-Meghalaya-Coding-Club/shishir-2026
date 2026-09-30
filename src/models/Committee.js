@@ -1,40 +1,5 @@
 import mongoose from "mongoose";
 
-const PersonSnapshotSchema = new mongoose.Schema(
-  {
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
-    collegeID: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    name: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    email: {
-      type: String,
-      required: true,
-      trim: true,
-      lowercase: true,
-    },
-    phone: {
-      type: String,
-      trim: true,
-    },
-    image: {
-      type: String,
-      trim: true,
-    },
-  },
-  { _id: false }
-);
-
 const committeeSchema = new mongoose.Schema(
   {
     name: {
@@ -51,7 +16,13 @@ const committeeSchema = new mongoose.Schema(
       index: true,
     },
     committeeHeads: {
-      type: [PersonSnapshotSchema],
+      type: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+          required: true,
+        },
+      ],
       required: true,
       validate: {
         validator: (heads) => Array.isArray(heads) && heads.length > 0,
@@ -59,18 +30,37 @@ const committeeSchema = new mongoose.Schema(
       },
     },
     coordinators: {
-      type: [PersonSnapshotSchema],
+      type: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+      ],
       default: [],
     },
     coCoordinators: {
-      type: [PersonSnapshotSchema],
+      type: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+      ],
       default: [],
     },
   },
   { timestamps: true }
 );
 
-committeeSchema.index({ "committeeHeads.email": 1 });
-committeeSchema.index({ "committeeHeads.collegeID": 1 });
+committeeSchema.index({ committeeHeads: 1 });
+committeeSchema.index({ coordinators: 1 });
+committeeSchema.index({ coCoordinators: 1 });
+
+const cachedCommittee = mongoose.models.Committee;
+const cachedHeadsSchema = cachedCommittee?.schema.path("committeeHeads")?.caster?.schema;
+
+// Drop a development-process model created from the previous embedded snapshot schema.
+if (cachedHeadsSchema?.path("name")) {
+  delete mongoose.models.Committee;
+}
 
 export default mongoose.models.Committee || mongoose.model("Committee", committeeSchema);

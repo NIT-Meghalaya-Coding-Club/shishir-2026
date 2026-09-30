@@ -26,7 +26,7 @@ export async function GET(req, { params }) {
       );
     }
 
-    if (!isEventHeadOrCoordinator(event, user.email)) {
+    if (!isEventHeadOrCoordinator(event, user)) {
       return NextResponse.json(
         { success: false, message: "Only event heads or coordinators can view participants" },
         { status: 403 }

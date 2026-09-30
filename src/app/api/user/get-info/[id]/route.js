@@ -30,23 +30,23 @@ export async function GET(req, { params }) {
         const canCreateEvts = await canCreateEvents(user);
         const canCreateComm = await canCreateCommittees(user);
 
-        const normalizedEmail = user.email.toLowerCase();
-
         const [isEventStaff, isCommitteeStaff] = await Promise.all([
             canCreateEvts
                 ? true
                 : Event.exists({
                     $or: [
-                        { "eventHeads.email": user.email },
-                        { "coordinators.email": user.email },
+                        { eventHeads: user._id },
+                        { coordinators: user._id },
+                        { coCoordinators: user._id },
                     ],
                 }),
             canCreateComm
                 ? true
                 : Committee.exists({
                     $or: [
-                        { "committeeHeads.email": normalizedEmail },
-                        { "coordinators.email": normalizedEmail },
+                        { committeeHeads: user._id },
+                        { coordinators: user._id },
+                        { coCoordinators: user._id },
                     ],
                 }),
         ]);

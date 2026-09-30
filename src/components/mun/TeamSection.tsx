@@ -1,56 +1,112 @@
-import Image from 'next/image';
-import { MUN_Team } from '@/data/MUN_Team';
-import { defaultImageUrl } from '@/data/Teams';
-import Title from './Title';
+"use client";
 
-const TeamSection:React.FC = () => {
-    return (
-        <div className='py-10'>
-          <Title text="Meet the Team" />
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:w-full gap-8 justify-items-center">
-            {MUN_Team.map((member, index) => (
-              <div key={index} className="group relative w-[300px]">
-                {/* Member Card */}
-                <div className="relative">
-                  {/* Card gradient border */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 rounded-2xl animate-gradient-x" />
+import { motion } from "framer-motion";
+import { FaPhone, FaEnvelope } from "react-icons/fa6";
+import { RiMenu4Line } from "@remixicon/react";
 
-                  {/* Card Content */}
-                  <div className="relative m-0.5 bg-gradient-to-br from-gray-900 to-black rounded-2xl p-8 backdrop-blur-xl transform hover:scale-95 transition-all duration-500">
-                    {/* Spotlight effect */}
-                    <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-32 h-32 bg-yellow-400/10 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+import { MUN_Team } from "@/data/MUN_Team";
+import { defaultImageUrl } from "@/data/Teams";
+import Title from "./Title";
 
-                    <div className="flex flex-col items-center gap-6">
-                      {/* Profile Image */}
-                      <div className="relative w-32 h-32">
-                        <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 rounded-full animate-gradient-x" />
-                        <div className="absolute inset-0.5 bg-gray-900 rounded-full overflow-hidden">
-                          <Image
-                            src={member.imageLink ?? defaultImageUrl}
-                            alt={`${member.name}'s photo`}
-                            fill
-                            className="object-cover transition-transform duration-500 group-hover:scale-110"
-                          />
-                        </div>
-                      </div>
+import "./TeamSection.css";
 
-                      {/* Member Info */}
-                      <div className="text-center">
-                        <h3 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600 ">
-                          {member.name}
-                        </h3>
-                        <span className="text-sm text-transparent bg-clip-text text-white ">
-                          {member.position}
-                        </span>
-                      </div>
-                    </div>
+const TeamSection: React.FC = () => {
+  return (
+    <section className="team-section">
+      {/* Section Heading */}
+      <Title text="Meet the Team" />
+
+      {/* Team Cards */}
+      <div className="card__container">
+        {MUN_Team.map((member, index) => {
+          const imageUrl = member.imageLink || defaultImageUrl;
+
+          return (
+            <motion.article
+              key={index}
+              className="card__article"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              whileHover={{ y: -8 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{
+                opacity: {
+                  duration: 0.7,
+                  delay: index * 0.08,
+                },
+                y: {
+                  duration: 0.6,
+                  ease: [0.22, 1, 0.36, 1],
+                },
+              }}
+            >
+              {/* Image */}
+              <div className="card__image-wrapper">
+                <div
+                  className="card__img"
+                  style={{
+                    backgroundImage: `url("${imageUrl}")`,
+                  }}
+                />
+              </div>
+
+              {/* Image Bottom Overlay */}
+              <div className="card__shadow" />
+
+              {/* Name and Position */}
+              <div className="card__data">
+                <h2 className="card__name">{member.name}</h2>
+
+                <span className="card__profession">
+                  {member.position}
+                </span>
+              </div>
+
+              {/* Contact Button */}
+              <div className="card__clip">
+                <RiMenu4Line />
+              </div>
+
+              {/* Contact Information */}
+              <div className="info">
+                <div className="info__data">
+                  <h2 className="info__name">{member.name}</h2>
+
+                  <p className="info__description">
+                    {member.position}
+                  </p>
+
+                  <div className="info__divider" />
+
+                  <div className="info__contact">
+                    {member.contactNo && (
+                      <a
+                        href={`tel:${member.contactNo}`}
+                        className="info__contact-link"
+                      >
+                        <FaPhone className="info__contact-icon" />
+                        <span>{member.contactNo}</span>
+                      </a>
+                    )}
+
+                    {member.email && (
+                      <a
+                        href={`mailto:${member.email}`}
+                        className="info__contact-link"
+                      >
+                        <FaEnvelope className="info__contact-icon" />
+                        <span>{member.email}</span>
+                      </a>
+                    )}
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
-    );
-}
+            </motion.article>
+          );
+        })}
+      </div>
+    </section>
+  );
+};
 
 export default TeamSection;

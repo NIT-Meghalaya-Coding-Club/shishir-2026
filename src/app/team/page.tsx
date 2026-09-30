@@ -282,6 +282,7 @@ export default function Contact() {
                             width={400}
                             height={500}
                             className="card__img"
+                            unoptimized
                           />
                         </div>
 

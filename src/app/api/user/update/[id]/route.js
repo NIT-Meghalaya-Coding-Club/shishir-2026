@@ -1,53 +1,9 @@
+import { deleteOwnedProfileImage } from '@/lib/r2';
 import connectMongo from '@/lib/mongodb';
 import User from '@/models/User';
-import { DeleteObjectCommand, S3Client } from '@aws-sdk/client-s3';
 
 const NIT_COLLEGE = "National Institute of Technology, Meghalaya";
 const COLLEGE_ID_PATTERN = /[A-Za-z]\d{2}[A-Za-z]{2}\d{3}/;
-
-function getR2Client() {
-    return new S3Client({
-        region: 'auto',
-        endpoint: process.env.R2_ENDPOINT,
-        credentials: {
-            accessKeyId: process.env.R2_ACCESS_KEY_ID,
-            secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
-        },
-    });
-}
-
-function getOwnedProfileImageKey(image, userId) {
-    if (typeof image !== 'string' || !image || !userId) return null;
-
-    let pathname;
-    try {
-        pathname = new URL(image, 'http://localhost').pathname;
-    } catch {
-        return null;
-    }
-
-    const marker = '/api/uploads/profile/';
-    const markerIndex = pathname.indexOf(marker);
-    if (markerIndex === -1) return null;
-
-    const key = pathname.slice(markerIndex + marker.length);
-    const ownedPrefix = `profiles/${userId}/`;
-
-    return key.startsWith(ownedPrefix) ? key : null;
-}
-
-async function deleteProfileImage(image, userId) {
-    const key = getOwnedProfileImageKey(image, userId);
-    const bucket = process.env.R2_BUCKET_NAME;
-
-    if (!key || !bucket) return;
-
-    try {
-        await getR2Client().send(new DeleteObjectCommand({ Bucket: bucket, Key: key }));
-    } catch (error) {
-        console.error('Error deleting old profile image from R2:', error);
-    }
-}
 
 export async function POST(req, { params }) {
     try {
@@ -95,7 +51,7 @@ export async function POST(req, { params }) {
         await user.save();
 
         if (nextFormData.image && nextFormData.image !== oldImage) {
-            await deleteProfileImage(oldImage, user._id.toString());
+            await deleteOwnedProfileImage(oldImage, user._id.toString());
         }
 
         return new Response(JSON.stringify({ success: true, user }), { status: 200 });

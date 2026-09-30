@@ -85,13 +85,13 @@ export default function CommitteeHeadDashboard() {
   const isEditing = Boolean(editingCode);
 
   const currentUserIsInStaff = useMemo(() => {
-    if (!currentUser?.collegeID) return false;
+    if (!currentUser) return false;
     const inHeads = formData.committeeHeads.some(
-      (head) => head.collegeID === currentUser.collegeID
+      (head) => (head._id && currentUser._id && head._id === currentUser._id) || (head.collegeID && currentUser.collegeID && head.collegeID === currentUser.collegeID) || (head.email && currentUser.email && head.email.toLowerCase() === currentUser.email.toLowerCase())
     );
     if (inHeads) return true;
     return formData.coordinators.some(
-      (coord) => coord.collegeID === currentUser.collegeID
+      (coord) => (coord._id && currentUser._id && coord._id === currentUser._id) || (coord.collegeID && currentUser.collegeID && coord.collegeID === currentUser.collegeID) || (coord.email && currentUser.email && coord.email.toLowerCase() === currentUser.email.toLowerCase())
     );
   }, [currentUser, formData.committeeHeads, formData.coordinators]);
 
