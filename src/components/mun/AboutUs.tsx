@@ -19,32 +19,19 @@ const AboutUs: React.FC = () => {
         <div className="text-[#E0FBFC]">
 
           <p className="py-3">
-            The NITM MUN was started in 2023 by a group of young, spirited
-            debate enthusiasts and turned out to be a spectacular success in
-            its very first edition. The MUN at NIT Meghalaya is an enthralling
-            version of a parliamentary debate, fostering diplomacy and critical
-            thinking.
+            Started in 2023 by a cohort of passionate debaters, our parliamentary initiative was conceived to foster democratic literacy, diplomacy, and critical inquiry among the youth.
           </p>
 
           <p className="py-3">
-            We promise intellectually stimulating debates, global challenge
-            solutions, and meaningful connections. With vibrant enthusiasm,
-            young minds contribute to this grand event. The previous
-            edition&apos;s success, with over 80 delegates, indicates a
-            promising future.
+            Having weathered testing waters in our third edition, the platform rebounded stronger than ever in its fourth edition recording over 250 registrations and hosting around 150 delegates in spirited legislative debate.
           </p>
 
           <p className="py-3">
-            NITM MUN aims to engage Meghalaya&apos;s youth in global affairs,
-            fostering leadership and diplomacy. NITMMUN is officially
-            recognized by government bodies and international
-            sub-organizations across the world.
+            Across our successive editions, we have engaged hundreds of aspiring policymakers, earning widespread recognition for promoting structured dialogue, cross-ideological consensus, and civic responsibility.
           </p>
 
           <p className="py-3">
-            NITM MUN has successfully conducted debates, youth parliaments,
-            and Model United Nations conferences, with a cumulative
-            participation of over 500 individuals in our events.
+            Stepping into Youth Parliament 2026, we promise intellectually invigorating committees, evidence-driven debates, and a definitive space for young voices to shape contemporary policy discourse.
           </p>
 
         </div>

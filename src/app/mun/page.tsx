@@ -52,7 +52,7 @@ const Mun: React.FC = () => {
             <Crown className="mun-crown mun-crown-left" />
 
             <h1 className="mun-title text-center text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
-              NITMMUN &amp; YOUTH PARLIAMENT 2026
+              YOUTH PARLIAMENT 2026
             </h1>
 
             <Crown className="mun-crown mun-crown-right" />

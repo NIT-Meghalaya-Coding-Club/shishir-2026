@@ -2,34 +2,42 @@ import CardWrapper from "./CardWrapper";
 
 const Intro: React.FC = () => {
   return (
-    <CardWrapper title="What is MUN?">
-      <div className="text-[#E0FBFC]">
-        <p className="p-2">
-          MUN stands for{" "}
-          <span className="text-[#3D5A80] font-medium">
-            Model United Nations
-          </span>
-          . It&apos;s an educational simulation and academic competition where
-          students typically shadow delegates to the United Nations and simulate
-          UN committees.
+    <CardWrapper title="What is Youth Parliament?">
+      <div className="space-y-6">
+        <p
+          className="
+            text-sm
+            leading-7
+            text-[#293241]/85
+            dark:text-[#E0FBFC]/85
+            sm:text-base
+          "
+        >
+          Youth Parliament is an interactive platform that immerses young people in legislative debate and democratic governance. By stepping into the shoes of elected representatives, participants tackle pressing contemporary issues in a structured, formal assembly.
         </p>
 
-        <p className="p-2">
-          Model United Nations (MUN) is characterized by role-playing, where
-          participants act as diplomats representing different countries in
-          simulated UN committees like the General Assembly or Security
-          Council. They engage in formal debates and negotiations, drafting
-          resolutions to address global issues.
+        <p
+          className="
+            text-sm
+            leading-7
+            text-[#293241]/85
+            dark:text-[#E0FBFC]/85
+            sm:text-base
+          "
+        >
+          Through simulated proceedings, delegates learn to defend policy proposals, scrutinize opposing viewpoints, and negotiate meaningful solutions. This hands-on experience sharpens essential competencies, including persuasive public speaking, critical analysis, and consensus-building.
         </p>
 
-        <p className="p-2">
-          Extensive research is essential, covering assigned countries&apos;
-          policies and agenda topics. Public speaking and diplomacy skills are
-          honed through speeches and interventions advocating for their
-          country&apos;s stance. MUN cultivates critical thinking by analyzing
-          complex issues and seeking solutions. It fosters cultural exchange
-          and networking opportunities, facilitating interactions with diverse
-          peers worldwide.
+        <p
+          className="
+            text-sm
+            leading-7
+            text-[#293241]/85
+            dark:text-[#E0FBFC]/85
+            sm:text-base
+          "
+        >
+          Ultimately, the initiative bridges civic awareness and leadership. By demystifying the democratic process, Youth Parliament empowers the next generation to move beyond passive observation and become informed, active changemakers.
         </p>
       </div>
     </CardWrapper>
