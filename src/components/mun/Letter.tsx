@@ -4,40 +4,35 @@ const SACLetter: React.FC = () => {
   return (
     <CardWrapper title="Letter from SAC President">
       <div className="mx-auto max-w-4xl">
-
-        {/* Letter header */}
-        <div className="mb-8 border-b border-[#3D5A80] pb-5">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+        <div className="mb-8 border-b border-[#3D5A80]/20 pb-5 dark:border-[#98C1D9]/15">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="text-xs uppercase tracking-[0.2em] text-[#98C1D9]">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#EE6C4D]">
                 NIT Meghalaya
               </p>
 
-              <p className="mt-1 text-sm text-[#E0FBFC]/70">
+              <p className="mt-1 text-sm text-[#293241]/60 dark:text-[#E0FBFC]/60">
                 Student Activity Center
               </p>
             </div>
 
-            <p className="text-sm text-[#98C1D9]">
-              NITMMUN 2025
+            <p className="text-sm font-medium text-[#3D5A80] dark:text-[#98C1D9]">
+              Youth Parliament 2026
             </p>
           </div>
         </div>
 
-        {/* Salutation */}
         <div className="mb-6">
-          <p className="text-[#E0FBFC]">
+          <p className="text-[#293241] dark:text-[#E0FBFC]">
             Dear Participants, Esteemed Guests, and Esteemed Members of the NIT
             Meghalaya Community,
           </p>
         </div>
 
-        {/* Letter body */}
-        <div className="space-y-5 text-justify leading-7 text-[#E0FBFC]/90">
-
+        <div className="space-y-5 text-justify text-sm leading-7 text-[#293241]/80 dark:text-[#E0FBFC]/80 sm:text-base">
           <p className="first-letter:text-4xl first-letter:font-semibold first-letter:text-[#EE6C4D]">
-            Welcome to the third edition of the National Institute of Technology
-            Meghalaya Model United Nations (NITMMUN) 2025. It is my profound
+            Welcome to the National Institute of Technology
+            Meghalaya Youth Parliament 2026. It is my profound
             honor to address such a vibrant assembly of young diplomats, eager
             to debate, negotiate, and craft resolutions that reflect the
             complexities of our global landscape.
@@ -53,7 +48,7 @@ const SACLetter: React.FC = () => {
           </p>
 
           <p>
-            This year, we proudly host NITMMUN alongside{" "}
+            This year, we proudly host Youth Parliament alongside{" "}
             <strong className="font-semibold text-[#EE6C4D]">
               Shishir
             </strong>
@@ -83,7 +78,7 @@ const SACLetter: React.FC = () => {
           </p>
 
           <p>
-            As we step into our third session, amidst the echoes of
+            As we step into our Youth Parliament 2026, amidst the echoes of
             Shishir&apos;s cultural anthems, I invite you all to embrace the
             challenge, celebrate diversity, and contribute to the dialogues
             that stimulate change. Let this platform be a testimony to your
@@ -92,31 +87,28 @@ const SACLetter: React.FC = () => {
           </p>
 
           <p>
-            Thank you for joining us at NITMMUN 2025. Engage, deliberate, and
+            Thank you for joining us at Youth Parliament 2026. Engage, deliberate, and
             enjoy your journey at this confluence of culture and diplomacy.
           </p>
-
         </div>
 
-        {/* Signature */}
-        <div className="mt-10 border-t border-[#3D5A80]/60 pt-6">
-          <p className="text-sm text-[#98C1D9]">
+        <div className="mt-10 border-t border-[#3D5A80]/20 pt-6 dark:border-[#98C1D9]/15">
+          <p className="text-sm font-medium text-[#3D5A80] dark:text-[#98C1D9]">
             Warm regards,
           </p>
 
           <div className="mt-4">
             <p className="text-lg font-semibold text-[#EE6C4D]">
-              Dr. Atanu Singha Roy
+              Dr. Rajat Subhra Das
             </p>
 
-            <p className="mt-1 text-sm leading-6 text-[#E0FBFC]/80">
+            <p className="mt-1 text-sm leading-6 text-[#293241]/65 dark:text-[#E0FBFC]/65">
               President, Student Activity Center
               <br />
               National Institute of Technology Meghalaya
             </p>
           </div>
         </div>
-
       </div>
     </CardWrapper>
   );

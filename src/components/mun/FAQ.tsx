@@ -16,7 +16,12 @@ const MUN_FAQ: React.FC = () => {
             <AccordionItem
               key={item.id}
               value={`item-${item.id}`}
-              className="border-b border-[#3D5A80]/60 last:border-b-0"
+              className="
+                border-b
+                border-[#3D5A80]/20
+                last:border-b-0
+                dark:border-[#98C1D9]/15
+              "
             >
               <AccordionTrigger
                 className="
@@ -25,46 +30,48 @@ const MUN_FAQ: React.FC = () => {
                   text-left
                   no-underline
                   hover:no-underline
-                  [&>svg]:text-[#98C1D9]
-                  [&>svg]:transition-transform
-                  [&>svg]:duration-300
+                  [&>svg]:text-[#3D5A80]
+                  dark:[&>svg]:text-[#98C1D9]
                 "
               >
                 <div className="flex items-center gap-4 pr-4">
-                  {/* Question Number */}
                   <span
                     className="
                       flex
-                      h-8
-                      w-8
+                      h-9
+                      w-9
                       shrink-0
                       items-center
                       justify-center
                       rounded-full
                       border
-                      border-[#3D5A80]
+                      border-[#3D5A80]/40
+                      bg-[#98C1D9]/15
                       text-xs
-                      font-medium
-                      text-[#98C1D9]
-                      transition-colors
+                      font-semibold
+                      text-[#3D5A80]
+                      transition-all
                       duration-300
-                      group-hover:border-[#98C1D9]
-                      group-hover:text-[#98C1D9]
+                      group-hover:border-[#EE6C4D]
+                      group-hover:bg-[#EE6C4D]/10
+                      group-hover:text-[#EE6C4D]
+                      dark:border-[#98C1D9]/25
+                      dark:bg-[#98C1D9]/5
+                      dark:text-[#98C1D9]
                     "
                   >
                     {String(index + 1).padStart(2, "0")}
                   </span>
 
-                  {/* Question */}
                   <span
                     className="
                       text-sm
                       font-medium
                       leading-6
-                      text-[#E0FBFC]
+                      text-[#293241]
                       transition-colors
-                      duration-300
-                      group-hover:text-[#98C1D9]
+                      duration-300              
+                      dark:text-[#E0FBFC]
                       sm:text-base
                     "
                   >
@@ -73,8 +80,26 @@ const MUN_FAQ: React.FC = () => {
                 </div>
               </AccordionTrigger>
 
-              <AccordionContent className="pb-5 pl-12 pr-8 text-sm leading-7 text-[#E0FBFC]/75 sm:text-[15px]">
-                <div className="border-l-2 border-[#3D5A80] pl-4">
+              <AccordionContent
+                className="
+                  pb-6
+                  pl-12
+                  pr-6
+                  text-sm
+                  leading-7
+                  text-[#293241]/70
+                  dark:text-[#E0FBFC]/70
+                  sm:text-[15px]
+                "
+              >
+                <div
+                  className="
+                    border-l-2
+                    border-[#98C1D9]
+                    pl-5
+                    dark:border-[#3D5A80]
+                  "
+                >
                   {item.answer}
                 </div>
               </AccordionContent>
