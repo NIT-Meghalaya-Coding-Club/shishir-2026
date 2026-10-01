@@ -14,7 +14,7 @@ const DynamicForm = dynamic(
     ssr: false,
     loading: () => (
       <div className="flex justify-center items-center min-h-64">
-        <div className="h-16 w-16 border-t-4 border-amber-400 border-solid rounded-full animate-spin"></div>
+        <div className="h-16 w-16 border-t-4 border-[#EE6C4D] border-solid rounded-full animate-spin"></div>
       </div>
     ),
   }
@@ -82,7 +82,7 @@ export default function EventPage() {
       }}
     >
       {/* Background Overlay */}
-      <div className="absolute inset-0 bg-white/75 dark:bg-black/75 pointer-events-none transition-colors duration-300 fixed" />
+      <div className="absolute inset-0 bg-[#E0FBFC]/75 dark:bg-[#293241]/75 pointer-events-none transition-colors duration-300 fixed" />
 
       {/* Main Content */}
       <div className="relative w-full z-10 pt-24 pb-16">
@@ -94,15 +94,15 @@ export default function EventPage() {
           {/* Header Section */}
           <div className="text-center mb-12">
             <div className="flex justify-center items-center gap-3 sm:gap-4 mb-4">
-              <Crown className="w-8 h-8 sm:w-10 sm:h-10 text-amber-400 animate-pulse" />
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold uppercase tracking-widest text-slate-800 dark:text-slate-100 drop-shadow-sm pt-2">
+              <Crown className="w-8 h-8 sm:w-10 sm:h-10 text-[#EE6C4D] animate-pulse" />
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold uppercase tracking-widest text-[#293241] dark:text-[#E0FBFC] drop-shadow-sm pt-2">
                 REGISTER
               </h1>
-              <Crown className="w-8 h-8 sm:w-10 sm:h-10 text-amber-400 animate-pulse" />
+              <Crown className="w-8 h-8 sm:w-10 sm:h-10 text-[#EE6C4D] animate-pulse" />
             </div>
 
-            <div className="inline-block bg-white/70 dark:bg-black/40 backdrop-blur-md rounded-full px-8 py-3 border border-slate-200/60 dark:border-white/10 shadow-[0_4px_20px_rgb(0,0,0,0.04)] dark:shadow-none">
-              <span className="text-xl sm:text-2xl font-bold text-amber-500 uppercase tracking-widest drop-shadow-sm">
+            <div className="inline-block bg-[#E0FBFC]/70 dark:bg-[#293241]/80 backdrop-blur-md rounded-full px-8 py-3 border border-[#98C1D9]/60 dark:border-[#3D5A80]/50 shadow-[0_4px_20px_rgb(0,0,0,0.04)] dark:shadow-none">
+              <span className="text-xl sm:text-2xl font-bold text-[#EE6C4D] uppercase tracking-widest drop-shadow-sm">
                 {event?.name || eventId}
               </span>
             </div>
@@ -117,7 +117,7 @@ export default function EventPage() {
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.1 }}
-                  className="w-full overflow-hidden rounded-2xl shadow-xl border-[3px] border-amber-400/80 dark:border-white/10"
+                  className="w-full overflow-hidden rounded-2xl shadow-xl border-[3px] border-[#EE6C4D]/80 dark:border-[#3D5A80]/50"
                 >
                   <Image
                     src={event.image.startsWith("http") ? event.image : `https://shishir.nitm.ac.in${event.image}`}
@@ -137,25 +137,25 @@ export default function EventPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="w-full bg-white/60 dark:bg-black/40 backdrop-blur-xl p-6 sm:p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:shadow-[0_8px_30px_rgb(255,255,255,0.03)] border border-slate-200/60 dark:border-white/10"
+                className="w-full bg-[#E0FBFC]/80 dark:bg-[#293241]/80 backdrop-blur-xl p-6 sm:p-8 rounded-3xl shadow-lg border border-[#98C1D9]/60 dark:border-[#3D5A80]/50"
               >
                 <div className="flex items-center gap-3 mb-6">
-                  <Info className="w-6 h-6 text-amber-500" />
-                  <h2 className="text-xl font-extrabold uppercase tracking-widest text-slate-800 dark:text-slate-100">Event Details</h2>
+                  <Info className="w-6 h-6 text-[#EE6C4D]" />
+                  <h2 className="text-xl font-extrabold uppercase tracking-widest text-[#293241] dark:text-[#E0FBFC]">Event Details</h2>
                 </div>
 
-                <div className="space-y-4 text-slate-700 dark:text-slate-300 font-medium text-lg">
-                  <div className="flex justify-between items-center bg-white/50 dark:bg-white/5 p-3 px-6 rounded-full border border-slate-200/50 dark:border-white/5">
+                <div className="space-y-4 text-[#3D5A80] dark:text-[#98C1D9] font-medium text-lg">
+                  <div className="flex justify-between items-center bg-[#E0FBFC]/50 dark:bg-[#3D5A80]/20 p-3 px-6 rounded-full border border-[#98C1D9]/50 dark:border-[#3D5A80]/50">
                     <span className="flex items-center gap-2"><Users className="w-4 h-4" /> Participation</span>
-                    <span className="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-sm">
+                    <span className="font-bold text-[#293241] dark:text-[#E0FBFC] uppercase tracking-wider text-sm">
                       {event.eventType === "individual" ? "Individual" :
                         event.eventType === "team" ? "Team" :
                           event.eventType === "performance" ? "Performance" : "—"}
                     </span>
                   </div>
-                  <div className="flex justify-between items-center bg-white/50 dark:bg-white/5 p-3 px-6 rounded-full border border-slate-200/50 dark:border-white/5">
+                  <div className="flex justify-between items-center bg-[#E0FBFC]/50 dark:bg-[#3D5A80]/20 p-3 px-6 rounded-full border border-[#98C1D9]/50 dark:border-[#3D5A80]/50">
                     <span>Team Size</span>
-                    <span className="font-bold text-slate-900 dark:text-white">
+                    <span className="font-bold text-[#293241] dark:text-[#E0FBFC]">
                       {event.min === event.max
                         ? `${event.min} ${event.min > 1 ? 'participants' : 'participant'}`
                         : `${event.min} - ${event.max} participants`}
@@ -168,7 +168,7 @@ export default function EventPage() {
                         href={event.rulebook}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="btn-53 block w-full bg-slate-800 hover:bg-slate-900 dark:bg-white/10 dark:hover:bg-white/20 text-white font-extrabold uppercase tracking-widest py-3 px-4 rounded-full text-center backdrop-blur-sm shadow-sm transition-all duration-300 hover:shadow-md border border-slate-700 dark:border-white/20"
+                        className="btn-53 block w-full bg-[#3D5A80] hover:bg-[#3D5A80]/90 dark:bg-[#3D5A80]/50 dark:hover:bg-[#98C1D9]/30 text-[#E0FBFC] font-extrabold uppercase tracking-widest py-3 px-4 rounded-full text-center backdrop-blur-sm shadow-sm transition-all duration-300 hover:shadow-md border border-[#3D5A80] dark:border-[#98C1D9]/30"
                       >
                         <div className="original">View Rulebook</div>
                         <div className="letters">
@@ -191,9 +191,9 @@ export default function EventPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="w-full bg-white/60 dark:bg-black/40 backdrop-blur-xl p-6 sm:p-10 pb-10 sm:pb-12 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:shadow-[0_8px_30px_rgb(255,255,255,0.03)] border border-slate-200/60 dark:border-white/10"
+                className="w-full bg-[#E0FBFC]/60 dark:bg-[#293241]/60 backdrop-blur-xl p-6 sm:p-10 pb-10 sm:pb-12 rounded-3xl shadow-lg border border-[#98C1D9]/60 dark:border-[#3D5A80]/50"
               >
-                <h2 className="text-2xl font-extrabold uppercase tracking-widest text-center text-slate-800 dark:text-slate-100 mb-8 pb-4 border-b border-slate-200/80 dark:border-white/10">
+                <h2 className="text-2xl font-extrabold uppercase tracking-widest text-center text-[#293241] dark:text-[#E0FBFC] mb-8 pb-4 border-b border-[#98C1D9]/80 dark:border-[#3D5A80]/50">
                   Registration Form
                 </h2>
                 <DynamicForm
@@ -221,16 +221,16 @@ export default function EventPage() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.4 }}
-                className="w-full text-center p-6 bg-white/50 dark:bg-white/5 backdrop-blur-md rounded-2xl border border-slate-200/50 dark:border-white/10 shadow-sm"
+                className="w-full text-center p-6 bg-[#E0FBFC]/50 dark:bg-[#3D5A80]/20 backdrop-blur-md rounded-2xl border border-[#98C1D9]/50 dark:border-[#3D5A80]/50 shadow-sm"
               >
                 <div className="flex justify-center mb-3">
-                  <Phone className="w-6 h-6 text-amber-500" />
+                  <Phone className="w-6 h-6 text-[#EE6C4D]" />
                 </div>
-                <h3 className="text-lg font-extrabold uppercase tracking-widest text-slate-800 dark:text-slate-100 mb-2">Got Questions?</h3>
-                <p className="text-slate-600 dark:text-slate-300 font-medium">
+                <h3 className="text-lg font-extrabold uppercase tracking-widest text-[#293241] dark:text-[#E0FBFC] mb-2">Got Questions?</h3>
+                <p className="text-[#3D5A80] dark:text-[#98C1D9] font-medium">
                   For any queries, please contact:<br />
-                  <span className="font-bold text-slate-900 dark:text-white mt-1 block text-lg">[TODO: ADD NAME]</span>
-                  <span className="text-amber-600 dark:text-amber-400 font-bold">[TODO: ADD NUMBER]</span>
+                  <span className="font-bold text-[#293241] dark:text-[#E0FBFC] mt-1 block text-lg">[TODO: ADD NAME]</span>
+                  <span className="text-[#EE6C4D] dark:text-[#EE6C4D] font-bold">[TODO: ADD NUMBER]</span>
                 </p>
               </motion.div>
             </div>

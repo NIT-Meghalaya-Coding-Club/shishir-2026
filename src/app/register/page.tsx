@@ -28,30 +28,33 @@ function Register() {
     });
   };
   
-  
   return (
-    <div className="wrapper">
+    <div className="min-h-screen w-full relative overflow-hidden bg-[#E0FBFC] dark:bg-[#293241] transition-colors duration-300">
+      {/* Background shapes */}
+      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-[#98C1D9] blur-[100px] opacity-60"></div>
+      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-[#EE6C4D] blur-[100px] opacity-30"></div>
+      
       {(status === "authenticated" || status === "loading") && <Loading />}
-      <div className="container absolute z-20 min-h-[60vh] w-[70%] rounded-2xl text-center bg-[#ffffff1a] backdrop-blur-[30px] top-[23%] left-[17%] p-[3%] px-5 py-10">
+      
+      <div className="absolute z-20 min-h-[60vh] w-[90%] sm:w-[70%] max-w-2xl rounded-3xl text-center bg-[#E0FBFC]/80 dark:bg-[#293241]/80 border border-[#98C1D9]/50 dark:border-[#3D5A80]/50 backdrop-blur-xl top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-8 sm:p-12 shadow-2xl flex flex-col justify-center items-center">
         <Image
           src={logo}
           alt="Shishir 2025 Logo"
-          height="0"
-          width="0"
+          height={0}
+          width={0}
           sizes="100svw"
-          className="h-[7rem] w-auto mx-auto"
+          className="h-28 w-auto mx-auto drop-shadow-lg"
         />
-        <div className="text-4xl font-zentry font-bold text-white pt-4">
-          <h1 className="font-general font-light text-2xl">Welcome to</h1>
-          <h1 className="text-5xl bg-gradient-to-r from-amber-200 via-amber-400 to-amber-500 bg-clip-text text-transparent">
+        <div className="text-4xl font-zentry font-bold pt-6">
+          <h1 className="font-general font-medium text-2xl text-[#3D5A80] dark:text-[#98C1D9] mb-2">Welcome to</h1>
+          <h1 className="text-5xl font-extrabold text-[#EE6C4D] drop-shadow-sm tracking-wide">
             Shishir 2025!
           </h1>
         </div>
-        <div className="text-lg mt-10 text-white mb-8 pt-4">
-          Log in to join the celebration and immerse yourself in the spirit of
-          the festival.
-        </div>
-        <div className="mx-auto w-fit" onClick={handleClick}>
+        <p className="text-lg mt-8 text-[#293241] dark:text-[#E0FBFC] mb-10 max-w-md mx-auto font-medium">
+          Log in to join the celebration and immerse yourself in the spirit of the festival.
+        </p>
+        <div className="mx-auto w-fit transition-transform hover:scale-105 active:scale-95" onClick={handleClick}>
           <GoogleSignInButton />
         </div>
       </div>
