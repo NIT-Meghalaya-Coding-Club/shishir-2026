@@ -1021,7 +1021,7 @@ const DynamicForm = ({
                       )}
                     </div>
                     {searchResults[field.memberIndex]?.length > 0 && (
-                      <div className="mt-2 space-y-1 rounded-md border border-[#3D5A80] bg-[#3D5A80] p-2">
+                      <div className="mt-2 space-y-1 rounded-md border border-[#98C1D9] bg-[#E0FBFC] dark:bg-[#3D5A80] p-2 shadow-lg">
                         {searchResults[field.memberIndex].map((user) => (
                           <button
                             key={user.email}
@@ -1031,10 +1031,10 @@ const DynamicForm = ({
                               setSelectedMembers((previous) => ({ ...previous, [field.memberIndex]: user }));
                               setSearchResults((previous) => ({ ...previous, [field.memberIndex]: [] }));
                             }}
-                            className="block w-full rounded px-2 py-1 text-left text-sm text-[#E0FBFC] hover:bg-[#293241]/50"
+                            className="block w-full rounded px-2 py-1 text-left text-sm text-[#293241] dark:text-[#E0FBFC] hover:bg-[#98C1D9]/30 dark:hover:bg-[#293241]/50 transition-colors"
                           >
                             <span className="block font-medium">{user.name || "Unnamed user"}</span>
-                            <span className="block text-xs text-[#293241] dark:text-[#E0FBFC]">{user.email}</span>
+                            <span className="block text-xs text-[#3D5A80] dark:text-[#98C1D9]">{user.email}</span>
                           </button>
                         ))}
                       </div>
