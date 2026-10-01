@@ -10,7 +10,7 @@ export default function TicketsPage() {
     )
   }
   return (
-    <main className="h-screen w-full">
+    <main className="min-h-screen">
       <ShishirTicketSeller />
     </main>
   );

@@ -193,7 +193,7 @@ const ShishirTicketSeller: React.FC = () => {
       </div>
 
       <main className="relative z-10 mx-auto flex min-h-screen w-full max-w-5xl items-center justify-center px-4 py-8 sm:px-6 lg:px-8">
-        <section className="glass-panel relative w-full overflow-hidden rounded-[28px] border border-white/70 shadow-[0_30px_90px_rgba(15,23,42,0.12)] dark:border-white/10 dark:shadow-[0_30px_90px_rgba(0,0,0,0.35)]">
+        <section className="glass-panel relative w-full rounded-[28px] pb-24 border border-white/70 shadow-[0_30px_90px_rgba(15,23,42,0.12)] dark:border-white/10 dark:shadow-[0_30px_90px_rgba(0,0,0,0.35)]">
           {/* Ticket notches */}
           <div className="absolute -left-5 top-24 h-10 w-10 rounded-full bg-[#f5f6fa] dark:bg-[#090d1a]" />
           <div className="absolute -right-5 top-24 h-10 w-10 rounded-full bg-[#f5f6fa] dark:bg-[#090d1a]" />
@@ -215,7 +215,7 @@ const ShishirTicketSeller: React.FC = () => {
               </p>
             </header>
 
-            <div className="max-h-[calc(100vh-260px)] overflow-y-auto pr-1 scrollbar-hide">
+            <div className="h-auto pr-1">
               {isLoading ? (
                 <div className="flex min-h-[460px] flex-col items-center justify-center">
                   <div className="relative mb-5 h-16 w-16">
@@ -703,13 +703,6 @@ const ShishirTicketSeller: React.FC = () => {
                   </div>
                 </section>
               )}
-
-              {/* Footer */}
-              <footer className="mt-10 border-t border-slate-200/80 pt-5 text-center dark:border-white/10">
-                <p className="text-xs font-medium tracking-wide text-slate-400">
-                  SHISHIR 2025 • NIT Meghalaya • Annual Cultural Fest
-                </p>
-              </footer>
             </div>
           </div>
         </section>
