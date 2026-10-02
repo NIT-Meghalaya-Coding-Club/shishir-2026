@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import Loading from "@/app/components/Loading";
 import Image from "next/image";
 import { Crown, Info, Users, Phone } from "lucide-react";
+import { AnimatedButton } from "@/components/events/buttons";
 
 const DynamicForm = dynamic(
   () => import("@/components/register-form/DynamicForm"),
@@ -164,21 +165,14 @@ export default function EventPage() {
 
                   {event.rulebook && (
                     <div className="pt-4">
-                      <a
+                      <AnimatedButton
                         href={event.rulebook}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="btn-53 block w-full bg-[#3D5A80] hover:bg-[#3D5A80]/90 dark:bg-[#3D5A80]/50 dark:hover:bg-[#98C1D9]/30 text-[#E0FBFC] font-extrabold uppercase tracking-widest py-3 px-4 rounded-full text-center backdrop-blur-sm shadow-sm transition-all duration-300 hover:shadow-md border border-[#3D5A80] dark:border-[#98C1D9]/30"
+                        className="w-full bg-[#3D5A80] hover:bg-[#3D5A80]/90 dark:bg-[#3D5A80]/50 dark:hover:bg-[#98C1D9]/30 text-[#E0FBFC] font-extrabold uppercase tracking-widest h-14 px-4 rounded-full text-center backdrop-blur-sm shadow-sm transition-all duration-300 hover:shadow-md border border-[#3D5A80] dark:border-[#98C1D9]/30"
                       >
-                        <div className="original">View Rulebook</div>
-                        <div className="letters">
-                          {"View Rulebook".split("").map((char, index) => (
-                            <span key={index} style={{ transitionDelay: `${index * 0.03}s` }}>
-                              {char === " " ? "\u00A0" : char}
-                            </span>
-                          ))}
-                        </div>
-                      </a>
+                        VIEW RULEBOOK
+                      </AnimatedButton>
                     </div>
                   )}
                 </div>

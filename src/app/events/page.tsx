@@ -5,6 +5,7 @@ import Inav from "@/components/events/internal-nav";
 import { useEffect, useRef, useState } from "react";
 import { CalendarDays, Crown, ExternalLink, Mail, MapPin, Phone, Sparkles, X } from "lucide-react";
 import Head from "next/head";
+import { AnimatedButton } from "@/components/events/buttons";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { EffectCoverflow, Pagination, Navigation } from "swiper/modules";
 import "swiper/css";
@@ -173,36 +174,21 @@ function EventDetailsModal({ event, onClose }: { event: EventRecord; onClose: ()
 
           {/* Buttons Row */}
           <div className="flex flex-col sm:flex-row gap-4 mt-auto">
-            <a
+            <AnimatedButton
               href={event.rulebookLink}
               target="_blank"
               rel="noreferrer"
-              className="btn-53 flex flex-1 items-center justify-center rounded-full border border-[#98C1D9]/50 dark:border-[#3D5A80]/50 bg-[#98C1D9]/20 dark:bg-[#3D5A80]/20 px-2 h-14 text-center font-semibold text-[#293241] dark:text-[#E0FBFC] transition hover:bg-[#98C1D9]/40 dark:hover:bg-[#3D5A80]/40 shadow-sm"
+              className="flex-1 border border-[#98C1D9]/50 dark:border-[#3D5A80]/50 bg-[#98C1D9]/20 dark:bg-[#3D5A80]/20 px-2 h-14 text-[13px] sm:text-sm font-semibold text-[#293241] dark:text-[#E0FBFC] transition-colors hover:bg-[#98C1D9]/40 dark:hover:bg-[#3D5A80]/40 shadow-sm"
+              icon={<ExternalLink size={16} />}
             >
-              <div className="original flex items-center justify-center gap-2 text-[13px] sm:text-sm">
-                <ExternalLink size={16} /> VIEW RULEBOOK
-              </div>
-              <div className="letters text-[13px] sm:text-sm">
-                {"VIEW RULEBOOK".split("").map((char, index) => (
-                  <span key={index} style={{ transitionDelay: `${index * 0.03}s` }}>
-                    {char === " " ? "\u00A0" : char}
-                  </span>
-                ))}
-              </div>
-            </a>
-            <a
+              VIEW RULEBOOK
+            </AnimatedButton>
+            <AnimatedButton
               href={`/register/${event.code}`}
-              className="btn-53 flex flex-1 items-center justify-center rounded-full bg-[#EE6C4D] hover:bg-[#EE6C4D]/90 text-[#E0FBFC] px-2 h-14 text-center font-bold transition hover:shadow-lg hover:shadow-[#EE6C4D]/25"
+              className="flex-1 bg-[#EE6C4D] hover:bg-[#EE6C4D]/90 text-[#E0FBFC] px-2 h-14 text-[13px] sm:text-sm font-bold transition-all hover:shadow-lg hover:shadow-[#EE6C4D]/25"
             >
-              <div className="original text-[13px] sm:text-sm">REGISTER NOW</div>
-              <div className="letters text-[13px] sm:text-sm">
-                {"REGISTER NOW".split("").map((char, index) => (
-                  <span key={index} style={{ transitionDelay: `${index * 0.03}s` }}>
-                    {char === " " ? "\u00A0" : char}
-                  </span>
-                ))}
-              </div>
-            </a>
+              REGISTER NOW
+            </AnimatedButton>
           </div>
         </div>
       </div>

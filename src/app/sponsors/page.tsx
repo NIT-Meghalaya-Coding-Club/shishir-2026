@@ -4,6 +4,7 @@ import { defaultSponsorImageUrl, sponsors } from "@/data/sponsors";
 import Image from "next/image";
 import { Crown, Gem } from "lucide-react";
 import ComingSoon from "@/components/ComingSoon";
+import Head from "next/head";
 
 const Sponsors: React.FC = () => {
   const sponsorTypes = Object.keys(sponsors);
@@ -15,14 +16,22 @@ const Sponsors: React.FC = () => {
   }
 
   return (
-    <div
-      className="min-h-screen relative"
-      style={{ backgroundImage: 'url("/img/brickwall.webp")' }}
-    >
-      {/* Main gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-white/95 via-slate-100/90 to-white/95 dark:from-gray-900/80 dark:to-black/80 transition-colors duration-300" />
+    <>
+      <Head>
+        <link rel="preload" href="/img/pattern-floral.png" as="image" />
+      </Head>
+      <div
+        className="relative flex flex-col items-center w-full h-auto min-h-screen overflow-x-hidden"
+        style={{
+          backgroundImage: `url('/img/pattern-floral.png')`,
+          backgroundSize: '700px',
+          backgroundRepeat: 'repeat',
+        }}
+      >
+        {/* Main gradient overlay */}
+        <div className="absolute inset-0 bg-[#E0FBFC]/80 dark:bg-[#293241]/80 pointer-events-none transition-colors duration-300" />
 
-      <div className="relative min-h-screen py-24">
+        <div className="relative min-h-screen py-24 w-full">
         {/* Header Section */}
         <div className="text-center mb-20">
           <div className="flex justify-center items-center gap-4 mb-6">
@@ -98,6 +107,7 @@ const Sponsors: React.FC = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

@@ -3,6 +3,7 @@
 import { defaultImageUrl, Teams } from "@/data/Teams";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import Head from "next/head";
 import { FaPhone, FaEnvelope } from "react-icons/fa6";
 import {
   RiMenu4Line,
@@ -233,14 +234,27 @@ export default function Contact() {
     };
   }, []);
   return (
-    <div
-      className={`teams-page w-full min-h-screen ${
-        mobileNavVisible
-          ? "mobile-nav-visible"
-          : "mobile-nav-hidden"
-      }`}
-    >
-      {/* =============== PAGE TITLE =============== */}
+    <>
+      <Head>
+        <link rel="preload" href="/img/pattern-floral.png" as="image" />
+      </Head>
+      <div
+        className={`relative flex flex-col items-center w-full h-auto min-h-screen overflow-x-hidden ${
+          mobileNavVisible
+            ? "mobile-nav-visible"
+            : "mobile-nav-hidden"
+        }`}
+        style={{
+          backgroundImage: `url('/img/pattern-floral.png')`,
+          backgroundSize: '700px',
+          backgroundRepeat: 'repeat',
+        }}
+      >
+        {/* Main gradient overlay */}
+        <div className="absolute inset-0 bg-[#E0FBFC]/80 dark:bg-[#293241]/80 pointer-events-none transition-colors duration-300" />
+        
+        <div className="relative w-full z-10">
+          {/* =============== PAGE TITLE =============== */}
 
       <header className="teams-header">
         <div className="teams-title-wrapper">
@@ -420,6 +434,8 @@ export default function Contact() {
           <RiArrowUpLine />
         </button>
       )}
-    </div>
+        </div>
+      </div>
+    </>
   );
 }

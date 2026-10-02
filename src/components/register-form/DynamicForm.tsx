@@ -5,8 +5,8 @@ import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
-// Components
 import Loading from "@/app/components/Loading";
+import { AnimatedButton } from "@/components/events/buttons";
 
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -677,22 +677,13 @@ const DynamicForm = ({
       {hasExistingRegistration && (
 
         <div className="mb-8">
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+          <AnimatedButton
             type="button"
             onClick={startNewRegistration}
-            className="btn-53 mb-8 w-full bg-[#3D5A80] hover:bg-[#3D5A80]/90 dark:bg-[#3D5A80]/50 dark:hover:bg-[#98C1D9]/30 text-[#E0FBFC] font-extrabold uppercase tracking-widest h-16 px-6 rounded-full shadow-sm transition-all duration-300 hover:shadow-md border border-[#3D5A80] dark:border-[#98C1D9]/30 text-sm sm:text-base flex items-center justify-center gap-2 cursor-pointer"
+            className="mb-8 w-full bg-[#3D5A80] hover:bg-[#3D5A80]/90 dark:bg-[#3D5A80]/50 dark:hover:bg-[#98C1D9]/30 text-[#E0FBFC] font-extrabold uppercase tracking-widest h-16 px-6 rounded-full shadow-sm transition-all duration-300 hover:shadow-md border border-[#3D5A80] dark:border-[#98C1D9]/30 text-sm sm:text-base flex items-center justify-center gap-2 cursor-pointer"
           >
-            <div className="original">Submit another registration</div>
-            <div className="letters">
-              {"Submit another registration".split("").map((char, index) => (
-                <span key={index} style={{ transitionDelay: `${index * 0.03}s` }}>
-                  {char === " " ? "\u00A0" : char}
-                </span>
-              ))}
-            </div>
-          </motion.button>
+            SUBMIT ANOTHER REGISTRATION
+          </AnimatedButton>
         </div>
       )}
 
@@ -1074,21 +1065,12 @@ const DynamicForm = ({
           })}
 
         <div className="relative pt-6 mt-8 mb-2 ">
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+          <AnimatedButton
             type="submit"
-            className="btn-53 w-full bg-[#EE6C4D] hover:bg-[#EE6C4D]/90 active:bg-[#EE6C4D]/80 text-[#E0FBFC] font-extrabold uppercase tracking-widest h-20 px-6 rounded-full shadow-lg hover:shadow-[#EE6C4D]/20 transition-all duration-200 text-base sm:text-lg flex items-center justify-center gap-2 cursor-pointer"
+            className="w-full bg-[#EE6C4D] hover:bg-[#EE6C4D]/90 active:bg-[#EE6C4D]/80 text-[#E0FBFC] font-extrabold uppercase tracking-widest h-20 px-6 rounded-full shadow-lg hover:shadow-[#EE6C4D]/20 transition-all duration-200 text-base sm:text-lg flex items-center justify-center gap-2 cursor-pointer"
           >
-            <div className="original">{paymentRequired ? "Proceed to Payment" : "Submit Registration"}</div>
-            <div className="letters">
-              {(paymentRequired ? "Proceed to Payment" : "Submit Registration").split("").map((char, index) => (
-                <span key={index} style={{ transitionDelay: `${index * 0.03}s` }}>
-                  {char === " " ? "\u00A0" : char}
-                </span>
-              ))}
-            </div>
-          </motion.button>
+            {paymentRequired ? "PROCEED TO PAYMENT" : "SUBMIT REGISTRATION"}
+          </AnimatedButton>
         </div>
       </form>
     </motion.div>
