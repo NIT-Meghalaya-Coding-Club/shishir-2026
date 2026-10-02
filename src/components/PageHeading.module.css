@@ -1,0 +1,99 @@
+/* =============== PAGE HEADING =============== */
+
+.pageHeading {
+  position: relative;
+  z-index: 10;
+
+  padding: 6rem 1.5rem 2rem;
+
+  text-align: center;
+}
+
+.pageHeadingWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.pageHeadingTitle {
+  margin: 0;
+
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 700;
+
+  color: #ee6c4d;
+  letter-spacing: 0.04em;
+}
+
+.pageHeading::after {
+  content: "";
+
+  display: block;
+
+  width: 80px;
+  height: 3px;
+
+  margin: 1rem auto 0;
+
+  border-radius: 999px;
+
+  background-color: #98c1d9;
+}
+
+.pageHeadingIcon {
+  width: 1.6rem;
+  height: 1.6rem;
+
+  color: #98c1d9;
+
+  animation: pageHeadingFloat 3s ease-in-out infinite;
+}
+
+.pageHeadingIcon:last-child {
+  animation-delay: 1.5s;
+}
+
+/* =============== STAR ANIMATION =============== */
+
+@keyframes pageHeadingFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+/* =============== DARK MODE =============== */
+
+:global(.dark) .pageHeadingTitle {
+  color: #ee6c4d;
+}
+
+:global(.dark) .pageHeadingIcon {
+  color: #ee6c4d;
+
+  filter: drop-shadow(
+    0 0 6px rgba(238, 108, 77, 0.18)
+  );
+}
+
+/* =============== RESPONSIVE =============== */
+
+@media screen and (max-width: 767px) {
+  .pageHeading {
+    padding: 5rem 1rem 1.5rem;
+  }
+
+  .pageHeadingWrapper {
+    gap: 0.75rem;
+  }
+
+  .pageHeadingIcon {
+    width: 1.3rem;
+    height: 1.3rem;
+  }
+}

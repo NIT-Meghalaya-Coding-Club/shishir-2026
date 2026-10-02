@@ -9,9 +9,10 @@ import {
   MapPin,
   Users,
   ChevronRight,
-  Crown,
 } from "lucide-react";
 import ComingSoon from "@/components/ComingSoon";
+
+import PageHeading from "@/components/PageHeading";
 
 const SchedulePage = () => {
   const days = Object.keys(Schedule);
@@ -66,28 +67,12 @@ const SchedulePage = () => {
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="mb-14 pt-8 text-center animate-fade-up">
-          <div className="mb-4 flex justify-center">
-            <div className="flex h-14 w-14 items-center justify-center rounded-full border border-yellow-400/20 bg-yellow-400/5">
-              <Crown className="h-8 w-8 text-yellow-400 animate-pulse" />
-            </div>
-          </div>
+        <PageHeading title="Schedule" />
 
-          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
-            Shishir 2026
-          </p>
-
-          <h1 className="text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 sm:text-6xl">
-            SCHEDULE
-          </h1>
-
-          <div className="mx-auto mt-4 h-px w-24 bg-gradient-to-r from-transparent via-yellow-500 to-transparent" />
-
-          <p className="mx-auto mt-4 max-w-xl text-sm leading-6 text-slate-500 dark:text-slate-400">
-            Explore the complete lineup, timings and venues for every session
-            across the festival.
-          </p>
-        </div>
+        <p className="mb-14 -mt-2 mx-auto max-w-xl text-center text-sm leading-6 text-slate-500 dark:text-slate-400">
+          Explore the complete lineup, timings and venues for every session
+          across the festival.
+        </p>
 
         {/* Day Selection */}
         <div className="mb-12 grid grid-cols-1 gap-5 md:grid-cols-3">

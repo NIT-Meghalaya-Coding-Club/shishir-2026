@@ -8,12 +8,13 @@ import { FaPhone, FaEnvelope } from "react-icons/fa6";
 import {
   RiMenu4Line,
   RiArrowUpLine,
-  RiSparkling2Fill,
 } from "@remixicon/react";
 
 import "animate.css";
 
 import "./team_style.css";
+
+import PageHeading from "@/components/PageHeading";
 
 type TeamMember = {
   name: string;
@@ -262,25 +263,7 @@ export default function Contact() {
         <div className="relative w-full z-10">
           {/* =============== PAGE TITLE =============== */}
 
-      <header className="teams-header">
-        <div className="teams-title-wrapper">
-          <RiSparkling2Fill className="teams-icon" />
-
-          <h1
-            className="teams-title animate__animated"
-            onMouseEnter={(event) => {
-              event.currentTarget.classList.add("animate__rubberBand");
-            }}
-            onAnimationEnd={(event) => {
-              event.currentTarget.classList.remove("animate__rubberBand");
-            }}
-          >
-            Teams
-          </h1>
-
-          <RiSparkling2Fill className="teams-icon" />
-        </div>
-      </header>
+      <PageHeading title="Teams" />
 
       {/* =============== CONTENT AREA =============== */}
 

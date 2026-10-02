@@ -3,7 +3,7 @@ import React from "react";
 import Image from "next/image";
 import Inav from "@/components/events/internal-nav";
 import { useEffect, useRef, useState } from "react";
-import { CalendarDays, Crown, ExternalLink, Mail, MapPin, Phone, Sparkles, X } from "lucide-react";
+import { CalendarDays, ExternalLink, Mail, MapPin, Phone, X } from "lucide-react";
 import Head from "next/head";
 import { AnimatedButton } from "@/components/events/buttons";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -12,6 +12,8 @@ import "swiper/css";
 import "swiper/css/effect-coverflow";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
+
+import PageHeading from "@/components/PageHeading";
 
 type EventRecord = {
   _id: string;
@@ -246,16 +248,7 @@ export default function Events() {
         {/* Content container */}
         <div className="relative w-full">
           {/* Header Section */}
-          <div className="text-center mt-20 mb-12">
-            <div className="flex justify-center items-center gap-4 mb-6">
-              <Crown className="w-12 h-12 text-[#EE6C4D] animate-pulse" />
-              <h1 className="text-6xl font-bold text-[#293241] dark:text-[#E0FBFC] drop-shadow-sm pt-10">
-                EVENTS
-              </h1>
-              <Crown className="w-12 h-12 text-[#EE6C4D] animate-pulse" />
-            </div>
-            <div className="h-1 w-48 mx-auto bg-[#EE6C4D] rounded-full" />
-          </div>
+          <PageHeading title="Events" />
 
           <Inav categories={eventCategories} />
 

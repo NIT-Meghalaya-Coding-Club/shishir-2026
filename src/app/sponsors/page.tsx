@@ -2,9 +2,11 @@
 
 import { defaultSponsorImageUrl, sponsors } from "@/data/sponsors";
 import Image from "next/image";
-import { Crown, Gem } from "lucide-react";
+import { Gem } from "lucide-react";
 import ComingSoon from "@/components/ComingSoon";
 import Head from "next/head";
+
+import PageHeading from "@/components/PageHeading";
 
 const Sponsors: React.FC = () => {
   const sponsorTypes = Object.keys(sponsors);
@@ -33,16 +35,7 @@ const Sponsors: React.FC = () => {
 
         <div className="relative min-h-screen py-24 w-full">
         {/* Header Section */}
-        <div className="text-center mb-20">
-          <div className="flex justify-center items-center gap-4 mb-6">
-            <Crown className="w-12 h-12 text-yellow-400 animate-pulse" />
-            <h1 className="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600">
-              Our Sponsors
-            </h1>
-            <Crown className="w-12 h-12 text-yellow-400 animate-pulse" />
-          </div>
-          <div className="h-1 w-48 mx-auto bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full" />
-        </div>
+        <PageHeading title="Our Sponsors" />
 
         <div className="container mx-auto px-4">
           {sponsorTypes.map((sponsorType) => (
