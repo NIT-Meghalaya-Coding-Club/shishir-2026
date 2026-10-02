@@ -13,33 +13,16 @@ import "./mun_style.css";
 
 const Mun: React.FC = () => {
   return (
-    <div className="mun-page relative min-h-screen overflow-hidden bg-[#E0FBFC] dark:bg-[#172B46]">
-
-      {/* Background elements */}
-      <div className="mun-background" aria-hidden="true">
-        <span className="mun-orb mun-orb-blue-1" />
-        <span className="mun-orb mun-orb-blue-2" />
-        <span className="mun-orb mun-orb-peach-1" />
-        <span className="mun-orb mun-orb-peach-2" />
-
-        {/* Floating particles */}
-        <span className="mun-particle mun-particle-1" />
-        <span className="mun-particle mun-particle-2" />
-        <span className="mun-particle mun-particle-3" />
-        <span className="mun-particle mun-particle-4" />
-        <span className="mun-particle mun-particle-5" />
-        <span className="mun-particle mun-particle-6" />
-        <span className="mun-particle mun-particle-7" />
-        <span className="mun-particle mun-particle-8" />
-        <span className="mun-particle mun-particle-9" />
-        <span className="mun-particle mun-particle-10" />
-        <span className="mun-particle mun-particle-11" />
-        <span className="mun-particle mun-particle-12" />
-        <span className="mun-particle mun-particle-13" />
-        <span className="mun-particle mun-particle-14" />
-        <span className="mun-particle mun-particle-15" />
-        <span className="mun-particle mun-particle-16" />
-      </div>
+    <div 
+      className="mun-page relative min-h-screen overflow-hidden"
+      style={{
+        backgroundImage: `url('/img/pattern-floral.png')`,
+        backgroundSize: '700px',
+        backgroundRepeat: 'repeat',
+      }}
+    >
+      {/* Background Overlay */}
+      <div className="absolute inset-0 bg-[#E0FBFC]/80 dark:bg-[#293241]/80 pointer-events-none transition-colors duration-300 fixed" />
 
       {/* Main page content */}
       <div className="relative z-10 flex min-h-screen w-full flex-col items-center px-4 sm:px-6 lg:px-8">
