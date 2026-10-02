@@ -417,10 +417,10 @@ export const Starfield: React.FC = () => {
 
   return (
     <>
-      <section ref={sectionRef} className="starfield-section relative w-screen h-screen overflow-hidden bg-white dark:bg-black transition-colors duration-300">
+      <section ref={sectionRef} className="starfield-section relative w-screen h-screen overflow-hidden bg-[#E0FBFC] dark:bg-black transition-colors duration-300">
 
         {/* THE PORTAL: starts at 0% circle clip-path, expands to fill screen without reflow */}
-        <div ref={portalRef} className="portal absolute inset-0 w-screen h-screen overflow-hidden z-[1] pointer-events-none bg-white dark:bg-black" style={{ clipPath: 'circle(0% at 50% 50%)' }}>
+        <div ref={portalRef} className="portal absolute inset-0 w-screen h-screen overflow-hidden z-[1] pointer-events-none bg-[#dcfdfe] dark:bg-black" style={{ clipPath: 'circle(0% at 50% 50%)' }}>
           <canvas ref={canvasRef} className="portal-canvas absolute inset-0 w-full h-full block" />
         </div>
 

@@ -121,14 +121,14 @@ const FeaturedArtists = () => {
   return (
     <div
       ref={sectionRef}
-      className="w-full min-h-screen flex flex-col justify-center bg-slate-50 dark:bg-gray-900 py-16 px-4 md:px-8 relative overflow-hidden transition-colors duration-300"
+      className="w-full min-h-screen flex flex-col justify-center bg-[#E0FBFC] dark:bg-gray-900 py-16 px-4 md:px-8 relative overflow-hidden transition-colors duration-300"
     >
       {/* Background decorative elements with zero-JS overhead */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {decorativeElements.map((element) => (
           <div
             key={element.key}
-            className="absolute rounded-full opacity-15 blur-xl pointer-events-none transition-transform duration-700"
+            className="absolute rounded-full opacity-15 blur-2xl pointer-events-none transition-transform duration-700"
             style={element.style}
           />
         ))}
@@ -141,11 +141,11 @@ const FeaturedArtists = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7 }}
       >
-        <h2 className="font-bold text-3xl md:text-6xl lg:text-7xl bg-clip-text text-transparent bg-gradient-to-r from-[#d4a200] to-[#ffd960] special-font tracking-wider transform hover:scale-105 transition-transform duration-300 text-center">
+        <h2 className="font-bold text-3xl md:text-6xl lg:text-7xl bg-clip-text text-transparent bg-gradient-to-r from-[#d04b29] to-[#f17758] special-font tracking-wider transform hover:scale-105 transition-transform duration-300 text-center">
           Featured Artists
         </h2>
         <motion.div
-          className="h-1 w-24 mx-auto bg-gradient-to-r from-red-500 via-yellow-500 to-green-500"
+          className="h-1 w-32 mx-auto bg-gradient-to-r from-red-500 via-yellow-500 to-green-500"
           animate={{
             backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
           }}
@@ -213,7 +213,7 @@ const FeaturedArtists = () => {
             aberrationIntensity={2}
             elasticity={0.35}
             cornerRadius={999}
-            padding="12px 32px"
+            padding="20px 40px"
             mode="standard"
             className="text-lg font-bold"
             style={{
@@ -224,7 +224,7 @@ const FeaturedArtists = () => {
           >
             <button
               type="button"
-              className="block w-max cursor-pointer whitespace-nowrap font-bold text-[#EE6C4D]"
+              className="block w-max cursor-pointer whitespace-nowrap font-bold text-[#293241]"
               onClick={handleRedirect}
             >
               Grab Your Tickets!
