@@ -781,6 +781,56 @@
   padding-block: 2rem;
 }
 
+.card + .card {
+  position: relative;
+  padding-top: 4.5rem;
+}
+
+.card + .card::before {
+  content: "";
+  position: absolute;
+  top: 0.7rem;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: min(75%, 600px);
+  height: 2px;
+
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(61, 90, 128, 0.2) 10%,
+    rgba(61, 90, 128, 0.5) 30%,
+    var(--burnt-peach) 50%,
+    rgba(61, 90, 128, 0.5) 70%,
+    rgba(61, 90, 128, 0.2) 90%,
+    transparent 100%
+  );
+
+  box-shadow:
+    0 0 8px rgba(238, 108, 77, 0.18);
+}
+
+.card + .card::after {
+  content: "✦";
+
+  position: absolute;
+  top: 0.7rem;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  padding: 0 0.8rem;
+
+  color: var(--burnt-peach);
+  font-size: 1rem;
+  font-weight: 700;
+
+  background: var(--color-5);
+
+  text-shadow:
+    0 0 10px rgba(238, 108, 77, 0.35);
+}
+
 
 /* =============== TEAM HEADING =============== */
 
@@ -867,6 +917,8 @@
   position: sticky;
   top: 160px;
 
+  height: fit-content;
+
   flex: 0 0 33.3333%;
   align-self: flex-start;
 
@@ -890,10 +942,10 @@
   border: none;
   background: none;
 
-  color: rgba(224, 251, 252, 0.45);
+  color: rgba(61, 90, 128, 0.75);
 
   font-family: var(--body-font);
-  font-size: 1.05rem;
+  font-size: 0.8rem;
   font-weight: var(--font-semi-bold);
 
   text-align: left;
@@ -916,7 +968,8 @@
 
 .team-index__item--active {
   color: var(--burnt-peach);
-  font-size: 1.2rem;
+  font-size: 1.4rem;
+  font-weight: var(--font-bold);
   transform: translateX(6px);
 }
 
@@ -1418,7 +1471,7 @@
   .card__container {
     display: grid;
 
-    grid-template-columns: repeat(6, 140px);
+    grid-template-columns: repeat(6, minmax(0, 1fr));
     grid-auto-rows: 320px;
 
     justify-content: center;

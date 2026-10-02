@@ -80,45 +80,51 @@ export default function Contact() {
       );
   }, []);
 
-  /* =============== ACTIVE TEAM DETECTION =============== */
+/* =============== ACTIVE TEAM DETECTION =============== */
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visibleEntries = entries
-          .filter(
-            (entry) => entry.isIntersecting
-          )
-          .sort(
-            (a, b) =>
-              b.intersectionRatio -
-              a.intersectionRatio
-          );
+    const updateActiveTeam = () => {
+      const sections = Object.entries(teamRefs.current);
 
-        if (visibleEntries.length > 0) {
-          setActiveTeam(
-            visibleEntries[0].target.getAttribute(
-              "data-team"
-            ) || ""
-          );
-        }
-      },
-      {
-        root: null,
-        rootMargin: "-25% 0px -55% 0px",
-        threshold: [0.1, 0.25, 0.5, 0.75],
-      }
-    );
+      if (sections.length === 0) return;
 
-    Object.values(teamRefs.current).forEach(
-      (section) => {
-        if (section) {
-          observer.observe(section);
+      // The point on the screen at which a team becomes active
+      const activationPoint = window.innerHeight * 0.30;
+
+      let currentTeam = sections[0][0];
+
+      for (const [team, section] of sections) {
+        if (!section) continue;
+
+        const rect = section.getBoundingClientRect();
+
+        if (rect.top <= activationPoint) {
+          currentTeam = team;
         }
       }
-    );
 
-    return () => observer.disconnect();
+      setActiveTeam(currentTeam);
+    };
+
+    updateActiveTeam();
+
+    window.addEventListener("scroll", updateActiveTeam, {
+      passive: true,
+    });
+
+    window.addEventListener("resize", updateActiveTeam);
+
+    return () => {
+      window.removeEventListener(
+        "scroll",
+        updateActiveTeam
+      );
+
+      window.removeEventListener(
+        "resize",
+        updateActiveTeam
+      );
+    };
   }, [teams]);
 
   /* =============== CENTER ACTIVE INDEX ITEM =============== */
@@ -161,26 +167,26 @@ export default function Contact() {
   /* =============== SCROLL TO TEAM =============== */
 
   function scrollToTeam(team: string) {
-    const teamElement =
-      teamRefs.current[team];
+    const teamElement = teamRefs.current[team];
 
-    if (teamElement) {
-      const navbarOffset = 120;
+    if (!teamElement) return;
 
-      const elementPosition =
-        teamElement.getBoundingClientRect()
-          .top;
+    setActiveTeam(team);
 
-      const offsetPosition =
-        elementPosition +
-        window.scrollY -
-        navbarOffset;
+    const navbarOffset = 120;
 
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth",
-      });
-    }
+    const elementPosition =
+      teamElement.getBoundingClientRect().top;
+
+    const offsetPosition =
+      elementPosition +
+      window.scrollY -
+      navbarOffset;
+
+    window.scrollTo({
+      top: offsetPosition,
+      behavior: "smooth",
+    });
   }
 
   /* =============== SCROLL TO TOP =============== */
@@ -239,7 +245,7 @@ export default function Contact() {
         <link rel="preload" href="/img/pattern-floral.png" as="image" />
       </Head>
       <div
-        className={`relative flex flex-col items-center w-full h-auto min-h-screen overflow-x-hidden ${
+        className={`relative flex flex-col items-center w-full h-auto min-h-screen overflow-x-clip ${
           mobileNavVisible
             ? "mobile-nav-visible"
             : "mobile-nav-hidden"
