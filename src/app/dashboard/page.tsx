@@ -20,6 +20,7 @@ import {
 //Components
 import Loading from "../components/Loading";
 import ImageCropper from "@/components/ImageCropper";
+import EditButton from "@/components/dashboard/EditButton";
 
 const configuredProfileSizeMb = Number(process.env.NEXT_PUBLIC_PROFILE_MAX_SIZE_MB);
 const PROFILE_MAX_SIZE_MB = Number.isFinite(configuredProfileSizeMb) && configuredProfileSizeMb > 0
@@ -171,7 +172,7 @@ const ProfileCard = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [dataFetched, setDataFetched] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [showMoreInfo, setShowMoreInfo] = useState(false);
   const [isUploadingProfile, setIsUploadingProfile] = useState(false);
   const [registeredEvents, setRegisteredEvents] = useState<RegisteredEvent[]>([]);
@@ -183,6 +184,7 @@ const ProfileCard = () => {
 
   useEffect(() => {
     if (status === "unauthenticated") {
+      setIsLoading(false);
       router.push("/register");
     }
   }, [status, router]);
@@ -452,6 +454,9 @@ const ProfileCard = () => {
 
   return (
     <div>
+      <div className="md:hidden">
+        <EditButton />
+      </div>
       <div className="relative flex min-h-screen max-w-full items-start justify-center overflow-x-hidden bg-[#E0FBFC] px-3 py-10 sm:px-5 sm:py-20 dark:bg-[#293241]">
         {/* Backdrop: static glows and a few drifting petals (no blur filters) */}
         <div
@@ -482,7 +487,7 @@ const ProfileCard = () => {
           })}
         </div>
 
-        {isLoading && <Loading />}
+        {(isLoading || eventsLoading) && <Loading />}
 
         <div
           className={`pc-rise relative z-10 mx-auto h-auto w-full overflow-hidden rounded-[3px] border-y-[6px] border-[#3D5A80] shadow-[0_28px_70px_-20px_rgba(61,90,128,0.55),0_0_0_1px_rgba(152,193,217,0.5)] sm:w-[90%] md:w-[75vw] lg:w-[65vw] xl:w-[55vw] dark:border-[#98C1D9] ${paperCls}`}
@@ -533,9 +538,14 @@ const ProfileCard = () => {
                 </div>
               </div>
               <div className="text-center md:text-left w-full">
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-[#EE6C4D] drop-shadow-[0_4px_18px_rgba(238,108,77,0.25)]">
-                  {userData.name}
-                </h2>
+                <div className="flex items-center justify-center gap-3 md:justify-start">
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-[#EE6C4D] drop-shadow-[0_4px_18px_rgba(238,108,77,0.25)]">
+                    {userData.name}
+                  </h2>
+                  <span className="hidden md:inline-flex">
+                    <EditButton desktop />
+                  </span>
+                </div>
                 <div className="mt-2 text-sm sm:text-base md:text-lg flex flex-wrap items-center justify-center md:justify-start gap-2 text-[#293241] dark:text-[#E0FBFC]">
                   <span className="flex items-center">
                     <FaUserAlt className="mr-1.5 text-xs sm:text-sm md:text-base text-[#EE6C4D]" /> 

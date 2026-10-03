@@ -35,6 +35,21 @@ const DEPARTMENT_SUGGESTIONS = [
   "Physics",
 ];
 
+function formatDateInput(value: string | Date | null | undefined) {
+  if (!value) return "";
+  if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    return value;
+  }
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 /* ─── Presentation helpers (no logic) ─────────────────────────── */
 
 const PETAL_COLORS = ["#F9C9C4", "#F4A9A0", "#EE6C4D", "#FBDDD9", "#F6B7B0"];
@@ -172,10 +187,10 @@ const ProfileDetailsForm = () => {
           setFormData({
             name: data.user?.name || "",
             gender: data.user?.gender || "",
-            dob: data.user?.dob || "",
+            dob: formatDateInput(data.user?.dob),
             college: isOtherCollege ? "Other" : data.user?.college || "",
             collegeID: data.user?.collegeID || "",
-            yearOfStudy: data.user?.yearOfStudy || "",
+            yearOfStudy: data.user?.yearOfStudy == null ? "" : String(data.user.yearOfStudy),
             dept: data.user?.dept || "",
             email: data.user?.email || "",
             phone: data.user?.phone || "",
@@ -189,10 +204,6 @@ const ProfileDetailsForm = () => {
           });
 
           setDataFetched(true);
-
-          if (data.user?.registered) {
-            setTimeout(() => setShowModal(true), 1000);
-          }
         } else {
           console.error("Failed to fetch user data");
         }
