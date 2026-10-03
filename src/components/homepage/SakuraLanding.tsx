@@ -8,7 +8,7 @@ import localFont from 'next/font/local';
 
 const samanFont = localFont({
   src: '../../app/fonts/saman_font.ttf',
-  display: 'swap',         
+  display: 'swap',
 });
 
 const MARQUEE_EVENTS = [
@@ -22,6 +22,12 @@ const MARQUEE_EVENTS = [
   'CHOREO NIGHT',
   'COSPLAY ARENA',
 ];
+
+/* Palette: Dusk Blue #3D5A80 · Powder Blue #98C1D9 · Burnt Peach #EE6C4D
+   Light Cyan #E0FBFC · Jet Black #293241 */
+
+/* Petal colours drawn from the brand blossom tones (plain strings, no per-frame hsla building) */
+const PETAL_COLORS = ['#F9C9C4', '#F4A9A0', '#F6B7B0', '#FBDDD9', '#F4A9A0', '#EE6C4D'];
 
 export const NumberCounter = ({
   end,
@@ -62,14 +68,10 @@ export const NumberCounter = ({
     return () => observer.disconnect();
   }, [end, duration]);
 
-  // Calculate the maximum width needed
-  const maxDigits = end.toString().length+1; // +1 for the '+' sign
-
   return (
     <span
       ref={countRef}
-      className=" text-amber-400 inline-block"
-      
+      className="text-[#EE6C4D] inline-block"
     >
       {count}<span className="font-bold"></span>
     </span>
@@ -112,17 +114,31 @@ export const SakuraLanding: React.FC = () => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     let animId: number;
     let W = (canvas.width = window.innerWidth);
     let H = (canvas.height = window.innerHeight);
 
+    // Cached tree rect: avoids a layout read for every petal that respawns
+    let treeRect: DOMRect | null = null;
+    const refreshTreeRect = () => {
+      const treeEl = treeRef.current;
+      const isMobile = window.innerWidth < 768;
+      treeRect =
+        !isMobile && treeEl && treeEl.offsetWidth > 0 && treeEl.offsetHeight > 0
+          ? treeEl.getBoundingClientRect()
+          : null;
+    };
+
     const handleResize = () => {
       W = canvas.width = window.innerWidth;
       H = canvas.height = window.innerHeight;
+      refreshTreeRect();
     };
     window.addEventListener('resize', handleResize);
 
-    // ─── Ambient Petals Particle System with Increased Density & Velocity ──
+    // ─── Ambient petals (fewer, cheaper) ──────────────────────────
     interface Petal {
       x: number;
       y: number;
@@ -134,32 +150,34 @@ export const SakuraLanding: React.FC = () => {
       flip: number;
       flipSpeed: number;
       opacity: number;
-      hue: number;
+      color: string;
     }
 
-    const MAX_PETALS = 65; // Balanced, elegant blossom density
+    const MAX_PETALS = 48;
+    const BASE_PETALS = 18;
+    const EXTRA_PETALS = MAX_PETALS - BASE_PETALS;
     const petals: Petal[] = [];
 
-    const getTreeBlossomRect = () => {
-      const isMobile = window.innerWidth < 768;
-      const treeEl = treeRef.current;
-      if (!isMobile && treeEl && treeEl.offsetWidth > 0 && treeEl.offsetHeight > 0) {
-        return treeEl.getBoundingClientRect();
-      }
-      return null;
-    };
+    // Unit petal path, built once and scaled per petal
+    const PETAL = new Path2D();
+    PETAL.moveTo(0, 0.6);
+    PETAL.bezierCurveTo(-0.7, 0.2, -0.55, -0.45, -0.2, -0.6);
+    PETAL.bezierCurveTo(-0.05, -0.45, 0.05, -0.45, 0.2, -0.6);
+    PETAL.bezierCurveTo(0.55, -0.45, 0.7, 0.2, 0, 0.6);
+    PETAL.closePath();
 
     const spawnPetal = (scatterInitial = false): Petal => {
       const isMobile = W < 768;
-      const rect = getTreeBlossomRect();
+
+      if (!treeRect || treeRect.width === 0) refreshTreeRect();
+      const rect = treeRect;
 
       let originX: number;
       let originY: number;
 
       if (rect) {
-        // Samples strictly from the floral canopy of the tree
+        // Sample from the floral canopy of the tree
         const normX = 0.24 + Math.random() * 0.60;
-        // The branch arches: higher on right (0.20-0.45), lower on left (0.35-0.70)
         const normY = normX < 0.5
           ? (0.32 + Math.random() * 0.38)
           : (0.18 + Math.random() * 0.32);
@@ -167,12 +185,11 @@ export const SakuraLanding: React.FC = () => {
         originX = rect.left + rect.width * normX;
         originY = rect.top + rect.height * normY;
       } else {
-        // Mobile fallback when tree is hidden: gentle stream across page
+        // Mobile fallback when the tree is hidden
         originX = W * (0.60 + Math.random() * 0.40);
         originY = H * (0.10 + Math.random() * 0.50);
       }
 
-      // Initial page load resting state: gentle spread along leftward drift trail
       const progress = scatterInitial ? Math.random() * 0.80 : 0;
       const x = originX - progress * (W * 0.48);
       const y = originY + progress * (H * 0.24);
@@ -181,100 +198,77 @@ export const SakuraLanding: React.FC = () => {
         x,
         y,
         size: isMobile ? (7 + Math.random() * 10) : (8 + Math.random() * 12),
-        vx: -(1.2 + Math.random() * 1.8), // Calm, natural leftward drift
-        vy: 0.30 + Math.random() * 0.85,  // Gentle downward drift
+        vx: -(1.2 + Math.random() * 1.8),
+        vy: 0.30 + Math.random() * 0.85,
         angle: Math.random() * Math.PI * 2,
         angleSpeed: (Math.random() - 0.5) * 0.025,
         flip: Math.random() * Math.PI,
         flipSpeed: 0.015 + Math.random() * 0.025,
         opacity: 0.6 + Math.random() * 0.35,
-        hue: 340 + Math.random() * 20, // Soft pink and creamy blossom hues
+        color: PETAL_COLORS[Math.floor(Math.random() * PETAL_COLORS.length)],
       };
     };
 
-    // Initialize: first 22 are visible at rest; all others start queued at the tree
+    refreshTreeRect();
     for (let i = 0; i < MAX_PETALS; i++) {
-      petals.push(spawnPetal(i < 22));
+      petals.push(spawnPetal(i < BASE_PETALS));
     }
 
     let scrollBoost = 0;
     let lastScrollY = window.scrollY;
     let landingScrollProgress = 0;
-    let previousActiveCount = 22;
+    let previousActiveCount = BASE_PETALS;
 
     const onScrollVelocity = () => {
       const currentScrollY = window.scrollY;
       const delta = Math.abs(currentScrollY - lastScrollY);
       lastScrollY = currentScrollY;
-      // Gentle wind breeze boost - strictly capped to avoid unnatural high-speed blur
       scrollBoost = Math.min(scrollBoost + delta * 0.015, 2.0);
     };
     window.addEventListener('scroll', onScrollVelocity, { passive: true });
-
-    // Draw single stylized petal with characteristic notch
-    const drawPetalShape = (c: CanvasRenderingContext2D, size: number) => {
-      c.beginPath();
-      c.moveTo(0, size * 0.6);
-      c.bezierCurveTo(-size * 0.7, size * 0.2, -size * 0.55, -size * 0.45, -size * 0.2, -size * 0.6);
-      c.bezierCurveTo(-size * 0.05, -size * 0.45, size * 0.05, -size * 0.45, size * 0.2, -size * 0.6);
-      c.bezierCurveTo(size * 0.55, -size * 0.45, size * 0.7, size * 0.2, 0, size * 0.6);
-      c.closePath();
-    };
 
     let isSectionVisible = true;
 
     const render = () => {
       ctx.clearRect(0, 0, W, H);
-      scrollBoost *= 0.92; // Decay wind gust gradually
+      scrollBoost *= 0.92;
 
-      // At scroll 0: ~22 peaceful leaves drifting gently
-      // On scroll: gently scales up to ~55 leaves
       const activeCount = Math.min(
         MAX_PETALS,
-        Math.floor(22 + landingScrollProgress * 36)
+        Math.floor(BASE_PETALS + landingScrollProgress * EXTRA_PETALS)
       );
 
-      // Controlled, natural speed multiplier (max ~1.5x during active scroll)
       const speedMultiplier = 1.0 + landingScrollProgress * 0.35 + scrollBoost * 0.15;
 
-      // When scroll increases, newly activated particles are spawned fresh on the tree branches
       if (activeCount > previousActiveCount) {
         for (let i = previousActiveCount; i < activeCount; i++) {
-          petals[i] = spawnPetal(false); // Emerge fresh from tree flowers!
+          petals[i] = spawnPetal(false);
         }
         previousActiveCount = activeCount;
       }
 
-      const isDark = typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
+      const alphaScale = document.documentElement.classList.contains('dark') ? 0.9 : 1;
 
       for (let i = 0; i < activeCount; i++) {
         const p = petals[i];
         p.angle += p.angleSpeed * (1.0 + scrollBoost * 0.12);
         p.flip += p.flipSpeed * (1.0 + scrollBoost * 0.12);
 
-        // Controlled, graceful breeze velocity
-        const effectiveVx = (p.vx - scrollBoost * 0.55) * speedMultiplier;
-        const effectiveVy = (p.vy + scrollBoost * 0.15) * speedMultiplier;
+        p.x += (p.vx - scrollBoost * 0.55) * speedMultiplier;
+        p.y += (p.vy + scrollBoost * 0.15) * speedMultiplier;
 
-        p.x += effectiveVx;
-        p.y += effectiveVy;
-
-        // Wrap around when leaving boundary: ALWAYS respawn from the tree branches!
         if (p.x < -40 || p.y > H + 40 || p.y < -30) {
           petals[i] = spawnPetal(false);
+          continue;
         }
 
         ctx.save();
         ctx.translate(p.x, p.y);
         ctx.rotate(p.angle);
-        ctx.scale(Math.cos(p.flip), 1);
-
-        ctx.fillStyle = isDark
-          ? `hsla(${p.hue}, 85%, 82%, ${p.opacity * 0.9})`
-          : `hsla(${p.hue}, 88%, 68%, ${p.opacity})`;
-
-        drawPetalShape(ctx, p.size);
-        ctx.fill();
+        ctx.scale(Math.cos(p.flip) * p.size, p.size);
+        ctx.globalAlpha = p.opacity * alphaScale;
+        ctx.fillStyle = p.color;
+        ctx.fill(PETAL);
         ctx.restore();
       }
 
@@ -283,9 +277,14 @@ export const SakuraLanding: React.FC = () => {
       }
     };
 
-    render();
+    if (reduceMotion) {
+      // No drifting petals for reduced-motion users
+      canvas.style.display = 'none';
+    } else {
+      render();
+    }
 
-    // ─── GSAP ScrollTrigger Sequence for Smooth Section Dissolve ──
+    // ─── GSAP ScrollTrigger sequence ──────────────────────────────
     const section = sectionRef.current;
     const topHeader = topHeaderRef.current;
     const marquee = marqueeRef.current;
@@ -303,7 +302,6 @@ export const SakuraLanding: React.FC = () => {
     const ctxTimeline = gsap.context(() => {
       const tl = gsap.timeline();
 
-      // 1. Header & marquee glide away softly as scroll begins (0.0 -> 0.7)
       tl.to(topHeader, {
         opacity: 0,
         y: -35,
@@ -320,7 +318,6 @@ export const SakuraLanding: React.FC = () => {
         }, 0);
       }
 
-      // 2. Tree description fades out softly (0.05 -> 0.65)
       if (treeDesc) {
         tl.to(treeDesc, {
           opacity: 0,
@@ -330,18 +327,19 @@ export const SakuraLanding: React.FC = () => {
         }, 0.05);
       }
 
-      // 3. Tree stays visible throughout petal flow, then dissolves gracefully near section end (1.3 -> 2.0)
       if (tree) {
-        // Gentle ambient wind-sway breathing loop
-        gsap.to(tree, {
-          rotation: 1.2,
-          x: 4,
-          y: -3,
-          duration: 4.5,
-          ease: 'sine.inOut',
-          repeat: -1,
-          yoyo: true,
-        });
+        // Gentle ambient sway (skipped for reduced motion)
+        if (!reduceMotion) {
+          gsap.to(tree, {
+            rotation: 1.2,
+            x: 4,
+            y: -3,
+            duration: 4.5,
+            ease: 'sine.inOut',
+            repeat: -1,
+            yoyo: true,
+          });
+        }
 
         tl.to(tree, {
           scale: 1.04,
@@ -352,7 +350,6 @@ export const SakuraLanding: React.FC = () => {
         }, 1.3);
       }
 
-      // 4. Petal canvas dissolves in unison with the tree (1.25 -> 1.95)
       tl.to(canvas, {
         opacity: 0,
         duration: 0.7,
@@ -364,7 +361,7 @@ export const SakuraLanding: React.FC = () => {
         start: 'top top',
         end: '+=120%',
         pin: true,
-        scrub: 0.15, // Immediately responsive to scroll velocity
+        scrub: 0.15,
         animation: tl,
         onUpdate: (self) => {
           landingScrollProgress = self.progress;
@@ -374,7 +371,7 @@ export const SakuraLanding: React.FC = () => {
           if (animId) cancelAnimationFrame(animId);
         },
         onEnterBack: () => {
-          if (!isSectionVisible) {
+          if (!isSectionVisible && !reduceMotion) {
             isSectionVisible = true;
             animId = requestAnimationFrame(render);
           }
@@ -395,13 +392,38 @@ export const SakuraLanding: React.FC = () => {
       ref={sectionRef}
       className="sakura-section relative w-screen h-screen overflow-hidden bg-[#E0FBFC] dark:bg-[#293241] select-none z-10 flex flex-col justify-between transition-colors duration-300"
     >
-      {/* ─── Drifting Petals Canvas ────────────────────────────────────────── */}
+      {/* One shared blossom icon, reused by <use> so the marquee stays light */}
+      <svg width="0" height="0" className="absolute" aria-hidden="true">
+        <symbol id="sk-blossom" viewBox="0 0 24 24">
+          {[0, 72, 144, 216, 288].map((deg) => (
+            <ellipse
+              key={deg}
+              cx="12"
+              cy="6.2"
+              rx="3.6"
+              ry="5"
+              fill="currentColor"
+              transform={`rotate(${deg} 12 12)`}
+            />
+          ))}
+          <circle cx="12" cy="12" r="2" fill="#E0FBFC" />
+          <circle cx="12" cy="12" r="0.9" fill="#EE6C4D" />
+        </symbol>
+      </svg>
+
+      {/* Static soft glows (plain gradients, no blur filters) */}
+      <div
+        className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_at_12%_18%,rgba(152,193,217,0.5),transparent_55%),radial-gradient(ellipse_at_88%_92%,rgba(238,108,77,0.14),transparent_50%)] dark:bg-[radial-gradient(ellipse_at_12%_18%,rgba(61,90,128,0.5),transparent_55%),radial-gradient(ellipse_at_88%_92%,rgba(238,108,77,0.1),transparent_50%)]"
+        aria-hidden="true"
+      />
+
+      {/* ─── Drifting Petals Canvas ───────────────────────────────── */}
       <canvas
         ref={canvasRef}
         className="absolute inset-0 w-full h-full pointer-events-none z-[3]"
       />
 
-      {/* ─── Wild Himalayan Cherry Tree (Responsive on Mobile & Desktop, Anchored Bottom-Right) ─── */}
+      {/* ─── Wild Himalayan Cherry Tree ───────────────────────────── */}
       <div className="flex absolute right-0 bottom-0 h-[48vh] sm:h-[60vh] md:h-[80vh] w-full max-w-[85vw] sm:max-w-[75vw] md:max-w-[65vw] lg:max-w-[58vw] pointer-events-none justify-end items-end z-[2]">
         <Image
           src="/images/cherry_blossom.webp"
@@ -422,7 +444,7 @@ export const SakuraLanding: React.FC = () => {
         />
       </div>
 
-      {/* ─── Header & Marquee (Centered in Middle on Mobile, Top-Anchored on Desktop) ─── */}
+      {/* ─── Header & Marquee ─────────────────────────────────────── */}
       <div
         ref={topHeaderRef}
         style={{
@@ -433,72 +455,68 @@ export const SakuraLanding: React.FC = () => {
         className="flex-1 md:flex-initial flex flex-col items-center justify-center md:justify-start pt-24 md:pt-28 px-4 md:px-12 text-center z-[4] pointer-events-none"
       >
         {/* Small branch in the corner */}
-          <Image
-            src="/images/tree_branch.webp"
-            alt="Welcome"
-            width={1500}
-            height={900}
-            priority
-            className="
-              absolute
-              w-[clamp(300px,40vw,500px)]
-              left-0
-              top-0
-              h-auto
-              drop-shadow-[0_4px_30px_rgba(238,108,77,0.25)]
-            "
-          />
-      <div className="relative flex h-fit w-full justify-center">
+        <Image
+          src="/images/tree_branch.webp"
+          alt="Welcome"
+          width={1500}
+          height={900}
+          priority
+          className="
+            absolute
+            w-[clamp(300px,40vw,500px)]
+            left-0
+            top-0
+            h-auto
+            drop-shadow-[0_4px_30px_rgba(238,108,77,0.25)]
+          "
+        />
+        <div className="relative flex mt-10 h-fit w-full justify-center">
           {/* SHISHIR */}
           <div
-            className={`z-20 pt-5 text-[20vw] md:text-[12vw] text-[#293241] drop-shadow-[0_0_6px_rgba(61,90,128,0.8)] ${samanFont.className}`}
+            className={`z-20 pt-5 text-[20vw] md:text-[12vw] leading-none text-[#293241] dark:text-[#E0FBFC] [text-shadow:0_4px_22px_rgba(61,90,128,0.35)] ${samanFont.className}`}
           >
             SHISHIR
           </div>
         </div>
-        <div className="mt-0 md:mt-0 text-[0.7rem] md:text-sm tracking-[0.35em] md:tracking-[0.4em] text-[#3D5A80] dark:text-[#98C1D9] font-bold uppercase transition-colors duration-300">
-          CULTURAL FEST OF NIT MEGHALAYA
+
+        {/* Subtitle with fine rules either side */}
+        <div className="mt-1 flex items-center justify-center gap-3 md:gap-4">
+          <span className="h-px w-8 md:w-16 bg-gradient-to-r from-transparent to-[#98C1D9]" />
+          <span className="text-[0.7rem] md:text-sm tracking-[0.35em] md:tracking-[0.4em] text-[#3D5A80] dark:text-[#98C1D9] font-bold uppercase transition-colors duration-300">
+            CULTURAL FEST OF NIT MEGHALAYA
+          </span>
+          <span className="h-px w-8 md:w-16 bg-gradient-to-l from-transparent to-[#98C1D9]" />
         </div>
 
-        {/* Moving Event Names Marquee Banner */}
+        {/* Event ribbon: a paper strip with a Dusk Blue edge and Peach line */}
         <div
           ref={marqueeRef}
-          className="w-screen overflow-hidden border-y border-[#98C1D9]/30 dark:border-[#98C1D9]/20 bg-[#E0FBFC]/80 dark:bg-[#293241]/80 py-2 md:py-3 mt-5 md:mt-4 pointer-events-none transition-colors duration-300 backdrop-blur-sm"
+          className="relative w-screen overflow-hidden mt-5 md:mt-6 py-2 md:py-3 pointer-events-none border-y-[3px] dark:border-[#98C1D9] bg-gradient-to-b from-white/70 via-[#F3FCFC]/70 to-[#DDF1F5]/70 dark:from-[#3b4d6b]/90 dark:via-[#33435e]/90 dark:to-[#2c3a52]/90 shadow-[0_14px_30px_-16px_rgba(61,90,128,0.55)] transition-colors duration-300"
         >
-          <div className="animate-marquee flex items-center gap-6 md:gap-8 font-black uppercase tracking-[0.16em] text-lg md:text-2xl text-[#293241] dark:text-[#E0FBFC]">
-            {MARQUEE_EVENTS.map((evt, idx) => (
-              <span key={`m1-${idx}`} className="flex items-center gap-6 md:gap-8 shrink-0">
-                <span className="text-[#EE6C4D] text-sm md:text-lg font-bold">•</span>
-                <span>{evt}</span>
-              </span>
-            ))}
-            {/* Duplicate set for seamless infinite loop */}
-            {MARQUEE_EVENTS.map((evt, idx) => (
-              <span key={`m2-${idx}`} className="flex items-center gap-6 md:gap-8 shrink-0">
-                <span className="text-[#EE6C4D] text-sm md:text-lg font-bold">•</span>
-                <span className='text-[#293241]'>{evt}</span>
-              </span>
-            ))}
+
+          <div className="animate-marquee flex items-center gap-6 md:gap-8 uppercase tracking-[0.16em] text-md md:text-lg text-[#293241] dark:text-[#E0FBFC]">
+            {[0, 1].map((set) =>
+              MARQUEE_EVENTS.map((evt, idx) => (
+                <span
+                  key={`m${set}-${idx}`}
+                  className="flex items-center gap-6 md:gap-8 shrink-0"
+                >
+                  <svg className="w-4 h-4 md:w-5 md:h-5 text-[#EE6C4D]" aria-hidden="true">
+                    <use href="#sk-blossom" />
+                  </svg>
+                  <span>{evt}</span>
+                </span>
+              ))
+            )}
           </div>
         </div>
       </div>
 
-      {/* ─── Bottom Area: Botanical Tree Description ─── */}
-      {/* <div className="flex pb-4 sm:pb-6 lg:pb-8 px-4 sm:px-8 lg:px-14 items-end justify-end z-[4] pointer-events-none relative flex-1 min-h-0">
-        <div
-          ref={treeDescRef}
-          className="flex flex-col items-end text-right gap-0.5 sm:gap-1 max-w-[200px] sm:max-w-xs pointer-events-none z-[4] mb-2 sm:mb-3 ml-auto"
-        >
-          <div className="text-[0.62rem] sm:text-[0.72rem] tracking-[0.18em] sm:tracking-[0.22em] uppercase text-[#EE6C4D] dark:text-[#98C1D9] font-semibold transition-colors duration-300">
-            Prunus cerasoides · Wild Himalayan Cherry
-          </div>
-          <p className="text-[0.58rem] sm:text-[0.68rem] tracking-[0.05em] text-[#3D5A80] dark:text-[#E0FBFC]/70 font-light transition-colors duration-300">
-            Local to Meghalaya · Blooms in November
-          </p>
-        </div>
-      </div> */}
+      <style>{`
+        @media (prefers-reduced-motion: reduce) {
+          .sakura-section .animate-marquee { animation: none !important; }
+        }
+      `}</style>
     </section>
   );
 };
-
-
