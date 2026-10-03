@@ -1026,12 +1026,12 @@
   position: relative;
 
   width: 100%;
-  height: 320px;
+  height: 100%;
 
   overflow: hidden;
   isolation: isolate;
 
-  border-radius: 1.5rem;
+  border-radius: 2.1rem;
 
   /* ---------- LIGHT MODE ---------- */
 
@@ -1471,52 +1471,24 @@
   .card__container {
     display: grid;
 
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-    grid-auto-rows: 320px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
 
     justify-content: center;
     align-items: start;
-
+    max-width: 700px;
     gap: 1.5rem;
+    margin-inline: auto;
   }
 
   .card__article {
-    grid-column: span 2;
-  }
+    grid-column: span 1;
 
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+  }
   /* First row: 3 cards */
 
-  .card__article:nth-child(1) {
-    grid-column: 1 / span 2;
-  }
-
-  .card__article:nth-child(2) {
-    grid-column: 3 / span 2;
-  }
-
-  .card__article:nth-child(3) {
-    grid-column: 5 / span 2;
-  }
-
-  /* Second row: 2 centered cards */
-
-  .card__article:nth-child(4) {
-    grid-column: 2 / span 2;
-  }
-
-  .card__article:nth-child(5) {
-    grid-column: 4 / span 2;
-  }
-
-  /* Third row: 2 centered cards */
-
-  .card__article:nth-child(6) {
-    grid-column: 2 / span 2;
-  }
-
-  .card__article:nth-child(7) {
-    grid-column: 4 / span 2;
-  }
 
   .card__article,
   .card__img {
@@ -1601,6 +1573,10 @@
   /* -----------------------------------------------------
      TEAM INDEX
      ----------------------------------------------------- */
+  .go-top-button {
+    bottom: calc(4.5rem + env(safe-area-inset-bottom));
+    right: 1rem;
+  }
   .teams-page {
     width: 100%;
     max-width: 100%;
@@ -1620,45 +1596,39 @@
     padding: 0;
   }
   
- .team-index-sidebar {
-    position: sticky;
-    top: 0;
+  .team-index-sidebar {
+    position: fixed;
+    top: auto;          /* <-- the actual fix: cancels top: 160px from the base rule */
+    right: 0;
+    bottom: 0;
+    left: 0;
 
     width: 100%;
     max-width: 100%;
+    height: auto;       /* cancels height: fit-content */
+    flex: none;         /* cancels flex: 0 0 33.33% */
+    align-self: auto;
 
     margin: 0;
-    padding: 0.4rem 0;
+    padding: 0.4rem 0 env(safe-area-inset-bottom);
 
-    z-index: 20;
+    z-index: 40;
 
-    background: rgba(224, 251, 252, 0.82);
-
+    background: rgba(224, 251, 252, 0.92);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
 
-    box-shadow:
-      0 6px 18px rgba(41, 50, 65, 0.10);
+    border-top: 1px solid rgba(61, 90, 128, 0.15);
+    box-shadow: 0 -6px 18px rgba(41, 50, 65, 0.10);   /* shadow now points upward */
 
     overflow: hidden;
-
-    transition:
-      top 0.45s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-
-  .mobile-nav-visible .team-index-sidebar {
-    top: 72px;
-  }
-
-  .mobile-nav-hidden .team-index-sidebar {
-    top: 0;
   }
 
 
   .dark .team-index-sidebar {
     background: rgba(8, 12, 20, 0.90);
 
-    border-bottom:
+    border-top:
       1px solid rgba(238, 108, 77, 0.10);
   }
 
@@ -1730,6 +1700,7 @@
 
     padding-left: 0 !important;
     padding-right: 0 !important;
+    padding-bottom: calc(4.5rem + env(safe-area-inset-bottom)) !important;
   }
 
 
@@ -1780,17 +1751,13 @@
 
   .card__article {
     width: 100%;
-    max-width: 320px;
+    max-width: 100%;
 
-    height: clamp(
-      270px,
-      82vw,
-      320px
-    );
+    height: 100%;
 
     margin-inline: auto;
 
-    border-radius: 1.5rem;
+    border-radius: 2rem;
   }
 
 

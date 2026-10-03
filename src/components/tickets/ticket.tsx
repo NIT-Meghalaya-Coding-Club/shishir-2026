@@ -491,13 +491,51 @@ const ShishirTicketSeller: React.FC = () => {
               ) : (
                 /* Payment / Ticket */
                 <section className="flex flex-col items-center section-enter">
+                  {/*
+                    E-ticket card (this exact element is captured by html2canvas for the PNG).
+                    It is always a light "paper" ticket, so it looks the same in light and dark
+                    mode, and it uses only plain hex colours, inline gradients and inline SVG
+                    so the downloaded image matches what is on screen.
+                  */}
                   <div
                     ref={ticketRef}
-                    className="ticket-shell relative w-full max-w-md overflow-hidden rounded-[24px] border border-amber-300/40 bg-[#10162b] shadow-[0_30px_70px_rgba(15,23,42,0.25)]"
+                    className="ticket-shell relative w-full max-w-md overflow-hidden rounded-[6px]"
+                    style={{
+                      background:
+                        "linear-gradient(135deg, #FFFFFF 0%, #F3FCFC 55%, #DDF1F5 100%)",
+                      borderTop: "8px solid #3D5A80",
+                      borderBottom: "8px solid #3D5A80",
+                      borderLeft: "1px solid #98C1D9",
+                      borderRight: "1px solid #98C1D9",
+                      boxShadow: "0 30px 60px -24px rgba(61,90,128,0.55)",
+                    }}
                   >
-                    <div className="ticket-topbar relative bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-400 px-6 py-5 text-center">
+                    <div
+                      className="absolute left-0 right-0 top-0 h-[3px]"
+                      style={{ background: "#EE6C4D" }}
+                    />
+                    <div
+                      className="absolute bottom-0 left-0 right-0 h-[3px]"
+                      style={{ background: "#EE6C4D" }}
+                    />
+
+                    {/* Header band */}
+                    <div
+                      className="ticket-topbar relative px-6 pb-5 pt-6 text-center"
+                      style={{
+                        background:
+                          "linear-gradient(135deg, #3D5A80 0%, #2F4A6B 100%)",
+                        borderBottom: "3px solid #EE6C4D",
+                      }}
+                    >
                       <div className="mx-auto flex max-w-[320px] items-center justify-between">
-                        <div className="logo-chip">
+                        <div
+                          className="flex h-[42px] w-[42px] items-center justify-center rounded-full"
+                          style={{
+                            background: "#FFFFFF",
+                            border: "2px solid #98C1D9",
+                          }}
+                        >
                           <img
                             src="/assets/NITM.png"
                             alt="College Logo"
@@ -508,15 +546,27 @@ const ShishirTicketSeller: React.FC = () => {
                         </div>
 
                         <div>
-                          <h2 className="text-2xl font-black tracking-tight text-slate-900">
-                            SHISHIR 2025
+                          <h2
+                            className="text-2xl font-black tracking-tight"
+                            style={{ color: "#E0FBFC" }}
+                          >
+                            SHISHIR 2026
                           </h2>
-                          <p className="mt-0.5 text-xs font-semibold text-slate-700">
+                          <p
+                            className="mt-0.5 text-xs font-semibold"
+                            style={{ color: "#98C1D9" }}
+                          >
                             Annual College Fest E-Ticket
                           </p>
                         </div>
 
-                        <div className="logo-chip">
+                        <div
+                          className="flex h-[42px] w-[42px] items-center justify-center rounded-full"
+                          style={{
+                            background: "#FFFFFF",
+                            border: "2px solid #98C1D9",
+                          }}
+                        >
                           <img
                             src="/assets/logo.png"
                             alt="Event Logo"
@@ -528,33 +578,58 @@ const ShishirTicketSeller: React.FC = () => {
 
                     <div className="ticket-body p-6 sm:p-7">
                       <div className="text-center">
-                        <span
-                          className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] ${paymentVerified
-                              ? "border-emerald-400/20 bg-emerald-400/10 text-emerald-300"
-                              : "border-amber-400/20 bg-amber-400/10 text-amber-300"
-                            }`}
-                        >
-                          <span
-                            className={`h-1.5 w-1.5 rounded-full ${paymentVerified
-                                ? "bg-emerald-400"
-                                : "bg-amber-400 animate-pulse"
-                              }`}
-                          />
-                          {paymentVerified ? "Payment Verified" : "Scan to Pay"}
-                        </span>
 
-                        <p className="mt-4 text-3xl font-black text-amber-300">
+                        <p
+                          className="mt-4 text-4xl font-black tracking-tight"
+                          style={{ color: "#EE6C4D" }}
+                        >
                           ₹{totalAmount}
                         </p>
 
-                        <p className="mt-1 text-xs text-slate-400">
+                        <p className="mt-1 text-xs" style={{ color: "#3D5A80" }}>
                           Ticket #{ticketNumber}
                         </p>
                       </div>
 
-                      <div className="qr-frame group mt-6">
+                      {/* QR frame with Peach corner marks */}
+                      <div
+                        className="group relative mx-auto mt-6 h-56 w-56 rounded-md bg-white p-2"
+                        style={{
+                          border: "2px solid #3D5A80",
+                          boxShadow: "0 16px 34px -16px rgba(61,90,128,0.55)",
+                        }}
+                      >
+                        <span
+                          className="absolute -left-1.5 -top-1.5 h-5 w-5 rounded-tl-md"
+                          style={{
+                            borderTop: "3px solid #EE6C4D",
+                            borderLeft: "3px solid #EE6C4D",
+                          }}
+                        />
+                        <span
+                          className="absolute -right-1.5 -top-1.5 h-5 w-5 rounded-tr-md"
+                          style={{
+                            borderTop: "3px solid #EE6C4D",
+                            borderRight: "3px solid #EE6C4D",
+                          }}
+                        />
+                        <span
+                          className="absolute -bottom-1.5 -left-1.5 h-5 w-5 rounded-bl-md"
+                          style={{
+                            borderBottom: "3px solid #EE6C4D",
+                            borderLeft: "3px solid #EE6C4D",
+                          }}
+                        />
+                        <span
+                          className="absolute -bottom-1.5 -right-1.5 h-5 w-5 rounded-br-md"
+                          style={{
+                            borderBottom: "3px solid #EE6C4D",
+                            borderRight: "3px solid #EE6C4D",
+                          }}
+                        />
+
                         {paymentVerified ? (
-                          <div className="flex h-full w-full items-center justify-center rounded-xl bg-white">
+                          <div className="flex h-full w-full items-center justify-center rounded bg-white">
                             <div className="verified-ring">
                               <svg
                                 className="h-14 w-14 text-emerald-500"
@@ -575,12 +650,15 @@ const ShishirTicketSeller: React.FC = () => {
                             <img
                               src="/qr.png"
                               alt="Scan to Pay via UPI"
-                              className="h-full w-full rounded-xl object-contain transition-transform duration-300 group-hover:scale-[1.015]"
+                              className="h-full w-full rounded object-contain transition-transform duration-300 group-hover:scale-[1.015]"
                             />
-                            <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-slate-950/80 p-5 text-center opacity-0 backdrop-blur-sm transition-opacity duration-300 group-hover:opacity-100">
+                            <div
+                              className="absolute inset-0 flex items-center justify-center rounded p-5 text-center opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                              style={{ background: "rgba(41,50,65,0.92)" }}
+                            >
                               <p className="text-xs leading-5 text-white">
                                 Scan with any UPI app and manually enter{" "}
-                                <span className="font-bold text-amber-300">
+                                <span className="font-bold" style={{ color: "#F4A9A0" }}>
                                   ₹{totalAmount}
                                 </span>
                               </p>
@@ -589,7 +667,18 @@ const ShishirTicketSeller: React.FC = () => {
                         )}
                       </div>
 
-                      <div className="my-6 border-t border-dashed border-slate-700" />
+                      {/* Perforation with a blossom */}
+                      <div className="my-6 flex items-center gap-3">
+                        <div
+                          className="flex-1"
+                          style={{ borderTop: "2px dashed #98C1D9" }}
+                        />
+                        <TicketBlossom size={18} />
+                        <div
+                          className="flex-1"
+                          style={{ borderTop: "2px dashed #98C1D9" }}
+                        />
+                      </div>
 
                       <div className="space-y-3 text-sm">
                         <TicketRow label="Event" value={selectedEvent?.name || "N/A"} />
@@ -603,15 +692,31 @@ const ShishirTicketSeller: React.FC = () => {
                         <TicketRow label="Name" value={name || "N/A"} />
                       </div>
 
-                      <div className="mt-6 rounded-xl border border-slate-700/80 bg-slate-950/40 p-4 text-center">
-                        <p className="text-xs font-bold uppercase tracking-[0.14em] text-amber-300">
+                      <div
+                        className="mt-6 rounded-md p-4 text-center"
+                        style={{ background: "#FFF4EF", border: "1px solid #F6C9BC" }}
+                      >
+                        <p
+                          className="text-xs font-bold uppercase tracking-[0.14em]"
+                          style={{ color: "#D4553A" }}
+                        >
                           Important Notice
                         </p>
-                        <p className="mt-2 text-[11px] leading-5 text-slate-400">
+                        <p
+                          className="mt-2 text-[11px] leading-5"
+                          style={{ color: "#3D5A80" }}
+                        >
                           This ticket is valid only with payment proof and
                           college ID. Unauthorized duplication may result in
                           denied entry.
                         </p>
+                      </div>
+
+                      {/* Closing flourish */}
+                      <div className="mt-5 flex items-center justify-center gap-2">
+                        <TicketBlossom size={10} color="#F9C9C4" />
+                        <TicketBlossom size={14} />
+                        <TicketBlossom size={10} color="#F9C9C4" />
                       </div>
                     </div>
                   </div>
@@ -1073,46 +1178,6 @@ const ShishirTicketSeller: React.FC = () => {
           color: #cbd5e1;
         }
 
-        .logo-chip {
-          display: flex;
-          height: 42px;
-          width: 42px;
-          align-items: center;
-          justify-content: center;
-          border-radius: 9999px;
-          background: rgba(255, 255, 255, 0.94);
-          box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
-        }
-
-        .ticket-body {
-          background:
-            radial-gradient(
-              circle at 12% 8%,
-              rgba(245, 180, 45, 0.085),
-              transparent 28%
-            ),
-            radial-gradient(
-              circle at 90% 50%,
-              rgba(99, 102, 241, 0.09),
-              transparent 30%
-            ),
-            #10162b;
-        }
-
-        .qr-frame {
-          position: relative;
-          margin-left: auto;
-          margin-right: auto;
-          height: 224px;
-          width: 224px;
-          border-radius: 16px;
-          padding: 8px;
-          background: white;
-          box-shadow:
-            0 0 0 1px rgba(255, 255, 255, 0.7),
-            0 18px 45px rgba(0, 0, 0, 0.18);
-        }
-
         .verified-ring {
           display: flex;
           height: 86px;
@@ -1290,14 +1355,57 @@ function FloatingInput({
   );
 }
 
+/** Ticket row, styled for the light paper ticket (plain hex, safe for html2canvas) */
 function TicketRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-start justify-between gap-4">
-      <span className="text-slate-500">{label}</span>
-      <span className="max-w-[65%] text-right font-semibold text-white">
+    <div
+      className="flex items-start justify-between gap-4 pb-2"
+      style={{ borderBottom: "1px solid #DCEAF0" }}
+    >
+      <span style={{ color: "#3D5A80" }}>{label}</span>
+      <span
+        className="max-w-[65%] text-right font-semibold"
+        style={{ color: "#293241" }}
+      >
         {value}
       </span>
     </div>
+  );
+}
+
+/**
+ * Cherry blossom ornament with explicit fills.
+ * No currentColor, <use> or CSS classes, so html2canvas renders it into the PNG correctly.
+ */
+function TicketBlossom({
+  size = 16,
+  color = "#F4A9A0",
+}: {
+  size?: number;
+  color?: string;
+}) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      style={{ display: "block" }}
+    >
+      {[0, 72, 144, 216, 288].map((deg) => (
+        <ellipse
+          key={deg}
+          cx="12"
+          cy="6.2"
+          rx="3.6"
+          ry="5"
+          fill={color}
+          transform={`rotate(${deg} 12 12)`}
+        />
+      ))}
+      <circle cx="12" cy="12" r="2" fill="#E0FBFC" />
+      <circle cx="12" cy="12" r="0.9" fill="#EE6C4D" />
+    </svg>
   );
 }
 

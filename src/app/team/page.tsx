@@ -16,6 +16,8 @@ import "./team_style.css";
 
 import PageHeading from "@/components/PageHeading";
 
+import Blossom from '@/components/Blossom';
+
 type TeamMember = {
   name: string;
   contactNo: string;
@@ -33,10 +35,6 @@ export default function Contact() {
   );
 
   const [showTopButton, setShowTopButton] = useState(false);
-
-  const [mobileNavVisible, setMobileNavVisible] = useState(true);
-
-  const lastScrollY = useRef(0);
 
   const teamRefs = useRef<{
     [key: string]: HTMLDivElement | null;
@@ -61,15 +59,12 @@ export default function Contact() {
         setTeams({
           ...Teams,
           ...Object.fromEntries(
-            databaseTeams.map(
-              (team: {
-                name: string;
-                members: TeamMember[];
-              }) => [
+            databaseTeams
+              .filter((team: { name?: string }) => team.name)
+              .map((team: { name: string; members: TeamMember[] }) => [
                 team.name,
-                team.members,
-              ]
-            )
+                team.members ?? [],
+              ])
           ),
         });
       })
@@ -199,58 +194,13 @@ export default function Contact() {
     });
   }
 
-  /* =============== MOBILE INDEX POSITION =============== */
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.innerWidth >= 768) return;
-
-      const currentScrollY = window.scrollY;
-      const scrollDifference =
-        currentScrollY - lastScrollY.current;
-
-      // Always show the navbar offset near the top
-      if (currentScrollY <= 10) {
-        setMobileNavVisible(true);
-        lastScrollY.current = currentScrollY;
-        return;
-      }
-
-      // Ignore tiny movements
-      if (Math.abs(scrollDifference) < 10) {
-        return;
-      }
-
-      if (scrollDifference > 0) {
-        // Scrolling down
-        setMobileNavVisible(false);
-      } else {
-        // Scrolling up
-        setMobileNavVisible(true);
-      }
-
-      lastScrollY.current = currentScrollY;
-    };
-
-    window.addEventListener("scroll", handleScroll, {
-      passive: true,
-    });
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
   return (
     <>
       <Head>
         <link rel="preload" href="/img/pattern-floral.png" as="image" />
       </Head>
       <div
-        className={`relative flex flex-col items-center w-full h-auto min-h-screen overflow-x-clip ${
-          mobileNavVisible
-            ? "mobile-nav-visible"
-            : "mobile-nav-hidden"
-        }`}
+        className="relative flex flex-col items-center w-full h-auto min-h-screen overflow-x-clip"
         style={{
           backgroundImage: `url('/img/pattern-floral.png')`,
           backgroundSize: '700px',
@@ -308,6 +258,13 @@ export default function Contact() {
               data-team={team}
               className="card"
             >
+              <div className="relative top-[-50px] text-[7vw] md:text-[3vw] flex justify-center items-center ">
+                <Blossom className="w-10 h-10 sm:w-10 sm:h-10 text-[#EE6C4D] animate-spin [animation-duration:3s]" />
+                <h1 className="pl-5 pr-5 text-center">
+                  {team}
+                </h1>
+                <Blossom className="w-10 h-10 sm:w-10 sm:h-10 text-[#EE6C4D] animate-spin [animation-duration:3s]" />
+              </div>
               {/* =============== TEAM MEMBERS =============== */}
 
               <div className="card__container container">
@@ -325,7 +282,6 @@ export default function Contact() {
                         className={`card__article ${cardTheme}`}
                       >
                         {/* Profile Image */}
-
                         <div className="relative w-full">
                           <Image
                             src={
@@ -333,7 +289,7 @@ export default function Contact() {
                               defaultImageUrl
                             }
                             alt={`${member.name}'s photo`}
-                            width={400}
+                            width={500}
                             height={500}
                             className="card__img"
                             unoptimized
