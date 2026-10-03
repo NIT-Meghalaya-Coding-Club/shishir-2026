@@ -20,6 +20,7 @@ import { EventPayloadSchema } from "@/lib/validation/eventSchema";
 import EventParticipants from "@/components/event-head/EventParticipants";
 import ImageCropper, { MAX_IMAGE_SIZE_MB } from "@/components/ImageCropper";
 import ValidationDialog from "@/components/ui/ValidationDialog";
+import NameDropdown from "@/components/NameDropdown";
 
 type Person = {
   _id?: string;
@@ -39,6 +40,7 @@ type EventRecord = {
   code: string;
   category: string;
   categoryId?: string;
+  eventNameId?: string;
   location: string;
   startsAt: string;
   endsAt: string;
@@ -60,7 +62,16 @@ type CategoryRecord = {
   name: string;
 };
 
+type EventNameRecord = {
+  _id: string;
+  name: string;
+};
+
 type PeopleField = "eventHeads" | "coordinators" | "coCoordinators";
+
+function getReferenceId(reference: string | { _id?: string } | null | undefined) {
+  return typeof reference === "string" ? reference : reference?._id || "";
+}
 
 const emptyEvent: EventRecord = {
   name: "",
@@ -111,6 +122,7 @@ export default function EventHeadDashboard() {
   const { data: session, status } = useSession();
   const [events, setEvents] = useState<EventRecord[]>([]);
   const [categories, setCategories] = useState<CategoryRecord[]>([]);
+  const [eventNames, setEventNames] = useState<EventNameRecord[]>([]);
   const [formData, setFormData] = useState<EventRecord>(emptyEvent);
   const [editingCode, setEditingCode] = useState("");
   const [loading, setLoading] = useState(false);
@@ -129,6 +141,7 @@ export default function EventHeadDashboard() {
   });
   const [lookupLoading, setLookupLoading] = useState<PeopleField | null>(null);
   const [newCategoryName, setNewCategoryName] = useState("");
+  const [newEventName, setNewEventName] = useState("");
   const [participantsCode, setParticipantsCode] = useState("");
   const [posterFile, setPosterFile] = useState<File | null>(null);
   const [posterToCrop, setPosterToCrop] = useState<File | null>(null);
@@ -160,10 +173,11 @@ export default function EventHeadDashboard() {
       try {
         setLoading(true);
 
-        const [userResponse, eventsResponse, categoriesResponse] = await Promise.all([
+        const [userResponse, eventsResponse, categoriesResponse, eventNamesResponse] = await Promise.all([
           fetch(`/api/user/get-info/${userEmail}`),
           fetch("/api/events?scope=mine"),
           fetch("/api/categories"),
+          fetch("/api/event-names"),
         ]);
 
         if (userResponse.ok) {
@@ -191,6 +205,10 @@ export default function EventHeadDashboard() {
         if (categoriesResponse.ok) {
           const categoriesData = await categoriesResponse.json();
           setCategories(categoriesData.categories || []);
+        }
+        if (eventNamesResponse.ok) {
+          const eventNamesData = await eventNamesResponse.json();
+          setEventNames(eventNamesData.eventNames || []);
         }
       } catch (error) {
         console.error("Failed to load dashboard:", error);
@@ -225,6 +243,7 @@ export default function EventHeadDashboard() {
     setEditingCode("");
     setParticipantsCode("");
     setNewCategoryName("");
+    setNewEventName("");
     setPosterFile(null);
     setPosterToCrop(null);
     setFormData({
@@ -251,15 +270,17 @@ export default function EventHeadDashboard() {
       startsAt: toDateTimeInputValue(event.startsAt),
       endsAt: toDateTimeInputValue(event.endsAt),
       categoryId:
-        event.categoryId ||
+        getReferenceId(event.categoryId) ||
         categories.find(
           (category) => category.name.toLowerCase() === event.category.toLowerCase().trim()
         )?._id ||
         "",
+      eventNameId: getReferenceId(event.eventNameId),
       eventHeads: event.eventHeads || [],
       coordinators: event.coordinators || [],
       coCoordinators: event.coCoordinators || [],
     });
+    setNewEventName("");
     setNewCategoryName("");
     setPosterFile(null);
     setPosterToCrop(null);
@@ -356,6 +377,7 @@ export default function EventHeadDashboard() {
 
     const validation = EventPayloadSchema.safeParse({
       ...formData,
+      name: formData.eventNameId === "new" ? newEventName : formData.name,
       category: formData.categoryId === "new" ? newCategoryName : formData.category,
       posterLink: formData.posterLink || (posterFile ? "pending" : ""),
       minParticipants: Number(formData.minParticipants),
@@ -371,6 +393,33 @@ export default function EventHeadDashboard() {
 
       let categoryId = formData.categoryId;
       let categoryName = formData.category;
+      let eventNameId = formData.eventNameId;
+      let eventName = formData.name;
+
+      if (eventNameId === "new") {
+        eventName = newEventName.trim();
+        if (!eventName) {
+          toast.error("Enter a new event name");
+          return;
+        }
+        const eventNameResponse = await fetch("/api/event-names", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: eventName }),
+        });
+        const eventNameData = await eventNameResponse.json();
+        if (!eventNameResponse.ok) {
+          toast.error(eventNameData.message || "Could not create event name");
+          return;
+        }
+        eventNameId = eventNameData.eventName._id;
+        eventName = eventNameData.eventName.name;
+        setEventNames((previous) =>
+          previous.some((item) => item._id === eventNameId)
+            ? previous
+            : [...previous, eventNameData.eventName].sort((a, b) => a.name.localeCompare(b.name))
+        );
+      }
 
       if (categoryId === "new") {
         categoryName = newCategoryName.trim();
@@ -426,6 +475,8 @@ export default function EventHeadDashboard() {
 
       const payload = {
         ...formData,
+        name: eventName,
+        eventNameId,
         posterLink,
         category: categoryName,
         categoryId,
@@ -686,15 +737,22 @@ export default function EventHeadDashboard() {
               </div>
 
               <section className="grid gap-4 md:grid-cols-2">
-                <label className="space-y-2">
-                  <span className="text-sm text-zinc-300">Event Name</span>
-                  <input
-                    required
-                    value={formData.name}
-                    onChange={(event) => handleInputChange("name", event.target.value)}
-                    className="w-full rounded-md border border-white/10 bg-zinc-900 px-3 py-2 text-white outline-none focus:border-amber-400"
-                  />
-                </label>
+                <NameDropdown
+                  label="Event Name"
+                  options={eventNames}
+                  value={formData.eventNameId || ""}
+                  onChange={(eventNameId) => {
+                    const selected = eventNames.find((item) => item._id === eventNameId);
+                    setFormData((previous) => ({
+                      ...previous,
+                      eventNameId,
+                      name: selected?.name || "",
+                    }));
+                  }}
+                  newValue={newEventName}
+                  onNewValueChange={setNewEventName}
+                  newLabel="New event name"
+                />
                 <label className="space-y-2">
                   <span className="text-sm text-zinc-300">Event Code</span>
                   <input
@@ -704,44 +762,22 @@ export default function EventHeadDashboard() {
                     className="w-full cursor-not-allowed rounded-md border border-white/10 bg-zinc-900 px-3 py-2 text-zinc-400 outline-none"
                   />
                 </label>
-                <label className="space-y-2">
-                  <span className="text-sm text-zinc-300">Category</span>
-                  <select
-                    required
-                    value={formData.categoryId || ""}
-                    onChange={(event) => {
-                      const categoryId = event.target.value;
-                      const selectedCategory = categories.find(
-                        (category) => category._id === categoryId
-                      );
-                      setFormData((previous) => ({
-                        ...previous,
-                        categoryId,
-                        category: selectedCategory?.name || "",
-                      }));
-                    }}
-                    className="w-full rounded-md border border-white/10 bg-zinc-900 px-3 py-2 text-white outline-none focus:border-amber-400"
-                  >
-                    <option value="" disabled>
-                      Select a category
-                    </option>
-                    {categories.map((category) => (
-                      <option key={category._id} value={category._id}>
-                        {category.name}
-                      </option>
-                    ))}
-                    <option value="new">+ Create new category</option>
-                  </select>
-                  {formData.categoryId === "new" && (
-                    <input
-                      required
-                      value={newCategoryName}
-                      onChange={(event) => setNewCategoryName(event.target.value)}
-                      placeholder="New category name"
-                      className="w-full rounded-md border border-white/10 bg-zinc-900 px-3 py-2 text-white outline-none focus:border-amber-400"
-                    />
-                  )}
-                </label>
+                <NameDropdown
+                  label="Category"
+                  options={categories}
+                  value={formData.categoryId || ""}
+                  onChange={(categoryId) => {
+                    const selectedCategory = categories.find((category) => category._id === categoryId);
+                    setFormData((previous) => ({
+                      ...previous,
+                      categoryId,
+                      category: selectedCategory?.name || "",
+                    }));
+                  }}
+                  newValue={newCategoryName}
+                  onNewValueChange={setNewCategoryName}
+                  newLabel="New category name"
+                />
                 <label className="space-y-2">
                   <span className="flex items-center gap-2 text-sm text-zinc-300">
                     <MapPin className="h-4 w-4" />

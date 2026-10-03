@@ -54,17 +54,22 @@ export default function Contact() {
       .then((data) => {
         if (!data.success) return;
 
-        const databaseTeams = data.teams || [];
+        const databaseTeams: { name: string; members: TeamMember[] }[] = (data.teams || []).filter(
+          (team: { name?: string; members?: TeamMember[] }) =>
+            team.name && Array.isArray(team.members)
+        );
 
         setTeams({
           ...Teams,
           ...Object.fromEntries(
             databaseTeams
-              .filter((team: { name?: string }) => team.name)
-              .map((team: { name: string; members: TeamMember[] }) => [
-                team.name,
-                team.members ?? [],
-              ])
+              .filter((team) => Boolean(team.name))
+              .map(
+                (team: {
+                  name: string;
+                  members: TeamMember[];
+                }) => [team.name, team.members] as const
+              )
           ),
         });
       })

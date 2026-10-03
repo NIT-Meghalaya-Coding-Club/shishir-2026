@@ -2,6 +2,7 @@ import { randomBytes } from "node:crypto";
 import { NextResponse } from "next/server";
 import connectMongo from "@/lib/mongodb";
 import Category from "@/models/Category";
+import EventName from "@/models/EventName";
 import Event from "@/models/Event";
 import Registration from "@/models/Registration";
 import mongoose from "mongoose";
@@ -13,6 +14,22 @@ import {
   resolveUsersByCollegeIDs,
   resolveUsersByEmails,
 } from "@/lib/eventAuth";
+
+function withEventName(event) {
+  if (!event) return event;
+  return {
+    ...event,
+    name: event.eventNameId?.name || event.name || "",
+  };
+}
+
+function withCategoryName(event) {
+  if (!event) return event;
+  return {
+    ...event,
+    category: event.categoryId?.name || event.category || "",
+  };
+}
 
 async function resolveCategory(payload) {
   if (payload.categoryId) {
@@ -26,6 +43,37 @@ async function resolveCategory(payload) {
     { $setOnInsert: { name } },
     { new: true, upsert: true, setDefaultsOnInsert: true }
   );
+}
+
+async function resolveEventName(payload) {
+  if (payload.eventNameId) {
+    const eventName = await EventName.findById(payload.eventNameId);
+    if (eventName) return eventName;
+  }
+
+  const name = String(payload.name || "").trim().replace(/\s+/g, " ");
+  return EventName.findOneAndUpdate(
+    { name: { $regex: `^${name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, $options: "i" } },
+    { $setOnInsert: { name } },
+    { new: true, upsert: true, setDefaultsOnInsert: true }
+  );
+}
+
+async function findExistingEventMessage(eventName) {
+  const existingEvent = await Event.findOne({
+    $or: [
+      { eventNameId: eventName._id },
+      { name: { $regex: `^${eventName.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, $options: "i" } },
+    ],
+  })
+    .populate("eventHeads", "name email")
+    .lean();
+
+  if (!existingEvent) return null;
+  const creator = existingEvent.eventHeads?.[0];
+  return creator
+    ? `A user named "${creator.name}" with email "${creator.email}" has already created this event. Contact them to have your name added as an event head.`
+    : "This event has already been created. Contact its existing event heads to be added.";
 }
 
 async function generateUniqueCode() {
@@ -128,13 +176,19 @@ export async function GET(req) {
       : {};
 
     const events = await Event.find(query)
+      .populate("eventNameId", "name")
+      .populate("categoryId", "name")
       .populate("eventHeads", "name email phone collegeID image dept yearOfStudy")
       .populate("coordinators", "name email phone collegeID image dept yearOfStudy")
       .populate("coCoordinators", "name email phone collegeID image dept yearOfStudy")
       .sort({ startsAt: 1 })
       .lean();
 
-    const eventsWithPeople = await hydrateEventPeople(events);
+    const eventsWithPeople = (await hydrateEventPeople(events)).map((event) => ({
+      ...event,
+      name: event.eventNameId?.name || event.name || "",
+      category: event.categoryId?.name || event.category || "",
+    }));
 
     return NextResponse.json(
       { success: true, events: eventsWithPeople, canCreateEvents: user ? await canCreateEvents(user) : false },
@@ -192,6 +246,14 @@ export async function POST(req) {
 
     const code = await generateUniqueCode();
     const category = await resolveCategory(payload);
+    const eventName = await resolveEventName(payload);
+    const duplicateMessage = await findExistingEventMessage(eventName);
+    if (duplicateMessage) {
+      return NextResponse.json(
+        { success: false, message: duplicateMessage },
+        { status: 409 }
+      );
+    }
 
     const currentUserCollegeID = user.collegeID;
     const eventHeadIDs = [
@@ -214,7 +276,8 @@ export async function POST(req) {
       );
 
     const createdEvent = await Event.create({
-      name: payload.name,
+      name: eventName.name,
+      eventNameId: eventName._id,
       code,
       category: category.name,
       categoryId: category._id,
@@ -233,14 +296,20 @@ export async function POST(req) {
       coordinators: coordinatorUsers.map((u) => u._id),
       coCoordinators: coCoordinatorUsers.map((u) => u._id),
     });
+    await Event.collection.updateOne(
+      { _id: createdEvent._id },
+      { $unset: { name: "", category: "" } }
+    );
 
     const event = await Event.findById(createdEvent._id)
+      .populate("eventNameId", "name")
+      .populate("categoryId", "name")
       .populate("eventHeads", "name email phone collegeID image dept yearOfStudy")
       .populate("coordinators", "name email phone collegeID image dept yearOfStudy")
       .populate("coCoordinators", "name email phone collegeID image dept yearOfStudy")
       .lean();
 
-    return NextResponse.json({ success: true, event }, { status: 201 });
+    return NextResponse.json({ success: true, event: withCategoryName(withEventName(event)) }, { status: 201 });
   } catch (error) {
     console.error("Create event error:", error);
     return NextResponse.json(

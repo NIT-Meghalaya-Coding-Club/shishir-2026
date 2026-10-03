@@ -2,6 +2,7 @@ import { randomBytes } from "node:crypto";
 import { NextResponse } from "next/server";
 import connectMongo from "@/lib/mongodb";
 import Committee from "@/models/Committee";
+import CommitteeName from "@/models/CommitteeName";
 import {
   canCreateCommittees,
   getCurrentUser,
@@ -21,6 +22,45 @@ function validateCommitteePayload(payload) {
   return missing.length > 0
     ? `Missing required fields: ${missing.join(", ")}`
     : null;
+}
+
+function withCommitteeName(committee) {
+  if (!committee) return committee;
+  return {
+    ...committee,
+    name: committee.committeeNameId?.name || committee.name || "",
+  };
+}
+
+async function resolveCommitteeName(payload) {
+  if (payload.committeeNameId) {
+    const committeeName = await CommitteeName.findById(payload.committeeNameId);
+    if (committeeName) return committeeName;
+  }
+
+  const name = String(payload.name || "").trim().replace(/\s+/g, " ");
+  return CommitteeName.findOneAndUpdate(
+    { name: { $regex: `^${name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, $options: "i" } },
+    { $setOnInsert: { name } },
+    { new: true, upsert: true, setDefaultsOnInsert: true }
+  );
+}
+
+async function findExistingCommitteeMessage(committeeName) {
+  const existingCommittee = await Committee.findOne({
+    $or: [
+      { committeeNameId: committeeName._id },
+      { name: { $regex: `^${committeeName.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, $options: "i" } },
+    ],
+  })
+    .populate("committeeHeads", "name email")
+    .lean();
+
+  if (!existingCommittee) return null;
+  const creator = existingCommittee.committeeHeads?.[0];
+  return creator
+    ? `A user named "${creator.name}" with email "${creator.email}" has already created this committee. Contact them to have your name added as a committee head.`
+    : "This committee has already been created. Contact its existing committee heads to be added.";
 }
 
 async function generateUniqueCode() {
@@ -57,6 +97,7 @@ export async function GET() {
         { coCoordinators: user._id },
       ],
     })
+      .populate("committeeNameId", "name")
       .populate("committeeHeads", "name email phone collegeID image dept yearOfStudy")
       .populate("coordinators", "name email phone collegeID image dept yearOfStudy")
       .populate("coCoordinators", "name email phone collegeID image dept yearOfStudy")
@@ -64,7 +105,7 @@ export async function GET() {
       .lean();
 
     return NextResponse.json(
-      { success: true, committees, canCreateCommittees: await canCreateCommittees(user) },
+      { success: true, committees: committees.map(withCommitteeName), canCreateCommittees: await canCreateCommittees(user) },
       { status: 200 }
     );
   } catch (error) {
@@ -118,6 +159,14 @@ export async function POST(req) {
     await connectMongo();
 
     const code = await generateUniqueCode();
+    const committeeName = await resolveCommitteeName(payload);
+    const duplicateMessage = await findExistingCommitteeMessage(committeeName);
+    if (duplicateMessage) {
+      return NextResponse.json(
+        { success: false, message: duplicateMessage },
+        { status: 409 }
+      );
+    }
 
     const committeeHeadIDs = [
       user.collegeID,
@@ -143,7 +192,7 @@ export async function POST(req) {
       );
 
     const createdCommittee = await Committee.create({
-      name: payload.name,
+      committeeNameId: committeeName._id,
       code,
       committeeHeads: committeeHeadUsers.map((u) => u._id),
       coordinators: coordinatorUsers.map((u) => u._id),
@@ -152,11 +201,12 @@ export async function POST(req) {
 
     const committee = await Committee.findById(createdCommittee._id)
       .populate("committeeHeads", "name email phone collegeID image dept yearOfStudy")
+      .populate("committeeNameId", "name")
       .populate("coordinators", "name email phone collegeID image dept yearOfStudy")
       .populate("coCoordinators", "name email phone collegeID image dept yearOfStudy")
       .lean();
 
-    return NextResponse.json({ success: true, committee }, { status: 201 });
+    return NextResponse.json({ success: true, committee: withCommitteeName(committee) }, { status: 201 });
   } catch (error) {
     console.error("Create committee error:", error);
     return NextResponse.json(

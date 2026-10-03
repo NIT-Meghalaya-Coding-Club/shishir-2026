@@ -14,6 +14,7 @@ import {
 import { toast } from "react-toastify";
 import { CommitteePayloadSchema } from "@/lib/validation/dashboardSchemas";
 import ValidationDialog from "@/components/ui/ValidationDialog";
+import NameDropdown from "@/components/NameDropdown";
 
 type Person = {
   _id?: string;
@@ -31,12 +32,22 @@ type CommitteeRecord = {
   _id?: string;
   name: string;
   code: string;
+  committeeNameId?: string;
   committeeHeads: Person[];
   coordinators: Person[];
   coCoordinators: Person[];
 };
 
+type CommitteeNameRecord = {
+  _id: string;
+  name: string;
+};
+
 type PeopleField = "committeeHeads" | "coordinators" | "coCoordinators";
+
+function getReferenceId(reference: string | { _id?: string } | null | undefined) {
+  return typeof reference === "string" ? reference : reference?._id || "";
+}
 
 const emptyCommittee: CommitteeRecord = {
   name: "",
@@ -63,6 +74,7 @@ function getPersonEmails(people: Person[]) {
 export default function CommitteeHeadDashboard() {
   const { data: session, status } = useSession();
   const [committees, setCommittees] = useState<CommitteeRecord[]>([]);
+  const [committeeNames, setCommitteeNames] = useState<CommitteeNameRecord[]>([]);
   const [formData, setFormData] = useState<CommitteeRecord>(emptyCommittee);
   const [editingCode, setEditingCode] = useState("");
   const [loading, setLoading] = useState(false);
@@ -80,6 +92,7 @@ export default function CommitteeHeadDashboard() {
     coordinators: [],
     coCoordinators: [],
   });
+  const [newCommitteeName, setNewCommitteeName] = useState("");
 
   const [canCreate, setCanCreate] = useState(false);
   const isEditing = Boolean(editingCode);
@@ -108,9 +121,10 @@ export default function CommitteeHeadDashboard() {
       try {
         setLoading(true);
 
-        const [userResponse, committeesResponse] = await Promise.all([
+        const [userResponse, committeesResponse, committeeNamesResponse] = await Promise.all([
           fetch(`/api/user/get-info/${userEmail}`),
           fetch("/api/committees"),
+          fetch("/api/committee-names"),
         ]);
 
         if (userResponse.ok) {
@@ -133,6 +147,10 @@ export default function CommitteeHeadDashboard() {
           setCanCreate(Boolean(committeesData.canCreateCommittees));
         } else {
           toast.error("Could not load your committees");
+        }
+        if (committeeNamesResponse.ok) {
+          const committeeNamesData = await committeeNamesResponse.json();
+          setCommitteeNames(committeeNamesData.committeeNames || []);
         }
       } catch (error) {
         console.error("Failed to load dashboard:", error);
@@ -165,6 +183,7 @@ export default function CommitteeHeadDashboard() {
 
   const resetForm = () => {
     setEditingCode("");
+    setNewCommitteeName("");
     setFormData({
       ...emptyCommittee,
       committeeHeads: currentUser?.collegeID && canCreate ? [currentUser] : [],
@@ -175,6 +194,7 @@ export default function CommitteeHeadDashboard() {
     setEditingCode(committee.code);
     setFormData({
       ...committee,
+      committeeNameId: getReferenceId(committee.committeeNameId),
       committeeHeads: committee.committeeHeads || [],
       coordinators: committee.coordinators || [],
       coCoordinators: committee.coCoordinators || [],
@@ -254,8 +274,37 @@ export default function CommitteeHeadDashboard() {
     try {
       setSaving(true);
 
+      let committeeNameId = formData.committeeNameId;
+      let committeeName = formData.name;
+      if (committeeNameId === "new") {
+        committeeName = newCommitteeName.trim();
+        if (!committeeName) {
+          toast.error("Enter a new committee name");
+          return;
+        }
+        const nameResponse = await fetch("/api/committee-names", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: committeeName }),
+        });
+        const nameData = await nameResponse.json();
+        if (!nameResponse.ok) {
+          toast.error(nameData.message || "Could not create committee name");
+          return;
+        }
+        committeeNameId = nameData.committeeName._id;
+        committeeName = nameData.committeeName.name;
+        setCommitteeNames((previous) =>
+          previous.some((item) => item._id === committeeNameId)
+            ? previous
+            : [...previous, nameData.committeeName].sort((a, b) => a.name.localeCompare(b.name))
+        );
+      }
+
       const payload = {
         ...formData,
+        name: committeeName,
+        committeeNameId,
         committeeHeadCollegeIDs: getPersonCollegeIDs(formData.committeeHeads),
         coordinatorCollegeIDs: getPersonCollegeIDs(formData.coordinators),
         coCoordinatorCollegeIDs: getPersonCollegeIDs(formData.coCoordinators),
@@ -476,15 +525,22 @@ export default function CommitteeHeadDashboard() {
           </div>
 
           <section className="grid gap-4 md:grid-cols-2">
-            <label className="space-y-2">
-              <span className="text-sm text-zinc-300">Committee Name</span>
-              <input
-                required
-                value={formData.name}
-                onChange={(committee) => handleInputChange("name", committee.target.value)}
-                className="w-full rounded-md border border-white/10 bg-zinc-900 px-3 py-2 text-white outline-none focus:border-amber-400"
-              />
-            </label>
+            <NameDropdown
+              label="Committee Name"
+              options={committeeNames}
+              value={formData.committeeNameId || ""}
+              onChange={(committeeNameId) => {
+                const selected = committeeNames.find((item) => item._id === committeeNameId);
+                setFormData((previous) => ({
+                  ...previous,
+                  committeeNameId,
+                  name: selected?.name || "",
+                }));
+              }}
+              newValue={newCommitteeName}
+              onNewValueChange={setNewCommitteeName}
+              newLabel="New committee name"
+            />
             <div className="space-y-2">
               <span className="text-sm text-zinc-300">Committee Code</span>
               <div className="w-full rounded-md border border-white/10 bg-zinc-900 px-3 py-2 text-zinc-400">

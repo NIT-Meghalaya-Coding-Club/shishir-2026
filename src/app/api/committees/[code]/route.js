@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import connectMongo from "@/lib/mongodb";
 import Committee from "@/models/Committee";
+import CommitteeName from "@/models/CommitteeName";
 import {
   getCurrentUser,
   isCommitteeHead,
@@ -23,6 +24,26 @@ function validateCommitteePayload(payload) {
     : null;
 }
 
+function withCommitteeName(committee) {
+  if (!committee) return committee;
+  committee.name = committee.committeeNameId?.name || committee.name || "";
+  return committee;
+}
+
+async function resolveCommitteeName(payload) {
+  if (payload.committeeNameId) {
+    const committeeName = await CommitteeName.findById(payload.committeeNameId);
+    if (committeeName) return committeeName;
+  }
+
+  const name = String(payload.name || "").trim().replace(/\s+/g, " ");
+  return CommitteeName.findOneAndUpdate(
+    { name: { $regex: `^${name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, $options: "i" } },
+    { $setOnInsert: { name } },
+    { new: true, upsert: true, setDefaultsOnInsert: true }
+  );
+}
+
 export async function PATCH(req, { params }) {
   try {
     const { code } = await params;
@@ -38,6 +59,7 @@ export async function PATCH(req, { params }) {
     await connectMongo();
 
     const committee = await Committee.findOne({ code: normalizeCode(code) })
+      .populate("committeeNameId", "name")
       .populate("committeeHeads", "name email phone collegeID image dept yearOfStudy")
       .populate("coordinators", "name email phone collegeID image dept yearOfStudy")
       .populate("coCoordinators", "name email phone collegeID image dept yearOfStudy");
@@ -67,6 +89,7 @@ export async function PATCH(req, { params }) {
     }
 
     const userIsHead = isCommitteeHead(committee, user);
+    const committeeName = await resolveCommitteeName(payload);
 
     const committeeHeadEmails = Array.isArray(payload.committeeHeadEmails)
       ? (userIsHead ? [...new Set([...payload.committeeHeadEmails, user.email])] : payload.committeeHeadEmails)
@@ -120,20 +143,26 @@ export async function PATCH(req, { params }) {
       "co-coordinators"
     );
 
-    committee.name = payload.name;
+    committee.name = committeeName.name;
+    committee.committeeNameId = committeeName._id;
     committee.committeeHeads = resolvedHeads.map((u) => u._id);
     committee.coordinators = resolvedCoords.map((u) => u._id);
     committee.coCoordinators = resolvedCoCoords.map((u) => u._id);
 
     await committee.save();
+    await Committee.collection.updateOne(
+      { _id: committee._id },
+      { $unset: { name: "" } }
+    );
 
     const populatedCommittee = await Committee.findById(committee._id)
+      .populate("committeeNameId", "name")
       .populate("committeeHeads", "name email phone collegeID image dept yearOfStudy")
       .populate("coordinators", "name email phone collegeID image dept yearOfStudy")
       .populate("coCoordinators", "name email phone collegeID image dept yearOfStudy")
       .lean();
 
-    return NextResponse.json({ success: true, committee: populatedCommittee }, { status: 200 });
+    return NextResponse.json({ success: true, committee: withCommitteeName(populatedCommittee) }, { status: 200 });
   } catch (error) {
     console.error("Update committee error:", error);
     return NextResponse.json(

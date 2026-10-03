@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import connectMongo from "@/lib/mongodb";
 import Category from "@/models/Category";
+import EventName from "@/models/EventName";
 import Event from "@/models/Event";
 import Registration from "@/models/Registration";
 import Upload from "@/models/Uploads";
@@ -19,6 +20,18 @@ function normalizeCode(code) {
   return String(code || "").trim().toLowerCase();
 }
 
+function withEventName(event) {
+  if (!event) return event;
+  event.name = event.eventNameId?.name || event.name || "";
+  return event;
+}
+
+function withCategoryName(event) {
+  if (!event) return event;
+  event.category = event.categoryId?.name || event.category || "";
+  return event;
+}
+
 async function resolveCategory(payload) {
   if (payload.categoryId) {
     const category = await Category.findById(payload.categoryId);
@@ -27,6 +40,20 @@ async function resolveCategory(payload) {
 
   const name = String(payload.category || "").trim().replace(/\s+/g, " ");
   return Category.findOneAndUpdate(
+    { name: { $regex: `^${name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, $options: "i" } },
+    { $setOnInsert: { name } },
+    { new: true, upsert: true, setDefaultsOnInsert: true }
+  );
+}
+
+async function resolveEventName(payload) {
+  if (payload.eventNameId) {
+    const eventName = await EventName.findById(payload.eventNameId);
+    if (eventName) return eventName;
+  }
+
+  const name = String(payload.name || "").trim().replace(/\s+/g, " ");
+  return EventName.findOneAndUpdate(
     { name: { $regex: `^${name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, $options: "i" } },
     { $setOnInsert: { name } },
     { new: true, upsert: true, setDefaultsOnInsert: true }
@@ -90,6 +117,8 @@ export async function GET(req, { params }) {
     await connectMongo();
 
     const event = await Event.findOne({ code: normalizeCode(code) })
+      .populate("eventNameId", "name")
+      .populate("categoryId", "name")
       .populate("eventHeads", "name email phone collegeID image dept yearOfStudy")
       .populate("coordinators", "name email phone collegeID image dept yearOfStudy")
       .populate("coCoordinators", "name email phone collegeID image dept yearOfStudy")
@@ -104,7 +133,7 @@ export async function GET(req, { params }) {
 
     const [eventWithPeople] = await hydrateEventPeople(event);
 
-    return NextResponse.json({ success: true, event: eventWithPeople }, { status: 200 });
+    return NextResponse.json({ success: true, event: withCategoryName(withEventName(eventWithPeople)) }, { status: 200 });
   } catch (error) {
     console.error("Fetch event error:", error);
     return NextResponse.json(
@@ -129,6 +158,8 @@ export async function PATCH(req, { params }) {
     await connectMongo();
 
     const event = await Event.findOne({ code: normalizeCode(code) })
+      .populate("eventNameId", "name")
+      .populate("categoryId", "name")
       .populate("eventHeads", "name email phone collegeID image dept yearOfStudy")
       .populate("coordinators", "name email phone collegeID image dept yearOfStudy")
       .populate("coCoordinators", "name email phone collegeID image dept yearOfStudy");
@@ -162,6 +193,7 @@ export async function PATCH(req, { params }) {
 
     const nextCode = normalizeCode(payload.code);
     const category = await resolveCategory(payload);
+    const eventName = await resolveEventName(payload);
 
     if (nextCode !== event.code) {
       const duplicate = await Event.findOne({ code: nextCode });
@@ -220,8 +252,10 @@ export async function PATCH(req, { params }) {
       "co-coordinators"
     );
 
-    event.name = payload.name;
+    event.name = eventName.name;
+    event.eventNameId = eventName._id;
     event.code = nextCode;
+    // Keep compatibility with a hot-reloaded legacy model; remove the duplicated field after saving.
     event.category = category.name;
     event.categoryId = category._id;
     event.location = payload.location;
@@ -241,6 +275,10 @@ export async function PATCH(req, { params }) {
     event.coCoordinators = resolvedCoCoords.map((u) => u._id);
 
     await event.save();
+    await Event.collection.updateOne(
+      { _id: event._id },
+      { $unset: { name: "", category: "" } }
+    );
 
     if (oldPosterLink !== event.posterLink) {
       await deletePosterImage(oldPosterLink);
@@ -251,12 +289,14 @@ export async function PATCH(req, { params }) {
     }
 
     const populatedEvent = await Event.findById(event._id)
+      .populate("eventNameId", "name")
+      .populate("categoryId", "name")
       .populate("eventHeads", "name email phone collegeID image dept yearOfStudy")
       .populate("coordinators", "name email phone collegeID image dept yearOfStudy")
       .populate("coCoordinators", "name email phone collegeID image dept yearOfStudy")
       .lean();
 
-    return NextResponse.json({ success: true, event: populatedEvent }, { status: 200 });
+    return NextResponse.json({ success: true, event: withCategoryName(withEventName(populatedEvent)) }, { status: 200 });
   } catch (error) {
     console.error("Update event error:", error);
     return NextResponse.json(
