@@ -7,8 +7,8 @@ import SACLetter from "@/components/mun/Letter";
 import Logo_mun from "@/components/mun/Logo";
 import TeamSection from "@/components/mun/TeamSection";
 import StickyRegisterButton from "@/components/mun/StickyRegisterButton";
+import Blossom from '@/components/Blossom';
 
-import { Crown } from "lucide-react";
 import "./mun_style.css";
 
 const Mun: React.FC = () => {
@@ -31,14 +31,15 @@ const Mun: React.FC = () => {
           <div className="mun-hero-glow" />
 
           {/* Title */}
-          <div className="mun-title-row">
-            <Crown className="mun-crown mun-crown-left" />
+          <div className="relative flex w-full justify-center items-center">
+            <Blossom className="w-10 h-10 sm:w-10 sm:h-10 text-[#98C1D9] animate-spin [animation-duration:3s]" />
 
-            <h1 className="mun-title text-center text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
+
+            <h1 className="mun-title text-center pl-5 pr-5 text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
               YOUTH PARLIAMENT 2026
             </h1>
 
-            <Crown className="mun-crown mun-crown-right" />
+            <Blossom className="w-10 h-10 sm:w-10 sm:h-10 text-[#98C1D9] animate-spin [animation-duration:3s]" />
           </div>
 
           {/* Title divider */}
