@@ -1,199 +1,89 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
-import { GripVertical, KeyRound, ListOrdered, LogOut, Save, ShieldCheck, ArrowDown, ArrowUp, UsersRound } from "lucide-react";
+import { ArrowDown, ArrowUp, Edit3, GripVertical, KeyRound, ListOrdered, LogOut, Save, ShieldCheck, UsersRound, CalendarDays } from "lucide-react";
 
 type CommitteeName = { _id: string; name: string };
-type Section = "access" | "mun" | "order";
+type Person = { name?: string; email?: string; collegeID?: string };
+type Committee = { code: string; committeeNameId?: CommitteeName; committeeHeads: Person[]; coordinators: Person[]; coCoordinators: Person[] };
+type EventItem = { code: string; eventNameId?: CommitteeName; categoryId?: CommitteeName; location: string; startsAt: string; endsAt: string; description: string; eventType: string; minParticipants: number; maxParticipants: number; allowPerformanceTypes?: boolean; paymentRequired?: { amount?: number; qrCodeUrl?: string }; rulebookLink: string; posterLink: string; eventHeads: Person[]; coordinators: Person[]; coCoordinators: Person[] };
+type Section = "access" | "mun" | "order" | "committees" | "events";
 
-function toLines(values: string[]) {
-  return values.join("\n");
-}
+const input = "w-full rounded-lg border border-white/10 bg-zinc-900 p-3 text-sm";
+const peopleText = (people: Person[] = []) => people.map((person) => person.email || "").filter(Boolean).join("\n");
+const dateValue = (value: string) => value ? new Date(value).toISOString().slice(0, 16) : "";
 
-function toEmails(value: string) {
-  return [...new Set(value.split(/[\n,]+/).map((email) => email.trim().toLowerCase()).filter(Boolean))]
-    .sort((a, b) => a.localeCompare(b));
-}
-
-function AdminSidebar({ section, onSectionChange, onLogout }: {
-  section: Section;
-  onSectionChange: (section: Section) => void;
-  onLogout: () => void;
-}) {
+function AdminSidebar({ section, onSectionChange, onLogout }: { section: Section; onSectionChange: (section: Section) => void; onLogout: () => void }) {
   const items = [
-    { id: "access" as const, label: "Access control", icon: KeyRound },
-    { id: "mun" as const, label: "MUN dashboard access", icon: UsersRound },
-    { id: "order" as const, label: "Committee order", icon: ListOrdered },
-  ];
+    ["access", "Access control", KeyRound], ["mun", "MUN dashboard access", UsersRound],
+    ["order", "Committee order", ListOrdered], ["committees", "Committees", UsersRound], ["events", "Events", CalendarDays],
+  ] as const;
+  return <aside className="flex w-full shrink-0 flex-col border-b border-white/10 bg-zinc-900/80 p-4 md:min-h-screen md:w-64 md:border-b-0 md:border-r">
+    <div className="flex items-center gap-3 px-2 py-3"><div className="rounded-lg bg-amber-400 p-2 text-zinc-950"><ShieldCheck size={18} /></div><div><p className="font-semibold">Shishir Admin</p><p className="text-xs text-zinc-500">Management</p></div></div>
+    <nav className="mt-6 space-y-1">{items.map(([id, label, Icon]) => <button key={id} type="button" onClick={() => onSectionChange(id)} className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition ${section === id ? "bg-white/10 text-white" : "text-zinc-400 hover:bg-white/5 hover:text-white"}`}><Icon size={17} />{label}</button>)}</nav>
+    <button type="button" onClick={onLogout} className="mt-auto flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-zinc-400 hover:bg-white/5 hover:text-white"><LogOut size={17} />Sign out</button>
+  </aside>;
+}
 
-  return (
-    <aside className="flex w-full shrink-0 flex-col border-b border-white/10 bg-zinc-900/80 p-4 md:min-h-screen md:w-64 md:border-b-0 md:border-r">
-      <div className="flex items-center gap-3 px-2 py-3">
-        <div className="rounded-lg bg-amber-400 p-2 text-zinc-950"><ShieldCheck size={18} /></div>
-        <div><p className="font-semibold">Shishir Admin</p><p className="text-xs text-zinc-500">Settings</p></div>
-      </div>
-      <nav className="mt-6 space-y-1">
-        {items.map(({ id, label, icon: Icon }) => (
-          <button key={id} type="button" onClick={() => onSectionChange(id)}
-            className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition ${section === id ? "bg-white/10 text-white" : "text-zinc-400 hover:bg-white/5 hover:text-white"}`}>
-            <Icon size={17} />{label}
-          </button>
-        ))}
-      </nav>
-      <button type="button" onClick={onLogout} className="mt-auto flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-zinc-400 hover:bg-white/5 hover:text-white">
-        <LogOut size={17} />Sign out
-      </button>
-    </aside>
-  );
+function PeopleField({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) {
+  return <label className="space-y-2"><span className="text-sm font-medium">{label} emails</span><textarea className={`${input} min-h-24 font-mono`} value={value} onChange={(event) => onChange(event.target.value)} placeholder="one email per line" /></label>;
 }
 
 export default function AdminPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [eventCreators, setEventCreators] = useState("");
-  const [committeeHeads, setCommitteeHeads] = useState("");
-  const [munDashboardEmails, setMunDashboardEmails] = useState("");
-  const [committeeNames, setCommitteeNames] = useState<CommitteeName[]>([]);
-  const [committeeOrder, setCommitteeOrder] = useState<string[]>([]);
-  const [section, setSection] = useState<Section>("access");
-  const [authenticated, setAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [message, setMessage] = useState("");
-  const [draggedId, setDraggedId] = useState<string | null>(null);
+  const [email, setEmail] = useState(""); const [password, setPassword] = useState(""); const [message, setMessage] = useState("");
+  const [authenticated, setAuthenticated] = useState(false); const [loading, setLoading] = useState(true); const [section, setSection] = useState<Section>("access");
+  const [eventCreators, setEventCreators] = useState(""); const [committeeHeads, setCommitteeHeads] = useState(""); const [munEmails, setMunEmails] = useState("");
+  const [committeeNames, setCommitteeNames] = useState<CommitteeName[]>([]); const [committeeOrder, setCommitteeOrder] = useState<string[]>([]); const [draggedId, setDraggedId] = useState<string | null>(null);
+  const [committees, setCommittees] = useState<Committee[]>([]); const [events, setEvents] = useState<EventItem[]>([]); const [editingCommittee, setEditingCommittee] = useState<Committee | null>(null); const [editingEvent, setEditingEvent] = useState<EventItem | null>(null);
 
-  const loadSettings = async () => {
-    const response = await fetch("/api/admin/settings");
-    if (!response.ok) {
-      setAuthenticated(false);
-      return;
-    }
-    const data = await response.json();
-    setEventCreators(toLines(data.settings.eventCreatorEmails || []));
-    setCommitteeHeads(toLines(data.settings.committeeHeadEmails || []));
-    setMunDashboardEmails(toLines(data.settings.munDashboardEmails || []));
-    setCommitteeNames(data.settings.committeeNames || []);
-    const configured = data.settings.committeeOrder || [];
-    const configuredSet = new Set(configured);
-    setCommitteeOrder([...configured, ...(data.settings.committeeNames || []).map((item: CommitteeName) => item._id).filter((id: string) => !configuredSet.has(id))]);
-    setAuthenticated(true);
-  };
-
-  useEffect(() => {
-    loadSettings().finally(() => setLoading(false));
-  }, []);
-
-  const login = async (event: FormEvent) => {
-    event.preventDefault();
-    setMessage("");
-    const response = await fetch("/api/admin/auth", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
-    if (!response.ok) {
-      setMessage("Invalid admin credentials");
-      return;
-    }
-    setPassword("");
-    await loadSettings();
-  };
-
-  const save = async (event: FormEvent) => {
-    event.preventDefault();
-    setMessage("");
-    const response = await fetch("/api/admin/settings", {
-      method: "PATCH", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        eventCreatorEmails: toEmails(eventCreators),
-        committeeHeadEmails: toEmails(committeeHeads),
-        munDashboardEmails: toEmails(munDashboardEmails),
-        committeeOrder,
-      }),
-    });
-    if (response.ok) {
-      setMessage("Settings saved");
-    } else {
-      const data = await response.json().catch(() => ({}));
-      setMessage(data.message || "Could not save settings");
-    }
-  };
-
-  const logout = async () => {
-    await fetch("/api/admin/auth", { method: "DELETE" });
-    setAuthenticated(false);
-  };
-
-  const moveCommittee = (id: string, direction: -1 | 1) => {
-    setCommitteeOrder((current) => {
-      const index = current.indexOf(id);
-      const nextIndex = index + direction;
-      if (index < 0 || nextIndex < 0 || nextIndex >= current.length) return current;
-      const next = [...current];
-      [next[index], next[nextIndex]] = [next[nextIndex], next[index]];
-      return next;
-    });
-  };
-
-  const dropCommittee = (targetId: string) => {
-    if (!draggedId || draggedId === targetId) return;
-    setCommitteeOrder((current) => {
-      const next = current.filter((id) => id !== draggedId);
-      next.splice(next.indexOf(targetId), 0, draggedId);
-      return next;
-    });
-    setDraggedId(null);
+  const loadSettings = async () => { const response = await fetch("/api/admin/settings"); if (!response.ok) { setAuthenticated(false); return; } const data = await response.json(); const settings = data.settings; setEventCreators((settings.eventCreatorEmails || []).join("\n")); setCommitteeHeads((settings.committeeHeadEmails || []).join("\n")); setMunEmails((settings.munDashboardEmails || []).join("\n")); setCommitteeNames(settings.committeeNames || []); const configured = settings.committeeOrder || []; const ids = (settings.committeeNames || []).map((item: CommitteeName) => item._id); setCommitteeOrder([...configured, ...ids.filter((id: string) => !configured.includes(id))]); setAuthenticated(true); };
+  const loadManaged = async () => { const [committeeResponse, eventResponse] = await Promise.all([fetch("/api/admin/committees"), fetch("/api/admin/events")]); if (committeeResponse.ok) setCommittees((await committeeResponse.json()).committees); if (eventResponse.ok) setEvents((await eventResponse.json()).events); };
+  useEffect(() => { loadSettings().finally(() => setLoading(false)); }, []);
+  useEffect(() => { if (authenticated && (section === "committees" || section === "events")) loadManaged(); }, [authenticated, section]);
+  const login = async (event: FormEvent) => { event.preventDefault(); const response = await fetch("/api/admin/auth", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, password }) }); if (!response.ok) { setMessage("Invalid admin credentials"); return; } setPassword(""); await loadSettings(); };
+  const saveSettings = async (event: FormEvent) => { event.preventDefault(); const response = await fetch("/api/admin/settings", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ eventCreatorEmails: eventCreators.split(/[\n,]+/).map((v) => v.trim()).filter(Boolean), committeeHeadEmails: committeeHeads.split(/[\n,]+/).map((v) => v.trim()).filter(Boolean), munDashboardEmails: munEmails.split(/[\n,]+/).map((v) => v.trim()).filter(Boolean), committeeOrder }) }); setMessage(response.ok ? "Settings saved" : "Could not save settings"); };
+  const logout = async () => { await fetch("/api/admin/auth", { method: "DELETE" }); setAuthenticated(false); };
+  const moveCommittee = (id: string, direction: -1 | 1) => setCommitteeOrder((current) => { const index = current.indexOf(id); const nextIndex = index + direction; if (index < 0 || nextIndex < 0 || nextIndex >= current.length) return current; const next = [...current]; [next[index], next[nextIndex]] = [next[nextIndex], next[index]]; return next; });
+  const saveManaged = async (kind: "committees" | "events", item: Committee | EventItem) => {
+    const editable = item as (Committee | EventItem) & { name?: string; category?: string; committeeHeadEmails?: string; eventHeadEmails?: string; coordinatorEmails?: string; coCoordinatorEmails?: string };
+    const payload = kind === "committees"
+      ? { ...item, name: editable.name || item.committeeNameId?.name, committeeHeadEmails: editable.committeeHeadEmails || peopleText(item.committeeHeads), coordinatorEmails: editable.coordinatorEmails || peopleText(item.coordinators), coCoordinatorEmails: editable.coCoordinatorEmails || peopleText(item.coCoordinators) }
+      : { ...item, name: editable.name || item.eventNameId?.name, category: editable.category || item.categoryId?.name, eventHeadEmails: editable.eventHeadEmails || peopleText(item.eventHeads), coordinatorEmails: editable.coordinatorEmails || peopleText(item.coordinators), coCoordinatorEmails: editable.coCoordinatorEmails || peopleText(item.coCoordinators), startsAt: new Date(item.startsAt).toISOString(), endsAt: new Date(item.endsAt).toISOString() };
+    const response = await fetch(`/api/admin/${kind}/${item.code}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+    const data = await response.json(); setMessage(response.ok ? "Changes saved" : data.message || "Could not save changes");
+    if (response.ok) { setEditingCommittee(null); setEditingEvent(null); await loadManaged(); }
   };
 
   if (loading) return <main className="min-h-screen bg-zinc-950 p-8 text-white">Loading...</main>;
+  if (!authenticated) return <main className="flex min-h-screen items-center justify-center bg-zinc-950 px-6 text-white"><form onSubmit={login} className="w-full max-w-md space-y-5 rounded-xl border border-white/10 bg-zinc-900 p-8 shadow-2xl"><p className="text-sm uppercase tracking-[0.25em] text-amber-400">Shishir Admin</p><h1 className="text-3xl font-semibold">Access control</h1><input className={input} type="email" placeholder="Admin email" value={email} onChange={(e) => setEmail(e.target.value)} required /><input className={input} type="password" placeholder="Admin password" value={password} onChange={(e) => setPassword(e.target.value)} required /><button className="w-full rounded-lg bg-amber-400 p-3 font-semibold text-zinc-950" type="submit">Sign in</button>{message && <p className="text-sm text-red-300">{message}</p>}</form></main>;
 
-  if (!authenticated) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-zinc-950 px-6 text-white">
-        <form onSubmit={login} className="w-full max-w-md space-y-5 rounded-xl border border-white/10 bg-zinc-900 p-8 shadow-2xl">
-          <p className="text-sm uppercase tracking-[0.25em] text-amber-400">Shishir Admin</p>
-          <h1 className="text-3xl font-semibold">Access control</h1>
-          <input className="w-full rounded-lg border border-white/10 bg-zinc-800 p-3" type="email" placeholder="Admin email" value={email} onChange={(event) => setEmail(event.target.value)} required />
-          <input className="w-full rounded-lg border border-white/10 bg-zinc-800 p-3" type="password" placeholder="Admin password" value={password} onChange={(event) => setPassword(event.target.value)} required />
-          <button className="w-full rounded-lg bg-amber-400 p-3 font-semibold text-zinc-950" type="submit">Sign in</button>
-          {message && <p className="text-sm text-red-300">{message}</p>}
-        </form>
-      </main>
-    );
-  }
+  const heading = section === "access" ? "Access control" : section === "mun" ? "MUN dashboard access" : section === "order" ? "Committee order" : section === "committees" ? "Committees" : "Events";
+  return <main className="flex min-h-screen flex-col bg-zinc-950 text-white md:flex-row"><AdminSidebar section={section} onSectionChange={(next) => { setSection(next); setMessage(""); setEditingCommittee(null); setEditingEvent(null); }} onLogout={logout} /><div className="w-full max-w-6xl space-y-8 p-6 md:p-12"><header><p className="text-sm uppercase tracking-[0.25em] text-amber-400">Admin panel</p><h1 className="mt-2 text-4xl font-semibold">{heading}</h1><p className="mt-2 text-zinc-400">{section === "committees" ? "Review every committee and edit its members." : section === "events" ? "Review events, poster links, and all event details." : "Manage site administration settings."}</p></header>
+    {section === "access" && <form onSubmit={saveSettings} className="grid gap-6 md:grid-cols-2"><PeopleField label="Event creator" value={eventCreators} onChange={setEventCreators} /><PeopleField label="Committee head" value={committeeHeads} onChange={setCommitteeHeads} /><div className="md:col-span-2"><SaveButton message={message} /></div></form>}
+    {section === "mun" && <form onSubmit={saveSettings} className="max-w-2xl space-y-5"><PeopleField label="MUN dashboard user" value={munEmails} onChange={setMunEmails} /><SaveButton message={message} /></form>}
+    {section === "order" && <form onSubmit={saveSettings} className="max-w-2xl space-y-3">{committeeOrder.map((id, index) => { const item = committeeNames.find((name) => name._id === id); return item && <div key={id} className="flex items-center gap-3 rounded-lg border border-white/10 bg-zinc-900 p-3" draggable onDragStart={() => setDraggedId(id)} onDragOver={(e) => e.preventDefault()} onDrop={() => { if (!draggedId) return; setCommitteeOrder((current) => { const next = current.filter((value) => value !== draggedId); next.splice(next.indexOf(id), 0, draggedId); return next; }); setDraggedId(null); }}><GripVertical size={18} className="text-zinc-500" /><span className="flex-1">{item.name}</span><button type="button" onClick={() => moveCommittee(id, -1)} disabled={!index} className="p-1 disabled:opacity-30"><ArrowUp size={16} /></button><button type="button" onClick={() => moveCommittee(id, 1)} disabled={index === committeeOrder.length - 1} className="p-1 disabled:opacity-30"><ArrowDown size={16} /></button></div>; })}<SaveButton message={message} /></form>}
+    {section === "committees" && (editingCommittee ? <CommitteeEditor item={editingCommittee} onChange={setEditingCommittee} onCancel={() => setEditingCommittee(null)} onSave={() => saveManaged("committees", editingCommittee)} /> : <List items={committees} getTitle={(item) => item.committeeNameId?.name || item.code} getMeta={(item) => `${item.committeeHeads.length} heads · ${item.coordinators.length} coordinators`} onEdit={setEditingCommittee} />)}
+    {section === "events" && (editingEvent ? <EventEditor item={editingEvent} onChange={setEditingEvent} onCancel={() => setEditingEvent(null)} onSave={() => saveManaged("events", editingEvent)} /> : <List items={events} getTitle={(item) => item.eventNameId?.name || item.code} getMeta={(item) => `${item.categoryId?.name || "Uncategorised"} · ${new Date(item.startsAt).toLocaleString()}`} onEdit={setEditingEvent} />)}
+  </div></main>;
+}
 
-  return (
-    <main className="flex min-h-screen flex-col bg-zinc-950 text-white md:flex-row">
-      <AdminSidebar section={section} onSectionChange={(next) => { setSection(next); setMessage(""); }} onLogout={logout} />
-      <form onSubmit={save} className="w-full max-w-5xl space-y-8 p-6 md:p-12">
-        <header>
-          <p className="text-sm uppercase tracking-[0.25em] text-amber-400">Settings</p>
-          <h1 className="mt-2 text-4xl font-semibold">{section === "access" ? "Access control" : section === "mun" ? "MUN dashboard access" : "Committee order"}</h1>
-          <p className="mt-2 text-zinc-400">{section === "access" ? "Manage who can create events and committees." : section === "mun" ? "Choose which registered users can manage MUN posts and assignments." : "Drag committees into the order they should appear across the site."}</p>
-        </header>
-        {section === "access" ? (
-          <section className="grid gap-6 md:grid-cols-2">
-            <label className="space-y-2"><span className="font-medium">Event creator emails</span><textarea className="min-h-64 w-full rounded-lg border border-white/10 bg-zinc-900 p-3 font-mono text-sm" value={eventCreators} onChange={(event) => setEventCreators(event.target.value)} placeholder="one email per line" /></label>
-            <label className="space-y-2"><span className="font-medium">Committee head emails</span><textarea className="min-h-64 w-full rounded-lg border border-white/10 bg-zinc-900 p-3 font-mono text-sm" value={committeeHeads} onChange={(event) => setCommitteeHeads(event.target.value)} placeholder="one email per line" /></label>
-          </section>
-        ) : section === "mun" ? (
-          <section className="max-w-2xl">
-            <label className="space-y-2"><span className="font-medium">MUN dashboard users</span><textarea className="min-h-64 w-full rounded-lg border border-white/10 bg-zinc-900 p-3 font-mono text-sm" value={munDashboardEmails} onChange={(event) => setMunDashboardEmails(event.target.value)} placeholder="one email per line" /></label>
-          </section>
-        ) : (
-          <section className="max-w-2xl space-y-2">
-            {committeeOrder.map((id, index) => {
-              const committee = committeeNames.find((item) => item._id === id);
-              if (!committee) return null;
-              return <div key={id} draggable onDragStart={() => setDraggedId(id)} onDragOver={(event) => event.preventDefault()} onDrop={() => dropCommittee(id)} className="flex items-center gap-3 rounded-lg border border-white/10 bg-zinc-900 p-3">
-                <GripVertical className="text-zinc-500" size={18} /><span className="flex-1">{committee.name}</span>
-                <button type="button" aria-label={`Move ${committee.name} up`} onClick={() => moveCommittee(id, -1)} disabled={index === 0} className="rounded p-1 text-zinc-400 hover:bg-white/10 disabled:opacity-30"><ArrowUp size={16} /></button>
-                <button type="button" aria-label={`Move ${committee.name} down`} onClick={() => moveCommittee(id, 1)} disabled={index === committeeOrder.length - 1} className="rounded p-1 text-zinc-400 hover:bg-white/10 disabled:opacity-30"><ArrowDown size={16} /></button>
-              </div>;
-            })}
-            {committeeOrder.length === 0 && <p className="rounded-lg border border-dashed border-white/15 p-6 text-zinc-500">No committee names have been created yet.</p>}
-          </section>
-        )}
-        <div className="flex items-center gap-4"><button className="flex items-center gap-2 rounded-lg bg-amber-400 px-6 py-3 font-semibold text-zinc-950" type="submit"><Save size={17} />Save settings</button>{message && <p className="text-sm text-emerald-300">{message}</p>}</div>
-      </form>
-    </main>
-  );
+function SaveButton({ message }: { message: string }) { return <div className="flex items-center gap-4"><button className="flex items-center gap-2 rounded-lg bg-amber-400 px-6 py-3 font-semibold text-zinc-950" type="submit"><Save size={17} />Save</button>{message && <p className="text-sm text-emerald-300">{message}</p>}</div>; }
+function List<T extends { code: string }>({ items, getTitle, getMeta, onEdit }: { items: T[]; getTitle: (item: T) => string; getMeta: (item: T) => string; onEdit: (item: T) => void }) { return <div className="space-y-3">{items.map((item) => <div key={item.code} className="flex items-center gap-4 rounded-xl border border-white/10 bg-zinc-900 p-4"><div className="min-w-0 flex-1"><p className="font-semibold">{getTitle(item)}</p><p className="mt-1 text-sm text-zinc-400">{getMeta(item)}</p><p className="mt-1 font-mono text-xs text-zinc-600">{item.code}</p></div><button type="button" onClick={() => onEdit(item)} className="rounded-lg bg-white/10 p-2 text-zinc-300 hover:bg-amber-400 hover:text-zinc-950" aria-label={`Edit ${getTitle(item)}`}><Edit3 size={17} /></button></div>)}{!items.length && <p className="rounded-lg border border-dashed border-white/15 p-6 text-zinc-500">Nothing to show.</p>}</div>; }
+
+function CommitteeEditor({ item, onChange, onCancel, onSave }: { item: Committee; onChange: (item: Committee) => void; onCancel: () => void; onSave: () => void }) { const update = (key: string, value: string) => onChange({ ...item, [key]: value }); return <div className="space-y-5"><div className="grid gap-5 md:grid-cols-2"><label className="space-y-2"><span>Name</span><input className={input} value={item.committeeNameId?.name || ""} onChange={(e) => onChange({ ...item, committeeNameId: { ...(item.committeeNameId || { _id: "" }), name: e.target.value } })} /></label><label className="space-y-2"><span>Code (cannot be changed)</span><input className={`${input} cursor-not-allowed opacity-60`} value={item.code} readOnly disabled /></label><PeopleField label="Committee head" value={peopleText(item.committeeHeads)} onChange={(value) => onChange({ ...item, committeeHeadEmails: value } as Committee)} /><PeopleField label="Coordinator" value={peopleText(item.coordinators)} onChange={(value) => onChange({ ...item, coordinatorEmails: value } as Committee)} /><PeopleField label="Co-coordinator" value={peopleText(item.coCoordinators)} onChange={(value) => onChange({ ...item, coCoordinatorEmails: value } as Committee)} /></div><div className="flex gap-3"><button type="button" onClick={onSave} className="rounded-lg bg-amber-400 px-5 py-3 font-semibold text-zinc-950">Save changes</button><button type="button" onClick={onCancel} className="rounded-lg border border-white/15 px-5 py-3">Cancel</button></div></div>; }
+
+function EventEditor({ item, onChange, onCancel, onSave }: { item: EventItem; onChange: (item: EventItem) => void; onCancel: () => void; onSave: () => void }) {
+  const [uploading, setUploading] = useState(false);
+  const [uploadMessage, setUploadMessage] = useState("");
+  const update = (key: string, value: unknown) => onChange({ ...item, [key]: value });
+  const uploadPoster = async (file: File) => {
+    setUploading(true); setUploadMessage("");
+    const formData = new FormData(); formData.append("file", file);
+    const response = await fetch(`/api/admin/events/${item.code}/poster`, { method: "POST", body: formData });
+    const data = await response.json();
+    if (response.ok) { update("posterLink", data.publicUrl); setUploadMessage("Poster uploaded. Save changes to apply it."); }
+    else setUploadMessage(data.message || "Could not upload poster");
+    setUploading(false);
+  };
+  return <div className="space-y-5"><div className="grid gap-5 md:grid-cols-2">{[["name", item.eventNameId?.name || ""], ["code", item.code], ["category", item.categoryId?.name || ""], ["location", item.location], ["rulebookLink", item.rulebookLink]].map(([key, value]) => <label key={key} className="space-y-2"><span className="capitalize">{key}</span><input className={input} value={value} onChange={(e) => update(key, e.target.value)} /></label>)}<div className="space-y-2"><span className="block">Poster</span>{item.posterLink && <a className="block truncate text-sm text-amber-300 underline" href={item.posterLink} target="_blank" rel="noreferrer">View current poster</a>}<input className={input} type="file" accept="image/jpeg,image/png,image/webp" disabled={uploading} onChange={(e) => { const file = e.target.files?.[0]; if (file) void uploadPoster(file); }} />{uploadMessage && <p className="text-xs text-zinc-400">{uploadMessage}</p>}</div><label className="space-y-2"><span>Starts at</span><input className={input} type="datetime-local" value={dateValue(item.startsAt)} onChange={(e) => update("startsAt", e.target.value)} /></label><label className="space-y-2"><span>Ends at</span><input className={input} type="datetime-local" value={dateValue(item.endsAt)} onChange={(e) => update("endsAt", e.target.value)} /></label><label className="space-y-2"><span>Participation type</span><select className={input} value={item.eventType} onChange={(e) => update("eventType", e.target.value)}><option value="individual">Individual</option><option value="team">Team</option><option value="performance">Performance</option></select></label><label className="space-y-2"><span>Minimum participants</span><input className={input} type="number" min="1" value={item.minParticipants} onChange={(e) => update("minParticipants", Number(e.target.value))} /></label><label className="space-y-2"><span>Maximum participants</span><input className={input} type="number" min="1" value={item.maxParticipants} onChange={(e) => update("maxParticipants", Number(e.target.value))} /></label><label className="space-y-2 md:col-span-2"><span>Description</span><textarea className={`${input} min-h-32`} value={item.description} onChange={(e) => update("description", e.target.value)} /></label><PeopleField label="Event head" value={peopleText(item.eventHeads)} onChange={(value) => onChange({ ...item, eventHeadEmails: value } as EventItem)} /><PeopleField label="Coordinator" value={peopleText(item.coordinators)} onChange={(value) => onChange({ ...item, coordinatorEmails: value } as EventItem)} /><PeopleField label="Co-coordinator" value={peopleText(item.coCoordinators)} onChange={(value) => onChange({ ...item, coCoordinatorEmails: value } as EventItem)} /></div><div className="flex gap-3"><button type="button" onClick={onSave} disabled={uploading} className="rounded-lg bg-amber-400 px-5 py-3 font-semibold text-zinc-950 disabled:opacity-50">Save changes</button><button type="button" onClick={onCancel} className="rounded-lg border border-white/15 px-5 py-3">Cancel</button></div></div>;
 }
