@@ -14,6 +14,7 @@ import {
 
 const PRESIGN_EXPIRES_IN_SECONDS = 600;
 const PROFILE_PROXY_PREFIX = "/api/uploads/profile/";
+const POSTER_PREFIX = "posters/";
 
 export type PresignedUpload = {
   uploadUrl: string;
@@ -169,5 +170,32 @@ export async function deleteOwnedProfileImage(image: unknown, userId: string) {
     await getR2Client().send(new DeleteObjectCommand({ Bucket: bucket, Key: key }));
   } catch (error) {
     console.error("Error deleting old profile image from R2:", error);
+  }
+}
+
+export function getPosterImageKey(image: unknown) {
+  if (typeof image !== "string" || !image) return null;
+
+  let pathname: string;
+  try {
+    pathname = new URL(image, "http://localhost").pathname;
+  } catch {
+    return null;
+  }
+
+  const key = pathname.replace(/^\/+/, "");
+  return key.startsWith(POSTER_PREFIX) ? key : null;
+}
+
+export async function deletePosterImage(image: unknown) {
+  const key = getPosterImageKey(image);
+  const { bucket } = getR2Config();
+
+  if (!key || !bucket) return;
+
+  try {
+    await getR2Client().send(new DeleteObjectCommand({ Bucket: bucket, Key: key }));
+  } catch (error) {
+    console.error("Error deleting event poster from R2:", error);
   }
 }

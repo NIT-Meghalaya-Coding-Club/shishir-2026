@@ -1,6 +1,7 @@
 import { deleteOwnedProfileImage } from '@/lib/r2';
 import connectMongo from '@/lib/mongodb';
 import User from '@/models/User';
+import Upload from '@/models/Uploads';
 
 const NIT_COLLEGE = "National Institute of Technology, Meghalaya";
 const COLLEGE_ID_PATTERN = /[A-Za-z]\d{2}[A-Za-z]{2}\d{3}/;
@@ -23,7 +24,11 @@ export async function POST(req, { params }) {
             return new Response(JSON.stringify({ success: false, error: "User not found." }), { status: 404 });
         }
 
-        const nextFormData = { ...formData };
+        const { upload, ...userData } = formData;
+        const nextFormData = { ...userData };
+        const imageChanged =
+            Object.prototype.hasOwnProperty.call(nextFormData, "image") &&
+            nextFormData.image !== existingUser.image;
         if (nextFormData.college === NIT_COLLEGE) {
             const collegeID = email.split("@")[0].match(COLLEGE_ID_PATTERN)?.[0].toLowerCase();
             if (!collegeID) {
@@ -50,7 +55,26 @@ export async function POST(req, { params }) {
 
         await user.save();
 
-        if (nextFormData.image && nextFormData.image !== oldImage) {
+        if (
+            imageChanged &&
+            nextFormData.image &&
+            upload &&
+            typeof upload === "object" &&
+            typeof upload.name === "string" &&
+            typeof upload.path === "string" &&
+            Number.isInteger(upload.size) &&
+            upload.size > 0
+        ) {
+            await Upload.create({
+                name: upload.name,
+                path: upload.path,
+                originalSize: upload.size,
+                processedSize: 0,
+                userId: user._id,
+            });
+        }
+
+        if (imageChanged) {
             await deleteOwnedProfileImage(oldImage, user._id.toString());
         }
 

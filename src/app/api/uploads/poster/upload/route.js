@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { uploadPoster } from "@/lib/r2";
-import connectMongo from "@/lib/mongodb";
 import Event from "@/models/Event";
+import Upload from "@/models/Uploads";
 import { canCreateEvents, getCurrentUser, isEventHeadOrCoordinator } from "@/lib/eventAuth";
 
 export const runtime = "nodejs";
@@ -55,7 +55,6 @@ export async function POST(req) {
     }
 
     if (eventCode) {
-      await connectMongo();
       const event = await Event.findOne({ code: eventCode });
 
       if (!event) {
@@ -79,11 +78,19 @@ export async function POST(req) {
     }
 
     const arrayBuffer = await file.arrayBuffer();
-    const { publicUrl } = await uploadPoster({
+    const { publicUrl, key } = await uploadPoster({
       userId: String(user._id),
       contentType,
       fileSize,
       body: Buffer.from(arrayBuffer),
+    });
+
+    await Upload.create({
+      name: file.name || null,
+      path: key,
+      originalSize: fileSize,
+      processedSize: 0,
+      userId: user._id,
     });
 
     return NextResponse.json({
