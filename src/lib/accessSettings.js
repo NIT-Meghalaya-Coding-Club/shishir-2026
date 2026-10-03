@@ -1,5 +1,6 @@
 import connectMongo from "@/lib/mongodb";
 import AppSettings from "@/models/AppSettings";
+import mongoose from "mongoose";
 
 function envEmails(name) {
   return String(process.env[name] || "")
@@ -14,6 +15,12 @@ function normalizeEmails(emails) {
     .filter(Boolean))].sort((a, b) => a.localeCompare(b));
 }
 
+function normalizeCommitteeOrder(ids) {
+  return [...new Set((Array.isArray(ids) ? ids : [])
+    .map((id) => String(id || "").trim())
+    .filter((id) => mongoose.Types.ObjectId.isValid(id)))];
+}
+
 export async function getAccessSettings() {
   await connectMongo();
   return AppSettings.findOneAndUpdate(
@@ -22,13 +29,14 @@ export async function getAccessSettings() {
       $setOnInsert: {
         eventCreatorEmails: envEmails("EVENT_CREATOR_EMAILS"),
         committeeHeadEmails: envEmails("COMMITTEE_HEAD_EMAILS"),
+        committeeOrder: [],
       },
     },
     { new: true, upsert: true, setDefaultsOnInsert: true }
   ).lean();
 }
 
-export async function updateAccessSettings({ eventCreatorEmails, committeeHeadEmails }) {
+export async function updateAccessSettings({ eventCreatorEmails, committeeHeadEmails, committeeOrder }) {
   await connectMongo();
   return AppSettings.findOneAndUpdate(
     { key: "access-control" },
@@ -36,10 +44,11 @@ export async function updateAccessSettings({ eventCreatorEmails, committeeHeadEm
       $set: {
         eventCreatorEmails: normalizeEmails(eventCreatorEmails),
         committeeHeadEmails: normalizeEmails(committeeHeadEmails),
+        committeeOrder: normalizeCommitteeOrder(committeeOrder),
       },
     },
     { new: true, upsert: true, setDefaultsOnInsert: true }
   ).lean();
 }
 
-export { normalizeEmails };
+export { normalizeEmails, normalizeCommitteeOrder };
