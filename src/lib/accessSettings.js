@@ -29,6 +29,7 @@ export async function getAccessSettings() {
       $setOnInsert: {
         eventCreatorEmails: envEmails("EVENT_CREATOR_EMAILS"),
         committeeHeadEmails: envEmails("COMMITTEE_HEAD_EMAILS"),
+        munDashboardEmails: envEmails("MUN_DASHBOARD_EMAILS"),
         committeeOrder: [],
       },
     },
@@ -36,7 +37,7 @@ export async function getAccessSettings() {
   ).lean();
 }
 
-export async function updateAccessSettings({ eventCreatorEmails, committeeHeadEmails, committeeOrder }) {
+export async function updateAccessSettings({ eventCreatorEmails, committeeHeadEmails, munDashboardEmails, committeeOrder }) {
   await connectMongo();
   return AppSettings.findOneAndUpdate(
     { key: "access-control" },
@@ -44,6 +45,7 @@ export async function updateAccessSettings({ eventCreatorEmails, committeeHeadEm
       $set: {
         eventCreatorEmails: normalizeEmails(eventCreatorEmails),
         committeeHeadEmails: normalizeEmails(committeeHeadEmails),
+        munDashboardEmails: normalizeEmails(munDashboardEmails),
         committeeOrder: normalizeCommitteeOrder(committeeOrder),
       },
     },

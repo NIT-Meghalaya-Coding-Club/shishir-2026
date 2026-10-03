@@ -3,7 +3,7 @@ import connectMongo from '../../../../../lib/mongodb';
 import User from '@/models/User';
 import Event from '@/models/Event';
 import Committee from '@/models/Committee';
-import { canCreateCommittees, canCreateEvents } from '@/lib/eventAuth';
+import { canAccessMunDashboard, canCreateCommittees, canCreateEvents } from '@/lib/eventAuth';
 
 export async function GET(req, { params }) {
     try {
@@ -29,6 +29,7 @@ export async function GET(req, { params }) {
 
         const canCreateEvts = await canCreateEvents(user);
         const canCreateComm = await canCreateCommittees(user);
+        const hasMunAccess = await canAccessMunDashboard(user);
 
         const [isEventStaff, isCommitteeStaff] = await Promise.all([
             canCreateEvts
@@ -57,6 +58,7 @@ export async function GET(req, { params }) {
             canCreateCommittees: canCreateComm,
             hasEventAccess: Boolean(isEventStaff),
             hasCommitteeAccess: Boolean(isCommitteeStaff),
+            hasMunAccess,
         }, { status: 200 });
     } catch (error) {
         console.error('Error fetching User:', error);

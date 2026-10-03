@@ -17,6 +17,7 @@ export async function GET() {
     settings: {
       eventCreatorEmails: settings.eventCreatorEmails,
       committeeHeadEmails: settings.committeeHeadEmails,
+      munDashboardEmails: settings.munDashboardEmails || [],
       committeeOrder: (settings.committeeOrder || []).map(String),
       committeeNames,
     },
@@ -36,6 +37,7 @@ export async function PATCH(req) {
     const settings = await updateAccessSettings({
       eventCreatorEmails: normalizeEmails(payload.eventCreatorEmails),
       committeeHeadEmails: normalizeEmails(payload.committeeHeadEmails),
+      munDashboardEmails: normalizeEmails(payload.munDashboardEmails),
       committeeOrder,
     });
 
@@ -44,6 +46,7 @@ export async function PATCH(req) {
       settings: {
         eventCreatorEmails: settings.eventCreatorEmails,
         committeeHeadEmails: settings.committeeHeadEmails,
+        munDashboardEmails: settings.munDashboardEmails || [],
         committeeOrder: (settings.committeeOrder || []).map(String),
       },
     });

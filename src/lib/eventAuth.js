@@ -94,6 +94,12 @@ export async function canCreateCommittees(user) {
   return settings.committeeHeadEmails.includes(user.email.toLowerCase());
 }
 
+export async function canAccessMunDashboard(user) {
+  if (!user?.email) return false;
+  const settings = await getAccessSettings();
+  return settings.munDashboardEmails.includes(user.email.toLowerCase());
+}
+
 export async function hydrateEventPeople(events) {
   const eventList = Array.isArray(events) ? events : [events];
   return eventList.map((event) => ({

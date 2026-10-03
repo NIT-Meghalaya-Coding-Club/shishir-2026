@@ -18,12 +18,6 @@ export async function GET(req) {
     const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     await connectMongo();
     const users = await User.find({
-      email: {
-        $not: {
-          $regex: `^${session.user.email.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`,
-          $options: "i",
-        },
-      },
       $or: [
         { email: { $regex: escapedQuery, $options: "i" } },
         { name: { $regex: escapedQuery, $options: "i" } },

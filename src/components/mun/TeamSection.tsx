@@ -1,16 +1,42 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { FaPhone, FaEnvelope } from "react-icons/fa6";
 import { RiMenu4Line } from "@remixicon/react";
 
-import { MUN_Team } from "@/data/MUN_Team";
 import { defaultImageUrl } from "@/data/Teams";
 import Title from "./Title";
 
 import "./TeamSection.css";
 
+type TeamMember = {
+  _id: string;
+  name?: string;
+  email: string;
+  phone?: string;
+  image?: string;
+  position: string;
+};
+
+type MunPost = {
+  _id: string;
+  title: string;
+  users: Omit<TeamMember, "position">[];
+};
+
 const TeamSection: React.FC = () => {
+  const [team, setTeam] = useState<TeamMember[]>([]);
+
+  useEffect(() => {
+    fetch("/api/mun/public")
+      .then((response) => response.ok ? response.json() : Promise.reject(new Error("Could not load MUN team")))
+      .then((data: { posts: MunPost[] }) => {
+        setTeam(data.posts.flatMap((post) => post.users.map((user) => ({ ...user, position: post.title }))));
+      })
+      .catch((error) => console.error("Load MUN team error:", error));
+  }, []);
+
   return (
     <section className="team-section">
       {/* Section Heading */}
@@ -18,12 +44,12 @@ const TeamSection: React.FC = () => {
 
       {/* Team Cards */}
       <div className="card__container">
-        {MUN_Team.map((member, index) => {
-          const imageUrl = member.imageLink || defaultImageUrl;
+        {team.map((member, index) => {
+          const imageUrl = member.image || defaultImageUrl;
 
           return (
             <motion.article
-              key={index}
+              key={`${member._id}-${member.position}`}
               className="card__article"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -79,13 +105,13 @@ const TeamSection: React.FC = () => {
                   <div className="info__divider" />
 
                   <div className="info__contact">
-                    {member.contactNo && (
+                    {member.phone && (
                       <a
-                        href={`tel:${member.contactNo}`}
+                        href={`tel:${member.phone}`}
                         className="info__contact-link"
                       >
                         <FaPhone className="info__contact-icon" />
-                        <span>{member.contactNo}</span>
+                        <span>{member.phone}</span>
                       </a>
                     )}
 

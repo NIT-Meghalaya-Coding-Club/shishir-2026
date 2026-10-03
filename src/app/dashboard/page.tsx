@@ -46,6 +46,7 @@ type UserData = {
   canCreateCommittees?: boolean;
   hasEventAccess?: boolean;
   hasCommitteeAccess?: boolean;
+  hasMunAccess?: boolean;
 };
 
 type RegisteredEvent = {
@@ -222,6 +223,7 @@ const ProfileCard = () => {
             canCreateCommittees: data.canCreateCommittees || false,
             hasEventAccess: data.hasEventAccess || false,
             hasCommitteeAccess: data.hasCommitteeAccess || false,
+            hasMunAccess: data.hasMunAccess || false,
           });
 
           setIsLoading(false);
@@ -390,6 +392,18 @@ const ProfileCard = () => {
       >
         <FaDesktop />
         <span>Committee Dashboard</span>
+      </button>
+    )
+  }
+
+  const CustomMunDashboardButton = () => {
+    return (
+      <button
+        onClick={() => router.push("/mun/dashboard")}
+        className={`${btnBase} bg-[#3D5A80] text-white shadow-[0_10px_22px_-10px_rgba(61,90,128,0.8)] hover:bg-[#33506f]`}
+      >
+        <FaDesktop />
+        <span>MUN Dashboard</span>
       </button>
     )
   }
@@ -583,6 +597,7 @@ const ProfileCard = () => {
                 <CustomCommitteDashboardButton />
                 :''
               }
+              {userData.hasMunAccess ? <CustomMunDashboardButton /> : ''}
               <CustomLogoutButton />
             </div>
             <AnimatePresence>
