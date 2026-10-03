@@ -1,5 +1,5 @@
 import About from '@/components/homepage/about'
-import Events from '@/components/homepage/stats'
+// import Events from '@/components/homepage/stats'
 // import CountdownTimer from '@/components/homepage/countdownTimer'
 // import Sponsors from '@/components/homepage/sponsors'
 // import ComingSoon from '@/components/ComingSoon'
@@ -31,7 +31,7 @@ export default function Home() {
         <Starfield/>
         {/* <Sponsors /> */}
         {/* <Announcement /> */}
-        <Events />
+        {/* <Events /> */}
       </div>
       
     </main>
