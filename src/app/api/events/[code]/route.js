@@ -3,6 +3,8 @@ import connectMongo from "@/lib/mongodb";
 import Category from "@/models/Category";
 import Event from "@/models/Event";
 import Registration from "@/models/Registration";
+import Upload from "@/models/Uploads";
+import { deletePosterImage, getPosterImageKey } from "@/lib/r2";
 import {
   canCreateEvents,
   getCurrentUser,
@@ -190,9 +192,7 @@ export async function PATCH(req, { params }) {
     const coCoordinatorEmails = Array.isArray(payload.coCoordinatorEmails)
       ? await resolveUsersByEmails(payload.coCoordinatorEmails, "co-coordinators", true)
       : null;
-    const coCoordinatorUsers = coCoordinatorEmails
-      ? await resolveUsersByEmails(coCoordinatorEmails, "co-coordinators", true)
-      : null;
+    const coCoordinatorUsers = coCoordinatorEmails;
 
     const eventHeadIDs = Array.isArray(payload.eventHeadCollegeIDs)
       ? payload.eventHeadCollegeIDs
@@ -234,12 +234,21 @@ export async function PATCH(req, { params }) {
     event.allowPerformanceTypes = Boolean(payload.allowPerformanceTypes);
     event.paymentRequired = payload.paymentRequired || undefined;
     event.rulebookLink = payload.rulebookLink;
+    const oldPosterLink = event.posterLink;
     event.posterLink = payload.posterLink;
     event.eventHeads = resolvedHeads.map((u) => u._id);
     event.coordinators = resolvedCoords.map((u) => u._id);
     event.coCoordinators = resolvedCoCoords.map((u) => u._id);
 
     await event.save();
+
+    if (oldPosterLink !== event.posterLink) {
+      await deletePosterImage(oldPosterLink);
+      const oldPosterKey = getPosterImageKey(oldPosterLink);
+      if (oldPosterKey) {
+        await Upload.deleteMany({ path: oldPosterKey });
+      }
+    }
 
     const populatedEvent = await Event.findById(event._id)
       .populate("eventHeads", "name email phone collegeID image dept yearOfStudy")
@@ -289,6 +298,11 @@ export async function DELETE(req, { params }) {
     }
 
     await Registration.deleteMany({ eventId: event.code });
+    await deletePosterImage(event.posterLink);
+    const posterKey = getPosterImageKey(event.posterLink);
+    if (posterKey) {
+      await Upload.deleteMany({ path: posterKey });
+    }
     await event.deleteOne();
 
     return NextResponse.json({ success: true, message: "Event deleted successfully" }, { status: 200 });
