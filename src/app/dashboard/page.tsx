@@ -295,7 +295,14 @@ const ProfileCard = () => {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ image: presignData.publicUrl }),
+          body: JSON.stringify({
+            image: presignData.publicUrl,
+            upload: {
+              name: file.name,
+              path: presignData.key,
+              size: file.size,
+            },
+          }),
         }
       );
 

@@ -148,6 +148,7 @@ const ProfileDetailsForm = () => {
     emergencyContact: "",
     image: "",
     registered: false,
+    upload: null as { name: string; path: string; size: number } | null,
   });
 
   useEffect(() => {
@@ -184,6 +185,7 @@ const ProfileDetailsForm = () => {
             emergencyContact: data.user?.emergencyContact || "",
             image: getProfileImageUrl(data.user?.image || session.user?.image || ""),
             registered: data.user?.registered || false,
+            upload: data.user?.upload || null,
           });
 
           setDataFetched(true);
@@ -346,6 +348,11 @@ const ProfileDetailsForm = () => {
         }
 
         profileImage = presignData.publicUrl;
+        submissionData.upload = {
+          name: profileFile.name,
+          path: presignData.key,
+          size: profileFile.size,
+        };
       }
 
       const res = await fetch(`/api/user/update/${formData.email}`, {
