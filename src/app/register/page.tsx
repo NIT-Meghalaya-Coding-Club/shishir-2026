@@ -44,6 +44,7 @@ function Register() {
           width={0}
           sizes="100svw"
           className="h-28 w-auto mx-auto drop-shadow-lg"
+          unoptimized
         />
         <div className="text-4xl font-zentry font-bold pt-6">
           <h1 className="font-general font-medium text-2xl text-[#3D5A80] dark:text-[#98C1D9] mb-2">Welcome to</h1>

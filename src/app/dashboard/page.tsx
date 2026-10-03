@@ -494,6 +494,7 @@ const ProfileCard = () => {
                       width={96}
                       height={96}
                       className="h-full w-full rounded-full border-[3px] border-white object-cover dark:border-[#293241]"
+unoptimized
                     />
                   </div>
                   <button

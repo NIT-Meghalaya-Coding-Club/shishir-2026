@@ -28,6 +28,7 @@ export default function EventList({ events = [] }: EventListProps) {
               alt={`Event Poster for ${event.name}`}
               width={500}
               height={500}
+              unoptimized
             />
             <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-2">
               <h3 className="text-lg font-bold">{event.name}</h3>

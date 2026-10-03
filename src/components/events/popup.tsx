@@ -51,6 +51,7 @@ const Popup: React.FC<PopupProps> = ({ isOpen, onClose, event }) => {
               width={300}
               height={200}
               className="rounded-lg mb-4"
+              unoptimized
             />
         </div>
         

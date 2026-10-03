@@ -127,6 +127,7 @@ export default function EventPage() {
                     alt={`${event.name} poster`}
                     className="w-full aspect-square object-cover"
                     priority
+                    unoptimized
                   />
                 </motion.div>
               </div>

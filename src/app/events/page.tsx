@@ -71,6 +71,7 @@ function PeopleGroup({ label, people }: { label: string; people: Person[] }) {
               width={56}
               height={56}
               className="my-2 h-14 w-14 rounded-full border-2 border-[#EE6C4D]/50 object-cover"
+              unoptimized
             />
             <div className="flex flex-col items-center min-w-0 space-y-1 text-sm">
               <p className="break-words font-semibold text-[#293241] dark:text-[#E0FBFC]">{person.name}</p>
@@ -339,6 +340,7 @@ export default function Events() {
                               quality={75}
                               priority={index < 4}
                               className="transition-transform duration-500 group-hover:scale-110"
+                              unoptimized
                             />
 
                             {/* Event Name Overlay (Gradient) */}
