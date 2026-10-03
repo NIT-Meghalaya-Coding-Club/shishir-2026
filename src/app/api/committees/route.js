@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import connectMongo from "@/lib/mongodb";
 import Committee from "@/models/Committee";
 import CommitteeName from "@/models/CommitteeName";
+import { getAccessSettings } from "@/lib/accessSettings";
 import {
   canCreateCommittees,
   getCurrentUser,
@@ -30,6 +31,20 @@ function withCommitteeName(committee) {
     ...committee,
     name: committee.committeeNameId?.name || committee.name || "",
   };
+}
+
+function sortByConfiguredOrder(committees, committeeOrder) {
+  const order = new Map(committeeOrder.map((id, index) => [String(id), index]));
+  return committees.sort((a, b) => {
+    const aIndex = order.get(String(a.committeeNameId?._id));
+    const bIndex = order.get(String(b.committeeNameId?._id));
+    if (aIndex !== undefined || bIndex !== undefined) {
+      if (aIndex === undefined) return 1;
+      if (bIndex === undefined) return -1;
+      if (aIndex !== bIndex) return aIndex - bIndex;
+    }
+    return (a.committeeNameId?.name || a.name || "").localeCompare(b.committeeNameId?.name || b.name || "");
+  });
 }
 
 async function resolveCommitteeName(payload) {
@@ -101,11 +116,11 @@ export async function GET() {
       .populate("committeeHeads", "name email phone collegeID image dept yearOfStudy")
       .populate("coordinators", "name email phone collegeID image dept yearOfStudy")
       .populate("coCoordinators", "name email phone collegeID image dept yearOfStudy")
-      .sort({ name: 1 })
       .lean();
+    const settings = await getAccessSettings();
 
     return NextResponse.json(
-      { success: true, committees: committees.map(withCommitteeName), canCreateCommittees: await canCreateCommittees(user) },
+      { success: true, committees: sortByConfiguredOrder(committees, (settings.committeeOrder || []).map(String)).map(withCommitteeName), canCreateCommittees: await canCreateCommittees(user) },
       { status: 200 }
     );
   } catch (error) {

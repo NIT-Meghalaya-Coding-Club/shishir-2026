@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import connectMongo from "@/lib/mongodb";
 import Committee from "@/models/Committee";
 import "@/models/CommitteeName";
+import { getAccessSettings } from "@/lib/accessSettings";
 
 const memberGroups = [
   ["committeeHeads", "Head"],
@@ -18,8 +19,19 @@ export async function GET() {
       .populate("committeeHeads", "name phone email image")
       .populate("coordinators", "name phone email image")
       .populate("coCoordinators", "name phone email image")
-      .sort({ name: 1 })
       .lean();
+    const settings = await getAccessSettings();
+    const order = new Map((settings.committeeOrder || []).map((id, index) => [String(id), index]));
+    committees.sort((a, b) => {
+      const aIndex = order.get(String(a.committeeNameId?._id));
+      const bIndex = order.get(String(b.committeeNameId?._id));
+      if (aIndex !== undefined || bIndex !== undefined) {
+        if (aIndex === undefined) return 1;
+        if (bIndex === undefined) return -1;
+        if (aIndex !== bIndex) return aIndex - bIndex;
+      }
+      return (a.committeeNameId?.name || a.name || "").localeCompare(b.committeeNameId?.name || b.name || "");
+    });
 
     const teams = committees
       .map((committee) => ({
