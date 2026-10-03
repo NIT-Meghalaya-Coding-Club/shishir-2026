@@ -148,7 +148,7 @@ const ProfileDetailsForm = () => {
     emergencyContact: "",
     image: "",
     registered: false,
-    upload: null as { name: string; path: string; size: number } | null,
+    upload: null as { size: number } | null,
   });
 
   useEffect(() => {
@@ -349,8 +349,6 @@ const ProfileDetailsForm = () => {
 
         profileImage = presignData.publicUrl;
         submissionData.upload = {
-          name: profileFile.name,
-          path: presignData.key,
           size: profileFile.size,
         };
       }

@@ -187,6 +187,23 @@ export function getPosterImageKey(image: unknown) {
   return key.startsWith(POSTER_PREFIX) ? key : null;
 }
 
+export function getPosterPublicUrl(image: unknown) {
+  if (typeof image !== "string" || !image) return image;
+
+  try {
+    const parsed = new URL(image);
+    if (parsed.protocol === "http:" || parsed.protocol === "https:") {
+      return image;
+    }
+  } catch {
+    // Stored poster keys are converted to their configured public URL below.
+  }
+
+  const key = getPosterImageKey(image);
+  const { publicBaseUrl } = getR2Config();
+  return key && publicBaseUrl ? `${publicBaseUrl}/${key}` : image;
+}
+
 export async function deletePosterImage(image: unknown) {
   const key = getPosterImageKey(image);
   const { bucket } = getR2Config();

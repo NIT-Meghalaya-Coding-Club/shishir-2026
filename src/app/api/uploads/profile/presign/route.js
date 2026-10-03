@@ -42,7 +42,7 @@ export async function POST(req) {
       );
     }
 
-    const { uploadUrl, publicUrl, key } = await presignProfileUpload({
+    const { uploadUrl, publicUrl } = await presignProfileUpload({
       userId: String(user._id),
       contentType,
       fileSize,
@@ -51,7 +51,6 @@ export async function POST(req) {
     return NextResponse.json({
       uploadUrl,
       publicUrl,
-      key,
     });
   } catch (error) {
     console.error("Profile image presign error:", error);

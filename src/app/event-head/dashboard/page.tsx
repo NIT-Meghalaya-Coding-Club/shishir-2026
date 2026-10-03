@@ -452,6 +452,7 @@ export default function EventHeadDashboard() {
       }
 
       let posterLink = formData.posterLink;
+      let posterUploadId: string | undefined;
       if (posterFile) {
         const formDataForUpload = new FormData();
         formDataForUpload.append("file", posterFile);
@@ -471,6 +472,7 @@ export default function EventHeadDashboard() {
         }
 
         posterLink = uploadData.publicUrl;
+        posterUploadId = uploadData.uploadId;
       }
 
       const payload = {
@@ -478,6 +480,7 @@ export default function EventHeadDashboard() {
         name: eventName,
         eventNameId,
         posterLink,
+        posterUploadId,
         category: categoryName,
         categoryId,
         eventType: formData.eventType || "individual",

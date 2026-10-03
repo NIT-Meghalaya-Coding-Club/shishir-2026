@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
+import mongoose from "mongoose";
 import connectMongo from "@/lib/mongodb";
 import Category from "@/models/Category";
 import EventName from "@/models/EventName";
 import Event from "@/models/Event";
 import Registration from "@/models/Registration";
 import Upload from "@/models/Uploads";
-import { deletePosterImage, getPosterImageKey } from "@/lib/r2";
+import { deletePosterImage, getPosterPublicUrl } from "@/lib/r2";
 import {
   canCreateEvents,
   getCurrentUser,
@@ -133,7 +134,13 @@ export async function GET(req, { params }) {
 
     const [eventWithPeople] = await hydrateEventPeople(event);
 
-    return NextResponse.json({ success: true, event: withCategoryName(withEventName(eventWithPeople)) }, { status: 200 });
+    return NextResponse.json({
+      success: true,
+      event: {
+        ...withCategoryName(withEventName(eventWithPeople)),
+        posterLink: getPosterPublicUrl(eventWithPeople.posterLink),
+      },
+    }, { status: 200 });
   } catch (error) {
     console.error("Fetch event error:", error);
     return NextResponse.json(
@@ -282,10 +289,15 @@ export async function PATCH(req, { params }) {
 
     if (oldPosterLink !== event.posterLink) {
       await deletePosterImage(oldPosterLink);
-      const oldPosterKey = getPosterImageKey(oldPosterLink);
-      if (oldPosterKey) {
-        await Upload.deleteMany({ path: oldPosterKey });
+      const uploadFilter = {
+        type: "poster",
+        referenceId: event._id,
+        referenceType: "Event",
+      };
+      if (mongoose.isValidObjectId(payload.posterUploadId)) {
+        uploadFilter._id = { $ne: payload.posterUploadId };
       }
+      await Upload.deleteMany(uploadFilter);
     }
 
     const populatedEvent = await Event.findById(event._id)
@@ -296,7 +308,13 @@ export async function PATCH(req, { params }) {
       .populate("coCoordinators", "name email phone collegeID image dept yearOfStudy")
       .lean();
 
-    return NextResponse.json({ success: true, event: withCategoryName(withEventName(populatedEvent)) }, { status: 200 });
+    return NextResponse.json({
+      success: true,
+      event: {
+        ...withCategoryName(withEventName(populatedEvent)),
+        posterLink: getPosterPublicUrl(populatedEvent.posterLink),
+      },
+    }, { status: 200 });
   } catch (error) {
     console.error("Update event error:", error);
     return NextResponse.json(
@@ -339,10 +357,11 @@ export async function DELETE(req, { params }) {
 
     await Registration.deleteMany({ eventId: event.code });
     await deletePosterImage(event.posterLink);
-    const posterKey = getPosterImageKey(event.posterLink);
-    if (posterKey) {
-      await Upload.deleteMany({ path: posterKey });
-    }
+    await Upload.deleteMany({
+      type: "poster",
+      referenceId: event._id,
+      referenceType: "Event",
+    });
     await event.deleteOne();
 
     return NextResponse.json({ success: true, message: "Event deleted successfully" }, { status: 200 });

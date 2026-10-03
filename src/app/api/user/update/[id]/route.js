@@ -55,19 +55,26 @@ export async function POST(req, { params }) {
 
         await user.save();
 
+        if (imageChanged) {
+            await Upload.deleteMany({
+                type: "profile",
+                referenceId: user._id,
+                referenceType: "User",
+            });
+        }
+
         if (
             imageChanged &&
             nextFormData.image &&
             upload &&
             typeof upload === "object" &&
-            typeof upload.name === "string" &&
-            typeof upload.path === "string" &&
             Number.isInteger(upload.size) &&
             upload.size > 0
         ) {
             await Upload.create({
-                name: upload.name,
-                path: upload.path,
+                type: "profile",
+                referenceId: user._id,
+                referenceType: "User",
                 originalSize: upload.size,
                 processedSize: 0,
                 userId: user._id,

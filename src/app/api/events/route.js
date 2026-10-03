@@ -5,6 +5,7 @@ import Category from "@/models/Category";
 import EventName from "@/models/EventName";
 import Event from "@/models/Event";
 import Registration from "@/models/Registration";
+import Upload from "@/models/Uploads";
 import mongoose from "mongoose";
 import {
   canCreateEvents,
@@ -14,6 +15,7 @@ import {
   resolveUsersByCollegeIDs,
   resolveUsersByEmails,
 } from "@/lib/eventAuth";
+import { getPosterPublicUrl } from "@/lib/r2";
 
 function withEventName(event) {
   if (!event) return event;
@@ -188,6 +190,7 @@ export async function GET(req) {
       ...event,
       name: event.eventNameId?.name || event.name || "",
       category: event.categoryId?.name || event.category || "",
+      posterLink: getPosterPublicUrl(event.posterLink),
     }));
 
     return NextResponse.json(
@@ -300,6 +303,22 @@ export async function POST(req) {
       { _id: createdEvent._id },
       { $unset: { name: "", category: "" } }
     );
+    if (mongoose.isValidObjectId(payload.posterUploadId)) {
+      await Upload.updateOne(
+        {
+          _id: payload.posterUploadId,
+          type: "poster",
+          referenceId: user._id,
+          referenceType: "User",
+        },
+        {
+          $set: {
+            referenceId: createdEvent._id,
+            referenceType: "Event",
+          },
+        }
+      );
+    }
 
     const event = await Event.findById(createdEvent._id)
       .populate("eventNameId", "name")
@@ -309,7 +328,13 @@ export async function POST(req) {
       .populate("coCoordinators", "name email phone collegeID image dept yearOfStudy")
       .lean();
 
-    return NextResponse.json({ success: true, event: withCategoryName(withEventName(event)) }, { status: 201 });
+    return NextResponse.json({
+      success: true,
+      event: {
+        ...withCategoryName(withEventName(event)),
+        posterLink: getPosterPublicUrl(event.posterLink),
+      },
+    }, { status: 201 });
   } catch (error) {
     console.error("Create event error:", error);
     return NextResponse.json(

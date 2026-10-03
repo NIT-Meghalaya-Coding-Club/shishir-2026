@@ -54,8 +54,9 @@ export async function POST(req) {
       );
     }
 
+    let event = null;
     if (eventCode) {
-      const event = await Event.findOne({ code: eventCode });
+      event = await Event.findOne({ code: eventCode });
 
       if (!event) {
         return NextResponse.json(
@@ -78,16 +79,17 @@ export async function POST(req) {
     }
 
     const arrayBuffer = await file.arrayBuffer();
-    const { publicUrl, key } = await uploadPoster({
+    const { publicUrl } = await uploadPoster({
       userId: String(user._id),
       contentType,
       fileSize,
       body: Buffer.from(arrayBuffer),
     });
 
-    await Upload.create({
-      name: file.name || null,
-      path: key,
+    const upload = await Upload.create({
+      type: "poster",
+      referenceId: event?._id || user._id,
+      referenceType: event ? "Event" : "User",
       originalSize: fileSize,
       processedSize: 0,
       userId: user._id,
@@ -96,6 +98,7 @@ export async function POST(req) {
     return NextResponse.json({
       success: true,
       publicUrl,
+      uploadId: upload._id,
     });
   } catch (error) {
     console.error("Poster upload error:", error);

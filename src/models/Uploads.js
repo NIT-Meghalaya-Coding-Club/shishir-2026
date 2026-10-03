@@ -3,8 +3,13 @@ const { Schema } = mongoose;
 
 const uploadSchema = new Schema(
   {
-    name: { type: String, default: null },
-    path: { type: String, default: null },
+    type: { type: String, required: true, trim: true, lowercase: true, index: true },
+    referenceId: { type: Schema.Types.ObjectId, required: true, index: true },
+    referenceType: {
+      type: String,
+      required: true,
+      enum: ["User", "Event"],
+    },
     originalSize: { type: Number, default: 0 },
     isProcessed: { type: Boolean, default: false },
     processedSize: { type: Number, default: 0 },
