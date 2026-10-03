@@ -8,7 +8,7 @@ const uploadSchema = new Schema(
     referenceType: {
       type: String,
       required: true,
-      enum: ["User", "Event"],
+      enum: ["User", "Event", "SacPost"],
     },
     originalSize: { type: Number, default: 0 },
     isProcessed: { type: Boolean, default: false },
