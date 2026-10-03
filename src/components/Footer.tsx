@@ -13,7 +13,7 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="relative overflow-hidden bg-slate-50 dark:bg-black text-slate-900 dark:text-white pt-12 pb-16 md:py-24 border-t border-slate-200 dark:border-white/10 z-10 select-none transition-colors duration-300">
+    <footer className="relative overflow-hidden bg-[#e9f9f9] dark:bg-black text-slate-900 dark:text-white pt-12 pb-16 md:py-24 border-t border-slate-200 dark:border-white/10 z-10 select-none transition-colors duration-300">
       {/* Ambient background glows */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-gradient-to-b from-[#ff8c00]/15 via-[#f43f5e]/10 to-transparent blur-[120px] rounded-full opacity-60 dark:opacity-100" />
