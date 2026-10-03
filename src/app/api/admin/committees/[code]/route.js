@@ -9,6 +9,11 @@ function unauthorized() {
   return NextResponse.json({ success: false, message: "Admin authentication required" }, { status: 401 });
 }
 
+function normalizeEmails(value) {
+  const values = Array.isArray(value) ? value : String(value || "").split(/[\n,]+/);
+  return [...new Set(values.map((email) => String(email).trim().toLowerCase()).filter(Boolean))];
+}
+
 export async function PATCH(req, { params }) {
   if (!(await isAdminRequest())) return unauthorized();
   try {
@@ -26,10 +31,10 @@ export async function PATCH(req, { params }) {
         { $setOnInsert: { name } }, { new: true, upsert: true, setDefaultsOnInsert: true }
       );
     if (!committeeName) return NextResponse.json({ success: false, message: "Committee name not found" }, { status: 400 });
-    const heads = await resolveUsersByEmails(payload.committeeHeadEmails || [], "committee heads");
+    const heads = await resolveUsersByEmails(normalizeEmails(payload.committeeHeadEmails), "committee heads");
     if (heads.length === 0) return NextResponse.json({ success: false, message: "Add at least one committee head" }, { status: 400 });
-    const coordinators = await resolveUsersByEmails(payload.coordinatorEmails || [], "coordinators");
-    const coCoordinators = await resolveUsersByEmails(payload.coCoordinatorEmails || [], "co-coordinators");
+    const coordinators = await resolveUsersByEmails(normalizeEmails(payload.coordinatorEmails), "coordinators");
+    const coCoordinators = await resolveUsersByEmails(normalizeEmails(payload.coCoordinatorEmails), "co-coordinators");
     committee.committeeNameId = committeeName._id;
     committee.committeeHeads = heads.map((user) => user._id);
     committee.coordinators = coordinators.map((user) => user._id);

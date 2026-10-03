@@ -11,6 +11,11 @@ function unauthorized() {
   return NextResponse.json({ success: false, message: "Admin authentication required" }, { status: 401 });
 }
 
+function normalizeEmails(value) {
+  const values = Array.isArray(value) ? value : String(value || "").split(/[\n,]+/);
+  return [...new Set(values.map((email) => String(email).trim().toLowerCase()).filter(Boolean))];
+}
+
 export async function PATCH(req, { params }) {
   if (!(await isAdminRequest())) return unauthorized();
   try {
@@ -32,10 +37,10 @@ export async function PATCH(req, { params }) {
     if (code !== event.code && await Event.exists({ code })) return NextResponse.json({ success: false, message: "Event code already exists" }, { status: 409 });
     const eventName = await EventName.findOneAndUpdate({ name: payload.name.trim() }, { $setOnInsert: { name: payload.name.trim() } }, { new: true, upsert: true, setDefaultsOnInsert: true });
     const category = await Category.findOneAndUpdate({ name: payload.category.trim() }, { $setOnInsert: { name: payload.category.trim() } }, { new: true, upsert: true, setDefaultsOnInsert: true });
-    const heads = await resolveUsersByEmails(payload.eventHeadEmails || [], "event heads");
+    const heads = await resolveUsersByEmails(normalizeEmails(payload.eventHeadEmails), "event heads");
     if (!heads.length) return NextResponse.json({ success: false, message: "Add at least one event head" }, { status: 400 });
-    const coordinators = await resolveUsersByEmails(payload.coordinatorEmails || [], "coordinators");
-    const coCoordinators = await resolveUsersByEmails(payload.coCoordinatorEmails || [], "co-coordinators");
+    const coordinators = await resolveUsersByEmails(normalizeEmails(payload.coordinatorEmails), "coordinators");
+    const coCoordinators = await resolveUsersByEmails(normalizeEmails(payload.coCoordinatorEmails), "co-coordinators");
     const oldPosterLink = event.posterLink;
     Object.assign(event, { code, eventNameId: eventName._id, categoryId: category._id, location: payload.location.trim(), startsAt, endsAt, description: payload.description.trim(), eventType: payload.eventType, minParticipants, maxParticipants, allowPerformanceTypes: Boolean(payload.allowPerformanceTypes), paymentRequired: payload.paymentRequired?.amount || payload.paymentRequired?.qrCodeUrl ? payload.paymentRequired : undefined, rulebookLink: payload.rulebookLink.trim(), posterLink: payload.posterLink.trim(), eventHeads: heads.map((user) => user._id), coordinators: coordinators.map((user) => user._id), coCoordinators: coCoordinators.map((user) => user._id) });
     await event.save();
