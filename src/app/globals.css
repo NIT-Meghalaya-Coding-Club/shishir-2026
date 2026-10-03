@@ -644,3 +644,22 @@ body::-webkit-scrollbar {
   opacity: 1;
   transform: translateY(0);
 }
+
+.shishir-title {
+          font-size: clamp(2.4rem, 7vw, 4.4rem);
+          line-height: 0.95;
+          font-weight: 950;
+          letter-spacing: -0.045em;
+          background: linear-gradient(
+            120deg,
+            #d9563a 0%,
+            #ff9f80 34%,
+            #b83a22 52%,
+            #fa8f6e 72%,
+            #cf4b2f 100%
+          );
+          -webkit-background-clip: text;
+          background-clip: text;
+          color: transparent;
+          filter: drop-shadow(0 12px 28px rgba(238, 108, 77, 0.22));
+        }
