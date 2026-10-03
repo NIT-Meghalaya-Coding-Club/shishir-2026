@@ -14,6 +14,7 @@ import {
 
 const PRESIGN_EXPIRES_IN_SECONDS = 600;
 const PROFILE_PROXY_PREFIX = "/api/uploads/profile/";
+const POSTER_PROXY_PREFIX = "/api/uploads/poster/";
 const POSTER_PREFIX = "posters/";
 
 export type PresignedUpload = {
@@ -60,7 +61,7 @@ export async function presignPosterUpload(options: {
   contentType: string;
   fileSize: number;
 }): Promise<PresignedUpload> {
-  const { bucket, publicBaseUrl } = requireR2PublicConfig();
+  const { bucket } = requireR2PublicConfig();
   const key = makeObjectKey("posters", options.userId, options.contentType);
   const uploadUrl = await presignPutObject({
     key,
@@ -71,7 +72,7 @@ export async function presignPosterUpload(options: {
 
   return {
     uploadUrl,
-    publicUrl: `${publicBaseUrl}/${key}`,
+    publicUrl: `${POSTER_PROXY_PREFIX}${key}`,
     key,
   };
 }
@@ -82,7 +83,7 @@ export async function uploadPoster(options: {
   fileSize: number;
   body: Buffer;
 }): Promise<UploadedObject> {
-  const { bucket, publicBaseUrl } = requireR2PublicConfig();
+  const { bucket } = requireR2PublicConfig();
   const key = makeObjectKey("posters", options.userId, options.contentType, "png");
 
   await getR2Client().send(
@@ -96,7 +97,7 @@ export async function uploadPoster(options: {
   );
 
   return {
-    publicUrl: `${publicBaseUrl}/${key}`,
+    publicUrl: `${POSTER_PROXY_PREFIX}${key}`,
     key,
   };
 }
@@ -183,25 +184,18 @@ export function getPosterImageKey(image: unknown) {
     return null;
   }
 
-  const key = pathname.replace(/^\/+/, "");
+  const proxyIndex = pathname.indexOf(POSTER_PROXY_PREFIX);
+  const key = proxyIndex >= 0
+    ? pathname.slice(proxyIndex + POSTER_PROXY_PREFIX.length)
+    : pathname.replace(/^\/+/, "");
   return key.startsWith(POSTER_PREFIX) ? key : null;
 }
 
 export function getPosterPublicUrl(image: unknown) {
   if (typeof image !== "string" || !image) return image;
 
-  try {
-    const parsed = new URL(image);
-    if (parsed.protocol === "http:" || parsed.protocol === "https:") {
-      return image;
-    }
-  } catch {
-    // Stored poster keys are converted to their configured public URL below.
-  }
-
   const key = getPosterImageKey(image);
-  const { publicBaseUrl } = getR2Config();
-  return key && publicBaseUrl ? `${publicBaseUrl}/${key}` : image;
+  return key ? `${POSTER_PROXY_PREFIX}${key}` : image;
 }
 
 export async function deletePosterImage(image: unknown) {
