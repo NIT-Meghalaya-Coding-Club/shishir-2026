@@ -2,10 +2,11 @@ import mongoose from "mongoose";
 
 const committeeSchema = new mongoose.Schema(
   {
-    name: {
-      type: String,
-      required: true,
-      trim: true,
+    committeeNameId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "CommitteeName",
+      default: null,
+      index: true,
     },
     code: {
       type: String,

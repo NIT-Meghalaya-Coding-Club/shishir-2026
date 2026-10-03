@@ -2,10 +2,11 @@ import mongoose from "mongoose";
 
 const EventSchema = new mongoose.Schema(
   {
-    name: {
-      type: String,
-      required: true,
-      trim: true,
+    eventNameId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "EventName",
+      default: null,
+      index: true,
     },
     code: {
       type: String,
@@ -14,11 +15,6 @@ const EventSchema = new mongoose.Schema(
       trim: true,
       lowercase: true,
       index: true,
-    },
-    category: {
-      type: String,
-      required: true,
-      trim: true,
     },
     categoryId: {
       type: mongoose.Schema.Types.ObjectId,
