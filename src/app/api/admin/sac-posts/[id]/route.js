@@ -10,13 +10,16 @@ export async function PATCH(request, { params }) {
   try {
     await connectMongo();
     const payload = await request.json();
+    const updates = {};
+    if (["name", "post", "phone", "email"].some((field) => Object.prototype.hasOwnProperty.call(payload, field))) {
+      updates.name = String(payload.name || "").trim();
+      updates.post = String(payload.post || "").trim();
+      updates.phone = String(payload.phone || "").trim();
+      updates.email = String(payload.email || "").trim().toLowerCase();
+    }
+    if (Number.isInteger(payload.order)) updates.order = payload.order;
     const post = await SacPost.findByIdAndUpdate((await params).id, {
-      $set: {
-        name: String(payload.name || "").trim(),
-        post: String(payload.post || "").trim(),
-        phone: String(payload.phone || "").trim(),
-        email: String(payload.email || "").trim().toLowerCase(),
-      },
+      $set: updates,
     }, { new: true, runValidators: true });
     if (!post) return NextResponse.json({ success: false, message: "SAC post not found" }, { status: 404 });
     return NextResponse.json({ success: true, post });

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import ImageCropper, { MAX_IMAGE_SIZE_MB } from "@/components/ImageCropper";
 
-type SacPost = { _id: string; name: string; post: string; phone: string; email: string; image?: string };
+type SacPost = { _id: string; name: string; post: string; phone: string; email: string; order: number; image?: string };
 const input = "w-full rounded-lg border border-white/10 bg-zinc-900 p-3 text-sm";
 const empty = { name: "", post: "", phone: "", email: "" };
 
@@ -57,6 +57,31 @@ export default function SacPostsPanel() {
     setMessage(response.ok ? "Photo uploaded" : data.message || "Could not upload photo");
     if (response.ok) await load();
   };
+  const move = (index: number, direction: -1 | 1) => {
+    const nextIndex = index + direction;
+    if (nextIndex < 0 || nextIndex >= posts.length) return;
+    setPosts((current) => {
+      const next = [...current];
+      [next[index], next[nextIndex]] = [next[nextIndex], next[index]];
+      return next;
+    });
+  };
+  const saveOrder = async () => {
+    const responses = await Promise.all(posts.map((item, index) =>
+      fetch(`/api/admin/sac-posts/${item._id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ order: index }),
+      })
+    ));
+    if (responses.every((response) => response.ok)) {
+      setPosts((current) => current.map((item, index) => ({ ...item, order: index })));
+      setMessage("SAC post order saved");
+    } else {
+      setMessage("Could not save SAC post order");
+      await load();
+    }
+  };
   const remove = async (id: string) => {
     if (!window.confirm("Delete this SAC post and its photo?")) return;
     const response = await fetch(`/api/admin/sac-posts/${id}`, { method: "DELETE" });
@@ -71,7 +96,8 @@ export default function SacPostsPanel() {
       <div className="flex gap-3 md:col-span-2"><button className="rounded-lg bg-amber-400 px-5 py-3 font-semibold text-zinc-950" type="submit">{editing ? "Update post" : "Add post"}</button>{editing && <button type="button" className="rounded-lg border border-white/15 px-5" onClick={() => { setEditing(null); setForm(empty); setPhoto(null); }}>Cancel</button>}</div>
     </form>
     {message && <p className="text-sm text-zinc-300">{message}</p>}
-    <div className="grid gap-4 md:grid-cols-2">{posts.map((item) => <article key={item._id} className="rounded-xl border border-white/10 bg-zinc-900 p-4"><div className="flex gap-4"><div className="h-24 w-24 shrink-0 overflow-hidden rounded-lg bg-zinc-950">{item.image ? <img src={item.image} alt="" className="h-full w-full object-cover" /> : <span className="flex h-full items-center justify-center text-xs text-zinc-600">No photo</span>}</div><div className="min-w-0"><h2 className="font-semibold">{item.name}</h2><p className="text-sm text-amber-300">{item.post}</p><p className="mt-2 text-sm text-zinc-400">{item.phone}<br />{item.email}</p></div></div><div className="mt-4 flex flex-wrap gap-2"><label className="cursor-pointer rounded-lg border border-white/15 px-3 py-2 text-sm">Upload photo<input className="hidden" type="file" accept="image/jpeg,image/png,image/webp" onChange={(event) => { const file = event.target.files?.[0]; if (file) { setPhotoPostId(item._id); setPhotoToCrop(file); } }} /></label><button type="button" className="rounded-lg border border-white/15 px-3 py-2 text-sm" onClick={() => { setEditing(item._id); setForm({ name: item.name, post: item.post, phone: item.phone, email: item.email }); setPhoto(null); }}>Edit</button><button type="button" className="rounded-lg border border-red-400/30 px-3 py-2 text-sm text-red-300" onClick={() => void remove(item._id)}>Delete</button></div></article>)}</div>
+    <div className="flex justify-end"><button type="button" className="rounded-lg bg-amber-400 px-5 py-3 font-semibold text-zinc-950" onClick={() => void saveOrder()}>Save order</button></div>
+    <div className="grid gap-4 md:grid-cols-2">{posts.map((item, index) => <article key={item._id} className="rounded-xl border border-white/10 bg-zinc-900 p-4"><div className="flex gap-4"><div className="h-24 w-24 shrink-0 overflow-hidden rounded-lg bg-zinc-950">{item.image ? <img src={item.image} alt="" className="h-full w-full object-cover" /> : <span className="flex h-full items-center justify-center text-xs text-zinc-600">No photo</span>}</div><div className="min-w-0"><h2 className="font-semibold">{item.name}</h2><p className="text-sm text-amber-300">{item.post}</p><p className="mt-2 text-sm text-zinc-400">{item.phone}<br />{item.email}</p></div></div><div className="mt-4 flex flex-wrap gap-2"><button type="button" aria-label={`Move ${item.name} up`} disabled={index === 0} className="rounded-lg border border-white/15 px-3 py-2 text-sm disabled:opacity-30" onClick={() => move(index, -1)}>↑</button><button type="button" aria-label={`Move ${item.name} down`} disabled={index === posts.length - 1} className="rounded-lg border border-white/15 px-3 py-2 text-sm disabled:opacity-30" onClick={() => move(index, 1)}>↓</button><label className="cursor-pointer rounded-lg border border-white/15 px-3 py-2 text-sm">Upload photo<input className="hidden" type="file" accept="image/jpeg,image/png,image/webp" onChange={(event) => { const file = event.target.files?.[0]; if (file) { setPhotoPostId(item._id); setPhotoToCrop(file); } }} /></label><button type="button" className="rounded-lg border border-white/15 px-3 py-2 text-sm" onClick={() => { setEditing(item._id); setForm({ name: item.name, post: item.post, phone: item.phone, email: item.email }); setPhoto(null); }}>Edit</button><button type="button" className="rounded-lg border border-red-400/30 px-3 py-2 text-sm text-red-300" onClick={() => void remove(item._id)}>Delete</button></div></article>)}</div>
     {photoToCrop && <ImageCropper file={photoToCrop} maxSizeMb={MAX_IMAGE_SIZE_MB} onComplete={(croppedFile) => { const postId = photoPostId; setPhotoToCrop(null); setPhotoPostId(null); if (postId) void upload(postId, croppedFile); else setPhoto(croppedFile); }} onCancel={() => { setPhotoToCrop(null); setPhotoPostId(null); }} />}
   </div>;
 }
