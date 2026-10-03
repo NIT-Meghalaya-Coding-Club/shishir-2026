@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState } from "react";
@@ -13,6 +12,62 @@ import {
 import ComingSoon from "@/components/ComingSoon";
 
 import PageHeading from "@/components/PageHeading";
+
+/* ──────────────────────────────────────────────────────────────
+   Palette
+   Dusk Blue #3D5A80 · Powder Blue #98C1D9 · Burnt Peach #EE6C4D
+   Light Cyan #E0FBFC · Jet Black #293241
+   ────────────────────────────────────────────────────────────── */
+
+const PETAL_COLORS = ["#F9C9C4", "#F4A9A0", "#EE6C4D", "#FBDDD9", "#F6B7B0"];
+
+const paperGrain =
+  "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.24  0 0 0 0 0.35  0 0 0 0 0.5  0 0 0 0.09 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>\")";
+
+const paperCls =
+  "bg-gradient-to-br from-white via-[#F3FCFC] to-[#DDF1F5] dark:from-[#3b4d6b] dark:via-[#33435e] dark:to-[#2c3a52]";
+
+function Blossom({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+      {[0, 72, 144, 216, 288].map((deg) => (
+        <ellipse
+          key={deg}
+          cx="12"
+          cy="6.2"
+          rx="3.6"
+          ry="5"
+          fill="currentColor"
+          transform={`rotate(${deg} 12 12)`}
+        />
+      ))}
+      <circle cx="12" cy="12" r="2" fill="#E0FBFC" />
+      <circle cx="12" cy="12" r="0.9" fill="#EE6C4D" />
+    </svg>
+  );
+}
+
+/** Grain + peach mounting lines shared by every paper panel */
+function PaperDressing({ strong = true }: { strong?: boolean }) {
+  return (
+    <>
+      <div
+        className="pointer-events-none absolute inset-0 opacity-70 dark:opacity-40 mix-blend-multiply"
+        style={{ backgroundImage: paperGrain }}
+      />
+      <div
+        className={`absolute top-0 left-0 right-0 h-[2px] bg-[#EE6C4D] ${
+          strong ? "" : "opacity-40"
+        }`}
+      />
+      <div
+        className={`absolute bottom-0 left-0 right-0 h-[2px] bg-[#EE6C4D] ${
+          strong ? "" : "opacity-40"
+        }`}
+      />
+    </>
+  );
+}
 
 const SchedulePage = () => {
   const days = Object.keys(Schedule);
@@ -44,454 +99,328 @@ const SchedulePage = () => {
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-slate-50 dark:bg-[#090d17]">
-      {/* Soft blurred particle background */}
-      <div className="particle-field pointer-events-none absolute inset-0" />
-
-      {/* Background decorations */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -left-24 top-24 h-56 w-56 rounded-full bg-amber-400/10 blur-3xl animate-float-slow" />
-
-        <div className="absolute -right-24 top-[42%] h-64 w-64 rounded-full bg-blue-500/10 blur-3xl animate-float-slower" />
-
-        <div className="absolute left-[8%] top-[36%] h-4 w-4 rotate-45 border border-slate-300/40 dark:border-white/10 animate-float" />
-
-        <div className="absolute right-[10%] top-[24%] h-5 w-5 rounded-full border border-amber-400/40 animate-float" />
-
-        <div className="absolute bottom-[18%] right-[6%] h-7 w-7 rotate-45 border border-blue-400/20 animate-float-slow" />
-
-        <div className="absolute left-[-70px] top-[62%] h-px w-64 rotate-[24deg] bg-gradient-to-r from-transparent via-slate-400/20 to-transparent" />
-
-        <div className="absolute right-[-80px] top-[34%] h-px w-72 -rotate-[26deg] bg-gradient-to-r from-transparent via-slate-400/20 to-transparent" />
+    <div className="relative min-h-screen overflow-hidden bg-[#E0FBFC] dark:bg-[#293241]">
+      {/* Backdrop: soft glows and drifting petals */}
+      <div
+        className="pointer-events-none fixed inset-0 z-0 overflow-hidden"
+        aria-hidden="true"
+      >
+        <div className="absolute -top-32 -left-24 h-[26rem] w-[26rem] rounded-full bg-[#98C1D9]/40 blur-3xl dark:bg-[#3D5A80]/40" />
+        <div className="absolute -bottom-32 -right-24 h-[26rem] w-[26rem] rounded-full bg-[#EE6C4D]/15 blur-3xl dark:bg-[#EE6C4D]/10" />
+        {Array.from({ length: 12 }).map((_, i) => {
+          const size = 9 + (i % 4) * 3;
+          return (
+            <span
+              key={i}
+              className="sch-petal absolute top-0"
+              style={
+                {
+                  left: `${(i * 8.3 + 3) % 100}%`,
+                  width: size,
+                  height: size * 1.25,
+                  background: PETAL_COLORS[i % PETAL_COLORS.length],
+                  borderRadius: "100% 0 100% 0",
+                  animationDuration: `${15 + ((i * 5) % 9)}s`,
+                  animationDelay: `-${(i * 3.1) % 16}s`,
+                  "--drift": `${(i % 2 ? 1 : -1) * (60 + ((i * 29) % 140))}px`,
+                  "--spin": `${(i % 2 ? 1 : -1) * (240 + ((i * 41) % 300))}deg`,
+                } as React.CSSProperties
+              }
+            />
+          );
+        })}
       </div>
 
-      <div className="relative z-10 mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+      <div className="relative z-10 top-[-80px] mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         {/* Header */}
         <PageHeading title="Schedule" />
 
-        <p className="mb-14 -mt-2 mx-auto max-w-xl text-center text-sm leading-6 text-slate-500 dark:text-slate-400">
+        <p className="mx-auto -mt-2 mb-5 max-w-xl text-center text-sm leading-6 text-[#3D5A80] dark:text-[#98C1D9]">
           Explore the complete lineup, timings and venues for every session
           across the festival.
         </p>
 
+        <div className="mb-12 flex items-center justify-center gap-3">
+          <div className="h-px w-16 bg-gradient-to-r from-transparent to-[#98C1D9] sm:w-28" />
+          <Blossom className="h-4 w-4 text-[#EE6C4D]" />
+          <div className="h-px w-16 bg-gradient-to-l from-transparent to-[#98C1D9] sm:w-28" />
+        </div>
+
         {/* Day Selection */}
         <div className="mb-12 grid grid-cols-1 gap-5 md:grid-cols-3">
-          {days.map((day, index) => (
-            <button
-              key={day}
-              onClick={() => {
-                setActiveDay(day);
-                setActiveCategory("All");
-              }}
-              className={`group relative overflow-hidden rounded-2xl border p-5 text-left transition-all duration-200 animate-fade-up ${
-                day === activeDay
-                  ? "border-yellow-400/50 bg-white shadow-lg shadow-yellow-500/10 dark:border-yellow-400/40 dark:bg-white/[0.04]"
-                  : "border-slate-200 bg-white hover:-translate-y-1 hover:border-yellow-400/30 hover:shadow-lg dark:border-white/10 dark:bg-white/[0.02]"
-              }`}
-              style={{ animationDelay: `${index * 70}ms` }}
-            >
-              <div className="relative z-10 flex items-start justify-between">
-                <div>
-                  <p className="text-[10px] font-bold tracking-[0.18em] text-yellow-600 dark:text-yellow-400">
-                    DAY {String(index + 1).padStart(2, "0")}
-                  </p>
+          {days.map((day, index) => {
+            const isActive = day === activeDay;
+            return (
+              <button
+                key={day}
+                aria-pressed={isActive}
+                onClick={() => {
+                  setActiveDay(day);
+                  setActiveCategory("All");
+                }}
+                className={`sch-rise group relative overflow-hidden rounded-[3px] border-y-[5px] text-left transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#EE6C4D] ${paperCls} ${
+                  isActive
+                    ? "-translate-y-0.5 border-[#3D5A80] shadow-[0_20px_44px_-16px_rgba(61,90,128,0.6)] dark:border-[#98C1D9]"
+                    : "border-[#98C1D9] shadow-[0_10px_24px_-14px_rgba(61,90,128,0.4)] hover:-translate-y-1 hover:border-[#3D5A80]/70 dark:border-[#98C1D9]/30 dark:hover:border-[#98C1D9]/70"
+                }`}
+                style={{ animationDelay: `${index * 80}ms` }}
+              >
+                <PaperDressing strong={isActive} />
 
-                  <p className="mt-2 text-xl font-bold text-slate-900 dark:text-white">
-                    {day.replace("day ", "Day ")}
-                  </p>
+                <div className="relative z-10 flex items-start justify-between p-5">
+                  <div>
+                    <p
+                      className={`text-2xl font-extrabold tracking-tight transition-colors duration-300 ${
+                        isActive
+                          ? "text-[#EE6C4D]"
+                          : "text-[#3D5A80] group-hover:text-[#EE6C4D] dark:text-[#98C1D9]"
+                      }`}
+                    >
+                      {day.replace("day ", "Day ")}
+                    </p>
 
-                  <p className="mt-1 text-xs text-slate-400">
-                    {Object.keys(Schedule[day]).length} Sessions
-                  </p>
+                    <p className="mt-1 text-sm text-[#293241]/70 dark:text-[#E0FBFC]/70">
+                      {Object.keys(Schedule[day]).length} Sessions
+                    </p>
+                  </div>
+
+                  <div
+                    className={`-rotate-6 rounded-md p-2.5 transition-all duration-300 group-hover:rotate-0 ${
+                      isActive
+                        ? "bg-[#EE6C4D] text-white shadow-[0_6px_14px_-4px_rgba(238,108,77,0.7)]"
+                        : "bg-[#EE6C4D]/10 text-[#EE6C4D]"
+                    }`}
+                  >
+                    <Calendar className="h-5 w-5" />
+                  </div>
                 </div>
 
-                <div className="rounded-xl bg-yellow-400/10 p-2.5 text-yellow-500">
-                  <Calendar className="h-5 w-5" />
-                </div>
-              </div>
-
-              <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-yellow-400/5 to-transparent transition-transform duration-500 group-hover:translate-x-full" />
-            </button>
-          ))}
+                <div className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/50 to-transparent transition-transform duration-700 group-hover:translate-x-full dark:via-white/10" />
+              </button>
+            );
+          })}
         </div>
 
         <div className="grid grid-cols-1 gap-7 lg:grid-cols-4">
           {/* Category Sidebar */}
-          <div className="lg:col-span-1">
-            <div className="category-box rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-[#0d1320]">
-              <div className="mb-5 flex items-center gap-3">
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-900 text-[10px] font-bold text-yellow-300 dark:bg-white dark:text-slate-900">
-                  01
-                </span>
+          <div className="lg:col-span-1 lg:self-start lg:sticky lg:top-28">
+            <div
+              className={`sch-rise relative overflow-hidden rounded-[3px] border-y-[5px] border-[#3D5A80] shadow-[0_24px_54px_-20px_rgba(61,90,128,0.55)] dark:border-[#98C1D9] ${paperCls}`}
+              style={{ animationDelay: "120ms" }}
+            >
+              <PaperDressing />
 
-                <div className="min-w-0">
-                  <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-                    Categories
-                  </h2>
-
-                  <div className="mt-1 flex items-center gap-2">
-                    <span className="h-px w-7 bg-yellow-500/60" />
-
-                    <p className="text-[11px] text-slate-400">
-                      Filter sessions
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <button
-                  onClick={() => setActiveCategory("All")}
-                  className={`category-item group flex w-full items-center justify-between rounded-xl border p-3 text-left transition-all duration-200 ${
-                    activeCategory === "All"
-                      ? "border-blue-500/30 bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md shadow-blue-500/10"
-                      : "border-slate-200 bg-slate-50 text-slate-700 hover:border-blue-400/30 hover:bg-slate-100 dark:border-white/10 dark:bg-white/[0.02] dark:text-white"
-                  }`}
-                >
-                  <span>
-                    <span className="block text-sm font-medium">
-                      All
-                    </span>
-
-                    <span className="mt-0.5 block text-[10px] opacity-60">
-                      Every session
-                    </span>
+              <div className="relative z-10 p-5">
+                <div className="mb-5 flex items-center gap-3">
+                  <span className="flex h-9 w-9 shrink-0 -rotate-6 items-center justify-center rounded-md bg-[#EE6C4D] text-white shadow-[0_6px_14px_-4px_rgba(238,108,77,0.7)]">
+                    <Blossom className="h-5 w-5" />
                   </span>
 
-                  <ChevronRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
-                </button>
+                  <div className="min-w-0">
+                    <h2 className="text-lg font-extrabold tracking-tight text-[#3D5A80] dark:text-[#98C1D9]">
+                      Categories
+                    </h2>
 
-                {categories.map((category) => (
+                    <div className="mt-1 flex items-center gap-2">
+                      <span className="h-px w-7 bg-[#EE6C4D]/70" />
+
+                      <p className="text-[11px] text-[#293241]/60 dark:text-[#E0FBFC]/60">
+                        Filter sessions
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
                   <button
-                    key={category}
-                    onClick={() => setActiveCategory(category)}
-                    className={`category-item group flex w-full items-center justify-between rounded-xl border p-3 text-left transition-all duration-200 ${
-                      category === activeCategory
-                        ? "border-blue-500/30 bg-gradient-to-r from-blue-700 to-blue-800 text-white shadow-md shadow-blue-500/10"
-                        : "border-slate-200 bg-slate-50 text-slate-700 hover:border-blue-400/30 hover:bg-slate-100 dark:border-white/10 dark:bg-white/[0.02] dark:text-white"
+                    onClick={() => setActiveCategory("All")}
+                    className={`sch-cat group relative flex w-full items-center justify-between overflow-hidden rounded-md border p-3 text-left transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#EE6C4D] ${
+                      activeCategory === "All"
+                        ? "border-[#3D5A80] bg-gradient-to-r from-[#3D5A80] to-[#2f4a6b] text-white shadow-[0_10px_22px_-10px_rgba(61,90,128,0.8)]"
+                        : "border-[#98C1D9] bg-white/60 text-[#293241] hover:border-[#EE6C4D] hover:bg-white dark:border-[#98C1D9]/30 dark:bg-[#293241]/50 dark:text-[#E0FBFC] dark:hover:border-[#EE6C4D]"
                     }`}
                   >
+                    {activeCategory === "All" && (
+                      <span className="absolute left-0 top-0 h-full w-1 bg-[#EE6C4D]" />
+                    )}
                     <span>
-                      <span className="block text-sm font-medium capitalize">
-                        {category}
+                      <span className="block text-sm font-semibold">
+                        All
                       </span>
 
-                      <span className="mt-0.5 block text-[10px] opacity-60">
-                        {Schedule[activeDay][category].length} session
-                        {Schedule[activeDay][category].length > 1 ? "s" : ""}
+                      <span className="mt-0.5 block text-[11px] opacity-70">
+                        Every session
                       </span>
                     </span>
 
-                    <ChevronRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+                    <ChevronRight
+                      className={`h-4 w-4 transition-all duration-200 group-hover:translate-x-0.5 ${
+                        activeCategory === "All"
+                          ? "text-[#EE6C4D]"
+                          : "group-hover:text-[#EE6C4D]"
+                      }`}
+                    />
                   </button>
-                ))}
+
+                  {categories.map((category) => (
+                    <button
+                      key={category}
+                      onClick={() => setActiveCategory(category)}
+                      className={`sch-cat group relative flex w-full items-center justify-between overflow-hidden rounded-md border p-3 text-left transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#EE6C4D] ${
+                        category === activeCategory
+                          ? "border-[#3D5A80] bg-gradient-to-r from-[#3D5A80] to-[#2f4a6b] text-white shadow-[0_10px_22px_-10px_rgba(61,90,128,0.8)]"
+                          : "border-[#98C1D9] bg-white/60 text-[#293241] hover:border-[#EE6C4D] hover:bg-white dark:border-[#98C1D9]/30 dark:bg-[#293241]/50 dark:text-[#E0FBFC] dark:hover:border-[#EE6C4D]"
+                      }`}
+                    >
+                      {category === activeCategory && (
+                        <span className="absolute left-0 top-0 h-full w-1 bg-[#EE6C4D]" />
+                      )}
+                      <span>
+                        <span className="block text-sm font-semibold capitalize">
+                          {category}
+                        </span>
+
+                        <span className="mt-0.5 block text-[11px] opacity-70">
+                          {Schedule[activeDay][category].length} session
+                          {Schedule[activeDay][category].length > 1 ? "s" : ""}
+                        </span>
+                      </span>
+
+                      <ChevronRight
+                        className={`h-4 w-4 transition-all duration-200 group-hover:translate-x-0.5 ${
+                          category === activeCategory
+                            ? "text-[#EE6C4D]"
+                            : "group-hover:text-[#EE6C4D]"
+                        }`}
+                      />
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
 
           {/* Event Cards */}
           <div className="lg:col-span-3">
-            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-[#0d1320]">
-              <div className="mb-7 flex items-end justify-between gap-4">
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
-                    {activeDay}
-                  </p>
+            <div
+              className={`sch-rise relative overflow-hidden rounded-[3px] border-y-[5px] border-[#3D5A80] shadow-[0_28px_64px_-22px_rgba(61,90,128,0.55)] dark:border-[#98C1D9] ${paperCls}`}
+              style={{ animationDelay: "200ms" }}
+            >
+              <PaperDressing />
 
-                  <h2 className="mt-1 text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-yellow-600">
-                    {activeCategory === "All"
-                      ? "All Sessions"
-                      : `${activeCategory} Sessions`}
-                  </h2>
-                </div>
-
-                <div className="text-right">
-                  <p className="text-xl font-bold text-yellow-500">
-                    {categoryEvents.length}
-                  </p>
-
-                  <p className="text-[10px] uppercase tracking-wider text-slate-400">
-                    Events
-                  </p>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                {categoryEvents.map((event: EventType, index: number) => (
-                  <div
-                    key={`${activeDay}-${activeCategory}-${index}`}
-                    className="event-card group relative overflow-hidden rounded-xl border border-slate-200 bg-slate-50 p-5 transition-all duration-300 hover:-translate-y-0.5 hover:border-yellow-400/30 hover:shadow-lg dark:border-white/10 dark:bg-white/[0.02]"
-                    style={{
-                      animation:
-                        "sessionReveal 500ms cubic-bezier(.22,1,.36,1) both",
-                      animationDelay: `${index * 90}ms`,
-                    }}
-                  >
-                    <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-                      <div className="flex min-w-0 gap-4">
-                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-yellow-400/10 text-[10px] font-bold text-yellow-500">
-                          {String(index + 1).padStart(2, "0")}
-                        </div>
-
-                        <div className="min-w-0">
-                          <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-slate-400">
-                            {activeCategory === "All"
-                              ? "Festival Session"
-                              : activeCategory}
-                          </p>
-
-                          <h3 className="schedule-name mt-1 text-lg font-bold">
-                            {event.name}
-                          </h3>
-                        </div>
-                      </div>
-
-                      <div className="flex shrink-0 items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 dark:border-white/10 dark:bg-white/[0.03] dark:text-slate-300">
-                        <Clock className="h-4 w-4 text-yellow-500" />
-                        {event.time}
-                      </div>
-                    </div>
-
-                    <p className="mt-4 text-sm leading-6 text-slate-600 dark:text-white/60 md:ml-13">
-                      {event.description}
+              <div className="relative z-10 m-2 rounded-[2px] border border-[#3D5A80]/20 p-4 sm:m-3 sm:p-6 dark:border-[#98C1D9]/30">
+                <div className="mb-7 flex items-end justify-between gap-4 border-b border-[#3D5A80]/15 pb-5 dark:border-[#98C1D9]/20">
+                  <div>
+                    <p className="text-sm font-semibold capitalize text-[#3D5A80]/80 dark:text-[#98C1D9]/80">
+                      {activeDay}
                     </p>
 
-                    <div className="mt-4 flex flex-col gap-2 text-xs text-slate-500 dark:text-white/60 sm:flex-row sm:flex-wrap sm:gap-5 md:ml-13">
-                      <div className="flex items-center gap-2">
-                        <MapPin className="h-4 w-4 text-blue-500" />
-                        <span>{event.place}</span>
+                    <h2 className="mt-1 text-2xl font-black tracking-tight text-[#EE6C4D] drop-shadow-[0_4px_18px_rgba(238,108,77,0.25)] sm:text-3xl">
+                      {activeCategory === "All"
+                        ? "All Sessions"
+                        : `${activeCategory} Sessions`}
+                    </h2>
+                  </div>
+
+                  <div className="-rotate-3 rounded-md border border-[#98C1D9] bg-white/70 px-4 py-2 text-center dark:border-[#98C1D9]/30 dark:bg-[#293241]/50">
+                    <p className="text-2xl font-extrabold leading-none text-[#3D5A80] dark:text-[#98C1D9]">
+                      {categoryEvents.length}
+                    </p>
+
+                    <p className="mt-1 text-[11px] text-[#293241]/60 dark:text-[#E0FBFC]/60">
+                      Events
+                    </p>
+                  </div>
+                </div>
+
+                {/* Timeline of sessions, ordered by time */}
+                <div className="relative space-y-5 pl-7 sm:pl-9">
+                  <div className="absolute bottom-0 left-[11.5px] top-0 w-px bg-gradient-to-b from-[#EE6C4D]/70 via-[#98C1D9] to-transparent" />
+
+                  {categoryEvents.map((event: EventType, index: number) => (
+                    <div
+                      key={`${activeDay}-${activeCategory}-${index}`}
+                      className="sch-reveal relative"
+                      style={{ animationDelay: `${index * 90}ms` }}
+                    >
+                      {/* Timeline blossom */}
+                      <div className="absolute -left-7 top-5 flex h-6 w-6 items-center justify-center rounded-full border border-[#98C1D9] bg-[#E0FBFC] sm:-left-9 dark:border-[#98C1D9]/50 dark:bg-[#293241]">
+                        <Blossom className="h-3.5 w-3.5 text-[#EE6C4D]" />
                       </div>
 
-                      {event.speakers && event.speakers.length > 0 && (
-                        <div className="flex items-center gap-2">
-                          <Users className="h-4 w-4 text-blue-500" />
-                          <span>{event.speakers.join(", ")}</span>
-                        </div>
-                      )}
-                    </div>
+                      <div className="sch-event group relative overflow-hidden rounded-md border border-[#98C1D9] bg-white/75 p-5 shadow-[0_8px_20px_-14px_rgba(61,90,128,0.5)] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#EE6C4D]/60 hover:bg-white hover:shadow-[0_16px_34px_-16px_rgba(61,90,128,0.6)] dark:border-[#98C1D9]/25 dark:bg-[#293241]/55 dark:hover:bg-[#293241]/80">
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                          <div className="min-w-0">
+                            <p className="text-xs font-medium text-[#3D5A80]/80 dark:text-[#98C1D9]/80">
+                              {activeCategory === "All"
+                                ? "Festival Session"
+                                : activeCategory}
+                            </p>
 
-                    <div className="absolute left-0 top-0 h-full w-0.5 bg-gradient-to-b from-yellow-400 to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
-                  </div>
-                ))}
+                            <h3 className="mt-1 text-lg font-bold text-[#293241] transition-colors duration-200 group-hover:text-[#EE6C4D] dark:text-[#E0FBFC]">
+                              {event.name}
+                            </h3>
+                          </div>
+
+                          <div className="flex shrink-0 items-center gap-2 self-start rounded-full border border-[#EE6C4D]/40 bg-[#EE6C4D]/10 px-3 py-1.5 text-xs font-semibold text-[#293241] dark:text-[#E0FBFC]">
+                            <Clock className="h-4 w-4 text-[#EE6C4D]" />
+                            {event.time}
+                          </div>
+                        </div>
+
+                        <p className="mt-3 text-sm leading-6 text-[#293241]/75 dark:text-[#E0FBFC]/70">
+                          {event.description}
+                        </p>
+
+                        <div className="mt-4 flex flex-col gap-2 border-t border-[#3D5A80]/10 pt-3 text-xs text-[#3D5A80] sm:flex-row sm:flex-wrap sm:gap-5 dark:border-[#98C1D9]/15 dark:text-[#98C1D9]">
+                          <div className="flex items-center gap-2">
+                            <MapPin className="h-4 w-4 text-[#EE6C4D]" />
+                            <span>{event.place}</span>
+                          </div>
+
+                          {event.speakers && event.speakers.length > 0 && (
+                            <div className="flex items-center gap-2">
+                              <Users className="h-4 w-4 text-[#EE6C4D]" />
+                              <span>{event.speakers.join(", ")}</span>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-[#EE6C4D] to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
         </div>
-
-        
       </div>
 
-      <style jsx>{`
-        .particle-field {
-          position: absolute;
-          inset: -10%;
-          pointer-events: none;
-          opacity: 0.55;
-          filter: blur(18px);
-          background:
-            radial-gradient(
-              circle at 10% 20%,
-              rgba(250, 204, 21, 0.16) 0 5px,
-              transparent 18px
-            ),
-            radial-gradient(
-              circle at 24% 70%,
-              rgba(59, 130, 246, 0.12) 0 4px,
-              transparent 16px
-            ),
-            radial-gradient(
-              circle at 40% 30%,
-              rgba(250, 204, 21, 0.12) 0 6px,
-              transparent 18px
-            ),
-            radial-gradient(
-              circle at 58% 78%,
-              rgba(59, 130, 246, 0.1) 0 5px,
-              transparent 17px
-            ),
-            radial-gradient(
-              circle at 72% 26%,
-              rgba(250, 204, 21, 0.13) 0 5px,
-              transparent 18px
-            ),
-            radial-gradient(
-              circle at 88% 65%,
-              rgba(59, 130, 246, 0.1) 0 4px,
-              transparent 16px
-            );
-
-          animation: particle-move 18s ease-in-out infinite alternate;
+      <style>{`
+        @keyframes sch-rise {
+          from { opacity: 0; transform: translateY(14px); }
+          to { opacity: 1; transform: none; }
         }
-
-        .category-box {
-          position: relative;
-          overflow: hidden;
-          transition:
-            transform 220ms ease,
-            border-color 220ms ease,
-            box-shadow 220ms ease;
+        @keyframes sch-reveal {
+          from { opacity: 0; transform: translateY(18px); filter: blur(4px); }
+          to { opacity: 1; transform: none; filter: blur(0); }
         }
-
-        .category-box::before {
-          content: "";
-          position: absolute;
-          top: 0;
-          left: 18px;
-          width: 70px;
-          height: 1px;
-          background: linear-gradient(
-            90deg,
-            transparent,
-            #eab308,
-            transparent
-          );
-          opacity: 0.8;
+        @keyframes sch-fall {
+          0% { transform: translate3d(0,-12vh,0) rotate(0deg); opacity: 0; }
+          10% { opacity: .7; }
+          90% { opacity: .7; }
+          100% { transform: translate3d(var(--drift),112vh,0) rotate(var(--spin)); opacity: 0; }
         }
-
-        .category-box:hover {
-          border-color: rgba(234, 179, 8, 0.22);
-          box-shadow: 0 14px 30px rgba(15, 23, 42, 0.07);
-        }
-
-        .category-item:hover {
-          transform: translateX(3px);
-        }
-
-        .event-card {
-          transition:
-            transform 250ms ease,
-            border-color 250ms ease,
-            box-shadow 250ms ease;
-        }
-
-        .event-card:hover {
-          transform: translateY(-2px);
-          border-color: rgba(234, 179, 8, 0.3);
-          box-shadow: 0 10px 24px rgba(15, 23, 42, 0.1);
-        }
-
-        /* Session name */
-        .schedule-name {
-          color: #1f2937 !important;
-          transition: color 200ms ease;
-        }
-
-        :global(.dark) .schedule-name {
-          color: #ffffff !important;
-        }
-
-        :global([data-theme="dark"]) .schedule-name {
-          color: #ffffff !important;
-        }
-
-        .event-card:hover .schedule-name {
-          color: #facc15 !important;
-        }
-
-        @keyframes fade-up {
-          from {
-            opacity: 0;
-            transform: translateY(8px);
-          }
-
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        @keyframes sessionReveal {
-          from {
-            opacity: 0;
-            transform: translateY(18px);
-            filter: blur(4px);
-          }
-
-          to {
-            opacity: 1;
-            transform: translateY(0);
-            filter: blur(0);
-          }
-        }
-
-        @keyframes particle-move {
-          0% {
-            transform: translate3d(-1%, -1%, 0) scale(1);
-          }
-
-          50% {
-            transform: translate3d(2%, -2%, 0) scale(1.04);
-          }
-
-          100% {
-            transform: translate3d(-2%, 2%, 0) scale(0.98);
-          }
-        }
-
-        @keyframes float {
-          0%,
-          100% {
-            transform: translateY(0) rotate(45deg);
-          }
-
-          50% {
-            transform: translateY(-8px) rotate(55deg);
-          }
-        }
-
-        @keyframes float-slow {
-          0%,
-          100% {
-            transform: translate(0, 0);
-          }
-
-          50% {
-            transform: translate(10px, -8px);
-          }
-        }
-
-        @keyframes float-slower {
-          0%,
-          100% {
-            transform: translate(0, 0);
-          }
-
-          50% {
-            transform: translate(-10px, 9px);
-          }
-        }
-
-        .animate-fade-up {
-          animation: fade-up 450ms ease both;
-        }
-
-        .animate-float {
-          animation: float 7s ease-in-out infinite;
-        }
-
-        .animate-float-slow {
-          animation: float-slow 10s ease-in-out infinite;
-        }
-
-        .animate-float-slower {
-          animation: float-slower 12s ease-in-out infinite;
-        }
+        .sch-rise { animation: sch-rise .6s cubic-bezier(.22,1,.36,1) both; }
+        .sch-reveal { animation: sch-reveal .5s cubic-bezier(.22,1,.36,1) both; }
+        .sch-petal { animation: sch-fall linear infinite; }
+        .sch-cat:hover { transform: translateX(3px); }
 
         @media (prefers-reduced-motion: reduce) {
-          .animate-fade-up,
-          .animate-float,
-          .animate-float-slow,
-          .animate-float-slower,
-          .particle-field,
-          .event-card {
-            animation: none !important;
-          }
-
-          .event-card,
-          .schedule-name,
-          .category-item {
-            transition: none !important;
-          }
+          .sch-rise, .sch-reveal, .sch-petal { animation: none !important; }
+          .sch-petal { display: none; }
+          .sch-cat:hover { transform: none; }
         }
       `}</style>
     </div>
@@ -499,4 +428,3 @@ const SchedulePage = () => {
 };
 
 export default SchedulePage;
-

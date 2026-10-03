@@ -5,6 +5,8 @@ import html2canvas from "html2canvas";
 import { TicketCheckoutSchema } from "@/lib/validation/ticketSchema";
 import ValidationDialog from "@/components/ui/ValidationDialog";
 
+import Blossom from "@/components/Blossom"
+
 const ShishirTicketSeller: React.FC = () => {
   const [selectedEvent, setSelectedEvent] = useState<{
     id: number;
@@ -177,7 +179,7 @@ const ShishirTicketSeller: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen w-full overflow-x-hidden bg-[#f5f6fa] font-sans text-slate-900 transition-colors duration-300 dark:bg-[#090d1a] dark:text-white">
+    <div className="min-h-screen w-full overflow-x-hidden bg-[#E0FBFC] font-sans text-slate-900 transition-colors duration-300 dark:bg-[#090d1a] dark:text-white">
       <ValidationDialog
         open={Boolean(validationMessage)}
         message={validationMessage}
@@ -189,24 +191,23 @@ const ShishirTicketSeller: React.FC = () => {
         <div className="ambient-orb ambient-orb-gold left-[4%] top-[8%]" />
         <div className="ambient-orb ambient-orb-indigo right-[3%] top-[28%]" />
         <div className="ambient-orb ambient-orb-purple bottom-[4%] left-[35%]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(245,180,45,0.08),_transparent_38%)] dark:bg-[radial-gradient(circle_at_top,_rgba(99,102,241,0.11),_transparent_42%)]" />
       </div>
 
       <main className="relative z-10 mx-auto flex min-h-screen w-full max-w-5xl items-center justify-center px-4 py-8 sm:px-6 lg:px-8">
         <section className="glass-panel relative w-full rounded-[28px] pb-24 border border-white/70 shadow-[0_30px_90px_rgba(15,23,42,0.12)] dark:border-white/10 dark:shadow-[0_30px_90px_rgba(0,0,0,0.35)]">
           {/* Ticket notches */}
-          <div className="absolute -left-5 top-24 h-10 w-10 rounded-full bg-[#f5f6fa] dark:bg-[#090d1a]" />
-          <div className="absolute -right-5 top-24 h-10 w-10 rounded-full bg-[#f5f6fa] dark:bg-[#090d1a]" />
+          <div className="flex justify-center items-center absolute -left-5 top-24 h-10 w-10 rounded-full bg-[#f5f6fa] dark:bg-[#090d1a]">
+              <Blossom className="relative justify-center w-4 h-4 sm:w-5 sm:h-5 text-[#98C1D9] animate-spin [animation-duration:3s]" />
+          </div>
+          <div className="flex justify-center items-center absolute -right-5 top-24 h-10 w-10 rounded-full bg-[#f5f6fa] dark:bg-[#090d1a]">
+              <Blossom className="relative justify-center w-4 h-4 sm:w-5 sm:h-5 text-[#98C1D9] animate-spin [animation-duration:3s]" />
+          </div>
 
           <div className="relative z-10 p-5 sm:p-8 lg:p-10">
             {/* Header */}
             <header className="mb-9 text-center">
-              <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-amber-400/25 bg-amber-400/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-amber-700 dark:text-amber-300">
-                <span className="pulse-dot" />
-                NIT Meghalaya • Annual Cultural Fest
-              </div>
 
-              <h1 className="shishir-title">SHISHIR 2025</h1>
+              <h1 className="shishir-title">SHISHIR 2026</h1>
 
               <div className="mx-auto mt-3 h-px w-28 bg-gradient-to-r from-transparent via-amber-400 to-transparent" />
 
@@ -370,7 +371,7 @@ const ShishirTicketSeller: React.FC = () => {
                       >
                         <SectionHeading number="03" title="Your Details" />
 
-                        <div className="surface-card grid grid-cols-1 gap-4 p-5 md:grid-cols-3">
+                        <div className="surface-card grid grid-cols-1 gap-4 p-5 md:grid-cols-3 md:gap-5">
                           <FloatingInput
                             label="Full Name"
                             type="text"
@@ -759,16 +760,16 @@ const ShishirTicketSeller: React.FC = () => {
           letter-spacing: -0.045em;
           background: linear-gradient(
             120deg,
-            #d79a00 0%,
-            #f7cf5b 34%,
-            #b87800 52%,
-            #f6c547 72%,
-            #c68800 100%
+            #d9563a 0%,
+            #ff9f80 34%,
+            #b83a22 52%,
+            #fa8f6e 72%,
+            #cf4b2f 100%
           );
           -webkit-background-clip: text;
           background-clip: text;
           color: transparent;
-          text-shadow: 0 12px 38px rgba(217, 157, 16, 0.16);
+          filter: drop-shadow(0 12px 28px rgba(238, 108, 77, 0.22));
         }
 
         .event-card {
@@ -1267,15 +1268,23 @@ function FloatingInput({
   value: string;
   onChange: (value: string) => void;
 }) {
+  const id = React.useId();
+
   return (
-    <div className="floating-field">
-      <label className="floating-label">{label}</label>
+    <div className="relative w-full">
+      <label
+        htmlFor={id}
+        className="pointer-events-none absolute left-3.5 top-2 text-[10px] font-bold uppercase tracking-[0.08em] text-slate-400"
+      >
+        {label}
+      </label>
       <input
+        id={id}
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="floating-input"
         required
+        className="w-full rounded-[14px] border border-slate-300 bg-white px-3.5 pb-2.5 pt-6 text-sm text-slate-900 shadow-sm outline-none transition-all duration-200 focus:-translate-y-px focus:border-amber-400 focus:ring-4 focus:ring-amber-400/10 dark:border-white/10 dark:bg-white/[0.04] dark:text-white"
       />
     </div>
   );

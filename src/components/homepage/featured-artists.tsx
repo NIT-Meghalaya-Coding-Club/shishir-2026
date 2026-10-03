@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import LiquidGlass from "liquid-glass-react";
+import Blossom from "../Blossom";
 
 const artists = [
   {
@@ -141,9 +142,13 @@ const FeaturedArtists = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7 }}
       >
-        <h2 className="font-bold text-3xl md:text-6xl lg:text-7xl bg-clip-text text-transparent bg-gradient-to-r from-[#d04b29] to-[#f17758] special-font tracking-wider transform hover:scale-105 transition-transform duration-300 text-center">
-          Featured Artists
-        </h2>
+        <div className="flex text-center justify-center items-center">
+          <Blossom className="w-10 h-10 sm:w-10 sm:h-10 text-[#98C1D9] animate-spin [animation-duration:3s]" />
+          <h2 className="shishir-title mr-4 ml-4 transform hover:scale-105 transition-transform duration-300 text-center">
+            Featured Artists
+          </h2>
+          <Blossom className="w-10 h-10 sm:w-10 sm:h-10 text-[#98C1D9] animate-spin [animation-duration:3s]" />
+        </div>
         <motion.div
           className="h-1 w-32 mx-auto bg-gradient-to-r from-red-500 via-yellow-500 to-green-500"
           animate={{
