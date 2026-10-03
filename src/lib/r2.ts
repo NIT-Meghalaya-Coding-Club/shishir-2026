@@ -16,6 +16,8 @@ const PRESIGN_EXPIRES_IN_SECONDS = 600;
 const PROFILE_PROXY_PREFIX = "/api/uploads/profile/";
 const POSTER_PROXY_PREFIX = "/api/uploads/poster/";
 const POSTER_PREFIX = "posters/";
+const TEAM_PROXY_PREFIX = "/api/uploads/team/";
+const TEAM_PREFIX = "teams/";
 
 export type PresignedUpload = {
   uploadUrl: string;
@@ -100,6 +102,26 @@ export async function uploadPoster(options: {
     publicUrl: `${POSTER_PROXY_PREFIX}${key}`,
     key,
   };
+}
+
+export async function uploadTeamPhoto(options: {
+  userId: string;
+  contentType: string;
+  fileSize: number;
+  body: Buffer;
+}): Promise<UploadedObject> {
+  const { bucket } = requireR2PublicConfig();
+  const key = makeObjectKey("teams", options.userId, options.contentType, "png");
+  await getR2Client().send(
+    new PutObjectCommand({
+      Bucket: bucket,
+      Key: key,
+      ContentType: options.contentType,
+      ContentLength: options.fileSize,
+      Body: options.body,
+    })
+  );
+  return { publicUrl: `${TEAM_PROXY_PREFIX}${key}`, key };
 }
 
 export async function presignProfileUpload(options: {
@@ -208,5 +230,24 @@ export async function deletePosterImage(image: unknown) {
     await getR2Client().send(new DeleteObjectCommand({ Bucket: bucket, Key: key }));
   } catch (error) {
     console.error("Error deleting event poster from R2:", error);
+  }
+}
+
+export async function deleteTeamImage(image: unknown) {
+  if (typeof image !== "string" || !image) return;
+  let pathname;
+  try {
+    pathname = new URL(image, "http://localhost").pathname;
+  } catch {
+    return;
+  }
+  const proxyIndex = pathname.indexOf(TEAM_PROXY_PREFIX);
+  const key = proxyIndex >= 0 ? pathname.slice(proxyIndex + TEAM_PROXY_PREFIX.length) : pathname.replace(/^\/+/, "");
+  const { bucket } = getR2Config();
+  if (!key.startsWith(TEAM_PREFIX) || !bucket) return;
+  try {
+    await getR2Client().send(new DeleteObjectCommand({ Bucket: bucket, Key: key }));
+  } catch (error) {
+    console.error("Error deleting SAC image from R2:", error);
   }
 }

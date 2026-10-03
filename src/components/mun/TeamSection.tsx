@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import { FaPhone, FaEnvelope } from "react-icons/fa6";
 import { RiMenu4Line } from "@remixicon/react";
 
-import { defaultImageUrl } from "@/data/Teams";
 import Title from "./Title";
 
 import "./TeamSection.css";
@@ -45,7 +44,7 @@ const TeamSection: React.FC = () => {
       {/* Team Cards */}
       <div className="card__container">
         {team.map((member, index) => {
-          const imageUrl = member.image || defaultImageUrl;
+          const imageUrl = member.image || "/defaultPhoto.webp";
 
           return (
             <motion.article

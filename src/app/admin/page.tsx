@@ -1,15 +1,16 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
-import { ArrowDown, ArrowUp, Edit3, GripVertical, KeyRound, ListOrdered, LogOut, Save, ShieldCheck, UsersRound, CalendarDays } from "lucide-react";
+import { ArrowDown, ArrowUp, Edit3, GripVertical, KeyRound, ListOrdered, LogOut, Save, ShieldCheck, UsersRound, CalendarDays, ContactRound } from "lucide-react";
 import UploadsPanel from "@/components/admin/UploadsPanel";
+import SacPostsPanel from "@/components/admin/SacPostsPanel";
 
 type CommitteeName = { _id: string; name: string };
 type Person = { name?: string; email?: string; collegeID?: string };
 type Committee = { code: string; committeeNameId?: CommitteeName; committeeHeads: Person[]; coordinators: Person[]; coCoordinators: Person[]; committeeHeadEmails?: string; coordinatorEmails?: string; coCoordinatorEmails?: string };
 type EventItem = { code: string; eventNameId?: CommitteeName; categoryId?: CommitteeName; location: string; startsAt: string; endsAt: string; description: string; eventType: string; minParticipants: number; maxParticipants: number; allowPerformanceTypes?: boolean; paymentRequired?: { amount?: number; qrCodeUrl?: string }; rulebookLink: string; posterLink: string; eventHeads: Person[]; coordinators: Person[]; coCoordinators: Person[]; name?: string; category?: string; eventHeadEmails?: string; coordinatorEmails?: string; coCoordinatorEmails?: string };
 type ManagedItem = { kind: "committees"; item: Committee } | { kind: "events"; item: EventItem };
-type Section = "access" | "mun" | "order" | "committees" | "events" | "uploads";
+type Section = "access" | "mun" | "order" | "committees" | "events" | "uploads" | "sac";
 
 const input = "w-full rounded-lg border border-white/10 bg-zinc-900 p-3 text-sm";
 const peopleText = (people: Person[] = []) => people.map((person) => person.email || "").filter(Boolean).join("\n");
@@ -19,7 +20,7 @@ function AdminSidebar({ section, onSectionChange, onLogout }: { section: Section
   const items = [
     ["access", "Access control", KeyRound], ["mun", "MUN dashboard access", UsersRound],
     ["order", "Committee order", ListOrdered], ["committees", "Committees", UsersRound], ["events", "Events", CalendarDays],
-    ["uploads", "Uploads", CalendarDays],
+    ["uploads", "Uploads", CalendarDays], ["sac", "SAC posts", ContactRound],
   ] as const;
   return <aside className="flex w-full shrink-0 flex-col border-b border-white/10 bg-zinc-900/80 p-4 md:min-h-screen md:w-64 md:border-b-0 md:border-r">
     <div className="flex items-center gap-3 px-2 py-3"><div className="rounded-lg bg-amber-400 p-2 text-zinc-950"><ShieldCheck size={18} /></div><div><p className="font-semibold">Shishir Admin</p><p className="text-xs text-zinc-500">Management</p></div></div>
@@ -60,7 +61,7 @@ export default function AdminPage() {
   if (loading) return <main className="min-h-screen bg-zinc-950 p-8 text-white">Loading...</main>;
   if (!authenticated) return <main className="flex min-h-screen items-center justify-center bg-zinc-950 px-6 text-white"><form onSubmit={login} className="w-full max-w-md space-y-5 rounded-xl border border-white/10 bg-zinc-900 p-8 shadow-2xl"><p className="text-sm uppercase tracking-[0.25em] text-amber-400">Shishir Admin</p><h1 className="text-3xl font-semibold">Access control</h1><input className={input} type="email" placeholder="Admin email" value={email} onChange={(e) => setEmail(e.target.value)} required /><input className={input} type="password" placeholder="Admin password" value={password} onChange={(e) => setPassword(e.target.value)} required /><button className="w-full rounded-lg bg-amber-400 p-3 font-semibold text-zinc-950" type="submit">Sign in</button>{message && <p className="text-sm text-red-300">{message}</p>}</form></main>;
 
-  const heading = section === "access" ? "Access control" : section === "mun" ? "MUN dashboard access" : section === "order" ? "Committee order" : section === "committees" ? "Committees" : section === "events" ? "Events" : "Uploads";
+  const heading = section === "access" ? "Access control" : section === "mun" ? "MUN dashboard access" : section === "order" ? "Committee order" : section === "committees" ? "Committees" : section === "events" ? "Events" : section === "sac" ? "SAC posts" : "Uploads";
   return <main className="flex min-h-screen flex-col bg-zinc-950 text-white md:flex-row"><AdminSidebar section={section} onSectionChange={(next) => { setSection(next); setMessage(""); setEditingCommittee(null); setEditingEvent(null); }} onLogout={logout} /><div className="w-full max-w-6xl space-y-8 p-6 md:p-12"><header><p className="text-sm uppercase tracking-[0.25em] text-amber-400">Admin panel</p><h1 className="mt-2 text-4xl font-semibold">{heading}</h1><p className="mt-2 text-zinc-400">{section === "committees" ? "Review every committee and edit its members." : section === "events" ? "Review events, poster links, and all event details." : "Manage site administration settings."}</p></header>
     {section === "access" && <form onSubmit={saveSettings} className="grid gap-6 md:grid-cols-2"><PeopleField label="Event creator" value={eventCreators} onChange={setEventCreators} /><PeopleField label="Committee head" value={committeeHeads} onChange={setCommitteeHeads} /><div className="md:col-span-2"><SaveButton message={message} /></div></form>}
     {section === "mun" && <form onSubmit={saveSettings} className="max-w-2xl space-y-5"><PeopleField label="MUN dashboard user" value={munEmails} onChange={setMunEmails} /><SaveButton message={message} /></form>}
@@ -68,6 +69,7 @@ export default function AdminPage() {
     {section === "committees" && (editingCommittee ? <CommitteeEditor item={editingCommittee} onChange={setEditingCommittee} onCancel={() => setEditingCommittee(null)} onSave={() => saveManaged({ kind: "committees", item: editingCommittee })} /> : <List items={committees} getTitle={(item) => item.committeeNameId?.name || item.code} getMeta={(item) => `${item.committeeHeads.length} heads · ${item.coordinators.length} coordinators`} onEdit={setEditingCommittee} />)}
     {section === "events" && (editingEvent ? <EventEditor item={editingEvent} onChange={setEditingEvent} onCancel={() => setEditingEvent(null)} onSave={() => saveManaged({ kind: "events", item: editingEvent })} /> : <List items={events} getTitle={(item) => item.eventNameId?.name || item.code} getMeta={(item) => `${item.categoryId?.name || "Uncategorised"} · ${new Date(item.startsAt).toLocaleString()}`} onEdit={setEditingEvent} />)}
     {section === "uploads" && <UploadsPanel />}
+    {section === "sac" && <SacPostsPanel />}
   </div></main>;
 }
 

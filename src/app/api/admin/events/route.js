@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { isAdminRequest } from "@/lib/adminAuth";
 import connectMongo from "@/lib/mongodb";
 import Event from "@/models/Event";
+import "@/models/EventName";
+import "@/models/Category";
+import "@/models/User";
 
 function unauthorized() {
   return NextResponse.json({ success: false, message: "Admin authentication required" }, { status: 401 });

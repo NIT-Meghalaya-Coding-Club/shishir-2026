@@ -1,6 +1,5 @@
 "use client";
 
-import { defaultImageUrl, Teams } from "@/data/Teams";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Head from "next/head";
@@ -27,12 +26,9 @@ type TeamMember = {
 };
 
 export default function Contact() {
-  const [teams, setTeams] =
-    useState<Record<string, TeamMember[]>>(Teams);
+  const [teams, setTeams] = useState<Record<string, TeamMember[]>>({});
 
-  const [activeTeam, setActiveTeam] = useState(
-    Object.keys(Teams)[0] ?? ""
-  );
+  const [activeTeam, setActiveTeam] = useState("");
 
   const [showTopButton, setShowTopButton] = useState(false);
 
@@ -59,19 +55,11 @@ export default function Contact() {
             team.name && Array.isArray(team.members)
         );
 
-        setTeams({
-          ...Teams,
-          ...Object.fromEntries(
-            databaseTeams
-              .filter((team) => Boolean(team.name))
-              .map(
-                (team: {
-                  name: string;
-                  members: TeamMember[];
-                }) => [team.name, team.members] as const
-              )
-          ),
-        });
+        setTeams(Object.fromEntries(
+          databaseTeams
+            .filter((team) => Boolean(team.name))
+            .map((team) => [team.name, team.members] as const)
+        ));
       })
       .catch((error) =>
         console.error(
@@ -290,8 +278,7 @@ export default function Contact() {
                         <div className="relative w-full">
                           <Image
                             src={
-                              member.imageLink ||
-                              defaultImageUrl
+                              member.imageLink || "/defaultPhoto.webp"
                             }
                             alt={`${member.name}'s photo`}
                             width={500}

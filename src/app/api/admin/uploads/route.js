@@ -5,17 +5,20 @@ import Upload from "@/models/Uploads";
 import User from "@/models/User";
 import Event from "@/models/Event";
 import EventName from "@/models/EventName";
-import { deleteOwnedProfileImage, deletePosterImage, getPosterPublicUrl } from "@/lib/r2";
+import SacPost from "@/models/SacPost";
+import { deleteOwnedProfileImage, deletePosterImage, deleteTeamImage, getPosterPublicUrl } from "@/lib/r2";
 
 export const runtime = "nodejs";
 
 const PAGE_SIZE = 20;
 
-function serializeUpload(upload, users, events) {
+function serializeUpload(upload, users, events, sacPosts) {
   const user = upload.userId ? users.get(String(upload.userId)) : null;
   const reference = upload.referenceType === "User"
     ? users.get(String(upload.referenceId))
-    : events.get(String(upload.referenceId));
+    : upload.referenceType === "Event"
+      ? events.get(String(upload.referenceId))
+      : sacPosts.get(String(upload.referenceId));
   const imageUrl = upload.type === "poster"
     ? getPosterPublicUrl(reference?.posterLink)
     : reference?.image || null;
@@ -71,14 +74,17 @@ export async function GET(request) {
 
     const userIds = new Set();
     const eventIds = new Set();
+    const sacPostIds = new Set();
     uploads.forEach((upload) => {
       if (upload.userId) userIds.add(String(upload.userId));
       if (upload.referenceType === "User") userIds.add(String(upload.referenceId));
       if (upload.referenceType === "Event") eventIds.add(String(upload.referenceId));
+      if (upload.referenceType === "SacPost") sacPostIds.add(String(upload.referenceId));
     });
-    const [users, events] = await Promise.all([
+    const [users, events, sacPosts] = await Promise.all([
       User.find({ _id: { $in: [...userIds] } }).select("name email image").lean(),
       Event.find({ _id: { $in: [...eventIds] } }).select("posterLink eventNameId").populate("eventNameId", "name").lean(),
+      SacPost.find({ _id: { $in: [...sacPostIds] } }).select("image name email").lean(),
     ]);
 
     return NextResponse.json({
@@ -91,6 +97,7 @@ export async function GET(request) {
         upload,
         new Map(users.map((user) => [String(user._id), user])),
         new Map(events.map((event) => [String(event._id), event])),
+        new Map(sacPosts.map((post) => [String(post._id), post])),
       )),
     });
   } catch (error) {
@@ -124,6 +131,13 @@ export async function DELETE(request) {
         await deleteOwnedProfileImage(user.image, String(user._id));
         user.image = null;
         await user.save();
+      }
+    } else if (upload.referenceType === "SacPost") {
+      const post = await SacPost.findById(upload.referenceId);
+      if (post) {
+        await deleteTeamImage(post.image);
+        post.image = "";
+        await post.save();
       }
     }
 

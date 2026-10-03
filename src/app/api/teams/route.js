@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import connectMongo from "@/lib/mongodb";
 import Committee from "@/models/Committee";
+import SacPost from "@/models/SacPost";
 import "@/models/CommitteeName";
+import "@/models/User";
 import { getAccessSettings } from "@/lib/accessSettings";
 
 const memberGroups = [
@@ -49,6 +51,20 @@ export async function GET() {
       ),
       }))
       .filter((team) => team.name);
+
+    const sacPosts = await SacPost.find({}).sort({ order: 1, createdAt: 1 }).lean();
+    if (sacPosts.length) {
+      teams.unshift({
+        name: "Student Activity Center (SAC)",
+        members: sacPosts.map((person) => ({
+          name: person.name,
+          contactNo: person.phone,
+          email: person.email,
+          position: person.post,
+          imageLink: person.image || undefined,
+        })),
+      });
+    }
 
     return NextResponse.json({ success: true, teams }, { status: 200 });
   } catch (error) {
