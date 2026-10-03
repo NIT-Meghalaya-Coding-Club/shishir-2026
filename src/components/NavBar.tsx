@@ -2,12 +2,11 @@
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
-import { LuMenu, LuSun, LuMoon } from "react-icons/lu";
+import MenuToggle from "./MenuToggle";
 import { motion, AnimatePresence } from "framer-motion";
 import NavBarItem from "./NavBarItem";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useTheme } from "@/context/ThemeContext";
 
 
 const NavBar: React.FC = () => {
@@ -23,7 +22,6 @@ const NavBar: React.FC = () => {
   const router = useRouter();
 
   const { status } = useSession();
-  const { theme, toggleTheme } = useTheme();
 
   const toggleMenu = () => {
     setIsOpen((prev) => !prev);
@@ -181,31 +179,11 @@ const NavBar: React.FC = () => {
           />
         </motion.div>
 
-        {/* Right action icons: Theme toggle & Hamburger menu */}
         <div className="flex items-center gap-2.5 sm:gap-3">
-          {/* Theme Toggle Button (Transparent Glass Capsule) */}
-          {/* <button
-            type="button"
-            onClick={toggleTheme}
-            aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
-            title={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
-            className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/20 dark:bg-white/5 border border-white/40 dark:border-white/15 text-yellow-800 dark:text-amber-300 hover:bg-white/40 dark:hover:bg-white/15 transition-all duration-200 cursor-pointer shadow-sm hover:scale-105 active:scale-95 backdrop-blur-xl"
-          >
-            {theme === "light" ? (
-              <LuMoon className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600 transition-transform duration-300" />
-            ) : (
-              <LuSun className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400 transition-transform duration-300" />
-            )}
-          </button> */}
+
 
           {/* Menu Hamburger Button */}
-          <div
-            className="cursor-pointer text-2xl sm:text-3xl text-yellow-500 dark:text-white hover:text-amber-500 dark:hover:text-yellow-300 transition-colors duration-200 flex items-center justify-center p-1 rounded-lg hover:bg-white/20 dark:hover:bg-white/10"
-            onClick={toggleMenu}
-            aria-label="Toggle Navigation Menu"
-          >
-            <LuMenu />
-          </div>
+          <MenuToggle isOpen={isOpen} onClick={toggleMenu} />
         </div>
       </div>
 
@@ -217,7 +195,7 @@ const NavBar: React.FC = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -15, scale: 0.98 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="absolute right-3 sm:right-6 top-16 sm:top-18 w-56 rounded-2xl bg-white/20 dark:bg-black/30 backdrop-blur-2xl backdrop-saturate-200 border border-white/40 dark:border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.25),inset_0_1px_2px_rgba(255,255,255,0.4)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.65),inset_0_1px_2px_rgba(255,255,255,0.15)] p-4 transition-all duration-300"
+            className="absolute right-3 sm:right-6 top-[70px] sm:top-18 w-56 rounded-2xl bg-white/20 dark:bg-black/30 backdrop-blur-2xl backdrop-saturate-200 border border-white/40 dark:border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.25),inset_0_1px_2px_rgba(255,255,255,0.4)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.65),inset_0_1px_2px_rgba(255,255,255,0.15)] p-4 transition-all duration-300"
           >
             <NavBarItem to="/" text="Home" onClick={closeMenu} />
             <NavBarItem to="/ticket" text="Ticket" onClick={closeMenu} />
@@ -232,21 +210,6 @@ const NavBar: React.FC = () => {
             {status === "authenticated" && (
               <NavBarItem to="/dashboard" text="Dashboard" onClick={closeMenu} />
             )}
-
-            {/* Quick theme switch inside menu */}
-            <li className="mt-3 pt-3 border-t border-white/30 dark:border-white/10 flex items-center justify-between px-2">
-              <span className="text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-neutral-300">
-                Theme: <span className="font-bold text-slate-900 dark:text-white capitalize">{theme}</span>
-              </span>
-              <button
-                type="button"
-                onClick={toggleTheme}
-                className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-white/30 dark:bg-white/10 text-slate-800 dark:text-amber-300 hover:bg-white/50 dark:hover:bg-white/20 transition-all duration-200 border border-white/40 dark:border-white/10"
-              >
-                {theme === "light" ? <LuMoon className="w-3.5 h-3.5 text-indigo-600" /> : <LuSun className="w-3.5 h-3.5 text-amber-400" />}
-                <span>Toggle</span>
-              </button>
-            </li>
           </motion.ul>
         )}
       </AnimatePresence>
