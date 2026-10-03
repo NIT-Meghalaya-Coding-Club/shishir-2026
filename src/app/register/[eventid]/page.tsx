@@ -34,6 +34,9 @@ export default function EventPage() {
     max: 1,
     allowPerformanceTypes: false,
     paymentRequired: undefined as { amount: number; qrCodeUrl: string } | undefined,
+    eventHeads: [] as Array<{ name?: string; phone?: string }>,
+    coordinators: [] as Array<{ name?: string; phone?: string }>,
+    coCoordinators: [] as Array<{ name?: string; phone?: string }>,
   });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -57,6 +60,9 @@ export default function EventPage() {
             min: Math.max(1, Number(createdEvent.minParticipants) || 1),
             max: Math.max(1, Number(createdEvent.maxParticipants) || 1),
             paymentRequired: createdEvent.paymentRequired,
+            eventHeads: Array.isArray(createdEvent.eventHeads) ? createdEvent.eventHeads : [],
+            coordinators: Array.isArray(createdEvent.coordinators) ? createdEvent.coordinators : [],
+            coCoordinators: Array.isArray(createdEvent.coCoordinators) ? createdEvent.coCoordinators : [],
           });
           setIsLoading(false);
           return;
@@ -70,6 +76,12 @@ export default function EventPage() {
 
     loadEvent();
   }, [pathname, eventId]);
+
+  const contactGroups = [
+    { key: "eventHeads", title: "Head Coordinator", people: event.eventHeads ?? [] },
+    { key: "coordinators", title: "Coordinator", people: event.coordinators ?? [] },
+    { key: "coCoordinators", title: "Co-Coordinator", people: event.coCoordinators ?? [] },
+  ].filter((group) => group.people.length > 0);
 
   if (isLoading) return <Loading />;
 
@@ -221,12 +233,40 @@ export default function EventPage() {
                 <div className="flex justify-center mb-3">
                   <Phone className="w-6 h-6 text-[#EE6C4D]" />
                 </div>
-                <h3 className="text-lg font-extrabold uppercase tracking-widest text-[#293241] dark:text-[#E0FBFC] mb-2">Got Questions?</h3>
-                <p className="text-[#3D5A80] dark:text-[#98C1D9] font-medium">
-                  For any queries, please contact:<br />
-                  <span className="font-bold text-[#293241] dark:text-[#E0FBFC] mt-1 block text-lg">[TODO: ADD NAME]</span>
-                  <span className="text-[#EE6C4D] dark:text-[#EE6C4D] font-bold">[TODO: ADD NUMBER]</span>
-                </p>
+                <h3 className="text-lg font-extrabold uppercase tracking-widest text-[#293241] dark:text-[#E0FBFC] mb-3">Got Questions?</h3>
+
+                {contactGroups.length > 0 ? (
+                  <div className="space-y-4 text-left">
+                    {contactGroups.map((group) => (
+                      <div key={group.key} className="rounded-2xl border border-[#98C1D9]/60 dark:border-[#3D5A80]/50 bg-[#E0FBFC]/60 dark:bg-[#293241]/40 p-3">
+                        <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-[#EE6C4D] mb-2">{group.title}</p>
+                        <div className="space-y-2">
+                          {group.people.map((person, index) => {
+                            const personName = String(person?.name ?? "").trim() || "Name unavailable";
+                            const phone = String(person?.phone ?? "").trim() || "Phone unavailable";
+
+                            return (
+                              <div key={`${group.key}-${personName}-${index}`} className="rounded-xl bg-white/40 dark:bg-[#3D5A80]/20 px-3 py-2">
+                                <p className="font-bold text-[#293241] dark:text-[#E0FBFC] break-words">{personName}</p>
+                                {phone !== "Phone unavailable" ? (
+                                  <a href={`tel:${phone}`} className="text-[#EE6C4D] dark:text-[#EE6C4D] font-bold break-all hover:underline">
+                                    {phone}
+                                  </a>
+                                ) : (
+                                  <span className="text-[#3D5A80] dark:text-[#98C1D9] font-medium">{phone}</span>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-[#3D5A80] dark:text-[#98C1D9] font-medium">
+                    For any queries, please contact the event team.
+                  </p>
+                )}
               </motion.div>
             </div>
           </div>
