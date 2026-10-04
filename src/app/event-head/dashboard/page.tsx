@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { signIn, useSession } from "next-auth/react";
 import {
   CalendarClock,
@@ -145,6 +145,11 @@ export default function EventHeadDashboard() {
   const [participantsCode, setParticipantsCode] = useState("");
   const [posterFile, setPosterFile] = useState<File | null>(null);
   const [posterToCrop, setPosterToCrop] = useState<File | null>(null);
+  const posterInputRef = useRef<HTMLInputElement>(null);
+
+  const clearPosterInput = () => {
+    if (posterInputRef.current) posterInputRef.current.value = "";
+  };
 
   const [canCreate, setCanCreate] = useState(false);
   const isEditing = Boolean(editingCode);
@@ -246,6 +251,7 @@ export default function EventHeadDashboard() {
     setNewEventName("");
     setPosterFile(null);
     setPosterToCrop(null);
+    clearPosterInput();
     setFormData({
       ...emptyEvent,
       eventHeads: currentUser?.collegeID && canCreate ? [currentUser] : [],
@@ -284,6 +290,7 @@ export default function EventHeadDashboard() {
     setNewCategoryName("");
     setPosterFile(null);
     setPosterToCrop(null);
+    clearPosterInput();
   };
 
   const addPerson = async (field: PeopleField) => {
@@ -523,6 +530,7 @@ export default function EventHeadDashboard() {
         endsAt: toDateTimeInputValue(savedEvent.endsAt),
       });
       setPosterFile(null);
+      clearPosterInput();
       toast.success(isEditing ? "Event updated" : "Event created");
     } catch (error) {
       console.error("Save event failed:", error);
@@ -838,11 +846,17 @@ export default function EventHeadDashboard() {
                     Poster Image
                   </span>
                   <input
+                    ref={posterInputRef}
                     type="file"
                     accept="image/jpeg,image/png,image/webp"
+                    onClick={(event) => {
+                      // Reset before the picker opens so picking the same
+                      // file again still fires onChange. Never reset inside
+                      // onChange - that wipes the shown filename.
+                      event.currentTarget.value = "";
+                    }}
                     onChange={(event) => {
                       const file = event.target.files?.[0];
-                      event.target.value = "";
                       if (file) setPosterToCrop(file);
                     }}
                     className="w-full rounded-md border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-white file:mr-3 file:rounded file:border-0 file:bg-amber-400 file:px-3 file:py-1 file:font-semibold file:text-zinc-950"
