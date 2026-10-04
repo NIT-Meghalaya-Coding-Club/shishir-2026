@@ -1,10 +1,12 @@
-'use client';
-import React from 'react';
-import { motion } from 'framer-motion';
+"use client";
+import React from "react";
+import { motion } from "framer-motion";
 
 export default function Inav({ categories }: { categories: string[] }) {
   const handleScroll = (category: string) => {
-    const element = document.getElementById(category.toLowerCase().replace(/ /g, '-'));
+    const element = document.getElementById(
+      category.toLowerCase().replace(/ /g, "-"),
+    );
     if (element) {
       const offset = 100; // Adjust this value based on the height of your navbar
       const elementPosition = element.getBoundingClientRect().top;
@@ -12,7 +14,7 @@ export default function Inav({ categories }: { categories: string[] }) {
 
       window.scrollTo({
         top: offsetPosition,
-        behavior: 'smooth'
+        behavior: "smooth",
       });
     }
   };
@@ -29,11 +31,11 @@ export default function Inav({ categories }: { categories: string[] }) {
               key={index}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
-              transition={{ type: 'spring', stiffness: 300 }}
+              transition={{ type: "spring", stiffness: 300 }}
               onClick={() => handleScroll(category)}
-              className="flex-shrink-0 cursor-pointer px-6 mx-2 py-3 text-lg font-medium text-[#EE6C4D] hover:text-[#E0FBFC] transition-colors duration-300 bg-[#E0FBFC]/70 dark:bg-[#293241]/70 backdrop-blur-sm rounded-full shadow-lg border border-[#EE6C4D]/80 hover:border-[#EE6C4D] hover:bg-[#EE6C4D]"
+              className="flex-shrink-0 cursor-pointer px-6 py-3 text-lg font-medium text-[#EE6C4D] hover:text-[#E0FBFC] transition-colors duration-300 bg-[#E0FBFC]/70 dark:bg-[#293241]/70 backdrop-blur-sm rounded-full shadow-lg border border-[#EE6C4D]/80 hover:border-[#EE6C4D] hover:bg-[#EE6C4D]"
             >
-              {category.replace('_', ' ')}
+              {category.replace("_", " ")}
             </motion.div>
           ))}
         </div>

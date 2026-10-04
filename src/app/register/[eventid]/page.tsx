@@ -160,7 +160,7 @@ export default function EventPage() {
                 </div>
 
                 <div className="space-y-4 text-[#3D5A80] dark:text-[#98C1D9] font-medium text-lg">
-                  <div className="flex justify-between items-center bg-[#E0FBFC]/50 dark:bg-[#3D5A80]/20 p-3 px-6 rounded-full border border-[#98C1D9]/50 dark:border-[#3D5A80]/50">
+                  <div className="flex justify-between items-center bg-[#E0FBFC]/50 dark:bg-[#3D5A80]/20 p-3 px-6 rounded-2xl border border-[#98C1D9]/50 dark:border-[#3D5A80]/50">
                     <span className="flex items-center gap-2"><Users className="w-4 h-4" /> Participation</span>
                     <span className="font-bold text-[#293241] dark:text-[#E0FBFC] uppercase tracking-wider text-sm">
                       {event.eventType === "individual" ? "Individual" :
@@ -168,7 +168,7 @@ export default function EventPage() {
                           event.eventType === "performance" ? "Performance" : "—"}
                     </span>
                   </div>
-                  <div className="flex justify-between items-center bg-[#E0FBFC]/50 dark:bg-[#3D5A80]/20 p-3 px-6 rounded-full border border-[#98C1D9]/50 dark:border-[#3D5A80]/50">
+                  <div className="flex justify-between items-center bg-[#E0FBFC]/50 dark:bg-[#3D5A80]/20 p-3 px-6 rounded-2xl border border-[#98C1D9]/50 dark:border-[#3D5A80]/50">
                     <span>Team Size</span>
                     <span className="font-bold text-[#293241] dark:text-[#E0FBFC]">
                       {event.min === event.max

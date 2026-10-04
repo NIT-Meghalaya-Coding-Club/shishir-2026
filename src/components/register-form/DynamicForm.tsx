@@ -647,7 +647,7 @@ const DynamicForm = ({
               <>
                 <div className="flex items-center justify-between gap-3">
                   <span className={`font-bold uppercase tracking-wider transition-colors ${isSelected ? "text-[#293241] dark:text-[#E0FBFC]" : "text-[#3D5A80]/60 dark:text-[#98C1D9]/60"}`}>TEAM: {teamName}</span>
-                  <span className={`text-xs font-semibold uppercase tracking-widest px-3 py-1 rounded-full transition-colors ${isSelected ? "text-[#EE6C4D] bg-[#EE6C4D]/10" : "text-[#3D5A80]/60 dark:text-[#98C1D9]/60 bg-[#3D5A80]/5 dark:bg-[#98C1D9]/5"}`}>
+                  <span className={`text-xs font-semibold uppercase tracking-widest px-3 py-1 rounded-2xl transition-colors ${isSelected ? "text-[#EE6C4D] bg-[#EE6C4D]/10" : "text-[#3D5A80]/60 dark:text-[#98C1D9]/60 bg-[#3D5A80]/5 dark:bg-[#98C1D9]/5"}`}>
                     {isSelected ? "Editing Now..." : "Click to edit"}
                   </span>
                 </div>
@@ -662,7 +662,7 @@ const DynamicForm = ({
                 key={registration._id}
                 type="button"
                 onClick={() => populateRegistration(registration)}
-                className={`w-full rounded-full border px-6 py-4 text-left transition-all duration-300 ${selectedRegistrationId === registration._id
+                className={`w-full rounded-2xl border px-6 py-4 text-left transition-all duration-300 ${selectedRegistrationId === registration._id
                   ? "border-[#EE6C4D] bg-[#EE6C4D]/10 shadow-md scale-[1.01]"
                   : "opacity-100 grayscale-[70%] border-[#EE6C4D]/50 dark:border-[#EE6C4D]/50 bg-transparent hover:opacity-100 hover:grayscale-0 hover:border-[#EE6C4D] hover:bg-[#EE6C4D]/5 hover:shadow-sm"
                   }`}
@@ -688,13 +688,10 @@ const DynamicForm = ({
       )}
 
       {!isIndividualEvent && !hideLeaderWarning && (
-        <div className="mb-6 rounded-full border border-[#EE6C4D]/50 bg-[#EE6C4D]/10 dark:bg-[#293241]/60 p-3 text-sm text-[#293241] dark:text-[#E0FBFC] flex items-center justify-between shadow-sm">
+        <div className="mb-6 rounded-2xl border border-[#EE6C4D]/50 bg-[#EE6C4D]/10 dark:bg-[#293241]/60 p-3 text-sm text-[#293241] dark:text-[#E0FBFC] flex items-center justify-between shadow-sm">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#EE6C4D] text-[#E0FBFC] font-bold text-xl">
-              !
-            </div>
             <div>
-              <p className="text-[#3D5A80] dark:text-[#98C1D9] font-medium mr-2">
+              <p className="text-[#3D5A80] dark:text-[#98C1D9] font-sm mr-2">
                 You are the group leader because you are filling out this form. Your account is added automatically as the first participant. Add other members using the email address registered on Shishir.
               </p>
             </div>
@@ -702,7 +699,7 @@ const DynamicForm = ({
           <button
             type="button"
             onClick={() => setHideLeaderWarning(true)}
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[#3D5A80] hover:bg-[#98C1D9]/30 hover:text-[#293241] dark:hover:text-[#E0FBFC] transition-colors mr-1"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-2xl text-[#3D5A80] hover:bg-[#98C1D9]/30 hover:text-[#293241] dark:hover:text-[#E0FBFC] transition-colors mr-1"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />

@@ -14,6 +14,8 @@ import "swiper/css/navigation";
 
 import PageHeading from "@/components/PageHeading";
 
+import Blossom from "@/components/Blossom";
+
 type EventRecord = {
   _id: string;
   name: string;
@@ -348,16 +350,14 @@ export default function Events() {
                   <div className="absolute inset-0 border border-[#98C1D9]/60 dark:border-[#3D5A80]/50 rounded-full" />
 
                   {/* Content */}
-                  <div className="relative px-10 sm:px-20 py-4 sm:py-6 flex items-center justify-center gap-4 sm:gap-8 z-10">
-                    <div className="h-[2px] w-6 sm:w-12 bg-[#EE6C4D] rounded-full opacity-80" />
-
+                  <div className="relative px-4 sm:px-10 py-2 sm:py-4 flex items-center justify-center gap-2 sm:gap-4 z-10">
+                    <Blossom className="w-8 h-8 sm:w-10 sm:h-10 text-[#EE6C4D] animate-spin [animation-duration:3s]" />
                     <h2
-                      className="text-2xl sm:text-3xl md:text-5xl font-extrabold text-[#293241] dark:text-[#E0FBFC] uppercase tracking-widest whitespace-nowrap drop-shadow-sm"
+                      className="text-xl sm:text-3xl md:text-4xl font-extrabold text-[#293241] dark:text-[#E0FBFC] uppercase tracking-widest whitespace-nowrap drop-shadow-sm"
                     >
                       {category.replace("_", " ")}
                     </h2>
-
-                    <div className="h-[2px] w-6 sm:w-12 bg-[#EE6C4D] rounded-full opacity-80" />
+                    <Blossom className="w-8 h-8 sm:w-10 sm:h-10 text-[#EE6C4D] animate-spin [animation-duration:3s]" />
                   </div>
                 </div>
               </div>
