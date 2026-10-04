@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
-import { Schedule, EventType } from "@/data/schedule";
+import React, { useEffect, useState } from "react";
 import {
   Calendar,
   Clock,
@@ -12,6 +11,9 @@ import {
 import ComingSoon from "@/components/ComingSoon";
 
 import PageHeading from "@/components/PageHeading";
+
+type EventType = { name: string; time: string; place: string; description: string; category: string; speakers?: string[] };
+type ScheduleDay = { date: string; categories: Record<string, EventType[]> };
 
 /* ──────────────────────────────────────────────────────────────
    Palette
@@ -70,11 +72,23 @@ function PaperDressing({ strong = true }: { strong?: boolean }) {
 }
 
 const SchedulePage = () => {
-  const days = Object.keys(Schedule);
+  const [schedule, setSchedule] = useState<Record<string, ScheduleDay>>({});
+  const days = ["all", "day1", "day2", "day3"];
   const [activeDay, setActiveDay] = useState(days[0]);
   const [activeCategory, setActiveCategory] = useState("All");
 
-  const categories = Object.keys(Schedule[activeDay]);
+  useEffect(() => {
+    fetch("/api/schedule")
+      .then((response) => {
+        if (!response.ok) throw new Error("Could not load schedule");
+        return response.json();
+      })
+      .then((data) => setSchedule(data.days || {}))
+      .catch((error) => console.error("Load schedule error:", error));
+  }, []);
+
+  const activeSchedule = schedule[activeDay] || { date: "", categories: {} };
+  const categories = Object.keys(activeSchedule.categories);
 
   const sortEventsByTime = (events: EventType[]) => {
     return [...events].sort((a, b) => {
@@ -84,13 +98,13 @@ const SchedulePage = () => {
     });
   };
 
-  const allEvents = Object.values(Schedule[activeDay]).flat();
+  const allEvents = Object.values(activeSchedule.categories).flat();
   const sortedAllEvents = sortEventsByTime(allEvents);
 
   const categoryEvents =
     activeCategory === "All"
       ? sortedAllEvents
-      : sortEventsByTime(Schedule[activeDay][activeCategory]);
+      : sortEventsByTime(activeSchedule.categories[activeCategory] || []);
 
   if (process.env.NEXT_PUBLIC_LAUNCH) {
     return (
@@ -176,11 +190,12 @@ const SchedulePage = () => {
                           : "text-[#3D5A80] group-hover:text-[#EE6C4D] dark:text-[#98C1D9]"
                       }`}
                     >
-                      {day.replace("day ", "Day ")}
+                      {day === "all" ? "All" : day.replace("day", "Day ")}
+                      {schedule[day]?.date && <span className="ml-2 text-sm font-medium">{new Date(`${schedule[day].date}T00:00:00`).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}</span>}
                     </p>
 
                     <p className="mt-1 text-sm text-[#293241]/70 dark:text-[#E0FBFC]/70">
-                      {Object.keys(Schedule[day]).length} Sessions
+                      {Object.keys(schedule[day]?.categories || {}).length} Sessions
                     </p>
                   </div>
 
@@ -281,8 +296,8 @@ const SchedulePage = () => {
                         </span>
 
                         <span className="mt-0.5 block text-[11px] opacity-70">
-                          {Schedule[activeDay][category].length} session
-                          {Schedule[activeDay][category].length > 1 ? "s" : ""}
+                          {activeSchedule.categories[category].length} session
+                          {activeSchedule.categories[category].length > 1 ? "s" : ""}
                         </span>
                       </span>
 

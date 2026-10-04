@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { isAdminRequest } from "@/lib/adminAuth";
 import CommitteeName from "@/models/CommitteeName";
-import { getAccessSettings, normalizeEmails, normalizeCommitteeOrder, updateAccessSettings } from "@/lib/accessSettings";
+import { getAccessSettings, normalizeEmails, normalizeCommitteeOrder, normalizeScheduleDates, updateAccessSettings } from "@/lib/accessSettings";
 
 function unauthorized() {
   return NextResponse.json({ success: false, message: "Admin authentication required" }, { status: 401 });
@@ -20,6 +20,7 @@ export async function GET() {
       munDashboardEmails: settings.munDashboardEmails || [],
       committeeOrder: (settings.committeeOrder || []).map(String),
       committeeNames,
+      scheduleDates: settings.scheduleDates || { day1: "", day2: "", day3: "" },
     },
   });
 }
@@ -39,6 +40,7 @@ export async function PATCH(req) {
       committeeHeadEmails: normalizeEmails(payload.committeeHeadEmails),
       munDashboardEmails: normalizeEmails(payload.munDashboardEmails),
       committeeOrder,
+      scheduleDates: normalizeScheduleDates(payload.scheduleDates),
     });
 
     return NextResponse.json({
@@ -48,6 +50,7 @@ export async function PATCH(req) {
         committeeHeadEmails: settings.committeeHeadEmails,
         munDashboardEmails: settings.munDashboardEmails || [],
         committeeOrder: (settings.committeeOrder || []).map(String),
+        scheduleDates: settings.scheduleDates || { day1: "", day2: "", day3: "" },
       },
     });
   } catch (error) {
