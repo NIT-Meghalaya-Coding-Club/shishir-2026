@@ -133,7 +133,7 @@ export default function EventPage() {
                   className="w-full overflow-hidden rounded-2xl shadow-xl border-[3px] border-[#EE6C4D]/80 dark:border-[#3D5A80]/50"
                 >
                   <Image
-                    src={event.image.startsWith("http") ? event.image : `https://shishir.nitm.ac.in${event.image}`}
+                    src={event.image}
                     width={500}
                     height={500}
                     alt={`${event.name} poster`}
