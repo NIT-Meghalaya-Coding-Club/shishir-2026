@@ -3,10 +3,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import LiquidGlass from "liquid-glass-react";
 import Blossom from "../Blossom";
 
 const artists = [
@@ -41,7 +39,6 @@ const FeaturedArtists = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLDivElement>(null);
-  const router = useRouter();
 
   useEffect(() => {
     const elements = [...Array(20)].map((_, i) => ({
@@ -114,10 +111,6 @@ const FeaturedArtists = () => {
 
     return () => ctx.revert();
   }, []);
-
-  const handleRedirect = () => {
-    router.push("/ticket");
-  };
 
   return (
     <div
@@ -198,46 +191,8 @@ const FeaturedArtists = () => {
         </div>
       </div>
 
-      {/* Animated call to action */}
-      <motion.div
-        className="mt-12 text-center relative z-10"
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
-      >
-        <motion.div
-          ref={buttonRef}
-          className="relative inline-block h-fit w-fit will-change-transform"
-          whileHover={{
-            scale: 1.05 
-          }}
-          whileTap={{ scale: 0.95 }}
-        >
-          <LiquidGlass
-            displacementScale={64}
-            blurAmount={0.08}
-            saturation={140}
-            aberrationIntensity={2}
-            elasticity={0.35}
-            cornerRadius={999}
-            padding="20px 40px"
-            mode="standard"
-            className="text-lg font-bold"
-            style={{
-              position: "absolute",
-              top: "50%",
-              left: "50%",
-            }}
-          >
-            <button
-              type="button"
-              className="block w-max cursor-pointer whitespace-nowrap font-bold text-[#293241]"
-              onClick={handleRedirect}
-            >
-              Grab Your Tickets!
-            </button>
-          </LiquidGlass>
-        </motion.div>
-      </motion.div>
+      {/* Invisible anchor for the card compress animation */}
+      <div ref={buttonRef} className="h-0 w-0" aria-hidden="true" />
     </div>
   );
 };

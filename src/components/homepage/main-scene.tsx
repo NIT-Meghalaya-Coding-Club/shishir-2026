@@ -1,7 +1,6 @@
 'use client'
 import Image from 'next/image'
 // import Rbutton from './register-button' 
-import TicketButton from './ticket'
 
 import { useState, useEffect } from 'react';
 
@@ -58,15 +57,6 @@ const ResponsiveScene = () => {
         </div>
       </div>
 
-      {/* Bottom Right Buttons */}
-      <div className="absolute bottom-0 right-8 flex items-center space-x-4">
-        <div className="rounded-full cursor-pointer hover:scale-105 transition-transform">
-          {/* <TicketButton /> */}
-        </div>
-        <div className="rounded-full cursor-pointer hover:scale-105 transition-transform">
-        <TicketButton />
-        </div>
-      </div>
     </div>
   );
 };

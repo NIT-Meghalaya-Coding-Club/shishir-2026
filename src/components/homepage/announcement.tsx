@@ -41,7 +41,7 @@ const EventAnnouncement = () => {
       description: "Show your moves and join the biggest dance competition!",
       color: "from-yellow-700 to-orange-900",
       emoji: "💃",
-      link: "/tickets/dance",
+      link: "/events",
     },
     {
       title: "Event Day",

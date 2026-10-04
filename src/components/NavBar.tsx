@@ -213,7 +213,6 @@ const NavBar: React.FC = () => {
             className="absolute right-3 sm:right-6 top-[70px] sm:top-18 w-56 rounded-2xl bg-white/20 dark:bg-black/30 backdrop-blur-2xl backdrop-saturate-200 border border-white/40 dark:border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.25),inset_0_1px_2px_rgba(255,255,255,0.4)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.65),inset_0_1px_2px_rgba(255,255,255,0.15)] p-4 transition-all duration-300"
           >
             <NavBarItem to="/" text="Home" onClick={closeMenu} />
-            <NavBarItem to="/ticket" text="Ticket" onClick={closeMenu} />
             <NavBarItem to="/events" text="Events" onClick={closeMenu} />
             <NavBarItem to="/schedule" text="Schedule" onClick={closeMenu} />
             <NavBarItem to="/mun" text="MUN" onClick={closeMenu} />
