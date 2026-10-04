@@ -7,6 +7,11 @@ const AppSettingsSchema = new mongoose.Schema(
     committeeHeadEmails: { type: [String], default: [] },
     munDashboardEmails: { type: [String], default: [] },
     committeeOrder: [{ type: mongoose.Schema.Types.ObjectId, ref: "CommitteeName" }],
+    scheduleDates: {
+      day1: { type: String, default: "" },
+      day2: { type: String, default: "" },
+      day3: { type: String, default: "" },
+    },
   },
   { timestamps: true }
 );
