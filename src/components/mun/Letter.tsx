@@ -171,65 +171,21 @@ const SACLetter: React.FC = () => {
                 <div className="space-y-5 sm:space-y-6 text-justify text-sm leading-7 sm:text-base md:text-[1.02rem] md:leading-8 text-[#293241]/80 dark:text-[#E0FBFC]/80 font-serif">
 
                   <p className="first-letter:text-4xl sm:first-letter:text-5xl first-letter:font-semibold first-letter:text-[#EE6C4D]">
-                    Welcome to the National Institute of Technology
-                    Meghalaya Youth Parliament 2026. It is my profound
-                    honor to address such a vibrant assembly of young diplomats, eager
-                    to debate, negotiate, and craft resolutions that reflect the
-                    complexities of our global landscape.
+                    A warm welcome to participants, esteemed guests, and the NIT Meghalaya community to the Youth Parliament 2026. It is an honor to host this dynamic gathering of future leaders, ready to debate, negotiate, and formulate impactful resolutions for our evolving global landscape.
                   </p>
 
                   <p>
-                    Since our inaugural session in 2023, NITMMUN has grown from a
-                    nascent conference into a cornerstone event that exemplifies the
-                    analytical rigor and diplomatic finesse expected of future leaders.
-                    Our second conference in 2024 built upon this foundation, expanding
-                    its scope and depth, engaging delegates in more intense and diverse
-                    deliberations that tested their resolve and honed their skills.
+                    Since our 2023 debut, NITMMUN has grown into a premier conference that hones diplomatic finesse and critical thinking. Building on the success of our 2024 edition, past delegates have continually leveraged this platform to excel in their careers and champion global cooperation.
                   </p>
 
                   <p>
-                    This year, we proudly host Youth Parliament alongside{" "}
+                    This year, we proudly host Youth Parliament with our cultural festival,{" "}
                     <strong className="font-semibold text-[#EE6C4D]">
                       Shishir
                     </strong>
-                    , our cherished cultural festival. This confluence of cultural and
-                    intellectual festivities is designed to enhance your experience,
-                    providing a unique blend of artistic celebration and academic
-                    excellence. This synergy not only enriches our campus culture but
-                    also offers participants a holistic view of the vibrancy that NIT
-                    Meghalaya has to offer.
+                    , blending academic excellence with vibrant artistic celebration. I invite every delegate to embrace diverse perspectives, spark meaningful dialogue, and champion peace, equity, and sustainability throughout this journey.
                   </p>
-
-                  <p>
-                    Reflecting on our past conferences, it is heartening to see the
-                    remarkable impact these experiences have had on our participants.
-                    Delegates who once navigated the complexities of international
-                    policies and negotiations in our committees have gone on to excel
-                    in various professional fields, embodying the spirit of global
-                    citizenship and cooperation.
-                  </p>
-
-                  <p>
-                    Our 2023 edition set the precedent with its innovative agendas and
-                    inclusive debate forums. The following year, in 2024, we delved
-                    deeper into pressing global issues, fostering a culture of critical
-                    thinking and solution-oriented discussions that resonated well
-                    beyond our campus.
-                  </p>
-
-                  <p>
-                    As we step into our Youth Parliament 2026, amidst the echoes of
-                    Shishir&apos;s cultural anthems, I invite you all to embrace the
-                    challenge, celebrate diversity, and contribute to the dialogues
-                    that stimulate change. Let this platform be a testimony to your
-                    potential to influence the world, advocating for peace, equity, and
-                    sustainability.
-                  </p>
-
-                  <p>
-                    Thank you for joining us at Youth Parliament 2026. Engage, deliberate, and
-                    enjoy your journey at this confluence of culture and diplomacy.
-                  </p>
+                  
                 </div>
 
                 {/* Signature */}
