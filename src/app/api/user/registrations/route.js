@@ -31,7 +31,9 @@ export async function GET() {
       .lean();
     const eventCodes = [...new Set(registrations.map((registration) => registration.eventId))];
     const events = await Event.find({ code: { $in: eventCodes } })
-      .select("name code category location startsAt endsAt eventType")
+      .select("name code eventNameId category categoryId location startsAt endsAt eventType")
+      .populate("eventNameId", "name")
+      .populate("categoryId", "name")
       .lean();
     const eventsByCode = new Map(events.map((event) => [event.code, event]));
 
@@ -44,8 +46,8 @@ export async function GET() {
         return {
           id: String(registration._id),
           eventId: event.code,
-          name: event.name,
-          category: event.category,
+          name: event.eventNameId?.name || event.name || event.code,
+          category: event.categoryId?.name || event.category || "Uncategorized",
           location: event.location,
           startsAt: event.startsAt,
           endsAt: event.endsAt,
