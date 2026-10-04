@@ -7,6 +7,7 @@ import About from '@/components/homepage/about'
 import FeaturedArtists from '@/components/homepage/featured-artists'
 import { SakuraLanding } from '@/components/homepage/SakuraLanding'
 import { Starfield } from '@/components/homepage/Starfield'
+import BackToTop from '@/components/BackToTop'
 import ComingSoon from '@/components/ComingSoon'
 
 export default function Home() {
@@ -33,7 +34,7 @@ export default function Home() {
         {/* <Announcement /> */}
         {/* <Events /> */}
       </div>
-      
+      <BackToTop />
     </main>
   )
 }
