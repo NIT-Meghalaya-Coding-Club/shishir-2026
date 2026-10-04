@@ -11,7 +11,37 @@ interface TimeLeft {
   seconds: number;
 }
 
-const CountdownTimer = () => {
+const containerVariants: Variants = {
+  hidden: {
+    opacity: 0,
+    y: 20,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.7,
+      ease: "easeOut",
+    },
+  },
+};
+
+const itemVariants: Variants = {
+  hidden: {
+    opacity: 0,
+    y: 15,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      ease: "easeOut",
+    },
+  },
+};
+
+const useCountdown = () => {
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({
     days: 0,
     hours: 0,
@@ -26,19 +56,33 @@ const CountdownTimer = () => {
       const difference = targetDate.getTime() - new Date().getTime();
 
       if (difference > 0) {
-        setTimeLeft({
-          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-          minutes: Math.floor((difference / (1000 * 60)) % 60),
-          seconds: Math.floor((difference / 1000) % 60),
+        setTimeLeft((prev) => {
+          const next = {
+            days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+            hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+            minutes: Math.floor((difference / (1000 * 60)) % 60),
+            seconds: Math.floor((difference / 1000) % 60),
+          };
+          // Skip re-render when nothing changed (same second)
+          if (
+            prev.days === next.days &&
+            prev.hours === next.hours &&
+            prev.minutes === next.minutes &&
+            prev.seconds === next.seconds
+          ) {
+            return prev;
+          }
+          return next;
         });
       } else {
-        setTimeLeft({
-          days: 0,
-          hours: 0,
-          minutes: 0,
-          seconds: 0,
-        });
+        setTimeLeft((prev) =>
+          prev.days === 0 &&
+          prev.hours === 0 &&
+          prev.minutes === 0 &&
+          prev.seconds === 0
+            ? prev
+            : { days: 0, hours: 0, minutes: 0, seconds: 0 }
+        );
       }
     };
 
@@ -49,35 +93,12 @@ const CountdownTimer = () => {
     return () => clearInterval(timer);
   }, []);
 
-  const containerVariants: Variants = {
-    hidden: {
-      opacity: 0,
-      y: 20,
-    },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.7,
-        ease: "easeOut",
-      },
-    },
-  };
+  return timeLeft;
+};
 
-  const itemVariants: Variants = {
-    hidden: {
-      opacity: 0,
-      y: 15,
-    },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.5,
-        ease: "easeOut",
-      },
-    },
-  };
+// Digits only: re-renders every second, chrome above/below stays static.
+const CountdownGrid = () => {
+  const timeLeft = useCountdown();
 
   const countdownItems = [
     { label: "Days", value: timeLeft.days },
@@ -87,7 +108,85 @@ const CountdownTimer = () => {
   ];
 
   return (
-    <section className="w-full px-4 py-10 sm:px-6">
+    <motion.div
+      variants={itemVariants}
+      className="
+        mt-8
+        grid grid-cols-2 gap-3
+        sm:mt-10 sm:grid-cols-4 sm:gap-4
+      "
+    >
+      {countdownItems.map((item) => (
+        <div
+          key={item.label}
+          className="
+            group/item relative overflow-hidden
+            rounded-xl
+            border border-[#3D5A80]/20
+            bg-[#E0FBFC]/35
+            px-3 py-5
+            text-center
+            shadow-[0_8px_25px_rgba(61,90,128,0.07)]
+            transition-colors duration-300
+            hover:border-[#EE6C4D]/45
+            hover:bg-[#E0FBFC]/60
+            dark:border-[#98C1D9]/20
+            dark:bg-[#293241]/35
+            dark:hover:border-[#EE6C4D]/40
+            dark:hover:bg-[#293241]/55
+          "
+        >
+          <div
+            className="
+              absolute left-1/2 top-0
+              h-[3px] w-8
+              -translate-x-1/2
+              rounded-b-full
+              bg-[#EE6C4D]
+              transition-all duration-300
+              group-hover/item:w-14
+            "
+          />
+
+          <div
+            className="
+              text-3xl font-bold
+              tabular-nums
+              text-[#3D5A80]
+              transition-colors duration-300
+              group-hover/item:text-[#EE6C4D]
+              sm:text-4xl
+              dark:text-[#E0FBFC]
+              dark:group-hover/item:text-[#EE6C4D]
+            "
+          >
+            {String(item.value).padStart(2, "0")}
+          </div>
+
+          <div
+            className="
+              mt-1
+              text-[10px] font-semibold
+              uppercase tracking-[0.18em]
+              text-[#3D5A80]/60
+              transition-colors duration-300
+              group-hover/item:text-[#3D5A80]
+              sm:text-xs
+              dark:text-[#98C1D9]
+            "
+          >
+            {item.label}
+          </div>
+        </div>
+      ))}
+    </motion.div>
+  );
+};
+
+const CountdownTimer = () => {
+
+  return (
+    <section className="w-full px-4 py-10 sm:px-6" style={{ contentVisibility: "auto", containIntrinsicSize: "auto 700px" }}>
       <motion.div
         initial="hidden"
         animate="visible"
@@ -95,21 +194,6 @@ const CountdownTimer = () => {
         className="group relative mx-auto w-full max-w-5xl"
       >
         {/* Background glow */}
-        <div
-          className="
-            pointer-events-none absolute
-            -inset-6
-            rounded-[2rem]
-            bg-[#98C1D9]/20
-            blur-3xl
-            opacity-60
-            transition-all duration-500
-            group-hover:opacity-100
-            group-hover:bg-[#98C1D9]/30
-            dark:bg-[#3D5A80]/25
-            dark:group-hover:bg-[#3D5A80]/40
-          "
-        />
 
         {/* Main Card */}
         <div
@@ -120,15 +204,10 @@ const CountdownTimer = () => {
             bg-white/40
             shadow-[0_20px_60px_rgba(61,90,128,0.12)]
             backdrop-blur-sm
-            transition-all duration-500
-            group-hover:-translate-y-1
-            group-hover:border-[#3D5A80]/40
-            group-hover:shadow-[0_25px_70px_rgba(61,90,128,0.18)]
+            transition-colors duration-500
             dark:border-[#98C1D9]/20
             dark:bg-[#293241]/40
             dark:shadow-[0_20px_60px_rgba(0,0,0,0.18)]
-            dark:group-hover:border-[#98C1D9]/35
-            dark:group-hover:shadow-[0_25px_70px_rgba(0,0,0,0.28)]
           "
         >
           {/* Inner glow */}
@@ -141,10 +220,7 @@ const CountdownTimer = () => {
               rounded-full
               bg-[#98C1D9]/15
               blur-3xl
-              transition-all duration-700
-              group-hover:bg-[#98C1D9]/25
               dark:bg-[#3D5A80]/20
-              dark:group-hover:bg-[#3D5A80]/30
             "
           />
 
@@ -237,87 +313,7 @@ const CountdownTimer = () => {
             </motion.div>
 
             {/* Countdown */}
-            <motion.div
-              variants={itemVariants}
-              className="
-                mt-8
-                grid grid-cols-2 gap-3
-                sm:mt-10 sm:grid-cols-4 sm:gap-4
-              "
-            >
-              {countdownItems.map((item) => (
-                <motion.div
-                  key={item.label}
-                  whileHover={{
-                    y: -5,
-                    scale: 1.03,
-                  }}
-                  transition={{
-                    duration: 0.2,
-                    ease: "easeOut",
-                  }}
-                  className="
-                    group/item relative overflow-hidden
-                    rounded-xl
-                    border border-[#3D5A80]/20
-                    bg-[#E0FBFC]/35
-                    px-3 py-5
-                    text-center
-                    shadow-[0_8px_25px_rgba(61,90,128,0.07)]
-                    transition-all duration-300
-                    hover:border-[#EE6C4D]/45
-                    hover:bg-[#E0FBFC]/60
-                    hover:shadow-[0_12px_30px_rgba(238,108,77,0.14)]
-                    dark:border-[#98C1D9]/20
-                    dark:bg-[#293241]/35
-                    dark:hover:border-[#EE6C4D]/40
-                    dark:hover:bg-[#293241]/55
-                  "
-                >
-                  <div
-                    className="
-                      absolute left-1/2 top-0
-                      h-[3px] w-8
-                      -translate-x-1/2
-                      rounded-b-full
-                      bg-[#EE6C4D]
-                      transition-all duration-300
-                      group-hover/item:w-14
-                    "
-                  />
-
-                  <div
-                    className="
-                      text-3xl font-bold
-                      tabular-nums
-                      text-[#3D5A80]
-                      transition-colors duration-300
-                      group-hover/item:text-[#EE6C4D]
-                      sm:text-4xl
-                      dark:text-[#E0FBFC]
-                      dark:group-hover/item:text-[#EE6C4D]
-                    "
-                  >
-                    {String(item.value).padStart(2, "0")}
-                  </div>
-
-                  <div
-                    className="
-                      mt-1
-                      text-[10px] font-semibold
-                      uppercase tracking-[0.18em]
-                      text-[#3D5A80]/60
-                      transition-colors duration-300
-                      group-hover/item:text-[#3D5A80]
-                      sm:text-xs
-                      dark:text-[#98C1D9]
-                    "
-                  >
-                    {item.label}
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
+            <CountdownGrid />
 
             {/* Bottom */}
             <motion.div

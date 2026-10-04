@@ -82,7 +82,7 @@ const SACLetter: React.FC = () => {
               {/* Paper grain */}
               <div
                 className="absolute inset-0 opacity-60 dark:opacity-30 mix-blend-multiply pointer-events-none"
-                style={{ backgroundImage: paperGrain }}
+                style={{ backgroundImage: paperGrain, contain: "strict" }}
               />
 
               {/* Peach mounting lines */}

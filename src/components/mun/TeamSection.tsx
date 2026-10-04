@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { FaPhone, FaEnvelope } from "react-icons/fa6";
 import { RiMenu4Line } from "@remixicon/react";
@@ -49,10 +50,10 @@ const TeamSection: React.FC = () => {
           return (
             <motion.article
               key={`${member._id}-${member.position}`}
-              className="card__article"
+              className="card__article transform-gpu"
+              style={{ contentVisibility: "auto", containIntrinsicSize: "auto 420px" }}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              whileHover={{ y: -8 }}
               viewport={{ once: true, amount: 0.2 }}
               transition={{
                 opacity: {
@@ -67,11 +68,14 @@ const TeamSection: React.FC = () => {
             >
               {/* Image */}
               <div className="card__image-wrapper">
-                <div
+                <Image
+                  src={imageUrl}
+                  alt={member.name || member.position}
+                  fill
+                  sizes="(max-width: 640px) 90vw, 320px"
+                  loading="lazy"
                   className="card__img"
-                  style={{
-                    backgroundImage: `url("${imageUrl}")`,
-                  }}
+                  style={{ objectFit: "cover", objectPosition: "center" }}
                 />
               </div>
 

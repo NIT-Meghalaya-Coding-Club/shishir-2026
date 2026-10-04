@@ -22,13 +22,13 @@ const Mun: React.FC = () => {
       }}
     >
       {/* Background Overlay */}
-      <div className="absolute inset-0 bg-[#E0FBFC]/80 dark:bg-[#293241]/80 pointer-events-none transition-colors duration-300 fixed" />
+      <div aria-hidden="true" className="fixed inset-0 bg-[#E0FBFC]/80 dark:bg-[#293241]/80 pointer-events-none" />
 
       {/* Main page content */}
       <div className="relative z-10 flex min-h-screen w-full flex-col items-center px-4 sm:px-6 lg:px-8">
 
         <section className="relative flex w-full flex-col items-center pt-28">
-          <div className="mun-hero-glow" />
+          {/* <div className="mun-hero-glow" /> */}
 
           {/* Title */}
           <div className="relative flex w-full justify-center items-center">

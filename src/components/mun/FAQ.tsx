@@ -30,6 +30,8 @@ const MUN_FAQ: React.FC = () => {
                   text-left
                   no-underline
                   hover:no-underline
+                  transition-colors
+                  duration-300
                   [&>svg]:text-[#3D5A80]
                   dark:[&>svg]:text-[#98C1D9]
                 "
@@ -90,6 +92,7 @@ const MUN_FAQ: React.FC = () => {
                   text-[#293241]/70
                   dark:text-[#E0FBFC]/70
                   sm:text-[15px]
+                  transform-gpu
                 "
               >
                 <div

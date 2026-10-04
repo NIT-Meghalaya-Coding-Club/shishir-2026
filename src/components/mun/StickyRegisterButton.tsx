@@ -18,15 +18,7 @@ export default function StickyRegisterButton() {
           onHoverStart={() => setIsHovered(true)}
           onHoverEnd={() => setIsHovered(false)}
           whileTap={{ scale: 0.94 }}
-          animate={{ rotate: 360 }}
-          transition={{
-            rotate: {
-              duration: 10,
-              repeat: Infinity,
-              ease: "linear",
-            },
-          }}
-          className="group relative"
+          className="group relative transform-gpu"
         >
           {/* Soft background */}
           <div

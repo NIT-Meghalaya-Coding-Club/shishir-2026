@@ -6,8 +6,9 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import Loading from "@/app/components/Loading";
 import Image from "next/image";
-import { Crown, Info, Users, Phone } from "lucide-react";
+import { Info, Users, Phone } from "lucide-react";
 import { AnimatedButton } from "@/components/events/buttons";
+import Blossom from "@/components/Blossom";
 
 const DynamicForm = dynamic(
   () => import("@/components/register-form/DynamicForm"),
@@ -107,11 +108,11 @@ export default function EventPage() {
           {/* Header Section */}
           <div className="text-center mb-12">
             <div className="flex justify-center items-center gap-3 sm:gap-4 mb-4">
-              <Crown className="w-8 h-8 sm:w-10 sm:h-10 text-[#EE6C4D] animate-pulse" />
+              <Blossom className="w-10 h-10 sm:w-10 sm:h-10 text-[#EE6C4D] animate-spin [animation-duration:3s]" />
               <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold uppercase tracking-widest text-[#293241] dark:text-[#E0FBFC] drop-shadow-sm pt-2">
                 REGISTER
               </h1>
-              <Crown className="w-8 h-8 sm:w-10 sm:h-10 text-[#EE6C4D] animate-pulse" />
+              <Blossom className="w-10 h-10 sm:w-10 sm:h-10 text-[#EE6C4D] animate-spin [animation-duration:3s]" />
             </div>
 
             <div className="inline-block bg-[#E0FBFC]/70 dark:bg-[#293241]/80 backdrop-blur-md rounded-full px-8 py-3 border border-[#98C1D9]/60 dark:border-[#3D5A80]/50 shadow-[0_4px_20px_rgb(0,0,0,0.04)] dark:shadow-none">

@@ -763,6 +763,14 @@
 }
 
 
+/* Scroll performance: skip offscreen work without changing visuals.
+   content-visibility keeps layout/paint off until near viewport. */
+.mun-page section,
+.mun-page .team-section {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 600px;
+}
+
 /* Very small screens */
 
 @media (max-width: 329px) {

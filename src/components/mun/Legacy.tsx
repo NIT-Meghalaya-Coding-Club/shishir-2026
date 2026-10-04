@@ -26,18 +26,11 @@ const LegacySection: React.FC = () => {
               viewport={{ once: true, amount: 0.2 }}
               transition={{
                 duration: 0.6,
-                delay: index * 0.08,
+                delay: Math.min(index, 3) * 0.08,
                 ease: "easeOut",
               }}
-              whileHover={{
-                y: -8,
-                scale: 1.015,
-                transition: {
-                  duration: 0.7,
-                  ease: [0.22, 1, 0.36, 1],
-                },
-              }}
-              className="group relative"
+              className="group relative transform-gpu"
+              style={{ contentVisibility: "auto", containIntrinsicSize: "auto 400px" }}
             >
               {/* Scattered background light */}
               <div
@@ -49,10 +42,6 @@ const LegacySection: React.FC = () => {
                   bg-[radial-gradient(circle_at_15%_20%,rgba(152,193,217,0.40),transparent_30%),radial-gradient(circle_at_85%_25%,rgba(238,108,77,0.14),transparent_30%),radial-gradient(circle_at_50%_90%,rgba(61,90,128,0.25),transparent_38%)]
                   opacity-0
                   blur-3xl
-                  transition-opacity
-                  duration-1000
-                  ease-out
-                  group-hover:opacity-75
                   dark:bg-[radial-gradient(circle_at_15%_20%,rgba(152,193,217,0.18),transparent_30%),radial-gradient(circle_at_85%_25%,rgba(238,108,77,0.08),transparent_30%),radial-gradient(circle_at_50%_90%,rgba(61,90,128,0.24),transparent_38%)]
                 "
               />
@@ -70,16 +59,11 @@ const LegacySection: React.FC = () => {
                   p-6
                   shadow-[0_8px_25px_rgba(61,90,128,0.06)]
                   backdrop-blur-sm
-                  transition-[box-shadow,border-color,background-color]
+                  transition-colors
                   duration-700
-                  ease-[cubic-bezier(0.22,1,0.36,1)]
-                  group-hover:border-[#3D5A80]/45
-                  group-hover:shadow-[0_22px_55px_rgba(61,90,128,0.14)]
                   dark:border-[#98C1D9]/15
                   dark:bg-[#1D3452]/70
                   dark:shadow-[0_8px_25px_rgba(0,0,0,0.15)]
-                  dark:group-hover:border-[#98C1D9]/25
-                  dark:group-hover:shadow-[0_22px_55px_rgba(0,0,0,0.30)]
                   sm:p-7
                 "
               >
@@ -91,10 +75,6 @@ const LegacySection: React.FC = () => {
                     inset-0
                     bg-[radial-gradient(circle_at_10%_10%,rgba(152,193,217,0.12),transparent_28%),radial-gradient(circle_at_90%_90%,rgba(238,108,77,0.06),transparent_30%)]
                     opacity-0
-                    transition-opacity
-                    duration-1000
-                    ease-out
-                    group-hover:opacity-100
                     dark:bg-[radial-gradient(circle_at_10%_10%,rgba(152,193,217,0.07),transparent_28%),radial-gradient(circle_at_90%_90%,rgba(238,108,77,0.04),transparent_30%)]
                   "
                 />
