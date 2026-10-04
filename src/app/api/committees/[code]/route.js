@@ -108,9 +108,6 @@ export async function PATCH(req, { params }) {
     const coCoordinatorEmails = Array.isArray(payload.coCoordinatorEmails)
       ? await resolveUsersByEmails(payload.coCoordinatorEmails, "co-coordinators", true)
       : null;
-    const coCoordinatorUsers = coCoordinatorEmails
-      ? await resolveUsersByEmails(coCoordinatorEmails, "co-coordinators", true)
-      : null;
 
     const committeeHeadIDs = Array.isArray(payload.committeeHeadCollegeIDs)
       ? payload.committeeHeadCollegeIDs
@@ -136,7 +133,7 @@ export async function PATCH(req, { params }) {
       coordinatorIDs,
       "coordinators"
     );
-    const resolvedCoCoords = coCoordinatorUsers || await resolveUsersByCollegeIDs(
+    const resolvedCoCoords = coCoordinatorEmails || await resolveUsersByCollegeIDs(
       Array.isArray(payload.coCoordinatorCollegeIDs)
         ? payload.coCoordinatorCollegeIDs
         : [],
