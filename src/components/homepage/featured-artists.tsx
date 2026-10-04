@@ -189,6 +189,7 @@ const FeaturedArtists = () => {
                 src={artist.image}
                 alt={artist.name}
                 fill
+                sizes="(max-width: 640px) 90vw, (max-width: 1024px) 30vw, 256px"
                 style={{ objectFit: "cover" }}
                 className="rounded-xl" // Match the container's rounding
               />

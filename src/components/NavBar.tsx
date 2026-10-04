@@ -149,8 +149,23 @@ const NavBar: React.FC = () => {
   }, [isOpen]);
 
   return (
+    <>
+      {/* Hover trigger zone: reveals navbar when it's hidden and mouse hits top edge.
+          Only mounted while hidden so it never blocks clicks on page content. */}
+      {!isVisible && (
+        <div
+          onMouseEnter={showNavbarAndResetTimer}
+          className="fixed top-0 left-0 right-0 h-20 z-40"
+          aria-hidden="true"
+        />
+      )}
     <motion.nav
       id="main-navbar"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => {
+        setIsHovered(false);
+        resetInactivityTimer();
+      }}
       initial={{ opacity: 0, y: -50 }}
       animate={{
         opacity: isVisible ? 1 : 0,
@@ -214,6 +229,7 @@ const NavBar: React.FC = () => {
         )}
       </AnimatePresence>
     </motion.nav>
+    </>
   );
 };
 

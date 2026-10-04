@@ -72,6 +72,7 @@ const Sponsors: React.FC = () => {
                             src={sponsor.imageLink ?? defaultSponsorImageUrl}
                             alt={`${sponsor.name}'s logo`}
                             fill
+                            sizes="(max-width: 640px) 90vw, (max-width: 1024px) 400px, 450px"
                             className="object-contain transition-all duration-500 group-hover:scale-110"
                           />
                         </div>
