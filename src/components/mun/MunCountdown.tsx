@@ -49,8 +49,11 @@ const CountdownTimer = () => {
     return () => clearInterval(timer);
   }, []);
 
-  const containerVariants : Variants = {
-    hidden: { opacity: 0, y: 20 },
+  const containerVariants: Variants = {
+    hidden: {
+      opacity: 0,
+      y: 20,
+    },
     visible: {
       opacity: 1,
       y: 0,
@@ -61,8 +64,11 @@ const CountdownTimer = () => {
     },
   };
 
-  const itemVariants : Variants = {
-    hidden: { opacity: 0, y: 15 },
+  const itemVariants: Variants = {
+    hidden: {
+      opacity: 0,
+      y: 15,
+    },
     visible: {
       opacity: 1,
       y: 0,
@@ -88,191 +94,294 @@ const CountdownTimer = () => {
         variants={containerVariants}
         className="group relative mx-auto w-full max-w-5xl"
       >
-        {/* Scattered background light */}
+        {/* Background glow */}
         <div
           className="
-            pointer-events-none
-            absolute
-            -inset-10
-            rounded-[2.5rem]
-            bg-[radial-gradient(circle_at_15%_25%,rgba(152,193,217,0.45),transparent_30%),radial-gradient(circle_at_85%_25%,rgba(238,108,77,0.18),transparent_30%),radial-gradient(circle_at_50%_90%,rgba(61,90,128,0.30),transparent_38%)]
-            opacity-0
+            pointer-events-none absolute
+            -inset-6
+            rounded-[2rem]
+            bg-[#98C1D9]/20
             blur-3xl
-            transition-opacity
-            duration-1000
-            ease-out
-            group-hover:opacity-75
-            dark:bg-[radial-gradient(circle_at_15%_25%,rgba(152,193,217,0.18),transparent_30%),radial-gradient(circle_at_85%_25%,rgba(238,108,77,0.10),transparent_30%),radial-gradient(circle_at_50%_90%,rgba(61,90,128,0.25),transparent_38%)]
+            opacity-60
+            transition-all duration-500
+            group-hover:opacity-100
+            group-hover:bg-[#98C1D9]/30
+            dark:bg-[#3D5A80]/25
+            dark:group-hover:bg-[#3D5A80]/40
           "
         />
 
-        {/* Main card */}
+        {/* Main Card */}
         <div
           className="
-            relative
-            z-10
-            overflow-hidden
+            relative overflow-hidden
             rounded-2xl
-            border
-            border-[#3D5A80]/25
+            border border-[#3D5A80]/25
             bg-white/40
-            px-5
-            py-8
-            shadow-[0_8px_30px_rgba(61,90,128,0.08)]
+            shadow-[0_20px_60px_rgba(61,90,128,0.12)]
             backdrop-blur-sm
-            transition-[transform,box-shadow,border-color]
-            duration-700
-            ease-[cubic-bezier(0.22,1,0.36,1)]
-            group-hover:-translate-y-2
-            group-hover:scale-[1.008]
+            transition-all duration-500
+            group-hover:-translate-y-1
             group-hover:border-[#3D5A80]/40
-            group-hover:shadow-[0_22px_55px_rgba(61,90,128,0.15)]
-            dark:border-[#98C1D9]/15
-            dark:bg-[#1D3452]/75
-            dark:shadow-[0_8px_30px_rgba(0,0,0,0.18)]
-            dark:group-hover:border-[#98C1D9]/25
-            dark:group-hover:shadow-[0_22px_55px_rgba(0,0,0,0.30)]
-            sm:px-8
-            md:px-10
+            group-hover:shadow-[0_25px_70px_rgba(61,90,128,0.18)]
+            dark:border-[#98C1D9]/20
+            dark:bg-[#293241]/40
+            dark:shadow-[0_20px_60px_rgba(0,0,0,0.18)]
+            dark:group-hover:border-[#98C1D9]/35
+            dark:group-hover:shadow-[0_25px_70px_rgba(0,0,0,0.28)]
           "
         >
-          {/* Soft internal background light */}
+          {/* Inner glow */}
           <div
             className="
-              pointer-events-none
-              absolute
-              inset-0
-              bg-[radial-gradient(circle_at_12%_15%,rgba(152,193,217,0.12),transparent_28%),radial-gradient(circle_at_88%_85%,rgba(238,108,77,0.06),transparent_30%)]
-              opacity-0
-              transition-opacity
-              duration-1000
-              ease-out
-              group-hover:opacity-100
-              dark:bg-[radial-gradient(circle_at_12%_15%,rgba(152,193,217,0.07),transparent_28%),radial-gradient(circle_at_88%_85%,rgba(238,108,77,0.04),transparent_30%)]
+              pointer-events-none absolute
+              left-1/2 top-0
+              h-72 w-72
+              -translate-x-1/2
+              rounded-full
+              bg-[#98C1D9]/15
+              blur-3xl
+              transition-all duration-700
+              group-hover:bg-[#98C1D9]/25
+              dark:bg-[#3D5A80]/20
+              dark:group-hover:bg-[#3D5A80]/30
             "
           />
 
-          <div className="relative z-10 flex flex-col items-center text-center">
-            <Image
-              src="/img/mun_logo.webp"
-              alt="NITM MUN"
-              width={90}
-              height={90}
+          <div className="relative px-5 py-8 sm:px-8 sm:py-10 md:px-12 md:py-12">
+
+            {/* Logo — no round container */}
+            <motion.div
+              variants={itemVariants}
               className="
                 mb-5
-                rounded-lg
-                transition-transform
-                duration-700
-                ease-[cubic-bezier(0.22,1,0.36,1)]
-                group-hover:scale-105
-              "
-            />
-
-            <p className="mb-2 text-sm uppercase tracking-[0.25em] text-[#3D5A80] dark:text-[#98C1D9]">
-              Youth Parliament 2026
-            </p>
-
-            <h2 className="text-2xl font-semibold text-[#EE6C4D] sm:text-3xl md:text-4xl">
-              Shaping Tomorrow&apos;s Diplomatic Leaders
-            </h2>
-
-            <div className="mt-4 h-[2px] w-16 rounded-full bg-[#3D5A80] transition-all duration-700 ease-out group-hover:w-24" />
-
-            <p className="mt-4 max-w-2xl text-sm leading-6 text-[#293241]/70 dark:text-[#E0FBFC]/75 sm:text-base">
-              The countdown begins. Prepare to debate, negotiate, and represent
-              your nation on the global stage.
-            </p>
-          </div>
-
-          {/* Countdown numbers */}
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            transition={{ staggerChildren: 0.1 }}
-            className="relative z-10 mt-9 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-5"
-          >
-            {countdownItems.map((item) => (
-              <motion.div
-                key={item.label}
-                variants={itemVariants}
-                className="group/time text-center"
-              >
-                <div
-                  className="
-                    relative
-                    flex
-                    h-24
-                    items-center
-                    justify-center
-                    overflow-hidden
-                    rounded-xl
-                    border
-                    border-[#3D5A80]/20
-                    bg-[#3D5A80]/5
-                    transition-[transform,background-color,border-color,box-shadow]
-                    duration-600
-                    ease-[cubic-bezier(0.22,1,0.36,1)]
-                    group-hover/time:-translate-y-1
-                    group-hover/time:scale-[1.025]
-                    group-hover/time:border-[#EE6C4D]/50
-                    group-hover/time:bg-[#3D5A80]/10
-                    group-hover/time:shadow-[0_10px_25px_rgba(61,90,128,0.10)]
-                    dark:border-[#98C1D9]/15
-                    dark:bg-[#98C1D9]/5
-                    dark:group-hover/time:border-[#EE6C4D]/40
-                    dark:group-hover/time:bg-[#98C1D9]/10
-                    sm:h-28
-                    md:h-32
-                  "
-                >
-                  <span className="font-mono text-4xl font-semibold tabular-nums text-[#EE6C4D] sm:text-5xl">
-                    {String(item.value).padStart(2, "0")}
-                  </span>
-                </div>
-
-                <p className="mt-3 text-xs font-medium uppercase tracking-[0.18em] text-[#3D5A80] dark:text-[#98C1D9] sm:text-sm">
-                  {item.label}
-                </p>
-              </motion.div>
-            ))}
-          </motion.div>
-
-          {/* Bottom section */}
-          <div className="relative z-10 mt-9 flex flex-col items-center gap-3 text-center sm:flex-row sm:justify-between sm:text-left">
-            <div>
-              <p className="text-sm font-medium text-[#293241] dark:text-[#E0FBFC]">
-                November 7th, 2026
-              </p>
-
-              <p className="mt-1 text-xs text-[#3D5A80]/70 dark:text-[#98C1D9]">
-                Join us for a transformative diplomatic experience.
-              </p>
-            </div>
-
-            <a
-              href="https://docs.google.com/forms/d/e/1FAIpQLSfk-XqhkB_y0ysSaBbGVNwPwiKS6SNElQkEDeBTFF7-ZkQPLg/viewform?usp=header"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="
-                rounded-lg
-                border
-                border-[#EE6C4D]/70
-                px-5
-                py-2.5
-                text-sm
-                font-semibold
-                text-[#EE6C4D]
-                transition-[transform,background-color,color,box-shadow]
-                duration-500
-                ease-[cubic-bezier(0.22,1,0.36,1)]
-                hover:-translate-y-1
-                hover:bg-[#EE6C4D]
-                hover:text-white
-                hover:shadow-[0_8px_20px_rgba(238,108,77,0.20)]
+                flex justify-center
               "
             >
-              Register Now
-            </a>
+              <Image
+                src="/img/mun_logo.webp"
+                alt="NITM MUN Logo"
+                width={75}
+                height={75}
+                className="
+                  object-contain
+                  transition-transform duration-500
+                  group-hover:scale-105
+                "
+              />
+            </motion.div>
+
+            {/* Heading */}
+            <motion.div
+              variants={itemVariants}
+              className="text-center"
+            >
+              <p
+                className="
+                  mb-2
+                  text-xs font-semibold uppercase
+                  tracking-[0.25em]
+                  text-[#3D5A80]
+                  dark:text-[#98C1D9]
+                "
+              >
+                Youth Parliament 2026
+              </p>
+
+              <h2
+                className="
+                  text-2xl font-bold
+                  tracking-tight
+                  text-[#3D5A80]
+                  sm:text-3xl
+                  md:text-4xl
+                  dark:text-[#E0FBFC]
+                "
+              >
+                Shaping Tomorrow&apos;s{" "}
+                <span
+                  className="
+                    text-[#EE6C4D]
+                    transition-colors duration-300
+                    group-hover:text-[#d95d45]
+                  "
+                >
+                  Diplomatic Leaders
+                </span>
+              </h2>
+
+              <div
+                className="
+                  mx-auto mt-4
+                  h-px w-24
+                  bg-[#EE6C4D]
+                  dark:bg-[#98C1D9]
+                "
+              />
+
+              <p
+                className="
+                  mx-auto mt-5
+                  max-w-2xl
+                  text-sm leading-6
+                  text-[#3D5A80]/80
+                  sm:text-base
+                  dark:text-[#E0FBFC]/75
+                "
+              >
+                Step into the world of diplomacy, leadership, and
+                meaningful debate. Get ready to raise your voice,
+                represent your ideas, and shape the conversations
+                that matter.
+              </p>
+            </motion.div>
+
+            {/* Countdown */}
+            <motion.div
+              variants={itemVariants}
+              className="
+                mt-8
+                grid grid-cols-2 gap-3
+                sm:mt-10 sm:grid-cols-4 sm:gap-4
+              "
+            >
+              {countdownItems.map((item) => (
+                <motion.div
+                  key={item.label}
+                  whileHover={{
+                    y: -5,
+                    scale: 1.03,
+                  }}
+                  transition={{
+                    duration: 0.2,
+                    ease: "easeOut",
+                  }}
+                  className="
+                    group/item relative overflow-hidden
+                    rounded-xl
+                    border border-[#3D5A80]/20
+                    bg-[#E0FBFC]/35
+                    px-3 py-5
+                    text-center
+                    shadow-[0_8px_25px_rgba(61,90,128,0.07)]
+                    transition-all duration-300
+                    hover:border-[#EE6C4D]/45
+                    hover:bg-[#E0FBFC]/60
+                    hover:shadow-[0_12px_30px_rgba(238,108,77,0.14)]
+                    dark:border-[#98C1D9]/20
+                    dark:bg-[#293241]/35
+                    dark:hover:border-[#EE6C4D]/40
+                    dark:hover:bg-[#293241]/55
+                  "
+                >
+                  <div
+                    className="
+                      absolute left-1/2 top-0
+                      h-[3px] w-8
+                      -translate-x-1/2
+                      rounded-b-full
+                      bg-[#EE6C4D]
+                      transition-all duration-300
+                      group-hover/item:w-14
+                    "
+                  />
+
+                  <div
+                    className="
+                      text-3xl font-bold
+                      tabular-nums
+                      text-[#3D5A80]
+                      transition-colors duration-300
+                      group-hover/item:text-[#EE6C4D]
+                      sm:text-4xl
+                      dark:text-[#E0FBFC]
+                      dark:group-hover/item:text-[#EE6C4D]
+                    "
+                  >
+                    {String(item.value).padStart(2, "0")}
+                  </div>
+
+                  <div
+                    className="
+                      mt-1
+                      text-[10px] font-semibold
+                      uppercase tracking-[0.18em]
+                      text-[#3D5A80]/60
+                      transition-colors duration-300
+                      group-hover/item:text-[#3D5A80]
+                      sm:text-xs
+                      dark:text-[#98C1D9]
+                    "
+                  >
+                    {item.label}
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+
+            {/* Bottom */}
+            <motion.div
+              variants={itemVariants}
+              className="
+                mt-8
+                flex flex-col items-center
+                justify-between gap-5
+                border-t border-[#3D5A80]/15
+                pt-6
+                sm:flex-row
+                dark:border-[#98C1D9]/20
+              "
+            >
+              <div className="text-center sm:text-left">
+                <p
+                  className="
+                    text-xs font-medium uppercase
+                    tracking-[0.16em]
+                    text-[#3D5A80]/55
+                    dark:text-[#98C1D9]
+                  "
+                >
+                  The countdown ends on
+                </p>
+
+                <p
+                  className="
+                    mt-1
+                    text-sm font-semibold
+                    text-[#3D5A80]
+                    dark:text-[#E0FBFC]
+                  "
+                >
+                  07 November 2026
+                </p>
+              </div>
+
+              {/* Register */}
+              <a
+                href="https://docs.google.com/forms/d/e/1FAIpQLSfk-XqhkB_y0ysSaBbGVNwPwiKS6SNElQkEDeBTFF7-ZkQPLg/viewform?usp=header"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="
+                  inline-flex items-center justify-center
+                  rounded-full
+                  border border-[#EE6C4D]
+                  bg-[#EE6C4D]
+                  px-6 py-2.5
+                  text-sm font-semibold
+                  text-white
+                  shadow-[0_8px_20px_rgba(238,108,77,0.20)]
+                  transition-all duration-300
+                  hover:-translate-y-1
+                  hover:scale-[1.03]
+                  hover:bg-[#d95d45]
+                  hover:shadow-[0_12px_28px_rgba(238,108,77,0.30)]
+                  active:translate-y-0
+                  active:scale-[0.98]
+                "
+              >
+                Register Now
+              </a>
+            </motion.div>
           </div>
         </div>
       </motion.div>

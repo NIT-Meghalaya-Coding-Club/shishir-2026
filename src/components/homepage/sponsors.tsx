@@ -126,6 +126,7 @@ const SponsorAnnouncement = () => {
                   src={currentSponsor.logo}
                   alt={currentSponsor.name}
                   fill
+                  sizes="(max-width: 768px) 192px, 224px"
                   className="object-contain relative z-10 rounded-full"
                 />
               </div>

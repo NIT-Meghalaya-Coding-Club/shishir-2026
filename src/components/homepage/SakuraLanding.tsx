@@ -431,6 +431,7 @@ export const SakuraLanding: React.FC = () => {
           width={1000}
           height={1000}
           quality={50}
+          loading="eager"
           sizes="(max-width: 640px) 85vw, (max-width: 768px) 75vw, (max-width: 1024px) 65vw, 58vw"
           className="
             h-auto

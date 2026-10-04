@@ -596,15 +596,16 @@
   height: 3px;
 
   border-radius: 999px;
-
-  background: linear-gradient(
+  
+  background-color: #98C1D9;
+  /* background: linear-gradient(
     90deg,
     #3D5A80,
     #98C1D9,
     #EE6C4D,
     #98C1D9,
     #3D5A80
-  );
+  ); */
 
   background-size: 200% 100%;
 

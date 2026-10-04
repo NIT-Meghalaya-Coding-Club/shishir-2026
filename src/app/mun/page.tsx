@@ -32,23 +32,21 @@ const Mun: React.FC = () => {
 
           {/* Title */}
           <div className="relative flex w-full justify-center items-center">
-            <Blossom className="w-10 h-10 sm:w-10 sm:h-10 text-[#98C1D9] animate-spin [animation-duration:3s]" />
+            <Blossom className="w-10 h-10 sm:w-10 sm:h-10 text-[#98C1D9]/90 animate-spin [animation-duration:3s]" />
 
 
             <h1 className="mun-title text-center pl-5 pr-5 text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
               YOUTH PARLIAMENT 2026
             </h1>
 
-            <Blossom className="w-10 h-10 sm:w-10 sm:h-10 text-[#98C1D9] animate-spin [animation-duration:3s]" />
+            <Blossom className="w-10 h-10 sm:w-10 sm:h-10 text-[#98C1D9]/90 animate-spin [animation-duration:3s]" />
           </div>
 
           {/* Title divider */}
           <div className="mun-divider">
-            <span className="mun-divider-line" />
-            <span className="mun-divider-dot" />
             <span className="mun-divider-main" />
-            <span className="mun-divider-dot" />
-            <span className="mun-divider-line" />
+            <Blossom className="h-4 w-4 text-[#EE6C4D]/90" />
+            <span className="mun-divider-main" />
           </div>
         </section>
 
