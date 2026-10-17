@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import {
   ArrowDown,
   ArrowUp,
@@ -9,14 +10,20 @@ import {
   KeyRound,
   ListOrdered,
   LogOut,
+  Loader2,
+  Plus,
   Save,
   ShieldCheck,
+  Trash2,
   UsersRound,
   CalendarDays,
   ContactRound,
 } from "lucide-react";
 import UploadsPanel from "@/components/admin/UploadsPanel";
 import SacPostsPanel from "@/components/admin/SacPostsPanel";
+import NameDropdown from "@/components/NameDropdown";
+import ImageCropper, { MAX_IMAGE_SIZE_MB } from "@/components/ImageCropper";
+import ValidationDialog from "@/components/ui/ValidationDialog";
 
 type CommitteeName = { _id: string; name: string };
 type Person = { name?: string; email?: string; collegeID?: string };
@@ -132,7 +139,6 @@ function AdminSidebar({
     </aside>
   );
 }
-
 function PeopleField({
   label,
   value,
@@ -171,6 +177,8 @@ export default function AdminPage() {
     day3: "",
   });
   const [committeeNames, setCommitteeNames] = useState<CommitteeName[]>([]);
+  const [categories, setCategories] = useState<CommitteeName[]>([]);
+  const [eventNames, setEventNames] = useState<CommitteeName[]>([]);
   const [committeeOrder, setCommitteeOrder] = useState<string[]>([]);
   const [draggedId, setDraggedId] = useState<string | null>(null);
   const [committees, setCommittees] = useState<Committee[]>([]);
@@ -179,6 +187,7 @@ export default function AdminPage() {
     null,
   );
   const [editingEvent, setEditingEvent] = useState<EventItem | null>(null);
+  const [creatingEvent, setCreatingEvent] = useState(false);
 
   const loadSettings = async () => {
     const response = await fetch("/api/admin/settings");
@@ -206,13 +215,19 @@ export default function AdminPage() {
     setAuthenticated(true);
   };
   const loadManaged = async () => {
-    const [committeeResponse, eventResponse] = await Promise.all([
+    const [committeeResponse, eventResponse, categoriesResponse, eventNamesResponse] = await Promise.all([
       fetch("/api/admin/committees"),
       fetch("/api/admin/events"),
+      fetch("/api/categories"),
+      fetch("/api/event-names"),
     ]);
     if (committeeResponse.ok)
       setCommittees((await committeeResponse.json()).committees);
     if (eventResponse.ok) setEvents((await eventResponse.json()).events);
+    if (categoriesResponse.ok)
+      setCategories((await categoriesResponse.json()).categories);
+    if (eventNamesResponse.ok)
+      setEventNames((await eventNamesResponse.json()).eventNames);
   };
   useEffect(() => {
     loadSettings().finally(() => setLoading(false));
@@ -316,6 +331,13 @@ export default function AdminPage() {
     }
   };
 
+  const deleteEvent = async (item: EventItem) => {
+    if (!window.confirm(`Delete event "${item.eventNameId?.name || item.code}"?`)) return;
+    const response = await fetch(`/api/admin/events/${item.code}`, { method: "DELETE" });
+    const data = await response.json(); setMessage(response.ok ? "Event deleted" : data.message || "Could not delete event");
+    if (response.ok) { setEditingEvent(null); await loadManaged(); }
+  };
+
   if (loading)
     return (
       <main className="min-h-screen bg-zinc-950 p-8 text-white">
@@ -385,6 +407,7 @@ export default function AdminPage() {
           setMessage("");
           setEditingCommittee(null);
           setEditingEvent(null);
+          setCreatingEvent(false);
         }}
         onLogout={logout}
       />
@@ -524,24 +547,56 @@ export default function AdminPage() {
               onEdit={setEditingCommittee}
             />
           ))}
-        {section === "events" &&
-          (editingEvent ? (
-            <EventEditor
-              item={editingEvent}
-              onChange={setEditingEvent}
-              onCancel={() => setEditingEvent(null)}
-              onSave={() => saveManaged({ kind: "events", item: editingEvent })}
-            />
-          ) : (
-            <List
-              items={events}
-              getTitle={(item) => item.eventNameId?.name || item.code}
-              getMeta={(item) =>
-                `${item.categoryId?.name || "Uncategorised"} · ${new Date(item.startsAt).toLocaleString()}`
-              }
-              onEdit={setEditingEvent}
-            />
-          ))}
+        {section === "events" && (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold">Manage events</h2>
+              {!creatingEvent && !editingEvent && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCreatingEvent(true);
+                    setMessage("");
+                    setEditingEvent(null);
+                  }}
+                  className="rounded-lg bg-amber-400 px-4 py-2 text-sm font-semibold text-zinc-950 hover:bg-amber-300"
+                >
+                  <Plus size={17} /> Create event
+                </button>
+              )}
+            </div>
+            {creatingEvent ? (
+              <CreateEventEditor
+                categories={categories}
+                eventNames={eventNames}
+                onCancel={() => setCreatingEvent(false)}
+                onSuccess={() => {
+                  setCreatingEvent(false);
+                  loadManaged();
+                }}
+              />
+            ) : editingEvent ? (
+              <EventEditor
+                item={editingEvent}
+                onChange={setEditingEvent}
+                onCancel={() => setEditingEvent(null)}
+                onSave={() =>
+                  saveManaged({ kind: "events", item: editingEvent })
+                }
+              />
+            ) : (
+              <List
+                items={events}
+                getTitle={(item) => item.eventNameId?.name || item.code}
+                getMeta={(item) =>
+                  `${item.categoryId?.name || "Uncategorised"} · ${new Date(item.startsAt).toLocaleString()}`
+                }
+                onEdit={setEditingEvent}
+                onDelete={deleteEvent}
+              />
+            )}
+          </div>
+        )}
         {section === "uploads" && <UploadsPanel />}
         {section === "sac" && <SacPostsPanel />}
       </div>
@@ -567,12 +622,12 @@ function List<T extends { code: string }>({
   items,
   getTitle,
   getMeta,
-  onEdit,
+  onEdit, onDelete,
 }: {
   items: T[];
   getTitle: (item: T) => string;
   getMeta: (item: T) => string;
-  onEdit: (item: T) => void;
+  onEdit: (item: T) => void; onDelete?: (item: T) => void;
 }) {
   return (
     <div className="space-y-3">
@@ -586,7 +641,7 @@ function List<T extends { code: string }>({
             <p className="mt-1 text-sm text-zinc-400">{getMeta(item)}</p>
             <p className="mt-1 font-mono text-xs text-zinc-600">{item.code}</p>
           </div>
-          <button
+          <div className="flex items-center gap-2"><button
             type="button"
             onClick={() => onEdit(item)}
             className="rounded-lg bg-white/10 p-2 text-zinc-300 hover:bg-amber-400 hover:text-zinc-950"
@@ -594,7 +649,7 @@ function List<T extends { code: string }>({
           >
             <Edit3 size={17} />
           </button>
-        </div>
+        {onDelete && <button type="button" onClick={() => onDelete(item)} className="rounded-lg border border-red-500/30 p-2 text-red-400 hover:bg-red-500 hover:text-white" aria-label={`Delete ${getTitle(item)}`}><Trash2 size={16} /></button>}</div></div>
       ))}
       {!items.length && (
         <p className="rounded-lg border border-dashed border-white/15 p-6 text-zinc-500">
@@ -856,3 +911,283 @@ function EventEditor({
     </div>
   );
 }
+
+function CreateEventEditor({ categories, eventNames, onCancel, onSuccess }: { categories: CommitteeName[]; eventNames: CommitteeName[]; onCancel: () => void; onSuccess: () => void }) {
+  type CreateEventForm = {
+    eventNameId: string;
+    name: string;
+    categoryId: string;
+    category: string;
+    location: string;
+    startsAt: string;
+    endsAt: string;
+    description: string;
+    rulebookLink: string;
+    eventType: "individual" | "team" | "performance";
+    minParticipants: number;
+    maxParticipants: number;
+    allowPerformanceTypes: boolean;
+    paymentRequired: { amount: number; qrCodeUrl: string } | null;
+    posterLink: string;
+    posterFile: File | null;
+    eventHeadEmails: string;
+    coordinatorEmails: string;
+    coCoordinatorEmails: string;
+  };
+
+  const [formData, setFormData] = useState<CreateEventForm>({
+    eventNameId: "",
+    name: "",
+    categoryId: "",
+    category: "",
+    location: "",
+    startsAt: "",
+    endsAt: "",
+    description: "",
+    rulebookLink: "",
+    eventType: "individual",
+    minParticipants: 1,
+    maxParticipants: 1,
+    allowPerformanceTypes: false,
+    paymentRequired: null,
+    posterLink: "",
+    posterFile: null,
+    eventHeadEmails: "",
+    coordinatorEmails: "",
+    coCoordinatorEmails: "",
+  });
+  const [newEventName, setNewEventName] = useState("");
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const [posterToCrop, setPosterToCrop] = useState<File | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [validationMessage, setValidationMessage] = useState("");
+
+  const update = (key: string, value: unknown) => setFormData((prev) => ({ ...prev, [key]: value }));
+
+  const handleNameChange = (eventNameId: string) => {
+    const selected = eventNames.find((item) => item._id === eventNameId);
+    setFormData((prev) => ({ ...prev, eventNameId, name: selected?.name || "" }));
+  };
+
+  const handleCategoryChange = (categoryId: string) => {
+    const selected = categories.find((item) => item._id === categoryId);
+    setFormData((prev) => ({ ...prev, categoryId, category: selected?.name || "" }));
+  };
+
+  const submit = async (event: FormEvent) => {
+    event.preventDefault();
+    setValidationMessage("");
+    if (!formData.eventHeadEmails.trim()) {
+      toast.error("Add at least one event head");
+      return;
+    }
+    try {
+      setSaving(true);
+
+      let categoryId = formData.categoryId;
+      let categoryName = formData.category;
+      let eventNameId = formData.eventNameId;
+      let eventName = formData.name;
+
+      if (eventNameId === "new") {
+        eventName = newEventName.trim();
+        if (!eventName) { toast.error("Enter a new event name"); return; }
+        const res = await fetch("/api/event-names", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: eventName }) });
+        const d = await res.json();
+        if (!res.ok) { toast.error(d.message || "Could not create event name"); return; }
+        eventNameId = d.eventName._id;
+        eventName = d.eventName.name;
+      }
+
+      if (categoryId === "new") {
+        categoryName = newCategoryName.trim();
+        if (!categoryName) { toast.error("Enter a new category name"); return; }
+        const res = await fetch("/api/categories", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: categoryName }) });
+        const d = await res.json();
+        if (!res.ok) { toast.error(d.message || "Could not create category"); return; }
+        categoryId = d.category._id;
+        categoryName = d.category.name;
+      }
+
+      let posterLink = formData.posterLink;
+      if (formData.posterFile) {
+        const fd = new FormData();
+        fd.append("file", formData.posterFile);
+        const res = await fetch("/api/admin/events/poster", { method: "POST", body: fd });
+        const d = await res.json();
+        if (!res.ok) { toast.error(d.message || "Could not upload poster"); return; }
+        posterLink = d.publicUrl;
+      }
+
+      if (!posterLink) { toast.error("Choose a poster image."); return; }
+
+      const payload = {
+        name: eventName,
+        eventNameId,
+        category: categoryName,
+        categoryId,
+        location: formData.location.trim(),
+        startsAt: formData.startsAt,
+        endsAt: formData.endsAt,
+        description: formData.description.trim(),
+        eventType: formData.eventType,
+        minParticipants: Number(formData.minParticipants),
+        maxParticipants: Number(formData.maxParticipants),
+        allowPerformanceTypes: formData.allowPerformanceTypes,
+        paymentRequired: formData.paymentRequired,
+        rulebookLink: formData.rulebookLink.trim(),
+        posterLink: posterLink.trim(),
+        eventHeadEmails: formData.eventHeadEmails,
+        coordinatorEmails: formData.coordinatorEmails,
+        coCoordinatorEmails: formData.coCoordinatorEmails,
+      };
+
+      const res = await fetch("/api/admin/events", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+      const d = await res.json();
+      if (!res.ok) { toast.error(d.message || "Could not create event"); return; }
+      toast.success("Event created");
+      onSuccess();
+    } catch (error) {
+      console.error("Create event failed:", error);
+      toast.error("Could not create event");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <>
+    <div className="space-y-5">
+      <ValidationDialog open={Boolean(validationMessage)} message={validationMessage} onClose={() => setValidationMessage("")} />
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xl font-semibold text-white">Create Event</h2>
+        <button type="button" onClick={onCancel} disabled={saving} className="rounded-lg border border-white/15 px-5 py-3 text-sm text-zinc-300 hover:bg-white/10 disabled:opacity-60">Cancel</button>
+      </div>
+      <form onSubmit={submit} className="grid gap-5 md:grid-cols-2 border border-white/10 bg-white/[0.04] p-5 rounded-xl">
+        <NameDropdown
+          label="Event Name"
+          options={eventNames}
+          value={formData.eventNameId || ""}
+          onChange={handleNameChange}
+          newValue={newEventName}
+          onNewValueChange={setNewEventName}
+          newLabel="New event name"
+        />
+        <NameDropdown
+          label="Category"
+          options={categories}
+          value={formData.categoryId || ""}
+          onChange={handleCategoryChange}
+          newValue={newCategoryName}
+          onNewValueChange={setNewCategoryName}
+          newLabel="New category name"
+        />
+        <label className="space-y-2 md:col-span-2">
+          <span className="text-sm font-medium text-zinc-300">Location</span>
+          <input required value={formData.location} onChange={(e) => update("location", e.target.value)} className={input} />
+        </label>
+        <label className="space-y-2">
+          <span className="text-sm font-medium text-zinc-300">Start Date and Time</span>
+          <input required type="datetime-local" value={formData.startsAt} onChange={(e) => update("startsAt", e.target.value)} className={input} />
+        </label>
+        <label className="space-y-2">
+          <span className="text-sm font-medium text-zinc-300">End Date and Time</span>
+          <input required type="datetime-local" value={formData.endsAt} onChange={(e) => update("endsAt", e.target.value)} className={input} />
+        </label>
+        <label className="space-y-2 md:col-span-2">
+          <span className="text-sm font-medium text-zinc-300">Rulebook Link</span>
+          <input required type="url" value={formData.rulebookLink} onChange={(e) => update("rulebookLink", e.target.value)} className={input} />
+        </label>
+        <label className="space-y-2 md:col-span-2">
+          <span className="block text-sm font-medium text-zinc-300">Poster Image</span>
+          <input type="file" accept="image/jpeg,image/png,image/webp" onChange={(e) => { const file = e.target.files?.[0]; e.target.value = ""; if (file) setPosterToCrop(file); }} className={input} />
+          <p className="text-xs text-zinc-500">JPEG, PNG, or WebP. {MAX_IMAGE_SIZE_MB} MB or smaller.</p>
+          {formData.posterLink && (
+            <a href={formData.posterLink} target="_blank" rel="noreferrer" className="inline-block text-xs text-zinc-400 underline hover:text-white">View current poster</a>
+          )}
+        </label>
+        <label className="space-y-2 md:col-span-2">
+          <span className="text-sm font-medium text-zinc-300">Description</span>
+          <textarea required rows={4} value={formData.description} onChange={(e) => update("description", e.target.value)} className={`${input} font-mono`} />
+        </label>
+
+        <div className="md:col-span-2 border-t border-white/10 pt-4">
+          <h3 className="font-semibold text-amber-300 mb-3">Registration Settings</h3>
+          <div className="grid gap-4 md:grid-cols-3">
+            <label className="space-y-2">
+              <span className="text-sm font-medium text-zinc-300">Participation Type</span>
+              <select required value={formData.eventType} onChange={(e) => update("eventType", e.target.value)} className={input}>
+                <option value="individual">Individual</option>
+                <option value="team">Team</option>
+                <option value="performance">Performance</option>
+              </select>
+            </label>
+            <label className="space-y-2">
+              <span className="text-sm font-medium text-zinc-300">Minimum Participants</span>
+              <input required min={1} type="number" value={formData.minParticipants} onChange={(e) => update("minParticipants", Number(e.target.value))} className={input} />
+            </label>
+            <label className="space-y-2">
+              <span className="text-sm font-medium text-zinc-300">Maximum Participants</span>
+              <input required min={formData.minParticipants || 1} type="number" value={formData.maxParticipants} onChange={(e) => update("maxParticipants", Number(e.target.value))} className={input} />
+            </label>
+          </div>
+          <label className="flex items-center gap-3 text-sm text-zinc-300">
+            <input type="checkbox" checked={formData.allowPerformanceTypes} onChange={(e) => update("allowPerformanceTypes", e.target.checked)} className="h-4 w-4 accent-amber-400" />
+            Let participants choose solo, duo, trio, or group
+          </label>
+          <label className="flex items-center gap-3 text-sm text-zinc-300">
+            <input type="checkbox" checked={Boolean(formData.paymentRequired)} onChange={(e) => update("paymentRequired", e.target.checked ? { amount: 0, qrCodeUrl: "" } : null)} className="h-4 w-4 accent-amber-400" />
+            Require payment during registration
+          </label>
+          {formData.paymentRequired && (
+            <div className="grid gap-4 md:grid-cols-2">
+              <label className="space-y-2">
+                <span className="text-sm font-medium text-zinc-300">Payment Amount (INR)</span>
+                <input required min={0} type="number" value={formData.paymentRequired.amount} onChange={(e) => update("paymentRequired", formData.paymentRequired ? { ...formData.paymentRequired, amount: Number(e.target.value) } : { amount: Number(e.target.value), qrCodeUrl: "" })} className={input} />
+              </label>
+              <label className="space-y-2">
+                <span className="text-sm font-medium text-zinc-300">Payment QR Code URL</span>
+                <input required type="url" value={formData.paymentRequired.qrCodeUrl} onChange={(e) => update("paymentRequired", formData.paymentRequired ? { ...formData.paymentRequired, qrCodeUrl: e.target.value } : { amount: 0, qrCodeUrl: e.target.value })} className={input} />
+              </label>
+            </div>
+          )}
+        </div>
+
+        <div className="md:col-span-2 border-t border-white/10 pt-4">
+          <h3 className="font-semibold text-amber-300 mb-3">Event Team (typed emails)</h3>
+          <p className="text-sm text-zinc-400 mb-4">Enter one email per line. Emails must belong to registered users.</p>
+          <label className="space-y-2">
+            <span className="text-sm font-medium text-zinc-300">Event Head emails</span>
+            <textarea className={`${input} min-h-32 font-mono`} value={formData.eventHeadEmails} onChange={(e) => update("eventHeadEmails", e.target.value)} placeholder="one email per line" />
+          </label>
+          <label className="space-y-2">
+            <span className="text-sm font-medium text-zinc-300">Coordinator emails</span>
+            <textarea className={`${input} min-h-32 font-mono`} value={formData.coordinatorEmails} onChange={(e) => update("coordinatorEmails", e.target.value)} placeholder="one email per line" />
+          </label>
+          <label className="space-y-2">
+            <span className="text-sm font-medium text-zinc-300">Co-coordinator emails</span>
+            <textarea className={`${input} min-h-32 font-mono`} value={formData.coCoordinatorEmails} onChange={(e) => update("coCoordinatorEmails", e.target.value)} placeholder="one email per line" />
+          </label>
+        </div>
+
+        <div className="flex justify-end md:col-span-2">
+          <button type="submit" disabled={saving} className="flex items-center gap-2 rounded-lg bg-amber-400 px-5 py-3 text-sm font-semibold text-zinc-950 hover:bg-amber-300 disabled:opacity-60">
+            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Create Event
+          </button>
+        </div>
+      </form>
+    </div>
+    {posterToCrop && (
+      <ImageCropper
+        file={posterToCrop}
+        onComplete={(croppedFile) => {
+          setFormData((prev) => ({ ...prev, posterFile: croppedFile }));
+          setPosterToCrop(null);
+        }}
+        onCancel={() => setPosterToCrop(null)}
+      />
+    )}
+    </>
+  );
+}
+

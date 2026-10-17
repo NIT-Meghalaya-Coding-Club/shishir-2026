@@ -64,3 +64,22 @@ export async function PATCH(req, { params }) {
     return NextResponse.json({ success: false, message: error.message || "Could not update event" }, { status: error.status || 500 });
   }
 }
+
+export async function DELETE(req, { params }) {
+  if (!(await isAdminRequest())) return unauthorized();
+  try {
+    await connectMongo();
+    const code = String((await params).code).trim().toLowerCase();
+    const event = await Event.findOne({ code });
+    if (!event) return NextResponse.json({ success: false, message: "Event not found" }, { status: 404 });
+
+    await deletePosterImage(event.posterLink);
+    await Upload.deleteMany({ type: "poster", referenceId: event._id, referenceType: "Event" });
+    await Event.deleteOne({ _id: event._id });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Admin event delete error:", error);
+    return NextResponse.json({ success: false, message: error.message || "Could not delete event" }, { status: error.status || 500 });
+  }
+}
