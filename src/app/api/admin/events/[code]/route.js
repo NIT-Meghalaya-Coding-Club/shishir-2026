@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
+import mongoose from "mongoose";
 import { isAdminRequest } from "@/lib/adminAuth";
 import connectMongo from "@/lib/mongodb";
 import Event from "@/models/Event";
 import EventName from "@/models/EventName";
 import Category from "@/models/Category";
+import Upload from "@/models/Uploads";
 import { resolveUsersByEmails } from "@/lib/eventAuth";
 import { deletePosterImage } from "@/lib/r2";
 
@@ -44,7 +46,18 @@ export async function PATCH(req, { params }) {
     const oldPosterLink = event.posterLink;
     Object.assign(event, { code, eventNameId: eventName._id, categoryId: category._id, location: payload.location.trim(), startsAt, endsAt, description: payload.description.trim(), eventType: payload.eventType, minParticipants, maxParticipants, allowPerformanceTypes: Boolean(payload.allowPerformanceTypes), paymentRequired: payload.paymentRequired?.amount || payload.paymentRequired?.qrCodeUrl ? payload.paymentRequired : undefined, rulebookLink: payload.rulebookLink.trim(), posterLink: payload.posterLink.trim(), eventHeads: heads.map((user) => user._id), coordinators: coordinators.map((user) => user._id), coCoordinators: coCoordinators.map((user) => user._id) });
     await event.save();
-    if (oldPosterLink !== event.posterLink) await deletePosterImage(oldPosterLink);
+    if (oldPosterLink !== event.posterLink) {
+      await deletePosterImage(oldPosterLink);
+      const uploadFilter = {
+        type: "poster",
+        referenceId: event._id,
+        referenceType: "Event",
+      };
+      if (mongoose.isValidObjectId(payload.posterUploadId)) {
+        uploadFilter._id = { $ne: payload.posterUploadId };
+      }
+      await Upload.deleteMany(uploadFilter);
+    }
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Admin event update error:", error);
