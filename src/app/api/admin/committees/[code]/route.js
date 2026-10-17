@@ -6,35 +6,81 @@ import CommitteeName from "@/models/CommitteeName";
 import { resolveUsersByEmails } from "@/lib/eventAuth";
 
 function unauthorized() {
-  return NextResponse.json({ success: false, message: "Admin authentication required" }, { status: 401 });
+  return NextResponse.json(
+    { success: false, message: "Admin authentication required" },
+    { status: 401 },
+  );
 }
 
 function normalizeEmails(value) {
-  const values = Array.isArray(value) ? value : String(value || "").split(/[\n,]+/);
-  return [...new Set(values.map((email) => String(email).trim().toLowerCase()).filter(Boolean))];
+  const values = Array.isArray(value)
+    ? value
+    : String(value || "").split(/[\n,]+/);
+  return [
+    ...new Set(
+      values.map((email) => String(email).trim().toLowerCase()).filter(Boolean),
+    ),
+  ];
 }
 
 export async function PATCH(req, { params }) {
   if (!(await isAdminRequest())) return unauthorized();
   try {
     await connectMongo();
-    const committee = await Committee.findOne({ code: String((await params).code).trim().toLowerCase() });
-    if (!committee) return NextResponse.json({ success: false, message: "Committee not found" }, { status: 404 });
+    const committee = await Committee.findOne({
+      code: String((await params).code)
+        .trim()
+        .toLowerCase(),
+    });
+    if (!committee)
+      return NextResponse.json(
+        { success: false, message: "Committee not found" },
+        { status: 404 },
+      );
     const payload = await req.json();
-    const name = String(payload.name || "").trim().replace(/\s+/g, " ");
+    const name = String(payload.name || "")
+      .trim()
+      .replace(/\s+/g, " ");
     const code = committee.code;
-    if (!name) return NextResponse.json({ success: false, message: "Name is required" }, { status: 400 });
+    if (!name)
+      return NextResponse.json(
+        { success: false, message: "Name is required" },
+        { status: 400 },
+      );
     const committeeName = payload.committeeNameId
       ? await CommitteeName.findById(payload.committeeNameId)
       : await CommitteeName.findOneAndUpdate(
-        { name: { $regex: `^${name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, $options: "i" } },
-        { $setOnInsert: { name } }, { new: true, upsert: true, setDefaultsOnInsert: true }
+          {
+            name: {
+              $regex: `^${name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`,
+              $options: "i",
+            },
+          },
+          { $setOnInsert: { name } },
+          { new: true, upsert: true, setDefaultsOnInsert: true },
+        );
+    if (!committeeName)
+      return NextResponse.json(
+        { success: false, message: "Committee name not found" },
+        { status: 400 },
       );
-    if (!committeeName) return NextResponse.json({ success: false, message: "Committee name not found" }, { status: 400 });
-    const heads = await resolveUsersByEmails(normalizeEmails(payload.committeeHeadEmails), "committee heads");
-    if (heads.length === 0) return NextResponse.json({ success: false, message: "Add at least one committee head" }, { status: 400 });
-    const coordinators = await resolveUsersByEmails(normalizeEmails(payload.coordinatorEmails), "coordinators");
-    const coCoordinators = await resolveUsersByEmails(normalizeEmails(payload.coCoordinatorEmails), "co-coordinators");
+    const heads = await resolveUsersByEmails(
+      normalizeEmails(payload.committeeHeadEmails),
+      "committee heads",
+    );
+    if (heads.length === 0)
+      return NextResponse.json(
+        { success: false, message: "Add at least one committee head" },
+        { status: 400 },
+      );
+    const coordinators = await resolveUsersByEmails(
+      normalizeEmails(payload.coordinatorEmails),
+      "coordinators",
+    );
+    const coCoordinators = await resolveUsersByEmails(
+      normalizeEmails(payload.coCoordinatorEmails),
+      "co-coordinators",
+    );
     committee.committeeNameId = committeeName._id;
     committee.committeeHeads = heads.map((user) => user._id);
     committee.coordinators = coordinators.map((user) => user._id);
@@ -43,6 +89,41 @@ export async function PATCH(req, { params }) {
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Admin committee update error:", error);
-    return NextResponse.json({ success: false, message: error.message || "Could not update committee" }, { status: error.status || 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        message: error.message || "Could not update committee",
+      },
+      { status: error.status || 500 },
+    );
+  }
+}
+
+export async function DELETE(req, { params }) {
+  if (!(await isAdminRequest())) return unauthorized();
+  try {
+    await connectMongo();
+    const code = String((await params).code)
+      .trim()
+      .toLowerCase();
+    const committee = await Committee.findOne({ code });
+    if (!committee)
+      return NextResponse.json(
+        { success: false, message: "Committee not found" },
+        { status: 404 },
+      );
+
+    await Committee.deleteOne({ _id: committee._id });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Admin committee delete error:", error);
+    return NextResponse.json(
+      {
+        success: false,
+        message: error.message || "Could not delete committee",
+      },
+      { status: error.status || 500 },
+    );
   }
 }

@@ -188,6 +188,7 @@ export default function AdminPage() {
   );
   const [editingEvent, setEditingEvent] = useState<EventItem | null>(null);
   const [creatingEvent, setCreatingEvent] = useState(false);
+  const [creatingCommittee, setCreatingCommittee] = useState(false);
 
   const loadSettings = async () => {
     const response = await fetch("/api/admin/settings");
@@ -336,6 +337,13 @@ export default function AdminPage() {
     const response = await fetch(`/api/admin/events/${item.code}`, { method: "DELETE" });
     const data = await response.json(); setMessage(response.ok ? "Event deleted" : data.message || "Could not delete event");
     if (response.ok) { setEditingEvent(null); await loadManaged(); }
+  };
+
+  const deleteCommittee = async (item: Committee) => {
+    if (!window.confirm(`Delete committee "${item.committeeNameId?.name || item.code}"?`)) return;
+    const response = await fetch(`/api/admin/committees/${item.code}`, { method: "DELETE" });
+    const data = await response.json(); setMessage(response.ok ? "Committee deleted" : data.message || "Could not delete committee");
+    if (response.ok) { setEditingCommittee(null); await loadManaged(); }
   };
 
   if (loading)
@@ -527,26 +535,55 @@ export default function AdminPage() {
             <SaveButton message={message} />
           </form>
         )}
-        {section === "committees" &&
-          (editingCommittee ? (
-            <CommitteeEditor
-              item={editingCommittee}
-              onChange={setEditingCommittee}
-              onCancel={() => setEditingCommittee(null)}
-              onSave={() =>
-                saveManaged({ kind: "committees", item: editingCommittee })
-              }
-            />
-          ) : (
-            <List
-              items={committees}
-              getTitle={(item) => item.committeeNameId?.name || item.code}
-              getMeta={(item) =>
-                `${item.committeeHeads.length} heads · ${item.coordinators.length} coordinators`
-              }
-              onEdit={setEditingCommittee}
-            />
-          ))}
+        {section === "committees" && (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold">Manage committees</h2>
+              {!creatingCommittee && !editingCommittee && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCreatingCommittee(true);
+                    setMessage("");
+                    setEditingCommittee(null);
+                  }}
+                  className="rounded-lg bg-amber-400 px-4 py-2 text-sm font-semibold text-zinc-950 hover:bg-amber-300"
+                >
+                  <Plus size={17} /> Create committee
+                </button>
+              )}
+            </div>
+            {creatingCommittee ? (
+              <CreateCommitteeEditor
+                committeeNames={committeeNames}
+                onCancel={() => setCreatingCommittee(false)}
+                onSuccess={() => {
+                  setCreatingCommittee(false);
+                  loadManaged();
+                }}
+              />
+            ) : editingCommittee ? (
+              <CommitteeEditor
+                item={editingCommittee}
+                onChange={setEditingCommittee}
+                onCancel={() => setEditingCommittee(null)}
+                onSave={() =>
+                  saveManaged({ kind: "committees", item: editingCommittee })
+                }
+              />
+            ) : (
+              <List
+                items={committees}
+                getTitle={(item) => item.committeeNameId?.name || item.code}
+                getMeta={(item) =>
+                  `${item.committeeHeads.length} heads · ${item.coordinators.length} coordinators`
+                }
+                onEdit={setEditingCommittee}
+                onDelete={deleteCommittee}
+              />
+            )}
+          </div>
+        )}
         {section === "events" && (
           <div className="space-y-3">
             <div className="flex items-center justify-between">
@@ -734,6 +771,171 @@ function CommitteeEditor({
         </button>
       </div>
     </div>
+  );
+}
+
+function CreateCommitteeEditor({
+  committeeNames,
+  onCancel,
+  onSuccess,
+}: {
+  committeeNames: CommitteeName[];
+  onCancel: () => void;
+  onSuccess: () => void;
+}) {
+  type CreateCommitteeForm = {
+    committeeNameId: string;
+    name: string;
+    committeeHeadEmails: string;
+    coordinatorEmails: string;
+    coCoordinatorEmails: string;
+  };
+
+  const [formData, setFormData] = useState<CreateCommitteeForm>({
+    committeeNameId: "",
+    name: "",
+    committeeHeadEmails: "",
+    coordinatorEmails: "",
+    coCoordinatorEmails: "",
+  });
+  const [newCommitteeName, setNewCommitteeName] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  const update = (key: string, value: unknown) =>
+    setFormData((prev) => ({ ...prev, [key]: value }));
+
+  const handleNameChange = (committeeNameId: string) => {
+    const selected = committeeNames.find((item) => item._id === committeeNameId);
+    setFormData((prev) => ({ ...prev, committeeNameId, name: selected?.name || "" }));
+  };
+
+  const submit = async (event: FormEvent) => {
+    event.preventDefault();
+    if (!formData.committeeHeadEmails.trim()) {
+      toast.error("Add at least one committee head");
+      return;
+    }
+    try {
+      setSaving(true);
+
+      let committeeNameId = formData.committeeNameId;
+      let committeeName = formData.name;
+
+      if (committeeNameId === "new") {
+        committeeName = newCommitteeName.trim();
+        if (!committeeName) {
+          toast.error("Enter a new committee name");
+          return;
+        }
+        const res = await fetch("/api/committee-names", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: committeeName }),
+        });
+        const d = await res.json();
+        if (!res.ok) {
+          toast.error(d.message || "Could not create committee name");
+          return;
+        }
+        committeeNameId = d.committeeName._id;
+        committeeName = d.committeeName.name;
+      }
+
+      const res = await fetch("/api/admin/committees", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: committeeName,
+          committeeNameId,
+          committeeHeadEmails: formData.committeeHeadEmails,
+          coordinatorEmails: formData.coordinatorEmails,
+          coCoordinatorEmails: formData.coCoordinatorEmails,
+        }),
+      });
+      const d = await res.json();
+      if (!res.ok) {
+        toast.error(d.message || "Could not create committee");
+        return;
+      }
+      toast.success("Committee created");
+      onSuccess();
+    } catch (error) {
+      console.error("Create committee failed:", error);
+      toast.error("Could not create committee");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <>
+      <div className="space-y-5">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold text-white">Create Committee</h2>
+          <button
+            type="button"
+            onClick={onCancel}
+            disabled={saving}
+            className="rounded-lg border border-white/15 px-5 py-3 text-sm text-zinc-300 hover:bg-white/10 disabled:opacity-60"
+          >
+            Cancel
+          </button>
+        </div>
+        <form onSubmit={submit} className="grid gap-5 md:grid-cols-2 border border-white/10 bg-white/[0.04] p-5 rounded-xl">
+          <NameDropdown
+            label="Committee Name"
+            options={committeeNames}
+            value={formData.committeeNameId || ""}
+            onChange={handleNameChange}
+            newValue={newCommitteeName}
+            onNewValueChange={setNewCommitteeName}
+            newLabel="New committee name"
+          />
+          <label className="space-y-2 md:col-span-2">
+            <span className="text-sm font-medium text-zinc-300">Committee Head emails</span>
+            <textarea
+              className={`${input} min-h-32 font-mono`}
+              value={formData.committeeHeadEmails}
+              onChange={(e) => update("committeeHeadEmails", e.target.value)}
+              placeholder="one email per line"
+            />
+          </label>
+          <label className="space-y-2 md:col-span-2">
+            <span className="text-sm font-medium text-zinc-300">Coordinator emails</span>
+            <textarea
+              className={`${input} min-h-32 font-mono`}
+              value={formData.coordinatorEmails}
+              onChange={(e) => update("coordinatorEmails", e.target.value)}
+              placeholder="one email per line"
+            />
+          </label>
+          <label className="space-y-2 md:col-span-2">
+            <span className="text-sm font-medium text-zinc-300">Co-coordinator emails</span>
+            <textarea
+              className={`${input} min-h-32 font-mono`}
+              value={formData.coCoordinatorEmails}
+              onChange={(e) => update("coCoordinatorEmails", e.target.value)}
+              placeholder="one email per line"
+            />
+          </label>
+
+          <div className="flex justify-end md:col-span-2">
+            <button
+              type="submit"
+              disabled={saving}
+              className="flex items-center gap-2 rounded-lg bg-amber-400 px-5 py-3 text-sm font-semibold text-zinc-950 hover:bg-amber-300 disabled:opacity-60"
+            >
+              {saving ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Save className="h-4 w-4" />
+              )}
+              Create Committee
+            </button>
+          </div>
+        </form>
+      </div>
+    </>
   );
 }
 
