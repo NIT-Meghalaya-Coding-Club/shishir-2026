@@ -34,9 +34,6 @@ export default function StickyRegisterButton() {
               duration-700
               group-hover:bg-[#EE6C4D]/20
               group-hover:opacity-100
-
-              dark:bg-[#FF8A6B]/10
-              dark:group-hover:bg-[#FF8A6B]/20
             "
           />
 
@@ -64,12 +61,6 @@ export default function StickyRegisterButton() {
               group-hover:border-[#EE6C4D]/70
               group-hover:shadow-[0_12px_32px_rgba(238,108,77,0.28)]
 
-              dark:border-[#FF8A6B]/45
-              dark:bg-[#172B46]
-              dark:shadow-[0_8px_25px_rgba(0,0,0,0.25)]
-              dark:group-hover:border-[#FF8A6B]/75
-              dark:group-hover:shadow-[0_12px_32px_rgba(255,138,107,0.18)]
-
               sm:h-[94px]
               sm:w-[94px]
             "
@@ -83,8 +74,6 @@ export default function StickyRegisterButton() {
                 rounded-full
                 border
                 border-[#EE6C4D]/15
-
-                dark:border-[#FF8A6B]/20
               "
             />
 
@@ -106,8 +95,6 @@ export default function StickyRegisterButton() {
                 rotate-[25deg]
                 bg-[#EE6C4D]/10
                 blur-md
-
-                dark:bg-[#FF8A6B]/10
               "
             />
 
@@ -120,8 +107,6 @@ export default function StickyRegisterButton() {
                   uppercase
                   tracking-[0.22em]
                   text-[#EE6C4D]/70
-
-                  dark:text-[#FF8A6B]/75
                 "
               >
                 Join
@@ -134,8 +119,6 @@ export default function StickyRegisterButton() {
                   font-bold
                   tracking-wide
                   text-[#EE6C4D]
-
-                  dark:text-[#FF8A6B]
                 "
               >
                 MUN
@@ -148,8 +131,6 @@ export default function StickyRegisterButton() {
                   font-medium
                   tracking-[0.2em]
                   text-[#EE6C4D]/70
-
-                  dark:text-[#FF8A6B]/75
                 "
               >
                 2026
@@ -209,10 +190,6 @@ export default function StickyRegisterButton() {
                 py-3
 
                 shadow-[0_10px_30px_rgba(238,108,77,0.16)]
-
-                dark:border-[#FF8A6B]/45
-                dark:bg-[#172B46]
-                dark:shadow-[0_10px_30px_rgba(0,0,0,0.30)]
               "
             >
               {/* Subtle shine */}
@@ -233,8 +210,6 @@ export default function StickyRegisterButton() {
                   skew-x-[-20deg]
                   bg-[#EE6C4D]/8
                   blur-sm
-
-                  dark:bg-[#FF8A6B]/10
                 "
               />
 
@@ -246,8 +221,6 @@ export default function StickyRegisterButton() {
                   font-semibold
                   tracking-wide
                   text-[#EE6C4D]
-
-                  dark:text-[#FF8A6B]
                 "
               >
                 Click to Register for NITM MUN 2026
@@ -268,9 +241,6 @@ export default function StickyRegisterButton() {
                 border-r
                 border-[#EE6C4D]/35
                 bg-white
-
-                dark:border-[#FF8A6B]/45
-                dark:bg-[#172B46]
               "
             />
           </motion.div>

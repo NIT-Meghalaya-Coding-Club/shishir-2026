@@ -61,7 +61,7 @@ export default function Events() {
         }}
       >
         {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-[#E0FBFC]/80 dark:bg-[#293241]/80 pointer-events-none transition-colors duration-300" />
+        <div className="absolute inset-0 bg-[#E0FBFC]/80 pointer-events-none transition-colors duration-300" />
 
         {/* Content container */}
         <div className="relative w-full">
@@ -87,16 +87,16 @@ export default function Events() {
                 <div className="relative group flex items-center justify-center cursor-default rounded-full transition-all duration-300 hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[8px_8px_0px_#EE6C4D] hover:scale-[1.03]">
 
                   {/* Soft Background Layer */}
-                  <div className="absolute inset-0 bg-[#E0FBFC]/70 dark:bg-[#3D5A80]/40 backdrop-blur-md rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:shadow-[0_8px_30px_rgb(255,255,255,0.03)] transition-transform duration-300" />
+                  <div className="absolute inset-0 bg-[#E0FBFC]/70 backdrop-blur-md rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-transform duration-300" />
 
                   {/* Border Layer */}
-                  <div className="absolute inset-0 border border-[#98C1D9]/60 dark:border-[#3D5A80]/50 rounded-full" />
+                  <div className="absolute inset-0 border border-[#98C1D9]/60 rounded-full" />
 
                   {/* Content */}
                   <div className="relative px-4 sm:px-10 py-2 sm:py-4 flex items-center justify-center gap-2 sm:gap-4 z-10">
                     <Blossom className="w-8 h-8 sm:w-10 sm:h-10 text-[#EE6C4D] animate-spin [animation-duration:3s]" />
                     <h2
-                      className="text-xl sm:text-3xl md:text-4xl font-extrabold text-[#293241] dark:text-[#E0FBFC] uppercase tracking-widest whitespace-nowrap drop-shadow-sm"
+                      className="text-xl sm:text-3xl md:text-4xl font-extrabold text-[#293241] uppercase tracking-widest whitespace-nowrap drop-shadow-sm"
                     >
                       {category.replace("_", " ")}
                     </h2>

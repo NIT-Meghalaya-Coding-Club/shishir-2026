@@ -63,7 +63,7 @@ const SACLetter: React.FC = () => {
           <Title text="Letter From SAC President" />
 
           {/* Soft background glow */}
-          <div className="absolute inset-4 sm:inset-8 rounded-full bg-[radial-gradient(circle,rgba(152,193,217,0.20)_0%,rgba(238,108,77,0.08)_45%,transparent_72%)] dark:bg-[radial-gradient(circle,rgba(152,193,217,0.12)_0%,rgba(238,108,77,0.07)_45%,transparent_72%)] blur-3xl pointer-events-none" />
+          <div className="absolute inset-4 sm:inset-8 rounded-full bg-[radial-gradient(circle,rgba(152,193,217,0.20)_0%,rgba(238,108,77,0.08)_45%,transparent_72%)] blur-3xl pointer-events-none" />
 
           {/* Scroll */}
           <div className="relative z-10 flex">
@@ -74,14 +74,14 @@ const SACLetter: React.FC = () => {
             </div>
 
             {/* Paper */}
-            <div className="relative flex-1 min-w-0 overflow-hidden rounded-[3px] bg-[#E0FBFC] dark:bg-[#293241] border-y-[5px] sm:border-y-[6px] border-[#3D5A80] dark:border-[#98C1D9] shadow-[0_24px_60px_-18px_rgba(61,90,128,0.5),0_0_0_1px_rgba(152,193,217,0.5)]">
+            <div className="relative flex-1 min-w-0 overflow-hidden rounded-[3px] bg-[#E0FBFC] border-y-[5px] sm:border-y-[6px] border-[#3D5A80] shadow-[0_24px_60px_-18px_rgba(61,90,128,0.5),0_0_0_1px_rgba(152,193,217,0.5)]">
 
               {/* Paper background */}
-              <div className="absolute inset-0 bg-gradient-to-br from-[#FFFFFF] via-[#F3FCFC] to-[#DDF1F5] dark:from-[#3b4d6b] dark:via-[#33435e] dark:to-[#2c3a52]" />
+              <div className="absolute inset-0 bg-gradient-to-br from-[#FFFFFF] via-[#F3FCFC] to-[#DDF1F5]" />
 
               {/* Paper grain */}
               <div
-                className="absolute inset-0 opacity-60 dark:opacity-30 mix-blend-multiply pointer-events-none"
+                className="absolute inset-0 opacity-60 mix-blend-multiply pointer-events-none"
                 style={{ backgroundImage: paperGrain, contain: "strict" }}
               />
 
@@ -130,10 +130,10 @@ const SACLetter: React.FC = () => {
               </svg>
 
               {/* Writing area */}
-              <div className="relative m-2 sm:m-4 md:m-6 p-4 sm:p-6 md:p-8 lg:p-10 border border-[#3D5A80]/25 dark:border-[#98C1D9]/30 rounded-[2px] z-10">
+              <div className="relative m-2 sm:m-4 md:m-6 p-4 sm:p-6 md:p-8 lg:p-10 border border-[#3D5A80]/25 rounded-[2px] z-10">
 
                 {/* Header */}
-                <div className="mb-6 sm:mb-8 border-b border-[#3D5A80]/20 dark:border-[#98C1D9]/20 pb-4 sm:pb-5">
+                <div className="mb-6 sm:mb-8 border-b border-[#3D5A80]/20 pb-4 sm:pb-5">
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
 
                     <div>
@@ -145,13 +145,13 @@ const SACLetter: React.FC = () => {
                         </p>
                       </div>
 
-                      <p className="mt-1 text-sm text-[#293241]/60 dark:text-[#E0FBFC]/60">
+                      <p className="mt-1 text-sm text-[#293241]/60">
                         Student Activity Center
                       </p>
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <p className="text-xs sm:text-sm font-bold uppercase tracking-[0.12em] text-[#3D5A80] dark:text-[#98C1D9]">
+                      <p className="text-xs sm:text-sm font-bold uppercase tracking-[0.12em] text-[#3D5A80]">
                         Youth Parliament 2026
                       </p>
 
@@ -161,14 +161,14 @@ const SACLetter: React.FC = () => {
 
                 {/* Greeting */}
                 <div className="mb-6 sm:mb-8">
-                  <p className="font-serif text-sm sm:text-base md:text-lg leading-7 text-[#293241] dark:text-[#E0FBFC]">
+                  <p className="font-serif text-sm sm:text-base md:text-lg leading-7 text-[#293241]">
                     Dear Participants, Esteemed Guests, and Esteemed Members of the NIT
                     Meghalaya Community,
                   </p>
                 </div>
 
                 {/* Letter content */}
-                <div className="space-y-5 sm:space-y-6 text-justify text-sm leading-7 sm:text-base md:text-[1.02rem] md:leading-8 text-[#293241]/80 dark:text-[#E0FBFC]/80 font-serif">
+                <div className="space-y-5 sm:space-y-6 text-justify text-sm leading-7 sm:text-base md:text-[1.02rem] md:leading-8 text-[#293241]/80 font-serif">
 
                   <p className="first-letter:text-4xl sm:first-letter:text-5xl first-letter:font-semibold first-letter:text-[#EE6C4D]">
                     A warm welcome to participants, esteemed guests, and the NIT Meghalaya community to the Youth Parliament 2026. It is an honor to host this dynamic gathering of future leaders, ready to debate, negotiate, and formulate impactful resolutions for our evolving global landscape.
@@ -189,12 +189,12 @@ const SACLetter: React.FC = () => {
                 </div>
 
                 {/* Signature */}
-                <div className="relative mt-8 sm:mt-10 pt-6 border-t border-[#3D5A80]/20 dark:border-[#98C1D9]/20">
+                <div className="relative mt-8 sm:mt-10 pt-6 border-t border-[#3D5A80]/20">
 
                   <div className="flex items-center gap-2">
                     <Blossom className="w-4 h-4 text-[#EE6C4D] animate-spin [animation-duration:3s]" />
 
-                    <p className="text-sm font-semibold tracking-wide text-[#3D5A80] dark:text-[#98C1D9]">
+                    <p className="text-sm font-semibold tracking-wide text-[#3D5A80]">
                       Warm regards,
                     </p>
                   </div>
@@ -204,7 +204,7 @@ const SACLetter: React.FC = () => {
                       Dr. Rajat Subhra Das
                     </p>
 
-                    <p className="mt-1 text-sm leading-6 text-[#293241]/65 dark:text-[#E0FBFC]/65">
+                    <p className="mt-1 text-sm leading-6 text-[#293241]/65">
                       President, Student Activity Center
                       <br />
                       National Institute of Technology Meghalaya
@@ -213,7 +213,7 @@ const SACLetter: React.FC = () => {
 
                   {/* Hanko-style seal */}
                   <div
-                    className="absolute bottom-0 right-0 w-12 h-12 sm:w-14 sm:h-14 rounded-md bg-[#EE6C4D] text-[#FFF4E0] flex items-center justify-center shadow-[0_3px_8px_rgba(238,108,77,0.45)] mix-blend-multiply dark:mix-blend-normal"
+                    className="absolute bottom-0 right-0 w-12 h-12 sm:w-14 sm:h-14 rounded-md bg-[#EE6C4D] text-[#FFF4E0] flex items-center justify-center shadow-[0_3px_8px_rgba(238,108,77,0.45)] mix-blend-multiply"
                     style={{ transform: "rotate(-6deg)" }}
                     aria-hidden="true"
                   >

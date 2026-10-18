@@ -201,7 +201,7 @@ export default function Contact() {
         }}
       >
         {/* Main gradient overlay */}
-        <div className="absolute inset-0 bg-[#E0FBFC]/80 dark:bg-[#293241]/80 pointer-events-none transition-colors duration-300" />
+        <div className="absolute inset-0 bg-[#E0FBFC]/80 pointer-events-none transition-colors duration-300" />
         
         <div className="relative w-full z-10">
           {/* =============== PAGE TITLE =============== */}

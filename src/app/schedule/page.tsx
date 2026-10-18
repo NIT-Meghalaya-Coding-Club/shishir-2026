@@ -29,7 +29,7 @@ const paperGrain =
   "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.24  0 0 0 0 0.35  0 0 0 0 0.5  0 0 0 0.09 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>\")";
 
 const paperCls =
-  "bg-gradient-to-br from-white via-[#F3FCFC] to-[#DDF1F5] dark:from-[#3b4d6b] dark:via-[#33435e] dark:to-[#2c3a52]";
+  "bg-gradient-to-br from-white via-[#F3FCFC] to-[#DDF1F5]";
 
 function Blossom({ className = "" }: { className?: string }) {
   return (
@@ -56,7 +56,7 @@ function PaperDressing({ strong = true }: { strong?: boolean }) {
   return (
     <>
       <div
-        className="pointer-events-none absolute inset-0 opacity-70 dark:opacity-40 mix-blend-multiply"
+        className="pointer-events-none absolute inset-0 opacity-70 mix-blend-multiply"
         style={{ backgroundImage: paperGrain }}
       />
       <div
@@ -130,14 +130,14 @@ const SchedulePage = () => {
       : sortEventsByTime(activeSchedule.categories[activeCategory] || []);
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#E0FBFC] dark:bg-[#293241]">
+    <div className="relative min-h-screen overflow-hidden bg-[#E0FBFC]">
       {/* Backdrop: soft glows and drifting petals */}
       <div
         className="pointer-events-none fixed inset-0 z-0 overflow-hidden"
         aria-hidden="true"
       >
-        <div className="absolute -top-32 -left-24 h-[26rem] w-[26rem] rounded-full bg-[#98C1D9]/40 blur-3xl dark:bg-[#3D5A80]/40" />
-        <div className="absolute -bottom-32 -right-24 h-[26rem] w-[26rem] rounded-full bg-[#EE6C4D]/15 blur-3xl dark:bg-[#EE6C4D]/10" />
+        <div className="absolute -top-32 -left-24 h-[26rem] w-[26rem] rounded-full bg-[#98C1D9]/40 blur-3xl" />
+        <div className="absolute -bottom-32 -right-24 h-[26rem] w-[26rem] rounded-full bg-[#EE6C4D]/15 blur-3xl" />
         {Array.from({ length: 12 }).map((_, i) => {
           const size = 9 + (i % 4) * 3;
           return (
@@ -166,7 +166,7 @@ const SchedulePage = () => {
         {/* Header */}
         <PageHeading title="Schedule" />
 
-        <p className="mx-auto -mt-2 mb-5 max-w-xl text-center text-sm leading-6 text-[#3D5A80] dark:text-[#98C1D9]">
+        <p className="mx-auto -mt-2 mb-5 max-w-xl text-center text-sm leading-6 text-[#3D5A80]">
           Explore the complete lineup, timings and venues for every session
           across the festival.
         </p>
@@ -191,8 +191,8 @@ const SchedulePage = () => {
                 }}
                 className={`sch-rise group relative overflow-hidden rounded-[3px] border-y-[5px] text-left transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#EE6C4D] ${paperCls} ${
                   isActive
-                    ? "-translate-y-0.5 border-[#3D5A80] shadow-[0_20px_44px_-16px_rgba(61,90,128,0.6)] dark:border-[#98C1D9]"
-                    : "border-[#98C1D9] shadow-[0_10px_24px_-14px_rgba(61,90,128,0.4)] hover:-translate-y-1 hover:border-[#3D5A80]/70 dark:border-[#98C1D9]/30 dark:hover:border-[#98C1D9]/70"
+                    ? "-translate-y-0.5 border-[#3D5A80] shadow-[0_20px_44px_-16px_rgba(61,90,128,0.6)]"
+                    : "border-[#98C1D9] shadow-[0_10px_24px_-14px_rgba(61,90,128,0.4)] hover:-translate-y-1 hover:border-[#3D5A80]/70"
                 }`}
                 style={{ animationDelay: `${index * 80}ms` }}
               >
@@ -204,14 +204,14 @@ const SchedulePage = () => {
                       className={`text-2xl font-extrabold tracking-tight transition-colors duration-300 ${
                         isActive
                           ? "text-[#EE6C4D]"
-                          : "text-[#3D5A80] group-hover:text-[#EE6C4D] dark:text-[#98C1D9]"
+                          : "text-[#3D5A80] group-hover:text-[#EE6C4D]"
                       }`}
                     >
                       {day === "all" ? "All" : day.replace("day", "Day ")}
                       {schedule[day]?.date && <span className="ml-2 text-sm font-medium">{new Date(`${schedule[day].date}T00:00:00`).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}</span>}
                     </p>
 
-                    <p className="mt-1 text-sm text-[#293241]/70 dark:text-[#E0FBFC]/70">
+                    <p className="mt-1 text-sm text-[#293241]/70">
                       {Object.keys(schedule[day]?.categories || {}).length} Sessions
                     </p>
                   </div>
@@ -227,7 +227,7 @@ const SchedulePage = () => {
                   </div>
                 </div>
 
-                <div className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/50 to-transparent transition-transform duration-700 group-hover:translate-x-full dark:via-white/10" />
+                <div className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/50 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
               </button>
             );
           })}
@@ -237,7 +237,7 @@ const SchedulePage = () => {
           {/* Category Sidebar */}
           <div className="lg:col-span-1 lg:self-start lg:sticky lg:top-28">
             <div
-              className={`sch-rise relative overflow-hidden rounded-[3px] border-y-[5px] border-[#3D5A80] shadow-[0_24px_54px_-20px_rgba(61,90,128,0.55)] dark:border-[#98C1D9] ${paperCls}`}
+              className={`sch-rise relative overflow-hidden rounded-[3px] border-y-[5px] border-[#3D5A80] shadow-[0_24px_54px_-20px_rgba(61,90,128,0.55)] ${paperCls}`}
               style={{ animationDelay: "120ms" }}
             >
               <PaperDressing />
@@ -249,14 +249,14 @@ const SchedulePage = () => {
                   </span>
 
                   <div className="min-w-0">
-                    <h2 className="text-lg font-extrabold tracking-tight text-[#3D5A80] dark:text-[#98C1D9]">
+                    <h2 className="text-lg font-extrabold tracking-tight text-[#3D5A80]">
                       Categories
                     </h2>
 
                     <div className="mt-1 flex items-center gap-2">
                       <span className="h-px w-7 bg-[#EE6C4D]/70" />
 
-                      <p className="text-[11px] text-[#293241]/60 dark:text-[#E0FBFC]/60">
+                      <p className="text-[11px] text-[#293241]/60">
                         Filter sessions
                       </p>
                     </div>
@@ -269,7 +269,7 @@ const SchedulePage = () => {
                     className={`sch-cat group relative flex w-full items-center justify-between overflow-hidden rounded-md border p-3 text-left transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#EE6C4D] ${
                       activeCategory === "All"
                         ? "border-[#3D5A80] bg-gradient-to-r from-[#3D5A80] to-[#2f4a6b] text-white shadow-[0_10px_22px_-10px_rgba(61,90,128,0.8)]"
-                        : "border-[#98C1D9] bg-white/60 text-[#293241] hover:border-[#EE6C4D] hover:bg-white dark:border-[#98C1D9]/30 dark:bg-[#293241]/50 dark:text-[#E0FBFC] dark:hover:border-[#EE6C4D]"
+                        : "border-[#98C1D9] bg-white/60 text-[#293241] hover:border-[#EE6C4D] hover:bg-white"
                     }`}
                   >
                     {activeCategory === "All" && (
@@ -301,7 +301,7 @@ const SchedulePage = () => {
                       className={`sch-cat group relative flex w-full items-center justify-between overflow-hidden rounded-md border p-3 text-left transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#EE6C4D] ${
                         category === activeCategory
                           ? "border-[#3D5A80] bg-gradient-to-r from-[#3D5A80] to-[#2f4a6b] text-white shadow-[0_10px_22px_-10px_rgba(61,90,128,0.8)]"
-                          : "border-[#98C1D9] bg-white/60 text-[#293241] hover:border-[#EE6C4D] hover:bg-white dark:border-[#98C1D9]/30 dark:bg-[#293241]/50 dark:text-[#E0FBFC] dark:hover:border-[#EE6C4D]"
+                          : "border-[#98C1D9] bg-white/60 text-[#293241] hover:border-[#EE6C4D] hover:bg-white"
                       }`}
                     >
                       {category === activeCategory && (
@@ -335,15 +335,15 @@ const SchedulePage = () => {
           {/* Event Cards */}
           <div className="lg:col-span-3">
             <div
-              className={`sch-rise relative overflow-hidden rounded-[3px] border-y-[5px] border-[#3D5A80] shadow-[0_28px_64px_-22px_rgba(61,90,128,0.55)] dark:border-[#98C1D9] ${paperCls}`}
+              className={`sch-rise relative overflow-hidden rounded-[3px] border-y-[5px] border-[#3D5A80] shadow-[0_28px_64px_-22px_rgba(61,90,128,0.55)] ${paperCls}`}
               style={{ animationDelay: "200ms" }}
             >
               <PaperDressing />
 
-              <div className="relative z-10 m-2 rounded-[2px] border border-[#3D5A80]/20 p-4 sm:m-3 sm:p-6 dark:border-[#98C1D9]/30">
-                <div className="mb-7 flex items-end justify-between gap-4 border-b border-[#3D5A80]/15 pb-5 dark:border-[#98C1D9]/20">
+              <div className="relative z-10 m-2 rounded-[2px] border border-[#3D5A80]/20 p-4 sm:m-3 sm:p-6">
+                <div className="mb-7 flex items-end justify-between gap-4 border-b border-[#3D5A80]/15 pb-5">
                   <div>
-                    <p className="text-sm font-semibold capitalize text-[#3D5A80]/80 dark:text-[#98C1D9]/80">
+                    <p className="text-sm font-semibold capitalize text-[#3D5A80]/80">
                       {activeDay}
                     </p>
 
@@ -354,12 +354,12 @@ const SchedulePage = () => {
                     </h2>
                   </div>
 
-                  <div className="-rotate-3 rounded-md border border-[#98C1D9] bg-white/70 px-4 py-2 text-center dark:border-[#98C1D9]/30 dark:bg-[#293241]/50">
-                    <p className="text-2xl font-extrabold leading-none text-[#3D5A80] dark:text-[#98C1D9]">
+                  <div className="-rotate-3 rounded-md border border-[#98C1D9] bg-white/70 px-4 py-2 text-center">
+                    <p className="text-2xl font-extrabold leading-none text-[#3D5A80]">
                       {categoryEvents.length}
                     </p>
 
-                    <p className="mt-1 text-[11px] text-[#293241]/60 dark:text-[#E0FBFC]/60">
+                    <p className="mt-1 text-[11px] text-[#293241]/60">
                       Events
                     </p>
                   </div>
@@ -376,39 +376,39 @@ const SchedulePage = () => {
                       style={{ animationDelay: `${index * 90}ms` }}
                     >
                       {/* Timeline blossom */}
-                      <div className="absolute -left-7 top-5 flex h-6 w-6 items-center justify-center rounded-full border border-[#98C1D9] bg-[#E0FBFC] sm:-left-9 dark:border-[#98C1D9]/50 dark:bg-[#293241]">
+                      <div className="absolute -left-7 top-5 flex h-6 w-6 items-center justify-center rounded-full border border-[#98C1D9] bg-[#E0FBFC] sm:-left-9">
                         <Blossom className="h-3.5 w-3.5 text-[#EE6C4D]" />
                       </div>
 
                       <button
                         type="button"
                         onClick={() => openEventDetails(event.code)}
-                        className="sch-event group relative w-full cursor-pointer overflow-hidden rounded-md border border-[#98C1D9] bg-white/75 p-5 text-left shadow-[0_8px_20px_-14px_rgba(61,90,128,0.5)] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#EE6C4D]/60 hover:bg-white hover:shadow-[0_16px_34px_-16px_rgba(61,90,128,0.6)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#EE6C4D] dark:border-[#98C1D9]/25 dark:bg-[#293241]/55 dark:hover:bg-[#293241]/80"
+                        className="sch-event group relative w-full cursor-pointer overflow-hidden rounded-md border border-[#98C1D9] bg-white/75 p-5 text-left shadow-[0_8px_20px_-14px_rgba(61,90,128,0.5)] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#EE6C4D]/60 hover:bg-white hover:shadow-[0_16px_34px_-16px_rgba(61,90,128,0.6)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#EE6C4D]"
                       >
                         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                           <div className="min-w-0">
-                            <p className="text-xs font-medium text-[#3D5A80]/80 dark:text-[#98C1D9]/80">
+                            <p className="text-xs font-medium text-[#3D5A80]/80">
                               {activeCategory === "All"
                                 ? "Festival Session"
                                 : activeCategory}
                             </p>
 
-                            <h3 className="mt-1 text-lg font-bold text-[#293241] transition-colors duration-200 group-hover:text-[#EE6C4D] dark:text-[#E0FBFC]">
+                            <h3 className="mt-1 text-lg font-bold text-[#293241] transition-colors duration-200 group-hover:text-[#EE6C4D]">
                               {event.name}
                             </h3>
                           </div>
 
-                          <div className="flex shrink-0 items-center gap-2 self-start rounded-full border border-[#EE6C4D]/40 bg-[#EE6C4D]/10 px-3 py-1.5 text-xs font-semibold text-[#293241] dark:text-[#E0FBFC]">
+                          <div className="flex shrink-0 items-center gap-2 self-start rounded-full border border-[#EE6C4D]/40 bg-[#EE6C4D]/10 px-3 py-1.5 text-xs font-semibold text-[#293241]">
                             <Clock className="h-4 w-4 text-[#EE6C4D]" />
                             {event.time}
                           </div>
                         </div>
 
-                        <p className="mt-3 text-sm leading-6 text-[#293241]/75 dark:text-[#E0FBFC]/70">
+                        <p className="mt-3 text-sm leading-6 text-[#293241]/75">
                           {event.description}
                         </p>
 
-                        <div className="mt-4 flex flex-col gap-2 border-t border-[#3D5A80]/10 pt-3 text-xs text-[#3D5A80] sm:flex-row sm:flex-wrap sm:gap-5 dark:border-[#98C1D9]/15 dark:text-[#98C1D9]">
+                        <div className="mt-4 flex flex-col gap-2 border-t border-[#3D5A80]/10 pt-3 text-xs text-[#3D5A80] sm:flex-row sm:flex-wrap sm:gap-5">
                           <div className="flex items-center gap-2">
                             <MapPin className="h-4 w-4 text-[#EE6C4D]" />
                             <span>{event.place}</span>
@@ -430,9 +430,9 @@ const SchedulePage = () => {
                         <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-[#EE6C4D] to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
 
                         {loadingEventCode === event.code && (
-                          <div className="absolute inset-0 z-20 flex items-center justify-center gap-2 bg-[#E0FBFC]/75 backdrop-blur-[2px] dark:bg-[#293241]/75">
+                          <div className="absolute inset-0 z-20 flex items-center justify-center gap-2 bg-[#E0FBFC]/75 backdrop-blur-[2px]">
                             <Blossom className="h-6 w-6 animate-spin text-[#EE6C4D]" />
-                            <span className="text-xs font-semibold text-[#3D5A80] dark:text-[#98C1D9]">
+                            <span className="text-xs font-semibold text-[#3D5A80]">
                               Opening…
                             </span>
                           </div>

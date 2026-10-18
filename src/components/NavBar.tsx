@@ -173,7 +173,7 @@ const NavBar: React.FC = () => {
         pointerEvents: isVisible ? "auto" : "none",
       }}
       transition={{ duration: 0.35, ease: "easeInOut" }}
-      className="fixed top-3 left-3 right-3 sm:left-6 sm:right-6 lg:left-8 lg:right-8 z-50 mx-auto max-w-7xl rounded-full bg-gradient-to-b  from-white/10 via-white/[0.02] to-white/[0.05] dark:from-white/[0.07] dark:via-transparent dark:to-white/[0.02] backdrop-blur-sm  backdrop-saturate-200 backdrop-contrast-125 backdrop-brightness-105 border border-white/40 dark:border-white/15 shadow-[0_8px_32px_0_rgba(0,0,0,0.1),inset_0_1px_2px_0_rgba(255,255,255,0.6),inset_0_-1px_1px_0_rgba(0,0,0,0.08)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.5),inset_0_1px_2px_0_rgba(255,255,255,0.25),inset_0_-1px_1px_0_rgba(0,0,0,0.4)] transition-all duration-300"
+      className="fixed top-3 left-3 right-3 sm:left-6 sm:right-6 lg:left-8 lg:right-8 z-50 mx-auto max-w-7xl rounded-full bg-gradient-to-b  from-white/10 via-white/[0.02] to-white/[0.05] backdrop-blur-sm  backdrop-saturate-200 backdrop-contrast-125 backdrop-brightness-105 border border-white/40 shadow-[0_8px_32px_0_rgba(0,0,0,0.1),inset_0_1px_2px_0_rgba(255,255,255,0.6),inset_0_-1px_1px_0_rgba(0,0,0,0.08)] transition-all duration-300"
       ref={menuRef}
     >
       <div className="container mx-auto flex items-center justify-between px-3 py-2 sm:px-4 sm:py-2.5">
@@ -210,7 +210,7 @@ const NavBar: React.FC = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -15, scale: 0.98 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="absolute right-3 sm:right-6 top-[70px] sm:top-18 w-56 rounded-2xl bg-white/20 dark:bg-black/30 backdrop-blur-2xl backdrop-saturate-200 border border-white/40 dark:border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.25),inset_0_1px_2px_rgba(255,255,255,0.4)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.65),inset_0_1px_2px_rgba(255,255,255,0.15)] p-4 transition-all duration-300"
+            className="absolute right-3 sm:right-6 top-[70px] sm:top-18 w-56 rounded-2xl bg-white/20 backdrop-blur-2xl backdrop-saturate-200 border border-white/40 shadow-[0_20px_50px_rgba(0,0,0,0.25),inset_0_1px_2px_rgba(255,255,255,0.4)] p-4 transition-all duration-300"
           >
             <NavBarItem to="/" text="Home" onClick={closeMenu} />
             <NavBarItem to="/events" text="Events" onClick={closeMenu} />

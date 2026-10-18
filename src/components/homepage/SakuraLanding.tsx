@@ -247,8 +247,6 @@ export const SakuraLanding: React.FC = () => {
         previousActiveCount = activeCount;
       }
 
-      const alphaScale = document.documentElement.classList.contains('dark') ? 0.9 : 1;
-
       for (let i = 0; i < activeCount; i++) {
         const p = petals[i];
         p.angle += p.angleSpeed * (1.0 + scrollBoost * 0.12);
@@ -266,7 +264,7 @@ export const SakuraLanding: React.FC = () => {
         ctx.translate(p.x, p.y);
         ctx.rotate(p.angle);
         ctx.scale(Math.cos(p.flip) * p.size, p.size);
-        ctx.globalAlpha = p.opacity * alphaScale;
+        ctx.globalAlpha = p.opacity;
         ctx.fillStyle = p.color;
         ctx.fill(PETAL);
         ctx.restore();
@@ -390,7 +388,7 @@ export const SakuraLanding: React.FC = () => {
   return (
     <section
       ref={sectionRef}
-      className="sakura-section relative w-screen h-screen overflow-hidden bg-[#E0FBFC] dark:bg-[#293241] select-none z-10 flex flex-col justify-between transition-colors duration-300"
+      className="sakura-section relative w-screen h-screen overflow-hidden bg-[#E0FBFC] select-none z-10 flex flex-col justify-between transition-colors duration-300"
     >
       {/* One shared blossom icon, reused by <use> so the marquee stays light */}
       <svg width="0" height="0" className="absolute" aria-hidden="true">
@@ -413,7 +411,7 @@ export const SakuraLanding: React.FC = () => {
 
       {/* Static soft glows (plain gradients, no blur filters) */}
       <div
-        className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_at_12%_18%,rgba(152,193,217,0.5),transparent_55%),radial-gradient(ellipse_at_88%_92%,rgba(238,108,77,0.14),transparent_50%)] dark:bg-[radial-gradient(ellipse_at_12%_18%,rgba(61,90,128,0.5),transparent_55%),radial-gradient(ellipse_at_88%_92%,rgba(238,108,77,0.1),transparent_50%)]"
+        className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_at_12%_18%,rgba(152,193,217,0.5),transparent_55%),radial-gradient(ellipse_at_88%_92%,rgba(238,108,77,0.14),transparent_50%)]"
         aria-hidden="true"
       />
 
@@ -474,7 +472,7 @@ export const SakuraLanding: React.FC = () => {
         <div className="relative flex mt-10 h-fit w-full justify-center">
           {/* SHISHIR */}
           <div
-            className={`z-20 pt-5 text-[20vw] md:text-[12vw] leading-none text-[#293241] dark:text-[#E0FBFC] [text-shadow:0_4px_22px_rgba(61,90,128,0.35)] ${samanFont.className}`}
+            className={`z-20 pt-5 text-[20vw] md:text-[12vw] leading-none text-[#293241] [text-shadow:0_4px_22px_rgba(61,90,128,0.35)] ${samanFont.className}`}
           >
             SHISHIR
           </div>
@@ -483,7 +481,7 @@ export const SakuraLanding: React.FC = () => {
         {/* Subtitle with fine rules either side */}
         <div className="mt-1 flex items-center justify-center gap-3 md:gap-4">
           <span className="h-px w-8 md:w-16 bg-gradient-to-r from-transparent to-[#98C1D9]" />
-          <span className="text-[0.7rem] md:text-sm tracking-[0.35em] md:tracking-[0.4em] text-[#3D5A80] dark:text-[#98C1D9] font-bold uppercase transition-colors duration-300">
+          <span className="text-[0.7rem] md:text-sm tracking-[0.35em] md:tracking-[0.4em] text-[#3D5A80] font-bold uppercase transition-colors duration-300">
             CULTURAL FEST OF NIT MEGHALAYA
           </span>
           <span className="h-px w-8 md:w-16 bg-gradient-to-l from-transparent to-[#98C1D9]" />
@@ -492,10 +490,10 @@ export const SakuraLanding: React.FC = () => {
         {/* Event ribbon: a paper strip with a Dusk Blue edge and Peach line */}
         <div
           ref={marqueeRef}
-          className="relative w-screen overflow-hidden mt-5 md:mt-6 py-2 md:py-3 pointer-events-none border-y-[3px] dark:border-[#98C1D9] bg-gradient-to-b from-white/70 via-[#F3FCFC]/70 to-[#DDF1F5]/70 dark:from-[#3b4d6b]/90 dark:via-[#33435e]/90 dark:to-[#2c3a52]/90 shadow-[0_14px_30px_-16px_rgba(61,90,128,0.55)] transition-colors duration-300"
+          className="relative w-screen overflow-hidden mt-5 md:mt-6 py-2 md:py-3 pointer-events-none border-y-[3px] bg-gradient-to-b from-white/70 via-[#F3FCFC]/70 to-[#DDF1F5]/70 shadow-[0_14px_30px_-16px_rgba(61,90,128,0.55)] transition-colors duration-300"
         >
 
-          <div className="animate-marquee flex items-center gap-6 md:gap-8 uppercase tracking-[0.16em] text-md md:text-lg text-[#293241] dark:text-[#E0FBFC]">
+          <div className="animate-marquee flex items-center gap-6 md:gap-8 uppercase tracking-[0.16em] text-md md:text-lg text-[#293241]">
             {[0, 1].map((set) =>
               MARQUEE_EVENTS.map((evt, idx) => (
                 <span

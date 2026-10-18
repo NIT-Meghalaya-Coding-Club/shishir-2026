@@ -20,7 +20,6 @@ const MUN_FAQ: React.FC = () => {
                 border-b
                 border-[#3D5A80]/20
                 last:border-b-0
-                dark:border-[#98C1D9]/15
               "
             >
               <AccordionTrigger
@@ -33,7 +32,6 @@ const MUN_FAQ: React.FC = () => {
                   transition-colors
                   duration-300
                   [&>svg]:text-[#3D5A80]
-                  dark:[&>svg]:text-[#98C1D9]
                 "
               >
                 <div className="flex items-center gap-4 pr-4">
@@ -57,9 +55,6 @@ const MUN_FAQ: React.FC = () => {
                       group-hover:border-[#EE6C4D]
                       group-hover:bg-[#EE6C4D]/10
                       group-hover:text-[#EE6C4D]
-                      dark:border-[#98C1D9]/25
-                      dark:bg-[#98C1D9]/5
-                      dark:text-[#98C1D9]
                     "
                   >
                     {String(index + 1).padStart(2, "0")}
@@ -72,8 +67,7 @@ const MUN_FAQ: React.FC = () => {
                       leading-6
                       text-[#293241]
                       transition-colors
-                      duration-300              
-                      dark:text-[#E0FBFC]
+                      duration-300
                       sm:text-base
                     "
                   >
@@ -90,7 +84,6 @@ const MUN_FAQ: React.FC = () => {
                   text-sm
                   leading-7
                   text-[#293241]/70
-                  dark:text-[#E0FBFC]/70
                   sm:text-[15px]
                   transform-gpu
                 "
@@ -100,7 +93,6 @@ const MUN_FAQ: React.FC = () => {
                     border-l-2
                     border-[#98C1D9]
                     pl-5
-                    dark:border-[#3D5A80]
                   "
                 >
                   {item.answer}

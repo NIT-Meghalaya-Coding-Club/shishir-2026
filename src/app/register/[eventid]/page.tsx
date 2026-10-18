@@ -96,7 +96,7 @@ export default function EventPage() {
       }}
     >
       {/* Background Overlay */}
-      <div className="absolute inset-0 bg-[#E0FBFC]/75 dark:bg-[#293241]/75 pointer-events-none transition-colors duration-300 fixed" />
+      <div className="absolute inset-0 bg-[#E0FBFC]/75 pointer-events-none transition-colors duration-300 fixed" />
 
       {/* Main Content */}
       <div className="relative w-full z-10 pt-24 pb-16">
@@ -109,13 +109,13 @@ export default function EventPage() {
           <div className="text-center mb-12">
             <div className="flex justify-center items-center gap-3 sm:gap-4 mb-4">
               <Blossom className="w-10 h-10 sm:w-10 sm:h-10 text-[#EE6C4D] animate-spin [animation-duration:3s]" />
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold uppercase tracking-widest text-[#293241] dark:text-[#E0FBFC] drop-shadow-sm pt-2">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold uppercase tracking-widest text-[#293241] drop-shadow-sm pt-2">
                 REGISTER
               </h1>
               <Blossom className="w-10 h-10 sm:w-10 sm:h-10 text-[#EE6C4D] animate-spin [animation-duration:3s]" />
             </div>
 
-            <div className="inline-block bg-[#E0FBFC]/70 dark:bg-[#293241]/80 backdrop-blur-md rounded-full px-8 py-3 border border-[#98C1D9]/60 dark:border-[#3D5A80]/50 shadow-[0_4px_20px_rgb(0,0,0,0.04)] dark:shadow-none">
+            <div className="inline-block bg-[#E0FBFC]/70 backdrop-blur-md rounded-full px-8 py-3 border border-[#98C1D9]/60 shadow-[0_4px_20px_rgb(0,0,0,0.04)]">
               <span className="text-xl sm:text-2xl font-bold text-[#EE6C4D] uppercase tracking-widest drop-shadow-sm">
                 {event?.name || eventId}
               </span>
@@ -131,7 +131,7 @@ export default function EventPage() {
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.1 }}
-                  className="w-full overflow-hidden rounded-2xl shadow-xl border-[3px] border-[#EE6C4D]/80 dark:border-[#3D5A80]/50"
+                  className="w-full overflow-hidden rounded-2xl shadow-xl border-[3px] border-[#EE6C4D]/80"
                 >
                   <Image
                     src={event.image}
@@ -152,25 +152,25 @@ export default function EventPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="w-full bg-[#E0FBFC]/80 dark:bg-[#293241]/80 backdrop-blur-xl p-6 sm:p-8 rounded-3xl shadow-lg border border-[#98C1D9]/60 dark:border-[#3D5A80]/50"
+                className="w-full bg-[#E0FBFC]/80 backdrop-blur-xl p-6 sm:p-8 rounded-3xl shadow-lg border border-[#98C1D9]/60"
               >
                 <div className="flex items-center gap-3 mb-6">
                   <Info className="w-6 h-6 text-[#EE6C4D]" />
-                  <h2 className="text-xl font-extrabold uppercase tracking-widest text-[#293241] dark:text-[#E0FBFC]">Event Details</h2>
+                  <h2 className="text-xl font-extrabold uppercase tracking-widest text-[#293241]">Event Details</h2>
                 </div>
 
-                <div className="space-y-4 text-[#3D5A80] dark:text-[#98C1D9] font-medium text-lg">
-                  <div className="flex justify-between items-center bg-[#E0FBFC]/50 dark:bg-[#3D5A80]/20 p-3 px-6 rounded-2xl border border-[#98C1D9]/50 dark:border-[#3D5A80]/50">
+                <div className="space-y-4 text-[#3D5A80] font-medium text-lg">
+                  <div className="flex justify-between items-center bg-[#E0FBFC]/50 p-3 px-6 rounded-2xl border border-[#98C1D9]/50">
                     <span className="flex items-center gap-2"><Users className="w-4 h-4" /> Participation</span>
-                    <span className="font-bold text-[#293241] dark:text-[#E0FBFC] uppercase tracking-wider text-sm">
+                    <span className="font-bold text-[#293241] uppercase tracking-wider text-sm">
                       {event.eventType === "individual" ? "Individual" :
                         event.eventType === "team" ? "Team" :
                           event.eventType === "performance" ? "Performance" : "—"}
                     </span>
                   </div>
-                  <div className="flex justify-between items-center bg-[#E0FBFC]/50 dark:bg-[#3D5A80]/20 p-3 px-6 rounded-2xl border border-[#98C1D9]/50 dark:border-[#3D5A80]/50">
+                  <div className="flex justify-between items-center bg-[#E0FBFC]/50 p-3 px-6 rounded-2xl border border-[#98C1D9]/50">
                     <span>Team Size</span>
-                    <span className="font-bold text-[#293241] dark:text-[#E0FBFC]">
+                    <span className="font-bold text-[#293241]">
                       {event.min === event.max
                         ? `${event.min} ${event.min > 1 ? 'participants' : 'participant'}`
                         : `${event.min} - ${event.max} participants`}
@@ -183,7 +183,7 @@ export default function EventPage() {
                         href={event.rulebook}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="w-full bg-[#3D5A80] hover:bg-[#3D5A80]/90 dark:bg-[#3D5A80]/50 dark:hover:bg-[#98C1D9]/30 text-[#E0FBFC] font-extrabold uppercase tracking-widest h-14 px-4 rounded-full text-center backdrop-blur-sm shadow-sm transition-all duration-300 hover:shadow-md border border-[#3D5A80] dark:border-[#98C1D9]/30"
+                        className="w-full bg-[#3D5A80] hover:bg-[#3D5A80]/90 text-[#E0FBFC] font-extrabold uppercase tracking-widest h-14 px-4 rounded-full text-center backdrop-blur-sm shadow-sm transition-all duration-300 hover:shadow-md border border-[#3D5A80]"
                       >
                         VIEW RULEBOOK
                       </AnimatedButton>
@@ -199,9 +199,9 @@ export default function EventPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="w-full bg-[#E0FBFC]/60 dark:bg-[#293241]/60 backdrop-blur-xl p-6 sm:p-10 pb-10 sm:pb-12 rounded-3xl shadow-lg border border-[#98C1D9]/60 dark:border-[#3D5A80]/50"
+                className="w-full bg-[#E0FBFC]/60 backdrop-blur-xl p-6 sm:p-10 pb-10 sm:pb-12 rounded-3xl shadow-lg border border-[#98C1D9]/60"
               >
-                <h2 className="text-2xl font-extrabold uppercase tracking-widest text-center text-[#293241] dark:text-[#E0FBFC] mb-8 pb-4 border-b border-[#98C1D9]/80 dark:border-[#3D5A80]/50">
+                <h2 className="text-2xl font-extrabold uppercase tracking-widest text-center text-[#293241] mb-8 pb-4 border-b border-[#98C1D9]/80">
                   Registration Form
                 </h2>
                 <DynamicForm
@@ -229,17 +229,17 @@ export default function EventPage() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.4 }}
-                className="w-full text-center p-6 bg-[#E0FBFC]/50 dark:bg-[#3D5A80]/20 backdrop-blur-md rounded-2xl border border-[#98C1D9]/50 dark:border-[#3D5A80]/50 shadow-sm"
+                className="w-full text-center p-6 bg-[#E0FBFC]/50 backdrop-blur-md rounded-2xl border border-[#98C1D9]/50 shadow-sm"
               >
                 <div className="flex justify-center mb-3">
                   <Phone className="w-6 h-6 text-[#EE6C4D]" />
                 </div>
-                <h3 className="text-lg font-extrabold uppercase tracking-widest text-[#293241] dark:text-[#E0FBFC] mb-3">Got Questions?</h3>
+                <h3 className="text-lg font-extrabold uppercase tracking-widest text-[#293241] mb-3">Got Questions?</h3>
 
                 {contactGroups.length > 0 ? (
                   <div className="space-y-4 text-left">
                     {contactGroups.map((group) => (
-                      <div key={group.key} className="rounded-2xl border border-[#98C1D9]/60 dark:border-[#3D5A80]/50 bg-[#E0FBFC]/60 dark:bg-[#293241]/40 p-3">
+                      <div key={group.key} className="rounded-2xl border border-[#98C1D9]/60 bg-[#E0FBFC]/60 p-3">
                         <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-[#EE6C4D] mb-2">{group.title}</p>
                         <div className="space-y-2">
                           {group.people.map((person, index) => {
@@ -247,14 +247,14 @@ export default function EventPage() {
                             const phone = String(person?.phone ?? "").trim() || "Phone unavailable";
 
                             return (
-                              <div key={`${group.key}-${personName}-${index}`} className="rounded-xl bg-white/40 dark:bg-[#3D5A80]/20 px-3 py-2">
-                                <p className="font-bold text-[#293241] dark:text-[#E0FBFC] break-words">{personName}</p>
+                              <div key={`${group.key}-${personName}-${index}`} className="rounded-xl bg-white/40 px-3 py-2">
+                                <p className="font-bold text-[#293241] break-words">{personName}</p>
                                 {phone !== "Phone unavailable" ? (
-                                  <a href={`tel:${phone}`} className="text-[#EE6C4D] dark:text-[#EE6C4D] font-bold break-all hover:underline">
+                                  <a href={`tel:${phone}`} className="text-[#EE6C4D] font-bold break-all hover:underline">
                                     {phone}
                                   </a>
                                 ) : (
-                                  <span className="text-[#3D5A80] dark:text-[#98C1D9] font-medium">{phone}</span>
+                                  <span className="text-[#3D5A80] font-medium">{phone}</span>
                                 )}
                               </div>
                             );
@@ -264,7 +264,7 @@ export default function EventPage() {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-[#3D5A80] dark:text-[#98C1D9] font-medium">
+                  <p className="text-[#3D5A80] font-medium">
                     For any queries, please contact the event team.
                   </p>
                 )}

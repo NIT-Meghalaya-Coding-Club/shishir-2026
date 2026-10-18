@@ -58,13 +58,13 @@ const paperGrain =
   "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.24  0 0 0 0 0.35  0 0 0 0 0.5  0 0 0 0.09 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>\")";
 
 const inputCls =
-  "w-full rounded-md border border-[#98C1D9] bg-white/80 px-3.5 py-2.5 text-[#293241] placeholder:text-[#3D5A80]/45 shadow-[inset_0_1px_2px_rgba(61,90,128,0.08)] outline-none transition duration-200 hover:border-[#3D5A80]/60 focus:border-[#EE6C4D] focus:bg-white focus:ring-2 focus:ring-[#EE6C4D]/25 read-only:bg-[#E0FBFC]/70 dark:bg-[#293241]/70 dark:border-[#98C1D9]/35 dark:text-[#E0FBFC] dark:placeholder:text-[#98C1D9]/50 dark:hover:border-[#98C1D9]/70 dark:focus:bg-[#293241] dark:read-only:bg-[#3D5A80]/30 dark:[color-scheme:dark]";
+  "w-full rounded-md border border-[#98C1D9] bg-white/80 px-3.5 py-2.5 text-[#293241] placeholder:text-[#3D5A80]/45 shadow-[inset_0_1px_2px_rgba(61,90,128,0.08)] outline-none transition duration-200 hover:border-[#3D5A80]/60 focus:border-[#EE6C4D] focus:bg-white focus:ring-2 focus:ring-[#EE6C4D]/25 read-only:bg-[#E0FBFC]/70";
 
 const labelCls =
-  "block text-sm font-semibold text-[#3D5A80] dark:text-[#98C1D9]";
+  "block text-sm font-semibold text-[#3D5A80]";
 
 const paperCls =
-  "bg-gradient-to-br from-white via-[#F3FCFC] to-[#DDF1F5] dark:from-[#3b4d6b] dark:via-[#33435e] dark:to-[#2c3a52]";
+  "bg-gradient-to-br from-white via-[#F3FCFC] to-[#DDF1F5]";
 
 function Blossom({ className = "" }: { className?: string }) {
   return (
@@ -90,7 +90,7 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex items-center gap-3 mb-4">
       <Blossom className="w-4 h-4 text-[#EE6C4D] shrink-0" />
-      <h2 className="text-base sm:text-lg font-extrabold tracking-tight text-[#3D5A80] dark:text-[#98C1D9]">
+      <h2 className="text-base sm:text-lg font-extrabold tracking-tight text-[#3D5A80]">
         {children}
       </h2>
       <div className="h-px flex-1 bg-gradient-to-r from-[#98C1D9] to-transparent" />
@@ -416,7 +416,7 @@ const ProfileDetailsForm = () => {
 
   if (isLoading) {
     return (
-      <div className="fixed inset-0 flex items-center justify-center bg-[#E0FBFC] dark:bg-[#293241]">
+      <div className="fixed inset-0 flex items-center justify-center bg-[#E0FBFC]">
         {styles}
         <Blossom className="reg-spin w-10 h-10 text-[#EE6C4D]" />
       </div>
@@ -433,9 +433,9 @@ const ProfileDetailsForm = () => {
       />
 
       {/* Fixed backdrop: Light Cyan wash, soft glows and drifting petals */}
-      <div className="fixed inset-0 z-0 overflow-hidden bg-[#E0FBFC] dark:bg-[#293241] pointer-events-none" aria-hidden="true">
-        <div className="absolute -top-32 -left-24 w-[26rem] h-[26rem] rounded-full blur-3xl bg-[#98C1D9]/40 dark:bg-[#3D5A80]/40" />
-        <div className="absolute -bottom-32 -right-24 w-[26rem] h-[26rem] rounded-full blur-3xl bg-[#EE6C4D]/15 dark:bg-[#EE6C4D]/10" />
+      <div className="fixed inset-0 z-0 overflow-hidden bg-[#E0FBFC] pointer-events-none" aria-hidden="true">
+        <div className="absolute -top-32 -left-24 w-[26rem] h-[26rem] rounded-full blur-3xl bg-[#98C1D9]/40" />
+        <div className="absolute -bottom-32 -right-24 w-[26rem] h-[26rem] rounded-full blur-3xl bg-[#EE6C4D]/15" />
         {Array.from({ length: 12 }).map((_, i) => {
           const size = 9 + (i % 4) * 3;
           return (
@@ -465,7 +465,7 @@ const ProfileDetailsForm = () => {
         <div className="absolute -top-12 left-1/2 -translate-x-1/2 z-20">
           <div className="reg-float relative">
             <div className="absolute -inset-5 rounded-full blur-xl bg-[radial-gradient(circle,rgba(152,193,217,0.7),rgba(238,108,77,0.15)_60%,transparent_72%)]" />
-            <div className="relative w-24 h-24 rounded-full bg-white dark:bg-[#293241] border-[3px] border-[#98C1D9] dark:border-[#3D5A80] shadow-[0_14px_30px_-10px_rgba(61,90,128,0.55)] flex items-center justify-center">
+            <div className="relative w-24 h-24 rounded-full bg-white border-[3px] border-[#98C1D9] shadow-[0_14px_30px_-10px_rgba(61,90,128,0.55)] flex items-center justify-center">
               <Image
                 src="/assets/logo.png"
                 alt="SHISHIR swan crest"
@@ -480,10 +480,10 @@ const ProfileDetailsForm = () => {
 
         {/* The paper */}
         <div
-          className={`relative overflow-hidden rounded-[3px] border-y-[6px] border-[#3D5A80] dark:border-[#98C1D9] shadow-[0_28px_70px_-20px_rgba(61,90,128,0.55),0_0_0_1px_rgba(152,193,217,0.5)] ${paperCls}`}
+          className={`relative overflow-hidden rounded-[3px] border-y-[6px] border-[#3D5A80] shadow-[0_28px_70px_-20px_rgba(61,90,128,0.55),0_0_0_1px_rgba(152,193,217,0.5)] ${paperCls}`}
         >
           <div
-            className="absolute inset-0 opacity-70 dark:opacity-40 mix-blend-multiply pointer-events-none"
+            className="absolute inset-0 opacity-70 mix-blend-multiply pointer-events-none"
             style={{ backgroundImage: paperGrain }}
           />
           <div className="absolute top-0 left-0 right-0 h-[2px] bg-[#EE6C4D] z-10" />
@@ -532,7 +532,7 @@ const ProfileDetailsForm = () => {
           </svg>
 
           {/* Inner framed writing area */}
-          <div className="relative z-10 m-2 sm:m-3 rounded-[2px] border border-[#3D5A80]/20 dark:border-[#98C1D9]/30 px-5 sm:px-9 pt-16 pb-8">
+          <div className="relative z-10 m-2 sm:m-3 rounded-[2px] border border-[#3D5A80]/20 px-5 sm:px-9 pt-16 pb-8">
             {/* Header */}
             <div className="reg-rise text-center mb-9" style={{ animationDelay: ".1s" }}>
               <div className="flex items-center justify-center gap-4">
@@ -542,7 +542,7 @@ const ProfileDetailsForm = () => {
                 </h1>
                 <Blossom className="w-5 h-5 text-[#F4A9A0]" />
               </div>
-              <p className="mt-2 text-sm text-[#3D5A80] dark:text-[#98C1D9]">
+              <p className="mt-2 text-sm text-[#3D5A80]">
                 Complete your profile to take part in Shishir.
               </p>
               <div className="mt-4 flex items-center justify-center gap-3">
@@ -608,22 +608,22 @@ const ProfileDetailsForm = () => {
                             <img
                               src={profilePreview}
                               alt="Selected profile preview"
-                              className="h-full w-full rounded-full object-cover border-2 border-white dark:border-[#293241]"
+                              className="h-full w-full rounded-full object-cover border-2 border-white"
                             />
                           ) : formData.image ? (
                             <img
                               src={formData.image}
                               alt="Current profile"
-                              className="h-full w-full rounded-full object-cover border-2 border-white dark:border-[#293241]"
+                              className="h-full w-full rounded-full object-cover border-2 border-white"
                             />
                           ) : (
-                            <div className="h-full w-full rounded-full border-2 border-white dark:border-[#293241] bg-[#E0FBFC] dark:bg-[#3D5A80]" />
+                            <div className="h-full w-full rounded-full border-2 border-white bg-[#E0FBFC]" />
                           )}
                         </div>
                         <label
                           htmlFor="profilePicture"
                           title="Change profile picture"
-                          className="absolute -right-1 -bottom-1 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-2 border-white dark:border-[#293241] bg-[#EE6C4D] text-white shadow-lg transition-transform duration-200 hover:scale-110 hover:rotate-6"
+                          className="absolute -right-1 -bottom-1 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-2 border-white bg-[#EE6C4D] text-white shadow-lg transition-transform duration-200 hover:scale-110 hover:rotate-6"
                         >
                           <Pencil size={15} aria-hidden="true" />
                           <span className="sr-only">Change profile picture</span>
@@ -637,10 +637,10 @@ const ProfileDetailsForm = () => {
                         className="sr-only"
                       />
                       <div className="space-y-0.5">
-                        <span className="block text-sm text-[#293241] dark:text-[#E0FBFC]">
+                        <span className="block text-sm text-[#293241]">
                           Use Pencil Icon to edit the profile photo.
                         </span>
-                        <p className="text-xs text-[#3D5A80]/80 dark:text-[#98C1D9]/80">
+                        <p className="text-xs text-[#3D5A80]/80">
                           JPEG, PNG, or WebP up to 5 MB.
                         </p>
                       </div>
@@ -695,7 +695,7 @@ const ProfileDetailsForm = () => {
                   </Field>
 
                   <Field label="Year of Study" htmlFor="yearOfStudy">
-                    <div className="flex items-center justify-between rounded-md border border-[#98C1D9] bg-white/80 dark:bg-[#293241]/70 dark:border-[#98C1D9]/35 px-1.5 py-1 shadow-[inset_0_1px_2px_rgba(61,90,128,0.08)]">
+                    <div className="flex items-center justify-between rounded-md border border-[#98C1D9] bg-white/80 px-1.5 py-1 shadow-[inset_0_1px_2px_rgba(61,90,128,0.08)]">
                       <button
                         type="button"
                         aria-label="Decrease year of study"
@@ -706,14 +706,14 @@ const ProfileDetailsForm = () => {
                             yearOfStudy: String(Math.max(1, Number(previous.yearOfStudy || 1) - 1)),
                           }))
                         }
-                        className="h-9 w-9 rounded-md text-2xl leading-none text-[#3D5A80] dark:text-[#98C1D9] transition hover:bg-[#EE6C4D]/10 hover:text-[#EE6C4D] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-[#3D5A80]"
+                        className="h-9 w-9 rounded-md text-2xl leading-none text-[#3D5A80] transition hover:bg-[#EE6C4D]/10 hover:text-[#EE6C4D] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-[#3D5A80]"
                       >
                         -
                       </button>
                       <span
                         id="yearOfStudy"
                         aria-live="polite"
-                        className="min-w-12 text-center text-lg font-bold text-[#293241] dark:text-[#E0FBFC]"
+                        className="min-w-12 text-center text-lg font-bold text-[#293241]"
                       >
                         {formData.yearOfStudy || "1"}
                       </span>
@@ -727,7 +727,7 @@ const ProfileDetailsForm = () => {
                             yearOfStudy: String(Math.min(5, Number(previous.yearOfStudy || 1) + 1)),
                           }))
                         }
-                        className="h-9 w-9 rounded-md text-2xl leading-none text-[#3D5A80] dark:text-[#98C1D9] transition hover:bg-[#EE6C4D]/10 hover:text-[#EE6C4D] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-[#3D5A80]"
+                        className="h-9 w-9 rounded-md text-2xl leading-none text-[#3D5A80] transition hover:bg-[#EE6C4D]/10 hover:text-[#EE6C4D] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-[#3D5A80]"
                       >
                         +
                       </button>
@@ -749,7 +749,7 @@ const ProfileDetailsForm = () => {
                         required
                       />
                       {departmentFocused && filteredDepartmentSuggestions.length > 0 && (
-                        <div className="reg-fade absolute left-0 right-0 top-full z-30 mt-1.5 max-h-56 overflow-y-auto rounded-md border border-[#98C1D9] bg-white dark:bg-[#293241] dark:border-[#98C1D9]/40 p-1 shadow-[0_18px_40px_-12px_rgba(41,50,65,0.45)]">
+                        <div className="reg-fade absolute left-0 right-0 top-full z-30 mt-1.5 max-h-56 overflow-y-auto rounded-md border border-[#98C1D9] bg-white p-1 shadow-[0_18px_40px_-12px_rgba(41,50,65,0.45)]">
                           {filteredDepartmentSuggestions.map((department) => (
                             <button
                               key={department}
@@ -759,7 +759,7 @@ const ProfileDetailsForm = () => {
                                 setFormData((previous) => ({ ...previous, dept: department }));
                                 setDepartmentFocused(false);
                               }}
-                              className="block w-full rounded px-3 py-2 text-left text-sm text-[#293241] dark:text-[#E0FBFC] transition hover:bg-[#EE6C4D]/10 hover:text-[#EE6C4D]"
+                              className="block w-full rounded px-3 py-2 text-left text-sm text-[#293241] transition hover:bg-[#EE6C4D]/10 hover:text-[#EE6C4D]"
                             >
                               {department}
                             </button>
@@ -832,7 +832,7 @@ const ProfileDetailsForm = () => {
               <section className="reg-rise" style={{ animationDelay: ".55s" }}>
                 <SectionTitle>Preferences</SectionTitle>
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <label className="flex flex-1 cursor-pointer items-center gap-3 rounded-md border border-[#98C1D9] bg-white/60 dark:bg-[#293241]/50 dark:border-[#98C1D9]/35 px-4 py-3 text-[#293241] dark:text-[#E0FBFC] transition hover:border-[#EE6C4D] has-[:checked]:border-[#EE6C4D] has-[:checked]:bg-[#EE6C4D]/10">
+                  <label className="flex flex-1 cursor-pointer items-center gap-3 rounded-md border border-[#98C1D9] bg-white/60 px-4 py-3 text-[#293241] transition hover:border-[#EE6C4D] has-[:checked]:border-[#EE6C4D] has-[:checked]:bg-[#EE6C4D]/10">
                     <input
                       type="checkbox"
                       name="accommodation"
@@ -842,7 +842,7 @@ const ProfileDetailsForm = () => {
                     />
                     <span className="font-medium">Need Accommodation?</span>
                   </label>
-                  <label className="flex flex-1 cursor-pointer items-center gap-3 rounded-md border border-[#98C1D9] bg-white/60 dark:bg-[#293241]/50 dark:border-[#98C1D9]/35 px-4 py-3 text-[#293241] dark:text-[#E0FBFC] transition hover:border-[#EE6C4D] has-[:checked]:border-[#EE6C4D] has-[:checked]:bg-[#EE6C4D]/10">
+                  <label className="flex flex-1 cursor-pointer items-center gap-3 rounded-md border border-[#98C1D9] bg-white/60 px-4 py-3 text-[#293241] transition hover:border-[#EE6C4D] has-[:checked]:border-[#EE6C4D] has-[:checked]:bg-[#EE6C4D]/10">
                     <input
                       type="checkbox"
                       name="nonVeg"
@@ -895,7 +895,7 @@ const ProfileDetailsForm = () => {
       {showModal && (
         <div className="reg-fade fixed inset-0 z-50 flex items-center justify-center bg-[#293241]/55 backdrop-blur-sm p-4">
           <div
-            className={`reg-pop relative w-80 max-w-full overflow-hidden rounded-[3px] border-y-[6px] border-[#3D5A80] dark:border-[#98C1D9] px-6 py-8 text-center shadow-[0_30px_70px_-20px_rgba(41,50,65,0.7)] ${paperCls}`}
+            className={`reg-pop relative w-80 max-w-full overflow-hidden rounded-[3px] border-y-[6px] border-[#3D5A80] px-6 py-8 text-center shadow-[0_30px_70px_-20px_rgba(41,50,65,0.7)] ${paperCls}`}
           >
             <div className="absolute top-0 left-0 right-0 h-[2px] bg-[#EE6C4D]" />
             <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#EE6C4D]" />
@@ -907,7 +907,7 @@ const ProfileDetailsForm = () => {
             <h2 className="text-2xl font-extrabold tracking-tight text-[#EE6C4D]">
               Profile Updated!
             </h2>
-            <p className="mt-2 text-[#293241] dark:text-[#E0FBFC]">
+            <p className="mt-2 text-[#293241]">
               Your profile has been successfully updated.
             </p>
             <button

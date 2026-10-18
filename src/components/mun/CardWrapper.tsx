@@ -35,9 +35,6 @@ const CardWrapper: React.FC<{
             shadow-[0_20px_60px_rgba(61,90,128,0.12)]
             backdrop-blur-sm
             transition-colors duration-500
-            dark:border-[#98C1D9]/20
-            dark:bg-[#293241]/40
-            dark:shadow-[0_20px_60px_rgba(0,0,0,0.18)]
           "
         >
           {/* Inner Glow */}
@@ -53,7 +50,6 @@ const CardWrapper: React.FC<{
               rounded-full
               bg-[#98C1D9]/15
               blur-3xl
-              dark:bg-[#3D5A80]/20
             "
           />
 
@@ -61,7 +57,7 @@ const CardWrapper: React.FC<{
           <div className="relative z-10 p-5 sm:p-8 md:p-10">
             <Title text={title} />
 
-            <div className="mt-6 text-[#3D5A80] dark:text-[#E0FBFC]">
+            <div className="mt-6 text-[#3D5A80]">
               {children}
             </div>
           </div>

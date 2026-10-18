@@ -33,11 +33,10 @@ export const Starfield: React.FC = () => {
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     // ─── Starfield engine ───────────────────────────────────────────────
-    // Streaks now use the brand palette: Powder Blue / Cyan / blossom pinks
-    // on the dark portal, Dusk Blue / Jet / Peach on the light portal.
+    // Streaks use the brand palette: Powder Blue / Cyan / blossom pinks
+    // with Dusk Blue / Jet / Peach accents.
     const S = {
       count:    600, // fewer streaks: still full, much cheaper per frame
-      paletteDark:  ['#98C1D9', '#E0FBFC', '#F4A9A0', '#F9C9C4', '#EE6C4D', '#BFD9E6'],
       paletteLight: ['#3D5A80', '#2f4a6b', '#EE6C4D', '#E98074', '#293241', '#F4A9A0'],
       weights:  [0.35, 0.2, 0.15, 0.13, 0.1, 0.07],
       holeR:    6,
@@ -61,7 +60,7 @@ export const Starfield: React.FC = () => {
 
     interface Star {
       dx: number; dy: number; off: number; len: number;
-      wid: number; cDark: string; cLight: string; thr: number;
+      wid: number; cLight: string; thr: number;
     }
     let stars: Star[] = [];
 
@@ -78,7 +77,6 @@ export const Starfield: React.FC = () => {
         return {
           dx: Math.cos(a), dy: Math.sin(a), off: Math.random(),
           len: rnd(S.minLen, S.maxLen), wid: rnd(S.minW, S.maxW),
-          cDark: pickColor(S.paletteDark),
           cLight: pickColor(S.paletteLight),
           thr: Math.random(),
         };
@@ -108,22 +106,14 @@ export const Starfield: React.FC = () => {
       const thick   = (1 - starProgress) * 1.5 + starProgress * 0.6;
       const stretch = (1 - starProgress) * 0.4 + starProgress * 0.9;
 
-      const isDark = document.documentElement.classList.contains('dark');
-
-      // Warm central core: Powder Blue / white in dark mode, Peach / Dusk Blue in light
+      // Warm central core: Peach / Dusk Blue
       if (starProgress > 0.02) {
         const coreOp = Math.min(0.55, starProgress * 0.55) * starGlobalFade * starExitFade;
         if (coreOp > 0.01) {
           const coreGr = ctx.createRadialGradient(cx, cy, 0, cx, cy, 40);
-          if (isDark) {
-            coreGr.addColorStop(0, `rgba(224, 251, 252, ${coreOp * 0.85})`);
-            coreGr.addColorStop(0.35, `rgba(152, 193, 217, ${coreOp * 0.5})`);
-            coreGr.addColorStop(1, 'rgba(152, 193, 217, 0)');
-          } else {
-            coreGr.addColorStop(0, `rgba(238, 108, 77, ${coreOp * 0.6})`);
-            coreGr.addColorStop(0.35, `rgba(61, 90, 128, ${coreOp * 0.35})`);
-            coreGr.addColorStop(1, 'rgba(61, 90, 128, 0)');
-          }
+          coreGr.addColorStop(0, `rgba(238, 108, 77, ${coreOp * 0.6})`);
+          coreGr.addColorStop(0.35, `rgba(61, 90, 128, ${coreOp * 0.35})`);
+          coreGr.addColorStop(1, 'rgba(61, 90, 128, 0)');
           ctx.fillStyle = coreGr;
           ctx.beginPath();
           ctx.arc(cx, cy, 40, 0, Math.PI * 2);
@@ -153,7 +143,7 @@ export const Starfield: React.FC = () => {
 
         // Fixed colour strings + globalAlpha: no per-star string building
         ctx.globalAlpha = op;
-        ctx.strokeStyle = isDark ? s.cDark : s.cLight;
+        ctx.strokeStyle = s.cLight;
         ctx.lineWidth   = s.wid * thick * (0.6 + travel * 0.8);
         ctx.beginPath();
         ctx.moveTo(tx, ty);
@@ -401,7 +391,7 @@ export const Starfield: React.FC = () => {
 
   return (
     <>
-      <section ref={sectionRef} className="starfield-section relative w-screen h-screen overflow-hidden bg-[#E0FBFC] dark:bg-[#293241] transition-colors duration-300">
+      <section ref={sectionRef} className="starfield-section relative w-screen h-screen overflow-hidden bg-[#E0FBFC] transition-colors duration-300">
 
         {/* One shared blossom icon, reused with <use> */}
         <svg width="0" height="0" className="absolute" aria-hidden="true">
@@ -425,7 +415,7 @@ export const Starfield: React.FC = () => {
         {/* THE PORTAL: a Powder Blue / Dusk Blue wash that opens from a 0% circle */}
         <div
           ref={portalRef}
-          className="portal absolute inset-0 w-screen h-screen overflow-hidden z-[1] pointer-events-none bg-[radial-gradient(circle_at_center,#F3FCFC_0%,#CFE6EF_55%,#98C1D9_130%)] dark:bg-[radial-gradient(circle_at_center,#3D5A80_0%,#293241_60%,#1b2230_130%)]"
+          className="portal absolute inset-0 w-screen h-screen overflow-hidden z-[1] pointer-events-none bg-[radial-gradient(circle_at_center,#F3FCFC_0%,#CFE6EF_55%,#98C1D9_130%)]"
           style={{ clipPath: 'circle(0% at 50% 50%)' }}
         >
           <canvas ref={canvasRef} className="portal-canvas absolute inset-0 w-full h-full block" />
@@ -442,7 +432,7 @@ export const Starfield: React.FC = () => {
             >
               {/* Paper frame: Dusk Blue edge, Peach line, caption strip below the video */}
               <div
-                className={`relative overflow-hidden rounded-[3px] border-y-[5px] border-[#3D5A80] dark:border-[#98C1D9] bg-gradient-to-br from-white via-[#F3FCFC] to-[#DDF1F5] dark:from-[#3b4d6b] dark:via-[#33435e] dark:to-[#2c3a52] p-1.5 shadow-[0_14px_30px_-12px_rgba(61,90,128,0.55)] ${STARFIELD_VISUAL.cardWidthClass} transition-colors duration-300`}
+                className={`relative overflow-hidden rounded-[3px] border-y-[5px] border-[#3D5A80] bg-gradient-to-br from-white via-[#F3FCFC] to-[#DDF1F5] p-1.5 shadow-[0_14px_30px_-12px_rgba(61,90,128,0.55)] ${STARFIELD_VISUAL.cardWidthClass} transition-colors duration-300`}
               >
                 <div className="absolute top-0 left-0 right-0 h-[2px] bg-[#EE6C4D]" />
                 <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#EE6C4D]" />
@@ -466,7 +456,7 @@ export const Starfield: React.FC = () => {
                   <svg className="w-3.5 h-3.5 shrink-0 text-[#EE6C4D]" aria-hidden="true">
                     <use href="#sf-blossom" />
                   </svg>
-                  <span className="truncate text-[clamp(0.7rem,1.1vw,0.9rem)] font-extrabold tracking-[0.12em] text-[#293241] dark:text-[#E0FBFC] uppercase">
+                  <span className="truncate text-[clamp(0.7rem,1.1vw,0.9rem)] font-extrabold tracking-[0.12em] text-[#293241] uppercase">
                     {evt.name}
                   </span>
                 </div>

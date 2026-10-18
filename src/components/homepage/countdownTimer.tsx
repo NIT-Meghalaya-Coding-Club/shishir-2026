@@ -56,7 +56,7 @@ const CountdownTimer = () => {
   };
 
   return (
-    <div className="w-full bg-slate-100 dark:bg-[#0a0a1a] transition-colors duration-300">
+    <div className="w-full bg-slate-100 transition-colors duration-300">
       <motion.div
         initial="hidden"
         animate="visible"
@@ -75,7 +75,7 @@ const CountdownTimer = () => {
           transition={{ duration: 3, repeat: Infinity }}
         />
 
-        <div className="flex flex-col md:flex-row items-center justify-between px-4 md:px-8 py-3 bg-gradient-to-r from-slate-100 via-white to-slate-100 dark:from-black dark:via-indigo-950/90 dark:to-black transition-colors duration-300">
+        <div className="flex flex-col md:flex-row items-center justify-between px-4 md:px-8 py-3 bg-gradient-to-r from-slate-100 via-white to-slate-100 transition-colors duration-300">
           <motion.div 
             className="flex items-center mb-2 md:mb-0"
             variants={itemVariants}
@@ -98,7 +98,7 @@ const CountdownTimer = () => {
             </motion.div>
             
             <h2 
-              className="text-lg md:text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-600 dark:from-yellow-300 dark:to-amber-500"
+              className="text-lg md:text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-600"
               style={{ textShadow: "0 0 5px rgba(255,215,0,0.3)" }}
             >
               {isComplete ? "THE CELEBRATION HAS BEGUN!" : "COUNTDOWN BEGINS ..."}
@@ -111,7 +111,7 @@ const CountdownTimer = () => {
               className="flex-1 text-center"
             >
               <motion.p
-                className="text-sm md:text-base text-amber-700 dark:text-amber-100 font-medium"
+                className="text-sm md:text-base text-amber-700 font-medium"
                 animate={{ 
                   scale: [1, 1.02, 1],
                   color: ["#B45309", "#D97706", "#B45309"]
@@ -138,7 +138,7 @@ const CountdownTimer = () => {
                   }}
                   transition={{ duration: 2, repeat: Infinity }}
                 >
-                  <p className="text-sm text-slate-700 dark:text-amber-100/90 font-medium dark:font-light italic">
+                  <p className="text-sm text-slate-700 font-medium italic">
                     Celebrating Vibrant Traditions and Cultural Heritage
                   </p>
                   <motion.div 
@@ -166,15 +166,15 @@ const CountdownTimer = () => {
                       scale: 1.05, 
                       boxShadow: "0 0 10px rgba(255,215,0,0.3)"
                     }}
-                    className="flex flex-col items-center justify-center px-2 py-1 md:px-3 md:py-2 rounded-lg bg-white/90 dark:bg-gradient-to-b dark:from-indigo-900/80 dark:to-black/80 border border-yellow-500/30 shadow-sm dark:shadow-none"
+                    className="flex flex-col items-center justify-center px-2 py-1 md:px-3 md:py-2 rounded-lg bg-white/90 border border-yellow-500/30 shadow-sm"
                   >
                     <div
-                      className="text-lg md:text-2xl font-bold text-amber-600 dark:text-amber-300"
+                      className="text-lg md:text-2xl font-bold text-amber-600"
                     >
                       {String(item.value).padStart(2, '0')}
                     </div>
                     <div 
-                      className="text-xs md:text-sm text-slate-600 dark:text-blue-200/80 uppercase tracking-wider font-semibold"
+                      className="text-xs md:text-sm text-slate-600 uppercase tracking-wider font-semibold"
                     >
                       {item.label}
                     </div>

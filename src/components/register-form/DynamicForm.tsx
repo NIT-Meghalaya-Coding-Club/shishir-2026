@@ -509,11 +509,11 @@ const DynamicForm = ({
           </svg>
         </div>
 
-        <h2 className="text-2xl sm:text-3xl font-extrabold uppercase tracking-widest text-[#293241] dark:text-[#E0FBFC] mb-4 text-center">
+        <h2 className="text-2xl sm:text-3xl font-extrabold uppercase tracking-widest text-[#293241] mb-4 text-center">
           {hasExistingRegistration ? "Registration Updated!" : "Registration Successful!"}
         </h2>
 
-        <p className="text-[#3D5A80] dark:text-[#98C1D9] font-medium text-lg mb-10 text-center max-w-md">
+        <p className="text-[#3D5A80] font-medium text-lg mb-10 text-center max-w-md">
           Your registration details have been saved securely.
         </p>
 
@@ -521,7 +521,7 @@ const DynamicForm = ({
           <button
             type="button"
             onClick={startNewRegistration}
-            className="w-full sm:w-1/2 bg-[#3D5A80] hover:bg-[#3D5A80]/90 dark:bg-[#3D5A80]/50 dark:hover:bg-[#98C1D9]/30 text-[#E0FBFC] font-extrabold uppercase tracking-widest h-[60px] px-4 rounded-2xl text-center backdrop-blur-sm shadow-sm transition-all duration-300 hover:shadow-md border border-[#3D5A80] dark:border-[#98C1D9]/30 text-sm sm:text-base flex items-center justify-center"
+            className="w-full sm:w-1/2 bg-[#3D5A80] hover:bg-[#3D5A80]/90 text-[#E0FBFC] font-extrabold uppercase tracking-widest h-[60px] px-4 rounded-2xl text-center backdrop-blur-sm shadow-sm transition-all duration-300 hover:shadow-md border border-[#3D5A80] text-sm sm:text-base flex items-center justify-center"
           >
             Register Another
           </button>
@@ -562,7 +562,7 @@ const DynamicForm = ({
           alt={`QR Code for ${eventName || eventId} Payment`}
           className="mx-auto mb-4 w-48 h-48"
         />
-        <p className="text-[#293241] dark:text-[#E0FBFC] mb-6">
+        <p className="text-[#293241] mb-6">
           Scan the QR code above to make the payment. Your registration will be confirmed only after the payment is received.
         </p>
         <button
@@ -646,12 +646,12 @@ const DynamicForm = ({
             const content = (
               <>
                 <div className="flex items-center justify-between gap-3">
-                  <span className={`font-bold uppercase tracking-wider transition-colors ${isSelected ? "text-[#293241] dark:text-[#E0FBFC]" : "text-[#3D5A80]/60 dark:text-[#98C1D9]/60"}`}>TEAM: {teamName}</span>
-                  <span className={`text-xs font-semibold uppercase tracking-widest px-3 py-1 rounded-2xl transition-colors ${isSelected ? "text-[#EE6C4D] bg-[#EE6C4D]/10" : "text-[#3D5A80]/60 dark:text-[#98C1D9]/60 bg-[#3D5A80]/5 dark:bg-[#98C1D9]/5"}`}>
+                  <span className={`font-bold uppercase tracking-wider transition-colors ${isSelected ? "text-[#293241]" : "text-[#3D5A80]/60"}`}>TEAM: {teamName}</span>
+                  <span className={`text-xs font-semibold uppercase tracking-widest px-3 py-1 rounded-2xl transition-colors ${isSelected ? "text-[#EE6C4D] bg-[#EE6C4D]/10" : "text-[#3D5A80]/60 bg-[#3D5A80]/5"}`}>
                     {isSelected ? "Editing Now..." : "Click to edit"}
                   </span>
                 </div>
-                <p className={`mt-1 text-sm transition-colors ${isSelected ? "text-[#3D5A80] dark:text-[#98C1D9]" : "text-[#3D5A80]/50 dark:text-[#98C1D9]/50"}`}>
+                <p className={`mt-1 text-sm transition-colors ${isSelected ? "text-[#3D5A80]" : "text-[#3D5A80]/50"}`}>
                   {registration.teamData.map((member) => member.name).filter(Boolean).join(", ")}
                 </p>
               </>
@@ -664,7 +664,7 @@ const DynamicForm = ({
                 onClick={() => populateRegistration(registration)}
                 className={`w-full rounded-2xl border px-6 py-4 text-left transition-all duration-300 ${selectedRegistrationId === registration._id
                   ? "border-[#EE6C4D] bg-[#EE6C4D]/10 shadow-md scale-[1.01]"
-                  : "opacity-100 grayscale-[70%] border-[#EE6C4D]/50 dark:border-[#EE6C4D]/50 bg-transparent hover:opacity-100 hover:grayscale-0 hover:border-[#EE6C4D] hover:bg-[#EE6C4D]/5 hover:shadow-sm"
+                  : "opacity-100 grayscale-[70%] border-[#EE6C4D]/50 bg-transparent hover:opacity-100 hover:grayscale-0 hover:border-[#EE6C4D] hover:bg-[#EE6C4D]/5 hover:shadow-sm"
                   }`}
               >
                 {content}
@@ -680,7 +680,7 @@ const DynamicForm = ({
           <AnimatedButton
             type="button"
             onClick={startNewRegistration}
-            className="mb-8 w-full bg-[#3D5A80] hover:bg-[#3D5A80]/90 dark:bg-[#3D5A80]/50 dark:hover:bg-[#98C1D9]/30 text-[#E0FBFC] font-extrabold uppercase tracking-widest h-16 px-6 rounded-full shadow-sm transition-all duration-300 hover:shadow-md border border-[#3D5A80] dark:border-[#98C1D9]/30 text-sm sm:text-base flex items-center justify-center gap-2 cursor-pointer"
+            className="mb-8 w-full bg-[#3D5A80] hover:bg-[#3D5A80]/90 text-[#E0FBFC] font-extrabold uppercase tracking-widest h-16 px-6 rounded-full shadow-sm transition-all duration-300 hover:shadow-md border border-[#3D5A80] text-sm sm:text-base flex items-center justify-center gap-2 cursor-pointer"
           >
             SUBMIT ANOTHER REGISTRATION
           </AnimatedButton>
@@ -688,10 +688,10 @@ const DynamicForm = ({
       )}
 
       {!isIndividualEvent && !hideLeaderWarning && (
-        <div className="mb-6 rounded-2xl border border-[#EE6C4D]/50 bg-[#EE6C4D]/10 dark:bg-[#293241]/60 p-3 text-sm text-[#293241] dark:text-[#E0FBFC] flex items-center justify-between shadow-sm">
+        <div className="mb-6 rounded-2xl border border-[#EE6C4D]/50 bg-[#EE6C4D]/10 p-3 text-sm text-[#293241] flex items-center justify-between shadow-sm">
           <div className="flex items-center gap-3">
             <div>
-              <p className="text-[#3D5A80] dark:text-[#98C1D9] font-sm mr-2">
+              <p className="text-[#3D5A80] font-sm mr-2">
                 You are the group leader because you are filling out this form. Your account is added automatically as the first participant. Add other members using the email address registered on Shishir.
               </p>
             </div>
@@ -699,7 +699,7 @@ const DynamicForm = ({
           <button
             type="button"
             onClick={() => setHideLeaderWarning(true)}
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-2xl text-[#3D5A80] hover:bg-[#98C1D9]/30 hover:text-[#293241] dark:hover:text-[#E0FBFC] transition-colors mr-1"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-2xl text-[#3D5A80] hover:bg-[#98C1D9]/30 hover:text-[#293241] transition-colors mr-1"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
@@ -717,7 +717,7 @@ const DynamicForm = ({
       <form onSubmit={handleSubmit}>
         {eventType === "team" && participantMax > 1 && (
           <div className="mb-6 border-b pb-4">
-            <p className="block text-[#293241] dark:text-[#E0FBFC] font-medium mb-1">
+            <p className="block text-[#293241] font-medium mb-1">
               Number of Participants <span className="text-red-500">*</span>
             </p>
             <div className="flex w-full items-stretch justify-between rounded-full border border-[#98C1D9] bg-[#3D5A80]/10">
@@ -735,7 +735,7 @@ const DynamicForm = ({
               <span
                 id="participant_count"
                 aria-live="polite"
-                className="flex-1 min-w-12 text-center text-lg font-semibold text-[#293241] dark:text-[#E0FBFC] flex items-center justify-center py-2"
+                className="flex-1 min-w-12 text-center text-lg font-semibold text-[#293241] flex items-center justify-center py-2"
               >
                 {participantCount}
               </span>
@@ -770,7 +770,7 @@ const DynamicForm = ({
                   <div key={field.id} className="mb-4">
                     <label
                       htmlFor={field.id}
-                      className="block text-[#293241] dark:text-[#E0FBFC] font-medium mb-1"
+                      className="block text-[#293241] font-medium mb-1"
                     >
                       {field.label}{" "}
                       {field.required && (
@@ -781,7 +781,7 @@ const DynamicForm = ({
                       id={field.id}
                       value={formData[field.id] || ""}
                       onChange={handleChange}
-                      className="w-full bg-[#3D5A80]/10 dark:bg-[#293241] px-4 py-2 border rounded-full border-[#98C1D9] focus:outline-none focus:ring-2 focus:ring-[#EE6C4D] text-[#293241] dark:text-[#E0FBFC]"
+                      className="w-full bg-[#3D5A80]/10 px-4 py-2 border rounded-full border-[#98C1D9] focus:outline-none focus:ring-2 focus:ring-[#EE6C4D] text-[#293241]"
                     >
                       <option value="solo">Solo</option>
                       <option value="duo">Duo</option>
@@ -809,7 +809,7 @@ const DynamicForm = ({
                   <div key={field.id} className="mb-4">
                     <label
                       htmlFor={field.id}
-                      className="block text-[#293241] dark:text-[#E0FBFC] font-medium mb-1"
+                      className="block text-[#293241] font-medium mb-1"
                     >
                       {field.label}{" "}
                       {field.required && (
@@ -820,7 +820,7 @@ const DynamicForm = ({
                       id={field.id}
                       value={selectedEvent}
                       onChange={handleChange}
-                      className="w-full bg-[#3D5A80]/10 dark:bg-[#293241] px-4 py-2 border rounded-full border-[#98C1D9] focus:outline-none focus:ring-2 focus:ring-[#EE6C4D] text-[#293241] dark:text-[#E0FBFC]"
+                      className="w-full bg-[#3D5A80]/10 px-4 py-2 border rounded-full border-[#98C1D9] focus:outline-none focus:ring-2 focus:ring-[#EE6C4D] text-[#293241]"
                     >
                       {EVENT_CONFIGS[
                         eventCode as keyof typeof EVENT_CONFIGS
@@ -846,7 +846,7 @@ const DynamicForm = ({
                   <div key={field.id} className="mb-4">
                     <label
                       htmlFor={field.id}
-                      className="block text-[#293241] dark:text-[#E0FBFC] font-medium mb-1"
+                      className="block text-[#293241] font-medium mb-1"
                     >
                       {field.label}{" "}
                       {field.required && (
@@ -878,7 +878,7 @@ const DynamicForm = ({
                   <div key={field.id} className="mb-4">
                     <label
                       htmlFor={field.id}
-                      className="block text-[#293241] dark:text-[#E0FBFC] font-medium mb-1"
+                      className="block text-[#293241] font-medium mb-1"
                     >
                       {field.label}{" "}
                       {field.required && (
@@ -937,7 +937,7 @@ const DynamicForm = ({
                 <h3 className="text-lg font-semibold mb-3">{sectionTitle}</h3>
                 {numericIndex === 0 ? (
                   !hideLeaderInfo && (
-                    <div className="rounded-full border border-[#98C1D9]/50 bg-[#98C1D9]/10 dark:bg-[#293241]/60 p-2 text-sm text-[#293241] dark:text-[#E0FBFC] flex items-center justify-between shadow-sm">
+                    <div className="rounded-full border border-[#98C1D9]/50 bg-[#98C1D9]/10 p-2 text-sm text-[#293241] flex items-center justify-between shadow-sm">
                       <div className="flex items-center gap-3">
                         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#98C1D9] text-[#293241]">
                           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -945,10 +945,10 @@ const DynamicForm = ({
                           </svg>
                         </div>
                         <div className="flex flex-col justify-center">
-                          <p className="font-bold text-[#293241] dark:text-[#E0FBFC] text-base leading-tight">
+                          <p className="font-bold text-[#293241] text-base leading-tight">
                             {selectedMembers[0]?.name || session?.user?.name || "Group leader"}
                           </p>
-                          <p className="text-[#3D5A80] dark:text-[#98C1D9] text-xs mt-0.5">
+                          <p className="text-[#3D5A80] text-xs mt-0.5">
                             {selectedMembers[0]?.email || session?.user?.email || ""}
                           </p>
                         </div>
@@ -959,7 +959,7 @@ const DynamicForm = ({
                   <div key={field.id} className="mb-4">
                     <label
                       htmlFor={field.id}
-                      className="block text-[#293241] dark:text-[#E0FBFC] font-medium mb-1"
+                      className="block text-[#293241] font-medium mb-1"
                     >
                       {field.label}{" "}
                       {field.required && (
@@ -1009,7 +1009,7 @@ const DynamicForm = ({
                       )}
                     </div>
                     {searchResults[field.memberIndex]?.length > 0 && (
-                      <div className="mt-2 space-y-1 rounded-md border border-[#98C1D9] bg-[#E0FBFC] dark:bg-[#3D5A80] p-2 shadow-lg">
+                      <div className="mt-2 space-y-1 rounded-md border border-[#98C1D9] bg-[#E0FBFC] p-2 shadow-lg">
                         {searchResults[field.memberIndex].map((user) => (
                           <button
                             key={user.email}
@@ -1019,16 +1019,16 @@ const DynamicForm = ({
                               setSelectedMembers((previous) => ({ ...previous, [field.memberIndex]: user }));
                               setSearchResults((previous) => ({ ...previous, [field.memberIndex]: [] }));
                             }}
-                            className="block w-full rounded px-2 py-1 text-left text-sm text-[#293241] dark:text-[#E0FBFC] hover:bg-[#98C1D9]/30 dark:hover:bg-[#293241]/50 transition-colors"
+                            className="block w-full rounded px-2 py-1 text-left text-sm text-[#293241] hover:bg-[#98C1D9]/30 transition-colors"
                           >
                             <span className="block font-medium">{user.name || "Unnamed user"}</span>
-                            <span className="block text-xs text-[#3D5A80] dark:text-[#98C1D9]">{user.email}</span>
+                            <span className="block text-xs text-[#3D5A80]">{user.email}</span>
                           </button>
                         ))}
                       </div>
                     )}
                     {selectedMembers[field.memberIndex] && (
-                      <div className="mt-4 rounded-full border border-[#98C1D9]/50 bg-[#98C1D9]/10 dark:bg-[#293241]/60 p-2 text-sm text-[#293241] dark:text-[#E0FBFC] flex items-center shadow-sm">
+                      <div className="mt-4 rounded-full border border-[#98C1D9]/50 bg-[#98C1D9]/10 p-2 text-sm text-[#293241] flex items-center shadow-sm">
                         <div className="flex items-center gap-3">
                           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#98C1D9] text-[#293241]">
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1036,10 +1036,10 @@ const DynamicForm = ({
                             </svg>
                           </div>
                           <div className="flex flex-col justify-center">
-                            <p className="font-medium text-[#293241] dark:text-[#E0FBFC] text-base leading-tight">
+                            <p className="font-medium text-[#293241] text-base leading-tight">
                               {selectedMembers[field.memberIndex]?.name || selectedMembers[field.memberIndex]?.email}
                             </p>
-                            <p className="text-[#3D5A80] dark:text-[#98C1D9] text-xs mt-0.5">
+                            <p className="text-[#3D5A80] text-xs mt-0.5">
                               Added
                             </p>
                           </div>

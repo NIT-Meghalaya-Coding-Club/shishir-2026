@@ -85,8 +85,6 @@ const NavBarItem: React.FC<Props> = ({ to, text, onClick }) => {
           backdrop-blur-md backdrop-saturate-150
           transition-all duration-300
           group-hover:bg-[linear-gradient(180deg,rgba(255,255,255,0.5)_0%,rgba(255,255,255,0.14)_50%,rgba(255,255,255,0.32)_100%)]
-          dark:border-white/30
-          dark:bg-[linear-gradient(180deg,rgba(255,255,255,0.18)_0%,rgba(255,255,255,0.03)_50%,rgba(255,255,255,0.1)_100%)]
         "
       >
         {/* thin inner pinstripes, like the silver lines on the blue banner */}
@@ -117,8 +115,7 @@ const NavBarItem: React.FC<Props> = ({ to, text, onClick }) => {
           className={`${samanFont.className} font-bold text-xl text-slate-900
             drop-shadow-[0_1px_0_rgba(255,255,255,0.6)]
             transition-all duration-300
-            group-hover:scale-105 group-hover:tracking-wider
-            dark:text-white dark:drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]`}
+            group-hover:scale-105 group-hover:tracking-wider`}
         >
           {text}
         </span>

@@ -115,7 +115,7 @@ const FeaturedArtists = () => {
   return (
     <div
       ref={sectionRef}
-      className="w-full min-h-screen flex flex-col justify-center bg-[#E0FBFC] dark:bg-gray-900 py-16 px-4 md:px-8 relative overflow-hidden transition-colors duration-300"
+      className="w-full min-h-screen flex flex-col justify-center bg-[#E0FBFC] py-16 px-4 md:px-8 relative overflow-hidden transition-colors duration-300"
     >
       {/* Background decorative elements with zero-JS overhead */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -154,7 +154,7 @@ const FeaturedArtists = () => {
           }}
           style={{ backgroundSize: "200% 200%" }}
         />
-        <p className="text-slate-600 dark:text-gray-300 mt-4 max-w-2xl mx-auto font-medium dark:font-normal transition-colors duration-300">
+        <p className="text-slate-600 mt-4 max-w-2xl mx-auto font-medium transition-colors duration-300">
           Experience the incredible lineup at NITM&apos;s Cultural Fest this year!
         </p>
       </motion.div>

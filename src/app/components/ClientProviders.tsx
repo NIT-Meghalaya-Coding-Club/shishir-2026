@@ -13,24 +13,20 @@ import RegistrationPrompt from "@/components/auth/RegistrationPrompt";
 
 import { ToastContainer } from "react-toastify";
 
-import { ThemeProvider } from "@/context/ThemeContext";
-
 export function ClientProviders({ children }: { children: React.ReactNode }) {
   return (
     <SessionProvider>
-      <ThemeProvider>
-        {/* <OrganizerProvider> */}
-        <ToastContainer position="top-center" />
-        <SmoothScroll />
-        <Suspense fallback={null}>
-          <PageLoader />
-        </Suspense>
-        <NavBar />
-        <RegistrationPrompt />
-        {children}
-        <Footer />
-        {/* </OrganizerProvider> */}
-      </ThemeProvider>
+      {/* <OrganizerProvider> */}
+      <ToastContainer position="top-center" />
+      <SmoothScroll />
+      <Suspense fallback={null}>
+        <PageLoader />
+      </Suspense>
+      <NavBar />
+      <RegistrationPrompt />
+      {children}
+      <Footer />
+      {/* </OrganizerProvider> */}
     </SessionProvider>
   );
 }

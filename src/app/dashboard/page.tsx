@@ -76,10 +76,10 @@ const paperGrain =
   "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.24  0 0 0 0 0.35  0 0 0 0 0.5  0 0 0 0.09 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>\")";
 
 const paperCls =
-  "bg-gradient-to-br from-white via-[#F3FCFC] to-[#DDF1F5] dark:from-[#3b4d6b] dark:via-[#33435e] dark:to-[#2c3a52]";
+  "bg-gradient-to-br from-white via-[#F3FCFC] to-[#DDF1F5]";
 
 const insetCls =
-  "rounded-md border border-[#98C1D9] bg-white/70 dark:bg-[#293241]/50 dark:border-[#98C1D9]/30";
+  "rounded-md border border-[#98C1D9] bg-white/70";
 
 const btnBase =
   "flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 rounded-md font-semibold text-sm sm:text-base w-full sm:w-auto transition duration-200 hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#EE6C4D] focus-visible:ring-offset-2";
@@ -116,7 +116,7 @@ function SectionTitle({
       <Blossom className="w-4 h-4 text-[#EE6C4D] shrink-0" />
       <h3
         id={id}
-        className="text-lg sm:text-xl font-extrabold tracking-tight text-[#3D5A80] dark:text-[#98C1D9]"
+        className="text-lg sm:text-xl font-extrabold tracking-tight text-[#3D5A80]"
       >
         {children}
       </h3>
@@ -140,8 +140,8 @@ function InfoRow({
         {icon}
       </span>
       <div className="min-w-0">
-        <p className="text-xs sm:text-sm text-[#3D5A80] dark:text-[#98C1D9]">{label}</p>
-        <p className="text-sm sm:text-base font-semibold text-[#293241] dark:text-[#E0FBFC] break-words">
+        <p className="text-xs sm:text-sm text-[#3D5A80]">{label}</p>
+        <p className="text-sm sm:text-base font-semibold text-[#293241] break-words">
           {children}
         </p>
       </div>
@@ -361,7 +361,7 @@ const ProfileCard = () => {
     return (
       <button
         onClick={handleLogout}
-        className={`${btnBase} border border-[#3D5A80] text-[#3D5A80] bg-white/60 hover:bg-[#3D5A80] hover:text-white dark:border-[#98C1D9] dark:text-[#98C1D9] dark:bg-transparent dark:hover:bg-[#98C1D9] dark:hover:text-[#293241]`}
+        className={`${btnBase} border border-[#3D5A80] text-[#3D5A80] bg-white/60 hover:bg-[#3D5A80] hover:text-white`}
       >
         <FaSignOutAlt />
         <span>Logout</span>
@@ -413,7 +413,7 @@ const ProfileCard = () => {
   const CustomContactInfo = ({ student }: { student: UserData }) => {
     return (
       <div className="w-full lg:w-1/2">
-        <h3 className="mb-4 border-b border-[#EE6C4D]/40 pb-2 text-lg sm:text-xl font-extrabold tracking-tight text-[#3D5A80] dark:text-[#98C1D9]">
+        <h3 className="mb-4 border-b border-[#EE6C4D]/40 pb-2 text-lg sm:text-xl font-extrabold tracking-tight text-[#3D5A80]">
           Contact Information
         </h3>
         <div className="space-y-4">
@@ -434,7 +434,7 @@ const ProfileCard = () => {
   const CustomAdditionalInfo = ({ student }: { student: UserData }) => {
     return (
       <div className="w-full lg:w-1/2">
-        <h3 className="mb-4 border-b border-[#EE6C4D]/40 pb-2 text-lg sm:text-xl font-extrabold tracking-tight text-[#3D5A80] dark:text-[#98C1D9]">
+        <h3 className="mb-4 border-b border-[#EE6C4D]/40 pb-2 text-lg sm:text-xl font-extrabold tracking-tight text-[#3D5A80]">
           Additional Information
         </h3>
         <div className="space-y-4">
@@ -457,10 +457,10 @@ const ProfileCard = () => {
       <div className="md:hidden">
         <EditButton />
       </div>
-      <div className="relative flex min-h-screen max-w-full items-start justify-center overflow-x-hidden bg-[#E0FBFC] px-3 py-10 sm:px-5 sm:py-20 dark:bg-[#293241]">
+      <div className="relative flex min-h-screen max-w-full items-start justify-center overflow-x-hidden bg-[#E0FBFC] px-3 py-10 sm:px-5 sm:py-20">
         {/* Backdrop: static glows and a few drifting petals (no blur filters) */}
         <div
-          className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-[radial-gradient(ellipse_at_12%_15%,rgba(152,193,217,0.5),transparent_55%),radial-gradient(ellipse_at_88%_92%,rgba(238,108,77,0.14),transparent_50%)] dark:bg-[radial-gradient(ellipse_at_12%_15%,rgba(61,90,128,0.5),transparent_55%),radial-gradient(ellipse_at_88%_92%,rgba(238,108,77,0.1),transparent_50%)]"
+          className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-[radial-gradient(ellipse_at_12%_15%,rgba(152,193,217,0.5),transparent_55%),radial-gradient(ellipse_at_88%_92%,rgba(238,108,77,0.14),transparent_50%)]"
           aria-hidden="true"
         >
           {Array.from({ length: 8 }).map((_, i) => {
@@ -490,16 +490,16 @@ const ProfileCard = () => {
         {(isLoading || eventsLoading) && <Loading />}
 
         <div
-          className={`pc-rise relative z-10 mx-auto h-auto w-full overflow-hidden rounded-[3px] border-y-[6px] border-[#3D5A80] shadow-[0_28px_70px_-20px_rgba(61,90,128,0.55),0_0_0_1px_rgba(152,193,217,0.5)] sm:w-[90%] md:w-[75vw] lg:w-[65vw] xl:w-[55vw] dark:border-[#98C1D9] ${paperCls}`}
+          className={`pc-rise relative z-10 mx-auto h-auto w-full overflow-hidden rounded-[3px] border-y-[6px] border-[#3D5A80] shadow-[0_28px_70px_-20px_rgba(61,90,128,0.55),0_0_0_1px_rgba(152,193,217,0.5)] sm:w-[90%] md:w-[75vw] lg:w-[65vw] xl:w-[55vw] ${paperCls}`}
         >
           <div
-            className="pointer-events-none absolute inset-0 opacity-70 mix-blend-multiply dark:opacity-40"
+            className="pointer-events-none absolute inset-0 opacity-70 mix-blend-multiply"
             style={{ backgroundImage: paperGrain }}
           />
           <div className="absolute top-0 left-0 right-0 h-[2px] bg-[#EE6C4D]" />
           <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#EE6C4D]" />
 
-          <div className="relative z-10 m-2 rounded-[2px] border border-[#3D5A80]/20 p-4 pt-8 sm:m-3 sm:p-6 sm:pt-12 md:p-8 md:pt-14 dark:border-[#98C1D9]/30">
+          <div className="relative z-10 m-2 rounded-[2px] border border-[#3D5A80]/20 p-4 pt-8 sm:m-3 sm:p-6 sm:pt-12 md:p-8 md:pt-14">
             <div className="flex flex-col md:flex-row items-center gap-6 md:gap-10 justify-center py-3 sm:py-5">
               <div>
                 {/* Photo with a Peach to Powder Blue ring */}
@@ -510,7 +510,7 @@ const ProfileCard = () => {
                       alt="Profile"
                       width={96}
                       height={96}
-                      className="h-full w-full rounded-full border-[3px] border-white object-cover dark:border-[#293241]"
+                      className="h-full w-full rounded-full border-[3px] border-white object-cover"
                       unoptimized
                     />
                   </div>
@@ -520,7 +520,7 @@ const ProfileCard = () => {
                     title={isUploadingProfile ? "Uploading profile picture" : "Change profile picture"}
                     aria-label="Change profile picture"
                     disabled={isUploadingProfile}
-                    className="absolute bottom-1 right-1 z-20 flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-[#EE6C4D] text-white shadow-lg transition duration-200 hover:scale-110 hover:rotate-6 disabled:cursor-wait disabled:opacity-60 dark:border-[#293241]"
+                    className="absolute bottom-1 right-1 z-20 flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-[#EE6C4D] text-white shadow-lg transition duration-200 hover:scale-110 hover:rotate-6 disabled:cursor-wait disabled:opacity-60"
                   >
                     {isUploadingProfile ? (
                       <Loader2 size={16} className="animate-spin" aria-hidden="true" />
@@ -546,7 +546,7 @@ const ProfileCard = () => {
                     <EditButton desktop />
                   </span>
                 </div>
-                <div className="mt-2 text-sm sm:text-base md:text-lg flex flex-wrap items-center justify-center md:justify-start gap-2 text-[#293241] dark:text-[#E0FBFC]">
+                <div className="mt-2 text-sm sm:text-base md:text-lg flex flex-wrap items-center justify-center md:justify-start gap-2 text-[#293241]">
                   <span className="flex items-center">
                     <FaUserAlt className="mr-1.5 text-xs sm:text-sm md:text-base text-[#EE6C4D]" /> 
                     <span>{userData.gender}</span>
@@ -566,33 +566,33 @@ const ProfileCard = () => {
                   <p className="flex flex-wrap items-center justify-center md:justify-start">
                     <span className="mr-1 flex items-center sm:mr-2">
                       <FaUniversity className="mr-1.5 text-xs md:text-sm text-[#EE6C4D]" /> 
-                      <span className="text-[#3D5A80] dark:text-[#98C1D9]">College:</span>
+                      <span className="text-[#3D5A80]">College:</span>
                     </span>
-                    <b className="ml-1 truncate text-[#293241] dark:text-[#E0FBFC]">{userData.college}</b>
+                    <b className="ml-1 truncate text-[#293241]">{userData.college}</b>
                   </p>
                   
                   <p className="flex flex-wrap items-center justify-center md:justify-start">
                     <span className="mr-1 flex items-center sm:mr-2">
                       <FaIdCard className="mr-1.5 text-xs md:text-sm text-[#EE6C4D]" /> 
-                      <span className="text-[#3D5A80] dark:text-[#98C1D9]">College ID:</span>
+                      <span className="text-[#3D5A80]">College ID:</span>
                     </span>
-                    <b className="ml-1 text-[#293241] dark:text-[#E0FBFC]">{userData.collegeId}</b>
+                    <b className="ml-1 text-[#293241]">{userData.collegeId}</b>
                   </p>
                   
                   <p className="flex flex-wrap items-center justify-center md:justify-start">
                     <span className="mr-1 flex items-center sm:mr-2">
                       <FaGraduationCap className="mr-1.5 text-xs md:text-sm text-[#EE6C4D]" /> 
-                      <span className="text-[#3D5A80] dark:text-[#98C1D9]">Year of study:</span>
+                      <span className="text-[#3D5A80]">Year of study:</span>
                     </span>
-                    <b className="ml-1 text-[#293241] dark:text-[#E0FBFC]">{userData.yearOfStudy}</b>
+                    <b className="ml-1 text-[#293241]">{userData.yearOfStudy}</b>
                   </p>
                   
                   <p className="flex flex-wrap items-center justify-center md:justify-start">
                     <span className="mr-1 flex items-center sm:mr-2">
                       <FaBookReader className="mr-1.5 text-xs md:text-sm text-[#EE6C4D]" /> 
-                      <span className="text-[#3D5A80] dark:text-[#98C1D9]">Department:</span>
+                      <span className="text-[#3D5A80]">Department:</span>
                     </span>
-                    <b className="ml-1 text-[#293241] dark:text-[#E0FBFC]">{userData.department}</b>
+                    <b className="ml-1 text-[#293241]">{userData.department}</b>
                   </p>
                 </div>
               </div>
@@ -624,41 +624,41 @@ const ProfileCard = () => {
                 </motion.div>
               )}
             </AnimatePresence>
-            <section className="mt-8 border-t border-[#3D5A80]/15 pt-6 dark:border-[#98C1D9]/20" aria-labelledby="my-events-heading">
+            <section className="mt-8 border-t border-[#3D5A80]/15 pt-6" aria-labelledby="my-events-heading">
               <div className="flex items-center justify-between gap-3">
                 <div className="flex-1">
                   <SectionTitle id="my-events-heading">My Events</SectionTitle>
                 </div>
                 {!eventsLoading && registeredEvents.length > 0 && (
-                  <span className="shrink-0 -rotate-3 rounded-md border border-[#98C1D9] bg-white/70 px-3 py-1 text-xs font-semibold text-[#3D5A80] dark:border-[#98C1D9]/30 dark:bg-[#293241]/50 dark:text-[#98C1D9]">
+                  <span className="shrink-0 -rotate-3 rounded-md border border-[#98C1D9] bg-white/70 px-3 py-1 text-xs font-semibold text-[#3D5A80]">
                     {registeredEvents.length} registered
                   </span>
                 )}
               </div>
 
               {eventsLoading ? (
-                <p className="mt-4 text-sm text-[#3D5A80] dark:text-[#98C1D9]">Loading your events...</p>
+                <p className="mt-4 text-sm text-[#3D5A80]">Loading your events...</p>
               ) : registeredEvents.length === 0 ? (
-                <p className="mt-4 text-sm text-[#3D5A80] dark:text-[#98C1D9]">You have not registered for any events yet.</p>
+                <p className="mt-4 text-sm text-[#3D5A80]">You have not registered for any events yet.</p>
               ) : (
                 <div className="mt-4 grid gap-3">
                   {registeredEvents.map((event) => (
                     <article
                       key={event.id}
-                      className="group relative overflow-hidden rounded-md border border-[#98C1D9] bg-white/75 p-4 shadow-[0_8px_20px_-14px_rgba(61,90,128,0.5)] transition duration-300 hover:-translate-y-0.5 hover:border-[#EE6C4D]/60 hover:bg-white dark:border-[#98C1D9]/25 dark:bg-[#293241]/55 dark:hover:bg-[#293241]/80"
+                      className="group relative overflow-hidden rounded-md border border-[#98C1D9] bg-white/75 p-4 shadow-[0_8px_20px_-14px_rgba(61,90,128,0.5)] transition duration-300 hover:-translate-y-0.5 hover:border-[#EE6C4D]/60 hover:bg-white"
                     >
                       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                         <div>
-                          <h4 className="font-bold text-[#293241] transition-colors duration-200 group-hover:text-[#EE6C4D] dark:text-[#E0FBFC]">{event.name}</h4>
-                          <p className="mt-1 text-xs text-[#3D5A80] dark:text-[#98C1D9]">{event.category}</p>
+                          <h4 className="font-bold text-[#293241] transition-colors duration-200 group-hover:text-[#EE6C4D]">{event.name}</h4>
+                          <p className="mt-1 text-xs text-[#3D5A80]">{event.category}</p>
                         </div>
-                        <span className="w-fit rounded-full border border-[#EE6C4D]/40 bg-[#EE6C4D]/10 px-3 py-1 text-xs font-semibold text-[#293241] dark:text-[#E0FBFC]">
+                        <span className="w-fit rounded-full border border-[#EE6C4D]/40 bg-[#EE6C4D]/10 px-3 py-1 text-xs font-semibold text-[#293241]">
                           {event.role}
                         </span>
                       </div>
-                      <div className="mt-3 grid gap-1 border-t border-[#3D5A80]/10 pt-3 text-sm text-[#293241] sm:grid-cols-2 dark:border-[#98C1D9]/15 dark:text-[#E0FBFC]">
+                      <div className="mt-3 grid gap-1 border-t border-[#3D5A80]/10 pt-3 text-sm text-[#293241] sm:grid-cols-2">
                         <p>
-                          <span className="text-[#3D5A80] dark:text-[#98C1D9]">When: </span>
+                          <span className="text-[#3D5A80]">When: </span>
                           {new Date(event.startsAt).toLocaleDateString("en-GB", {
                             day: "2-digit",
                             month: "short",
@@ -666,16 +666,16 @@ const ProfileCard = () => {
                           })}
                         </p>
                         <p>
-                          <span className="text-[#3D5A80] dark:text-[#98C1D9]">Location: </span>{event.location}
+                          <span className="text-[#3D5A80]">Location: </span>{event.location}
                         </p>
                         {event.groupName && (
                           <p>
-                            <span className="text-[#3D5A80] dark:text-[#98C1D9]">Group: </span>{event.groupName}
+                            <span className="text-[#3D5A80]">Group: </span>{event.groupName}
                           </p>
                         )}
                         {event.eventType !== "individual" && (
                           <p>
-                            <span className="text-[#3D5A80] dark:text-[#98C1D9]">Participants: </span>{event.participantCount}
+                            <span className="text-[#3D5A80]">Participants: </span>{event.participantCount}
                           </p>
                         )}
                       </div>

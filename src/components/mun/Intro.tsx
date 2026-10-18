@@ -9,7 +9,6 @@ const Intro: React.FC = () => {
             text-sm
             leading-7
             text-[#293241]/85
-            dark:text-[#E0FBFC]/85
             sm:text-base
           "
         >
@@ -21,7 +20,6 @@ const Intro: React.FC = () => {
             text-sm
             leading-7
             text-[#293241]/85
-            dark:text-[#E0FBFC]/85
             sm:text-base
           "
         >
@@ -33,7 +31,6 @@ const Intro: React.FC = () => {
             text-sm
             leading-7
             text-[#293241]/85
-            dark:text-[#E0FBFC]/85
             sm:text-base
           "
         >

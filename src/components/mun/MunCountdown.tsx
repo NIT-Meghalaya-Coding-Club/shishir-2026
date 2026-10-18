@@ -130,10 +130,6 @@ const CountdownGrid = () => {
             transition-colors duration-300
             hover:border-[#EE6C4D]/45
             hover:bg-[#E0FBFC]/60
-            dark:border-[#98C1D9]/20
-            dark:bg-[#293241]/35
-            dark:hover:border-[#EE6C4D]/40
-            dark:hover:bg-[#293241]/55
           "
         >
           <div
@@ -156,8 +152,6 @@ const CountdownGrid = () => {
               transition-colors duration-300
               group-hover/item:text-[#EE6C4D]
               sm:text-4xl
-              dark:text-[#E0FBFC]
-              dark:group-hover/item:text-[#EE6C4D]
             "
           >
             {String(item.value).padStart(2, "0")}
@@ -172,7 +166,6 @@ const CountdownGrid = () => {
               transition-colors duration-300
               group-hover/item:text-[#3D5A80]
               sm:text-xs
-              dark:text-[#98C1D9]
             "
           >
             {item.label}
@@ -205,9 +198,6 @@ const CountdownTimer = () => {
             shadow-[0_20px_60px_rgba(61,90,128,0.12)]
             backdrop-blur-sm
             transition-colors duration-500
-            dark:border-[#98C1D9]/20
-            dark:bg-[#293241]/40
-            dark:shadow-[0_20px_60px_rgba(0,0,0,0.18)]
           "
         >
           {/* Inner glow */}
@@ -220,7 +210,6 @@ const CountdownTimer = () => {
               rounded-full
               bg-[#98C1D9]/15
               blur-3xl
-              dark:bg-[#3D5A80]/20
             "
           />
 
@@ -258,7 +247,6 @@ const CountdownTimer = () => {
                   text-xs font-semibold uppercase
                   tracking-[0.25em]
                   text-[#3D5A80]
-                  dark:text-[#98C1D9]
                 "
               >
                 Youth Parliament 2026
@@ -271,7 +259,6 @@ const CountdownTimer = () => {
                   text-[#3D5A80]
                   sm:text-3xl
                   md:text-4xl
-                  dark:text-[#E0FBFC]
                 "
               >
                 Shaping Tomorrow&apos;s{" "}
@@ -291,7 +278,6 @@ const CountdownTimer = () => {
                   mx-auto mt-4
                   h-px w-24
                   bg-[#EE6C4D]
-                  dark:bg-[#98C1D9]
                 "
               />
 
@@ -302,7 +288,6 @@ const CountdownTimer = () => {
                   text-sm leading-6
                   text-[#3D5A80]/80
                   sm:text-base
-                  dark:text-[#E0FBFC]/75
                 "
               >
                 Step into the world of diplomacy, leadership, and
@@ -325,7 +310,6 @@ const CountdownTimer = () => {
                 border-t border-[#3D5A80]/15
                 pt-6
                 sm:flex-row
-                dark:border-[#98C1D9]/20
               "
             >
               <div className="text-center sm:text-left">
@@ -334,7 +318,6 @@ const CountdownTimer = () => {
                     text-xs font-medium uppercase
                     tracking-[0.16em]
                     text-[#3D5A80]/55
-                    dark:text-[#98C1D9]
                   "
                 >
                   The countdown ends on
@@ -345,7 +328,6 @@ const CountdownTimer = () => {
                     mt-1
                     text-sm font-semibold
                     text-[#3D5A80]
-                    dark:text-[#E0FBFC]
                   "
                 >
                   07 November 2026

@@ -522,18 +522,7 @@
 }
 
 /* =====================================================
-   SHISHIR 2026 — DARK MODE PATTERN
-   ===================================================== */
-
-.dark .teams-page {
-  --color-1: rgba(238, 108, 77, 0.16);   /* Burnt Peach */
-  --color-2: rgba(61, 90, 128, 0.14);    /* Dusk Blue */
-  --color-3: rgba(238, 108, 77, 0.09);
-  --color-4: rgba(152, 193, 217, 0.09);  /* Powder Blue */
-  --color-5: var(--jet-black);
-}
-/* =====================================================
-   LIGHT MODE — SOFT WHITE / CYAN VEIL
+   SOFT WHITE / CYAN VEIL
    ===================================================== */
 
 .teams-page::before {
@@ -591,75 +580,7 @@
       translate(0.3%, 0);
   }
 }
-/* =====================================================
-   DARK MODE — JET BLUE-BLACK VEIL
-   ===================================================== */
 
-.dark .teams-page::before {
-  content: "";
-
-  position: absolute;
-  inset: -10%;
-
-  z-index: 0;
-  pointer-events: none;
-
-  background:
-    /* very subtle warm atmosphere */
-    radial-gradient(
-      ellipse at 20% 10%,
-      rgba(238, 108, 77, 0.055),
-      transparent 38%
-    ),
-
-    /* subtle dusk-blue atmosphere */
-    radial-gradient(
-      ellipse at 82% 75%,
-      rgba(61, 90, 128, 0.075),
-      transparent 42%
-    ),
-
-    /* THE ACTUAL VEIL */
-    linear-gradient(
-      125deg,
-      rgba(5, 10, 20, 0.40) 0%,
-      rgba(8, 14, 27, 0.44) 50%,
-      rgba(2, 6, 14, 0.48) 100%
-    );
-
-  transform: rotate(-5deg) scale(1.08);
-
-  animation: shishirVeil 60s ease-in-out infinite alternate;
-}
-
-
-/* =====================================================
-   SLOW VEIL MOVEMENT
-   ===================================================== */
-
-@keyframes shishirVeil {
-
-  0% {
-    transform:
-      rotate(-1deg)
-      scale(1.06)
-      translate(-0.3%, -0.2%);
-  }
-
-  50% {
-    transform:
-      rotate(0deg)
-      scale(1.07)
-      translate(0%, 0.2%);
-  }
-
-  100% {
-    transform:
-      rotate(1deg)
-      scale(1.06)
-      translate(0.3%, 0%);
-  }
-}
 
 /* =============== BOTTOM FADE =============== */
 .teams-page::after {
@@ -684,37 +605,9 @@
 
   z-index: 0;
 }
-/* =====================================================
-   DARK MODE — SOFT BOTTOM FADE
-   ===================================================== */
-
-.dark .teams-page::after {
-  content: "";
-
-  position: absolute;
-
-  left: 0;
-  right: 0;
-  bottom: 0;
-
-  height: 220px;
-
-  pointer-events: none;
-
-  background:
-    linear-gradient(
-      to bottom,
-      transparent 0%,
-      rgba(4, 8, 17, 0.10) 35%,
-      rgba(4, 8, 17, 0.28) 75%,
-      rgba(2, 5, 11, 0.48) 100%
-    );
-
-  z-index: 0;
-}
 
 
-/* Light mode has NO bottom fade */
+/* No bottom fade over the content */
 
 .teams-page::before,
 .teams-page::after {
@@ -862,27 +755,6 @@
 .teams-icon:last-child {
   animation-delay: 1.5s;
 }
-/* =============== DARK MODE TEAM HEADING =============== */
-
-.dark .teams-page .team-heading {
-  color: var(--burnt-peach);
-
-  text-shadow:
-    0 0 18px rgba(238, 108, 77, 0.14);
-}
-
-
-/* =============== DARK MODE TEAM ICONS =============== */
-
-.dark .teams-page .teams-icon {
-  color: var(--burnt-peach);
-
-  filter:
-    drop-shadow(
-      0 0 6px rgba(238, 108, 77, 0.18)
-    );
-}
-
 
 
 @keyframes floatIcon {
@@ -1057,27 +929,6 @@
 }
 
 
-/* =============== DARK MODE CARDS =============== */
-
-.dark .card__article {
-  background:
-    linear-gradient(
-      145deg,
-      #3A4658 0%,
-      #303B4D 48%,
-      #202833 100%
-    );
-
-  border-color: rgba(238, 108, 77, 0.18);
-
-  box-shadow:
-    0 20px 45px rgba(0, 0, 0, 0.48),
-    0 6px 16px rgba(0, 0, 0, 0.30),
-    inset 0 1px 0 rgba(255, 255, 255, 0.07),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.22);
-}
-
-
 /* =============== CARD HIGHLIGHT =============== */
 
 .card__article::before {
@@ -1114,13 +965,6 @@
     0 28px 55px rgba(0, 0, 0, 0.30),
     0 10px 20px rgba(0, 0, 0, 0.15),
     0 0 24px rgba(245, 181, 27, 0.10);
-}
-
-.dark .card__article:hover {
-  box-shadow:
-    0 28px 60px rgba(0, 0, 0, 0.65),
-    0 10px 22px rgba(0, 0, 0, 0.40),
-    0 0 28px rgba(245, 181, 27, 0.12);
 }
 
 
@@ -1243,7 +1087,7 @@
 
   color: var(--white-color);
 
-  /* Dark elegant glass panel */
+  /* Elegant glass panel */
   background:
     linear-gradient(
       180deg,
@@ -1622,14 +1466,6 @@
     box-shadow: 0 -6px 18px rgba(41, 50, 65, 0.10);   /* shadow now points upward */
 
     overflow: hidden;
-  }
-
-
-  .dark .team-index-sidebar {
-    background: rgba(8, 12, 20, 0.90);
-
-    border-top:
-      1px solid rgba(238, 108, 77, 0.10);
   }
 
 

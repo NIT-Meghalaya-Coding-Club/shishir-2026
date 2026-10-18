@@ -22,7 +22,7 @@ const Mun: React.FC = () => {
       }}
     >
       {/* Background Overlay */}
-      <div aria-hidden="true" className="fixed inset-0 bg-[#E0FBFC]/80 dark:bg-[#293241]/80 pointer-events-none" />
+      <div aria-hidden="true" className="fixed inset-0 bg-[#E0FBFC]/80 pointer-events-none" />
 
       {/* Main page content */}
       <div className="relative z-10 flex min-h-screen w-full flex-col items-center px-4 sm:px-6 lg:px-8">

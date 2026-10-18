@@ -42,7 +42,6 @@ const LegacySection: React.FC = () => {
                   bg-[radial-gradient(circle_at_15%_20%,rgba(152,193,217,0.40),transparent_30%),radial-gradient(circle_at_85%_25%,rgba(238,108,77,0.14),transparent_30%),radial-gradient(circle_at_50%_90%,rgba(61,90,128,0.25),transparent_38%)]
                   opacity-0
                   blur-3xl
-                  dark:bg-[radial-gradient(circle_at_15%_20%,rgba(152,193,217,0.18),transparent_30%),radial-gradient(circle_at_85%_25%,rgba(238,108,77,0.08),transparent_30%),radial-gradient(circle_at_50%_90%,rgba(61,90,128,0.24),transparent_38%)]
                 "
               />
 
@@ -61,9 +60,6 @@ const LegacySection: React.FC = () => {
                   backdrop-blur-sm
                   transition-colors
                   duration-700
-                  dark:border-[#98C1D9]/15
-                  dark:bg-[#1D3452]/70
-                  dark:shadow-[0_8px_25px_rgba(0,0,0,0.15)]
                   sm:p-7
                 "
               >
@@ -75,20 +71,19 @@ const LegacySection: React.FC = () => {
                     inset-0
                     bg-[radial-gradient(circle_at_10%_10%,rgba(152,193,217,0.12),transparent_28%),radial-gradient(circle_at_90%_90%,rgba(238,108,77,0.06),transparent_30%)]
                     opacity-0
-                    dark:bg-[radial-gradient(circle_at_10%_10%,rgba(152,193,217,0.07),transparent_28%),radial-gradient(circle_at_90%_90%,rgba(238,108,77,0.04),transparent_30%)]
                   "
                 />
 
-                <div className="absolute right-0 top-0 h-24 w-24 rounded-bl-full bg-[#98C1D9]/10 dark:bg-[#98C1D9]/5" />
+                <div className="absolute right-0 top-0 h-24 w-24 rounded-bl-full bg-[#98C1D9]/10" />
 
                 {/* Header */}
                 <div className="relative mb-8 flex items-start justify-between">
                   <div>
-                    <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.25em] text-[#3D5A80]/70 dark:text-[#98C1D9]/60">
+                    <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.25em] text-[#3D5A80]/70">
                       {data.title}
                     </p>
 
-                    <h2 className="text-4xl font-bold tracking-tight text-[#293241] dark:text-[#E0FBFC]">
+                    <h2 className="text-4xl font-bold tracking-tight text-[#293241]">
                       {displayYear}
                     </h2>
 
@@ -109,8 +104,6 @@ const LegacySection: React.FC = () => {
                       uppercase
                       tracking-[0.15em]
                       text-[#3D5A80]/70
-                      dark:border-[#98C1D9]/15
-                      dark:text-[#98C1D9]/60
                     "
                   >
                     Edition
@@ -120,18 +113,18 @@ const LegacySection: React.FC = () => {
                 {/* Delegates */}
                 <div className="relative">
                   <div className="flex items-baseline gap-2">
-                    <span className="text-4xl font-bold text-[#293241] dark:text-[#E0FBFC]">
+                    <span className="text-4xl font-bold text-[#293241]">
                       <NumberCounter end={data.delegatesNo ?? 0} />
                     </span>
 
-                    <span className="text-sm font-medium text-[#3D5A80] dark:text-[#98C1D9]">
+                    <span className="text-sm font-medium text-[#3D5A80]">
                       delegates
                     </span>
                   </div>
                 </div>
 
                 {/* Description */}
-                <p className="relative mt-6 text-sm leading-7 text-[#293241]/70 dark:text-[#E0FBFC]/70">
+                <p className="relative mt-6 text-sm leading-7 text-[#293241]/70">
                   {data.description}
                 </p>
               </div>

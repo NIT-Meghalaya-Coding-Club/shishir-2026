@@ -177,14 +177,14 @@ export default function PageLoader() {
         <div
           role="status"
           aria-live="polite"
-          className="page-loader-in fixed inset-0 z-[100] flex flex-col items-center justify-center gap-5 bg-[#E0FBFC]/75 backdrop-blur-sm dark:bg-[#293241]/75"
+          className="page-loader-in fixed inset-0 z-[100] flex flex-col items-center justify-center gap-5 bg-[#E0FBFC]/75 backdrop-blur-sm"
         >
           <Blossom
             className="h-14 w-14 text-[#EE6C4D] drop-shadow-[0_6px_16px_rgba(238,108,77,0.35)] motion-safe:animate-spin"
             style={{ animationDuration: "3s" }}
           />
 
-          <p className="font-serif text-xs font-bold uppercase tracking-[0.35em] text-[#3D5A80] dark:text-[#98C1D9]">
+          <p className="font-serif text-xs font-bold uppercase tracking-[0.35em] text-[#3D5A80]">
             Loading
           </p>
         </div>

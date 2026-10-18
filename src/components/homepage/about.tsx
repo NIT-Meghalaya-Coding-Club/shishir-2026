@@ -311,7 +311,7 @@ export default function AboutScroll() {
   return (
     <section
       ref={containerRef}
-      className="relative w-screen h-screen overflow-hidden bg-[#E0FBFC] dark:bg-[#293241] select-none transition-colors duration-500 z-20 flex flex-col justify-between"
+      className="relative w-screen h-screen overflow-hidden bg-[#E0FBFC] select-none transition-colors duration-500 z-20 flex flex-col justify-between"
     >
       <div className="relative z-20 w-full h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 flex flex-col justify-between pt-10 sm:pt-14 md:pt-16 pb-4 sm:pb-6 md:pb-8">
         {/* ─── Title ─── */}
@@ -323,7 +323,7 @@ export default function AboutScroll() {
               </h2>
             <Blossom className="w-10 h-10 sm:w-10 sm:h-10 text-[#98C1D9] animate-spin [animation-duration:3s]" />
           </div>
-          <p className="mt-1 text-[0.65rem] sm:text-xs md:text-sm tracking-[0.25em] sm:tracking-[0.32em] text-[#3D5A80] dark:text-[#98C1D9] font-bold uppercase">
+          <p className="mt-1 text-[0.65rem] sm:text-xs md:text-sm tracking-[0.25em] sm:tracking-[0.32em] text-[#3D5A80] font-bold uppercase">
             ANNUAL CULTURAL FESTIVAL OF NIT MEGHALAYA
           </p>
         </div>
@@ -345,7 +345,7 @@ export default function AboutScroll() {
               >
                 <div
                   ref={logoGlowRef}
-                  className="absolute -inset-8 sm:-inset-12 rounded-full blur-2xl bg-[radial-gradient(circle,rgba(152,193,217,0.7)_0%,rgba(238,108,77,0.16)_55%,transparent_72%)] dark:bg-[radial-gradient(circle,rgba(152,193,217,0.3)_0%,rgba(238,108,77,0.14)_55%,transparent_72%)] pointer-events-none"
+                  className="absolute -inset-8 sm:-inset-12 rounded-full blur-2xl bg-[radial-gradient(circle,rgba(152,193,217,0.7)_0%,rgba(238,108,77,0.16)_55%,transparent_72%)] pointer-events-none"
                 />
                 <div ref={logoFloatRef} className="relative">
                   <div className="relative w-24 h-24 sm:w-36 sm:h-36 md:w-48 md:h-48 lg:w-60 lg:h-60 transition-transform duration-500 ease-out group-hover:scale-105">
@@ -380,12 +380,12 @@ export default function AboutScroll() {
                 <div
                   ref={parchmentRef}
                   style={{ clipPath: 'inset(0% calc(100% - 20px) 0% 0%)' }}
-                  className="relative w-full h-full min-h-[300px] sm:min-h-[350px] md:min-h-[380px] rounded-[3px] overflow-hidden z-20 shadow-[0_24px_60px_-18px_rgba(61,90,128,0.5),0_0_0_1px_rgba(152,193,217,0.5)] border-y-[6px] border-[#3D5A80] dark:border-[#98C1D9]"
+                  className="relative w-full h-full min-h-[300px] sm:min-h-[350px] md:min-h-[380px] rounded-[3px] overflow-hidden z-20 shadow-[0_24px_60px_-18px_rgba(61,90,128,0.5),0_0_0_1px_rgba(152,193,217,0.5)] border-y-[6px] border-[#3D5A80]"
                 >
                   {/* Frosted paper body, same glass feel as the navbar */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#FFFFFF] via-[#F3FCFC] to-[#DDF1F5] dark:from-[#3b4d6b] dark:via-[#33435e] dark:to-[#2c3a52]" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#FFFFFF] via-[#F3FCFC] to-[#DDF1F5]" />
                   <div
-                    className="absolute inset-0 opacity-70 dark:opacity-40 mix-blend-multiply pointer-events-none"
+                    className="absolute inset-0 opacity-70 mix-blend-multiply pointer-events-none"
                     style={{ backgroundImage: paperGrain }}
                   />
                   {/* Mounting edge: thin peach line under the dusk-blue border */}
@@ -428,14 +428,14 @@ export default function AboutScroll() {
                   </svg>
 
                   {/* Writing area */}
-                  <div className="relative h-full m-1.5 sm:m-3 p-3 sm:p-5 md:p-6 border border-[#3D5A80]/25 dark:border-[#98C1D9]/30 rounded-[2px] flex flex-col justify-between z-10">
+                  <div className="relative h-full m-1.5 sm:m-3 p-3 sm:p-5 md:p-6 border border-[#3D5A80]/25 rounded-[2px] flex flex-col justify-between z-10">
                     {/* Header */}
                     <div
                       data-reveal
-                      className="flex items-center justify-center gap-2 mb-1 sm:mb-1.5 pb-1.5 border-b border-[#3D5A80]/20 dark:border-[#98C1D9]/25"
+                      className="flex items-center justify-center gap-2 mb-1 sm:mb-1.5 pb-1.5 border-b border-[#3D5A80]/20"
                     >
                       <Blossom className="w-3 h-3 sm:w-4 sm:h-4 text-[#EE6C4D]" />
-                      <span className="text-[0.62rem] sm:text-xs tracking-[0.2em] font-bold uppercase text-[#3D5A80] dark:text-[#98C1D9]">
+                      <span className="text-[0.62rem] sm:text-xs tracking-[0.2em] font-bold uppercase text-[#3D5A80]">
                         Festival proclamation · NIT Meghalaya
                       </span>
                       <Blossom className="w-3 h-3 sm:w-4 sm:h-4 text-[#EE6C4D]" />
@@ -445,13 +445,13 @@ export default function AboutScroll() {
                     <div className="space-y-1 sm:space-y-1.5">
                       <div data-reveal className="flex items-center gap-2">
                         <Blossom className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#F4A9A0] shrink-0" />
-                        <h3 className="text-sm sm:text-base md:text-lg font-extrabold tracking-tight text-[#3D5A80] dark:text-[#98C1D9]">
+                        <h3 className="text-sm sm:text-base md:text-lg font-extrabold tracking-tight text-[#3D5A80]">
                           Where nature meets culture
                         </h3>
                       </div>
                       <p
                         data-reveal
-                        className="font-serif text-[#293241] dark:text-[#E0FBFC] text-[0.7rem] sm:text-[0.85rem] md:text-[0.95rem] leading-snug sm:leading-relaxed"
+                        className="font-serif text-[#293241] text-[0.7rem] sm:text-[0.85rem] md:text-[0.95rem] leading-snug sm:leading-relaxed"
                       >
                         Experience the enchanting allure of diversity at{' '}
                         <span className="font-bold text-[#EE6C4D]">SHISHIR</span>, the Annual
@@ -476,13 +476,13 @@ export default function AboutScroll() {
                     <div className="space-y-1 sm:space-y-1.5">
                       <div data-reveal className="flex items-center gap-2">
                         <Blossom className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#F4A9A0] shrink-0" />
-                        <h3 className="text-sm sm:text-base md:text-lg font-extrabold tracking-tight text-[#3D5A80] dark:text-[#98C1D9]">
+                        <h3 className="text-sm sm:text-base md:text-lg font-extrabold tracking-tight text-[#3D5A80]">
                           Annual extravaganza
                         </h3>
                       </div>
                       <p
                         data-reveal
-                        className="font-serif text-[#293241] dark:text-[#E0FBFC] text-[0.7rem] sm:text-[0.85rem] md:text-[0.95rem] leading-snug sm:leading-relaxed pr-9 sm:pr-14"
+                        className="font-serif text-[#293241] text-[0.7rem] sm:text-[0.85rem] md:text-[0.95rem] leading-snug sm:leading-relaxed pr-9 sm:pr-14"
                       >
                         <span className="font-bold text-[#EE6C4D]">NIT Meghalaya</span> extends a
                         warm welcome to all, as we prepare for Meghalaya&apos;s grandest cultural
@@ -494,7 +494,7 @@ export default function AboutScroll() {
 
                     {/* Peach hanko-style seal */}
                     <div
-                      className="seal-stamp absolute bottom-1.5 right-1.5 sm:bottom-3 sm:right-3 w-8 h-8 sm:w-11 sm:h-11 rounded-md bg-[#EE6C4D] text-[#FFF4E0] flex items-center justify-center shadow-[0_2px_6px_rgba(238,108,77,0.45)] mix-blend-multiply dark:mix-blend-normal"
+                      className="seal-stamp absolute bottom-1.5 right-1.5 sm:bottom-3 sm:right-3 w-8 h-8 sm:w-11 sm:h-11 rounded-md bg-[#EE6C4D] text-[#FFF4E0] flex items-center justify-center shadow-[0_2px_6px_rgba(238,108,77,0.45)] mix-blend-multiply"
                       style={{ transform: 'rotate(-6deg)' }}
                       aria-hidden="true"
                     >
@@ -545,7 +545,7 @@ export default function AboutScroll() {
       </div>
 
       {/* Soft fade into the next section */}
-      <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-[#E0FBFC] dark:from-[#293241] to-transparent pointer-events-none z-[12]" />
+      <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-[#E0FBFC] to-transparent pointer-events-none z-[12]" />
     </section>
   );
 }

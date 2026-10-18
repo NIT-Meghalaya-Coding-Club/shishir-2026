@@ -8,11 +8,6 @@
   transition: background-color 0.5s ease, color 0.5s ease;
 }
 
-.dark .mun-page {
-  background: #172B46;
-  color: #E0FBFC;
-}
-
 
 /* Background */
 
@@ -24,10 +19,6 @@
   z-index: 0;
   background: #E0FBFC;
   transition: background-color 0.5s ease;
-}
-
-.dark .mun-background {
-  background: #172B46;
 }
 
 .mun-background::before {
@@ -43,16 +34,6 @@
 
   background-size: 34px 34px;
   opacity: 0.3;
-}
-
-.dark .mun-background::before {
-  background-image:
-    radial-gradient(
-      rgba(152, 193, 217, 0.14) 0.7px,
-      transparent 0.7px
-    );
-
-  opacity: 0.22;
 }
 
 
@@ -131,16 +112,6 @@
 
   filter: blur(12px);
   animation: orb-float-4 11s ease-in-out infinite;
-}
-
-.dark .mun-orb-blue-1,
-.dark .mun-orb-blue-2 {
-  filter: blur(12px) brightness(1.2);
-}
-
-.dark .mun-orb-peach-1,
-.dark .mun-orb-peach-2 {
-  filter: blur(14px) brightness(1.1);
 }
 
 
@@ -404,15 +375,6 @@
   pointer-events: none;
 
   animation: hero-glow-pulse 6s ease-in-out infinite;
-}
-
-.dark .mun-hero-glow {
-  background: radial-gradient(
-    ellipse,
-    rgba(152, 193, 217, 0.2) 0%,
-    rgba(61, 90, 128, 0.14) 38%,
-    transparent 72%
-  );
 }
 
 @keyframes hero-glow-pulse {

@@ -21,7 +21,6 @@ const MenuToggle: React.FC<Props> = ({ isOpen, onClick }) => {
         text-red-800 transition-colors duration-200
         hover:bg-white/20 hover:text-red-700
         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80
-        dark:text-white dark:hover:bg-white/10 dark:hover:text-yellow-300
       "
     >
       <span

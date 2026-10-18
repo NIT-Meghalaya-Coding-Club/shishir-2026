@@ -93,11 +93,11 @@ function PeopleGroup({ label, people }: { label: string; people: Person[] }) {
       <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-[#EE6C4D]">{label}</p>
       <div className="grid gap-3 sm:grid-cols-2">
         {people.map((person) => (
-          <div key={`${label}-${person.collegeID || person.email || person.name}`} className="flex min-w-0 items-center gap-3 rounded-lg border border-[#EE6C4D]/30 bg-[#3D5A80]/10 dark:bg-[#3D5A80]/30 p-4 text-left">
+          <div key={`${label}-${person.collegeID || person.email || person.name}`} className="flex min-w-0 items-center gap-3 rounded-lg border border-[#EE6C4D]/30 bg-[#3D5A80]/10 p-4 text-left">
             <PersonAvatar person={person} />
             <div className="flex min-w-0 flex-1 flex-col items-start space-y-1 text-sm">
-              <p className="break-words font-semibold text-[#293241] dark:text-[#E0FBFC]">{person.name}</p>
-              {person.collegeID && <p className="break-words text-[#3D5A80] dark:text-[#98C1D9]">{(person.collegeID).toUpperCase()}</p>}
+              <p className="break-words font-semibold text-[#293241]">{person.name}</p>
+              {person.collegeID && <p className="break-words text-[#3D5A80]">{(person.collegeID).toUpperCase()}</p>}
               {person.phone && (
                 <a href={`tel:${person.phone}`} className="flex break-all items-center justify-start gap-1 text-[#EE6C4D] hover:text-[#EE6C4D]/80">
                   <Phone size={13} className="shrink-0" />
@@ -147,12 +147,12 @@ export default function EventDetailsModal({ event, onClose }: { event: EventReco
   const duration = formatEventDuration(event.startsAt, event.endsAt);
 
   return (
-    <div ref={overlayRef} className="fixed inset-0 z-30 flex items-center justify-center bg-[#293241]/60 dark:bg-[#293241]/80 p-4 sm:p-8 backdrop-blur-sm" onMouseDown={onClose}>
+    <div ref={overlayRef} className="fixed inset-0 z-30 flex items-center justify-center bg-[#293241]/60 p-4 sm:p-8 backdrop-blur-sm" onMouseDown={onClose}>
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="event-details-title"
-        className="relative flex mt-10 h-[85vh] max-h-[800px] w-[85vh] max-w-[760px] flex-col rounded-3xl border border-[#98C1D9]/50 dark:border-[#3D5A80]/50 bg-[#E0FBFC] dark:bg-[#293241] shadow-2xl"
+        className="relative flex mt-10 h-[85vh] max-h-[800px] w-[85vh] max-w-[760px] flex-col rounded-3xl border border-[#98C1D9]/50 bg-[#E0FBFC] shadow-2xl"
         onMouseDown={(eventMouseDown) => eventMouseDown.stopPropagation()}
       >
         {/* Floating Close Button */}
@@ -170,30 +170,30 @@ export default function EventDetailsModal({ event, onClose }: { event: EventReco
           {/* Event details */}
           <div>
             <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-[#EE6C4D]">{event.category.replace("_", " ")}</p>
-            <h2 id="event-details-title" className="text-3xl sm:text-4xl font-serif font-bold text-[#293241] dark:text-[#E0FBFC] mb-4">{event.name}</h2>
-            <p className="whitespace-pre-wrap break-words leading-relaxed text-[#3D5A80] dark:text-[#98C1D9] text-sm">{event.description}</p>
+            <h2 id="event-details-title" className="text-3xl sm:text-4xl font-serif font-bold text-[#293241] mb-4">{event.name}</h2>
+            <p className="whitespace-pre-wrap break-words leading-relaxed text-[#3D5A80] text-sm">{event.description}</p>
           </div>
 
           {/* Schedule: date + venue pills, then start -> end timeline */}
           <div className="flex flex-col gap-3">
             <div className="flex flex-wrap gap-2 text-sm">
-              <span className="inline-flex items-center gap-2 rounded-full border border-[#EE6C4D]/30 bg-[#EE6C4D]/10 px-3 py-1.5 font-semibold text-[#293241] dark:text-[#E0FBFC]">
+              <span className="inline-flex items-center gap-2 rounded-full border border-[#EE6C4D]/30 bg-[#EE6C4D]/10 px-3 py-1.5 font-semibold text-[#293241]">
                 <CalendarDays className="shrink-0 text-[#EE6C4D]" size={16} />
                 {formatEventDate(event.startsAt)}
               </span>
-              <span className="inline-flex items-center gap-2 rounded-full border border-[#EE6C4D]/30 bg-[#EE6C4D]/10 px-3 py-1.5 font-semibold text-[#293241] dark:text-[#E0FBFC]">
+              <span className="inline-flex items-center gap-2 rounded-full border border-[#EE6C4D]/30 bg-[#EE6C4D]/10 px-3 py-1.5 font-semibold text-[#293241]">
                 <MapPin className="shrink-0 text-[#EE6C4D]" size={16} />
                 {event.location}
               </span>
             </div>
 
             {/* Timeline: mobile = Start/End on top row, bar on its own row. sm+ = single row. */}
-            <div className="rounded-2xl border border-[#EE6C4D]/30 bg-[#3D5A80]/10 dark:bg-[#3D5A80]/30 p-4 sm:p-5">
+            <div className="rounded-2xl border border-[#EE6C4D]/30 bg-[#3D5A80]/10 p-4 sm:p-5">
               <div className="grid grid-cols-2 items-center gap-x-4 gap-y-4 sm:grid-cols-[auto_1fr_auto] sm:gap-x-5">
                 {/* Start */}
                 <div className="order-1 text-left sm:text-center">
                   <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#EE6C4D]">Start</p>
-                  <p className="whitespace-nowrap text-lg font-bold text-[#293241] dark:text-[#E0FBFC] sm:text-base">
+                  <p className="whitespace-nowrap text-lg font-bold text-[#293241] sm:text-base">
                     {formatEventTime(event.startsAt)}
                   </p>
                 </div>
@@ -201,7 +201,7 @@ export default function EventDetailsModal({ event, onClose }: { event: EventReco
                 {/* End */}
                 <div className="order-2 text-right sm:order-3 sm:text-center">
                   <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#EE6C4D]">End</p>
-                  <p className="whitespace-nowrap text-lg font-bold text-[#293241] dark:text-[#E0FBFC] sm:text-base">
+                  <p className="whitespace-nowrap text-lg font-bold text-[#293241] sm:text-base">
                     {formatEventTime(event.endsAt)}
                   </p>
                 </div>
@@ -224,7 +224,7 @@ export default function EventDetailsModal({ event, onClose }: { event: EventReco
           </div>
 
           {/* Poster */}
-          <div className="relative h-64 w-full shrink-0 overflow-hidden rounded-2xl bg-black/5 dark:bg-white/5 sm:h-80 md:h-96">
+          <div className="relative h-64 w-full shrink-0 overflow-hidden rounded-2xl bg-black/5 sm:h-80 md:h-96">
             <Image src={event.posterLink} alt={`${event.name} poster`} fill className="object-cover object-center" sizes="(max-width: 768px) 100vw, 760px" />
           </div>
 
@@ -234,7 +234,7 @@ export default function EventDetailsModal({ event, onClose }: { event: EventReco
               href={event.rulebookLink}
               target="_blank"
               rel="noreferrer"
-              className="flex min-h-14 flex-1 items-center justify-center gap-2 rounded-full border border-[#98C1D9]/60 dark:border-[#3D5A80]/60 bg-[#98C1D9]/20 dark:bg-[#3D5A80]/20 px-6 py-3 text-base font-bold uppercase tracking-wide text-[#293241] dark:text-[#E0FBFC] shadow-sm transition-colors hover:bg-[#98C1D9]/40 dark:hover:bg-[#3D5A80]/40 active:scale-[0.98] sm:min-h-12 sm:text-sm"
+              className="flex min-h-14 flex-1 items-center justify-center gap-2 rounded-full border border-[#98C1D9]/60 bg-[#98C1D9]/20 px-6 py-3 text-base font-bold uppercase tracking-wide text-[#293241] shadow-sm transition-colors hover:bg-[#98C1D9]/40 active:scale-[0.98] sm:min-h-12 sm:text-sm"
             >
               <ExternalLink size={18} />
               View Rulebook
@@ -249,7 +249,7 @@ export default function EventDetailsModal({ event, onClose }: { event: EventReco
           </div>
 
           {/* People */}
-          <div className="space-y-4 border-t border-[#3D5A80]/20 dark:border-[#98C1D9]/20 pt-6">
+          <div className="space-y-4 border-t border-[#3D5A80]/20 pt-6">
             <PeopleGroup label="Event Heads" people={event.eventHeads} />
             <PeopleGroup label="Coordinators" people={event.coordinators} />
             <PeopleGroup label="Co-coordinators" people={event.coCoordinators} />

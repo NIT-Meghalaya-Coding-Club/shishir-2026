@@ -67,20 +67,6 @@
   }
 }
 
-/* =============== DARK MODE =============== */
-
-:global(.dark) .pageHeadingTitle {
-  color: #ee6c4d;
-}
-
-:global(.dark) .pageHeadingIcon {
-  color: #ee6c4d;
-
-  filter: drop-shadow(
-    0 0 6px rgba(238, 108, 77, 0.18)
-  );
-}
-
 /* =============== RESPONSIVE =============== */
 
 @media screen and (max-width: 767px) {
