@@ -322,6 +322,36 @@ export default function AdminPage() {
     });
   const saveManaged = async (managed: ManagedItem) => {
     const { kind, item } = managed;
+    let categoryName = "";
+    if (kind === "events") {
+      categoryName = (item.category || item.categoryId?.name || "").trim();
+      if (item.categoryId?._id === "new") {
+        if (!categoryName) {
+          toast.error("Enter a new category name");
+          return;
+        }
+        const categoryResponse = await fetch("/api/categories", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: categoryName }),
+        });
+        if (categoryResponse.ok) {
+          categoryName = (await categoryResponse.json()).category.name;
+        } else if (
+          categoryResponse.status !== 401 &&
+          categoryResponse.status !== 403
+        ) {
+          const categoryData = await categoryResponse.json();
+          toast.error(categoryData.message || "Could not create category");
+          return;
+        }
+        // If this admin session cannot create categories itself, the event
+        // update route below creates the category from the submitted name.
+      } else if (!categoryName) {
+        toast.error("Select a category");
+        return;
+      }
+    }
     const payload =
       kind === "committees"
         ? {
@@ -337,7 +367,7 @@ export default function AdminPage() {
         : {
             ...item,
             name: item.name || item.eventNameId?.name,
-            category: item.category || item.categoryId?.name,
+            category: categoryName,
             eventHeadEmails:
               item.eventHeadEmails || peopleText(item.eventHeads),
             coordinatorEmails:
@@ -646,6 +676,7 @@ export default function AdminPage() {
             ) : editingEvent ? (
               <EventEditor
                 item={editingEvent}
+                categories={categories}
                 onChange={setEditingEvent}
                 onCancel={() => setEditingEvent(null)}
                 onSave={() =>
@@ -747,17 +778,10 @@ function CommitteeEditor({
         <label className="space-y-2">
           <span>Name</span>
           <input
-            className={input}
+            className={`${input} cursor-not-allowed opacity-60`}
             value={item.committeeNameId?.name || ""}
-            onChange={(e) =>
-              onChange({
-                ...item,
-                committeeNameId: {
-                  ...(item.committeeNameId || { _id: "" }),
-                  name: e.target.value,
-                },
-              })
-            }
+            readOnly
+            disabled
           />
         </label>
         <label className="space-y-2">
@@ -972,11 +996,13 @@ function CreateCommitteeEditor({
 
 function EventEditor({
   item,
+  categories,
   onChange,
   onCancel,
   onSave,
 }: {
   item: EventItem;
+  categories: CommitteeName[];
   onChange: (item: EventItem) => void;
   onCancel: () => void;
   onSave: () => void;
@@ -1001,13 +1027,19 @@ function EventEditor({
     } else setUploadMessage(data.message || "Could not upload poster");
     setUploading(false);
   };
+  const currentCategory = item.categoryId;
+  const categoryOptions =
+    currentCategory &&
+    currentCategory._id !== "new" &&
+    !categories.some((category) => category._id === currentCategory._id)
+      ? [currentCategory, ...categories]
+      : categories;
   return (
     <div className="space-y-5">
       <div className="grid gap-5 md:grid-cols-2">
         {[
           ["name", item.name ?? item.eventNameId?.name ?? ""],
           ["code", item.code],
-          ["category", item.category ?? item.categoryId?.name ?? ""],
           ["location", item.location],
           ["rulebookLink", item.rulebookLink],
         ].map(([key, value]) => (
@@ -1021,6 +1053,30 @@ function EventEditor({
             />
           </label>
         ))}
+        <NameDropdown
+          label="Category"
+          options={categoryOptions}
+          value={item.categoryId?._id || ""}
+          onChange={(categoryId) => {
+            const selected = categories.find(
+              (category) => category._id === categoryId,
+            );
+            onChange({
+              ...item,
+              categoryId: { _id: categoryId, name: selected?.name || "" },
+              category: selected?.name || "",
+            });
+          }}
+          newValue={item.categoryId?._id === "new" ? item.category || "" : ""}
+          onNewValueChange={(value) =>
+            onChange({
+              ...item,
+              categoryId: { _id: "new", name: value },
+              category: value,
+            })
+          }
+          newLabel="New category name"
+        />
         <div className="space-y-2">
           <span className="block">Poster</span>
           {item.posterLink && (
