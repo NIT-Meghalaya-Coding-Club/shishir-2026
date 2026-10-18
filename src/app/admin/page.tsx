@@ -82,8 +82,39 @@ const peopleText = (people: Person[] = []) =>
     .map((person) => person.email || "")
     .filter(Boolean)
     .join("\n");
-const dateValue = (value: string) =>
-  value ? new Date(value).toISOString().slice(0, 16) : "";
+// Event times are stored as UTC instants but entered and displayed in IST
+// (Asia/Kolkata, fixed +05:30). Never rely on the server's ambient timezone.
+const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
+const DATE_TIME_LOCAL_PATTERN = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;
+
+// Stored instant (ISO string) -> value for a <input type="datetime-local"> in IST.
+const dateValue = (value: string) => {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  return new Date(date.getTime() + IST_OFFSET_MS).toISOString().slice(0, 16);
+};
+
+// <input type="datetime-local"> value (IST wall clock) -> UTC ISO string.
+const toInstant = (value: string) => {
+  if (!value) return "";
+  const iso = DATE_TIME_LOCAL_PATTERN.test(value)
+    ? `${value}:00+05:30`
+    : value;
+  const date = new Date(iso);
+  return Number.isNaN(date.getTime()) ? "" : date.toISOString();
+};
+
+const formatDateTime = (value: string) => {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  return new Intl.DateTimeFormat("en-IN", {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone: "Asia/Kolkata",
+  }).format(date);
+};
 
 function AdminSidebar({
   section,
@@ -313,8 +344,8 @@ export default function AdminPage() {
               item.coordinatorEmails || peopleText(item.coordinators),
             coCoordinatorEmails:
               item.coCoordinatorEmails || peopleText(item.coCoordinators),
-            startsAt: new Date(item.startsAt).toISOString(),
-            endsAt: new Date(item.endsAt).toISOString(),
+            startsAt: toInstant(item.startsAt),
+            endsAt: toInstant(item.endsAt),
           };
     const response = await fetch(`/api/admin/${kind}/${item.code}`, {
       method: "PATCH",
@@ -626,7 +657,7 @@ export default function AdminPage() {
                 items={events}
                 getTitle={(item) => item.eventNameId?.name || item.code}
                 getMeta={(item) =>
-                  `${item.categoryId?.name || "Uncategorised"} · ${new Date(item.startsAt).toLocaleString()}`
+                  `${item.categoryId?.name || "Uncategorised"} · ${formatDateTime(item.startsAt)}`
                 }
                 onEdit={setEditingEvent}
                 onDelete={deleteEvent}
@@ -1229,8 +1260,8 @@ function CreateEventEditor({ categories, eventNames, onCancel, onSuccess }: { ca
         category: categoryName,
         categoryId,
         location: formData.location.trim(),
-        startsAt: formData.startsAt,
-        endsAt: formData.endsAt,
+        startsAt: toInstant(formData.startsAt),
+        endsAt: toInstant(formData.endsAt),
         description: formData.description.trim(),
         eventType: formData.eventType,
         minParticipants: Number(formData.minParticipants),
