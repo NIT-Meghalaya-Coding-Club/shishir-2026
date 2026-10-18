@@ -11,8 +11,11 @@ import {
 import ComingSoon from "@/components/ComingSoon";
 
 import PageHeading from "@/components/PageHeading";
+import EventDetailsModal, {
+  type EventRecord,
+} from "@/components/events/event-details-modal";
 
-type EventType = { name: string; time: string; place: string; description: string; category: string; speakers?: string[] };
+type EventType = { code: string; name: string; time: string; place: string; description: string; category: string; speakers?: string[] };
 type ScheduleDay = { date: string; categories: Record<string, EventType[]> };
 
 /* ──────────────────────────────────────────────────────────────
@@ -76,6 +79,8 @@ const SchedulePage = () => {
   const days = ["all", "day1", "day2", "day3"];
   const [activeDay, setActiveDay] = useState(days[0]);
   const [activeCategory, setActiveCategory] = useState("All");
+  const [selectedEvent, setSelectedEvent] = useState<EventRecord | null>(null);
+  const [loadingEventCode, setLoadingEventCode] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/schedule")
@@ -86,6 +91,25 @@ const SchedulePage = () => {
       .then((data) => setSchedule(data.days || {}))
       .catch((error) => console.error("Load schedule error:", error));
   }, []);
+
+  // Opens the same details modal as the events page; the schedule payload
+  // is slim, so fetch the full event record by its code first.
+  const openEventDetails = async (code: string) => {
+    if (!code || loadingEventCode) return;
+    setLoadingEventCode(code);
+    try {
+      const response = await fetch(`/api/events/${code}`);
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || "Could not load event details");
+      }
+      setSelectedEvent(data.event);
+    } catch (error) {
+      console.error("Load event details error:", error);
+    } finally {
+      setLoadingEventCode(null);
+    }
+  };
 
   const activeSchedule = schedule[activeDay] || { date: "", categories: {} };
   const categories = Object.keys(activeSchedule.categories);
@@ -105,12 +129,6 @@ const SchedulePage = () => {
     activeCategory === "All"
       ? sortedAllEvents
       : sortEventsByTime(activeSchedule.categories[activeCategory] || []);
-
-  if (process.env.NEXT_PUBLIC_LAUNCH) {
-    return (
-      <ComingSoon />
-    )
-  }
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#E0FBFC] dark:bg-[#293241]">
@@ -363,7 +381,11 @@ const SchedulePage = () => {
                         <Blossom className="h-3.5 w-3.5 text-[#EE6C4D]" />
                       </div>
 
-                      <div className="sch-event group relative overflow-hidden rounded-md border border-[#98C1D9] bg-white/75 p-5 shadow-[0_8px_20px_-14px_rgba(61,90,128,0.5)] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#EE6C4D]/60 hover:bg-white hover:shadow-[0_16px_34px_-16px_rgba(61,90,128,0.6)] dark:border-[#98C1D9]/25 dark:bg-[#293241]/55 dark:hover:bg-[#293241]/80">
+                      <button
+                        type="button"
+                        onClick={() => openEventDetails(event.code)}
+                        className="sch-event group relative w-full cursor-pointer overflow-hidden rounded-md border border-[#98C1D9] bg-white/75 p-5 text-left shadow-[0_8px_20px_-14px_rgba(61,90,128,0.5)] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#EE6C4D]/60 hover:bg-white hover:shadow-[0_16px_34px_-16px_rgba(61,90,128,0.6)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#EE6C4D] dark:border-[#98C1D9]/25 dark:bg-[#293241]/55 dark:hover:bg-[#293241]/80"
+                      >
                         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                           <div className="min-w-0">
                             <p className="text-xs font-medium text-[#3D5A80]/80 dark:text-[#98C1D9]/80">
@@ -399,10 +421,24 @@ const SchedulePage = () => {
                               <span>{event.speakers.join(", ")}</span>
                             </div>
                           )}
+
+                          <span className="inline-flex items-center gap-1 font-semibold text-[#EE6C4D] sm:ml-auto">
+                            View details
+                            <ChevronRight className="h-3.5 w-3.5" />
+                          </span>
                         </div>
 
                         <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-[#EE6C4D] to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
-                      </div>
+
+                        {loadingEventCode === event.code && (
+                          <div className="absolute inset-0 z-20 flex items-center justify-center gap-2 bg-[#E0FBFC]/75 backdrop-blur-[2px] dark:bg-[#293241]/75">
+                            <Blossom className="h-6 w-6 animate-spin text-[#EE6C4D]" />
+                            <span className="text-xs font-semibold text-[#3D5A80] dark:text-[#98C1D9]">
+                              Opening…
+                            </span>
+                          </div>
+                        )}
+                      </button>
                     </div>
                   ))}
                 </div>
@@ -438,6 +474,13 @@ const SchedulePage = () => {
           .sch-cat:hover { transform: none; }
         }
       `}</style>
+
+      {selectedEvent && (
+        <EventDetailsModal
+          event={selectedEvent}
+          onClose={() => setSelectedEvent(null)}
+        />
+      )}
     </div>
   );
 };

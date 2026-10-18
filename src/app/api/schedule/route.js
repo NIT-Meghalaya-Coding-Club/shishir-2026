@@ -36,6 +36,7 @@ export async function GET() {
           const category = event.categoryId?.name || event.category || "Uncategorized";
           if (!groups[category]) groups[category] = [];
           groups[category].push({
+            code: event.code,
             name: event.eventNameId?.name || event.name || event.code,
             time: `${formatTime(event.startsAt)} - ${formatTime(event.endsAt)}`,
             place: event.location,
@@ -57,6 +58,7 @@ export async function GET() {
       const category = event.categoryId?.name || event.category || "Uncategorized";
       if (!allGroups[category]) allGroups[category] = [];
       allGroups[category].push({
+        code: event.code,
         name: event.eventNameId?.name || event.name || event.code,
         time: `${formatTime(event.startsAt)} - ${formatTime(event.endsAt)}`,
         place: event.location,
