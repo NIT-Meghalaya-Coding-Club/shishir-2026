@@ -322,8 +322,36 @@ export default function AdminPage() {
     });
   const saveManaged = async (managed: ManagedItem) => {
     const { kind, item } = managed;
+    let eventName = "";
     let categoryName = "";
     if (kind === "events") {
+      eventName = (item.name || item.eventNameId?.name || "").trim();
+      if (item.eventNameId?._id === "new") {
+        if (!eventName) {
+          toast.error("Enter a new event name");
+          return;
+        }
+        const eventNameResponse = await fetch("/api/event-names", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: eventName }),
+        });
+        if (eventNameResponse.ok) {
+          eventName = (await eventNameResponse.json()).eventName.name;
+        } else if (
+          eventNameResponse.status !== 401 &&
+          eventNameResponse.status !== 403
+        ) {
+          const eventNameData = await eventNameResponse.json();
+          toast.error(eventNameData.message || "Could not create event name");
+          return;
+        }
+        // If this admin session cannot create event names itself, the event
+        // update route below creates the event name from the submitted name.
+      } else if (!eventName) {
+        toast.error("Select an event name");
+        return;
+      }
       categoryName = (item.category || item.categoryId?.name || "").trim();
       if (item.categoryId?._id === "new") {
         if (!categoryName) {
@@ -366,7 +394,7 @@ export default function AdminPage() {
           }
         : {
             ...item,
-            name: item.name || item.eventNameId?.name,
+            name: eventName,
             category: categoryName,
             eventHeadEmails:
               item.eventHeadEmails || peopleText(item.eventHeads),
@@ -677,6 +705,7 @@ export default function AdminPage() {
               <EventEditor
                 item={editingEvent}
                 categories={categories}
+                eventNames={eventNames}
                 onChange={setEditingEvent}
                 onCancel={() => setEditingEvent(null)}
                 onSave={() =>
@@ -997,12 +1026,14 @@ function CreateCommitteeEditor({
 function EventEditor({
   item,
   categories,
+  eventNames,
   onChange,
   onCancel,
   onSave,
 }: {
   item: EventItem;
   categories: CommitteeName[];
+  eventNames: CommitteeName[];
   onChange: (item: EventItem) => void;
   onCancel: () => void;
   onSave: () => void;
@@ -1027,6 +1058,13 @@ function EventEditor({
     } else setUploadMessage(data.message || "Could not upload poster");
     setUploading(false);
   };
+  const currentEventName = item.eventNameId;
+  const eventNameOptions =
+    currentEventName &&
+    currentEventName._id !== "new" &&
+    !eventNames.some((eventName) => eventName._id === currentEventName._id)
+      ? [currentEventName, ...eventNames]
+      : eventNames;
   const currentCategory = item.categoryId;
   const categoryOptions =
     currentCategory &&
@@ -1037,22 +1075,30 @@ function EventEditor({
   return (
     <div className="space-y-5">
       <div className="grid gap-5 md:grid-cols-2">
-        {[
-          ["name", item.name ?? item.eventNameId?.name ?? ""],
-          ["code", item.code],
-          ["location", item.location],
-          ["rulebookLink", item.rulebookLink],
-        ].map(([key, value]) => (
-          <label key={key} className="space-y-2">
-            <span className="capitalize">{key}</span>
-            <input
-              className={input}
-              value={value}
-              readOnly={key === "code"}
-              onChange={(e) => update(key, e.target.value)}
-            />
-          </label>
-        ))}
+        <NameDropdown
+          label="Event Name"
+          options={eventNameOptions}
+          value={item.eventNameId?._id || ""}
+          onChange={(eventNameId) => {
+            const selected = eventNames.find(
+              (eventName) => eventName._id === eventNameId,
+            );
+            onChange({
+              ...item,
+              eventNameId: { _id: eventNameId, name: selected?.name || "" },
+              name: selected?.name || "",
+            });
+          }}
+          newValue={item.eventNameId?._id === "new" ? item.name || "" : ""}
+          onNewValueChange={(value) =>
+            onChange({
+              ...item,
+              eventNameId: { _id: "new", name: value },
+              name: value,
+            })
+          }
+          newLabel="New event name"
+        />
         <NameDropdown
           label="Category"
           options={categoryOptions}
@@ -1077,6 +1123,23 @@ function EventEditor({
           }
           newLabel="New category name"
         />
+        {[
+          ["code", item.code],
+          ["location", item.location],
+          ["rulebookLink", item.rulebookLink],
+        ].map(([key, value]) => (
+          <label key={key} className="space-y-2">
+            <span className="capitalize">{key}</span>
+            <input
+              className={`${input} ${
+                key === "code" ? "cursor-not-allowed opacity-60" : ""
+              }`}
+              value={value}
+              readOnly={key === "code"}
+              onChange={(e) => update(key, e.target.value)}
+            />
+          </label>
+        ))}
         <div className="space-y-2">
           <span className="block">Poster</span>
           {item.posterLink && (
