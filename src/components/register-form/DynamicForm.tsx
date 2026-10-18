@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { usePageRouter } from "@/components/ui/page-loader";
 
 import Loading from "@/app/components/Loading";
 import { AnimatedButton } from "@/components/events/buttons";
@@ -105,7 +105,7 @@ const DynamicForm = ({
   const [hideLeaderWarning, setHideLeaderWarning] = useState(false);
   const [hideLeaderInfo, setHideLeaderInfo] = useState(false);
   const { data: session, status } = useSession();
-  const router = useRouter();
+  const router = usePageRouter();
 
 
   // Check if this is an event that needs dynamic configuration

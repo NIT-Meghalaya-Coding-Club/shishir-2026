@@ -1,10 +1,10 @@
 "use client"
 
-import { useRouter } from "next/navigation"
+import { usePageRouter } from "@/components/ui/page-loader"
 import { Pencil } from "lucide-react"
 
 export default function EditButton({ desktop = false }: { desktop?: boolean }) {
-  const router = useRouter()
+  const router = usePageRouter()
 
   return (
     <button

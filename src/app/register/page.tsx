@@ -3,7 +3,7 @@
 import React, { useEffect } from "react";
 import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { usePageRouter } from "@/components/ui/page-loader";
 
 // Components
 import GoogleSignInButton from "@/components/competition/googleSignInButton";
@@ -14,7 +14,7 @@ import Loading from "../components/Loading";
 
 function Register() {
   const { status } = useSession();
-  const router = useRouter();
+  const router = usePageRouter();
 
   useEffect(() => {
     if (status === "authenticated") {

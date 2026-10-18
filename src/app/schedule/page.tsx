@@ -8,7 +8,6 @@ import {
   Users,
   ChevronRight,
 } from "lucide-react";
-import ComingSoon from "@/components/ComingSoon";
 
 import PageHeading from "@/components/PageHeading";
 import EventDetailsModal, {

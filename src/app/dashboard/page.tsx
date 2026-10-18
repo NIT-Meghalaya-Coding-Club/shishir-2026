@@ -3,7 +3,7 @@
 
 import Image from "next/image";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { usePageRouter } from "@/components/ui/page-loader";
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, Pencil } from "lucide-react";
@@ -170,7 +170,7 @@ const ProfileCard = () => {
   });
 
   const { data: session, status } = useSession();
-  const router = useRouter();
+  const router = usePageRouter();
   const [dataFetched, setDataFetched] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [showMoreInfo, setShowMoreInfo] = useState(false);

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { usePageRouter } from "@/components/ui/page-loader";
 
 import { Pencil } from "lucide-react";
 
@@ -121,7 +121,7 @@ function Field({
 
 const ProfileDetailsForm = () => {
   const { data: session } = useSession();
-  const router = useRouter();
+  const router = usePageRouter();
   const [dataFetched, setDataFetched] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [saving, setSaving] = useState(false);

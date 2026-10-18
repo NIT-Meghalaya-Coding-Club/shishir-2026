@@ -1,13 +1,13 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { usePageRouter } from "@/components/ui/page-loader";
 import { useEffect, useState } from "react";
 import Image from 'next/image';
 
 export default function RegistrationPrompt() {
   const { data: session, status } = useSession();
-  const router = useRouter();
+  const router = usePageRouter();
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {

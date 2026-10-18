@@ -6,7 +6,7 @@ import MenuToggle from "./MenuToggle";
 import { motion, AnimatePresence } from "framer-motion";
 import NavBarItem from "./NavBarItem";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { usePageRouter } from "@/components/ui/page-loader";
 
 
 const NavBar: React.FC = () => {
@@ -19,7 +19,7 @@ const NavBar: React.FC = () => {
   const isHoveredRef = useRef(false);
   const isOpenRef = useRef(false);
   const isVisibleRef = useRef(true);
-  const router = useRouter();
+  const router = usePageRouter();
 
   const { status } = useSession();
 

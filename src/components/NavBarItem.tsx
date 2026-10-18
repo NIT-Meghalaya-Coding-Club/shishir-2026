@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { usePageRouter } from "@/components/ui/page-loader";
 import { motion } from "framer-motion";
 
 interface Props {
@@ -47,7 +47,7 @@ const GlassRoll: React.FC<{ side: "left" | "right" }> = ({ side }) => (
 );
 
 const NavBarItem: React.FC<Props> = ({ to, text, onClick }) => {
-  const router = useRouter();
+  const router = usePageRouter();
 
   const navigateTo = () => {
     router.push(to);
