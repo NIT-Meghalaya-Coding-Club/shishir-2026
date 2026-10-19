@@ -4,12 +4,14 @@ import Event from "@/models/Event";
 import Registration from "@/models/Registration";
 import User from "@/models/User";
 import { getCurrentUser, isEventHeadOrCoordinator } from "@/lib/eventAuth";
+import { isAdminRequest } from "@/lib/adminAuth";
 
 export async function GET(req, { params }) {
   try {
-    const { user } = await getCurrentUser();
+    const isAdmin = await isAdminRequest();
+    const { user } = isAdmin ? { user: null } : await getCurrentUser();
 
-    if (!user) {
+    if (!isAdmin && !user) {
       return NextResponse.json(
         { success: false, message: "Unauthorized" },
         { status: 401 }
@@ -26,7 +28,7 @@ export async function GET(req, { params }) {
       );
     }
 
-    if (!isEventHeadOrCoordinator(event, user)) {
+    if (!isAdmin && !isEventHeadOrCoordinator(event, user)) {
       return NextResponse.json(
         { success: false, message: "Only event heads or coordinators can view participants" },
         { status: 403 }

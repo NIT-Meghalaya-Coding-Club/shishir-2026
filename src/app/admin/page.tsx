@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import UploadsPanel from "@/components/admin/UploadsPanel";
 import SacPostsPanel from "@/components/admin/SacPostsPanel";
+import EventParticipants from "@/components/event-head/EventParticipants";
 import NameDropdown from "@/components/NameDropdown";
 import ImageCropper, { MAX_IMAGE_SIZE_MB } from "@/components/ImageCropper";
 import ValidationDialog from "@/components/ui/ValidationDialog";
@@ -218,6 +219,9 @@ export default function AdminPage() {
     null,
   );
   const [editingEvent, setEditingEvent] = useState<EventItem | null>(null);
+  const [participantsEvent, setParticipantsEvent] = useState<EventItem | null>(
+    null,
+  );
   const [creatingEvent, setCreatingEvent] = useState(false);
   const [creatingCommittee, setCreatingCommittee] = useState(false);
   const [signingIn, setSigningIn] = useState(false);
@@ -521,6 +525,7 @@ export default function AdminPage() {
           setMessage("");
           setEditingCommittee(null);
           setEditingEvent(null);
+          setParticipantsEvent(null);
           setCreatingEvent(false);
         }}
         onLogout={logout}
@@ -696,7 +701,7 @@ export default function AdminPage() {
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold">Manage events</h2>
-              {!creatingEvent && !editingEvent && (
+              {!creatingEvent && !editingEvent && !participantsEvent && (
                 <LoadingButton
                   type="button"
                   size="sm"
@@ -733,6 +738,14 @@ export default function AdminPage() {
                   saveManaged({ kind: "events", item: editingEvent })
                 }
               />
+            ) : participantsEvent ? (
+              <EventParticipants
+                eventCode={participantsEvent.code}
+                eventName={
+                  participantsEvent.eventNameId?.name || participantsEvent.code
+                }
+                onClose={() => setParticipantsEvent(null)}
+              />
             ) : (
               <List
                 items={events}
@@ -741,6 +754,7 @@ export default function AdminPage() {
                   `${item.categoryId?.name || "Uncategorised"} · ${formatDateTime(item.startsAt)}`
                 }
                 onEdit={setEditingEvent}
+                onParticipants={setParticipantsEvent}
                 onDelete={deleteEvent}
               />
             )}
@@ -767,12 +781,13 @@ function List<T extends { code: string }>({
   items,
   getTitle,
   getMeta,
-  onEdit, onDelete,
+  onEdit, onDelete, onParticipants,
 }: {
   items: T[];
   getTitle: (item: T) => string;
   getMeta: (item: T) => string;
   onEdit: (item: T) => void; onDelete?: (item: T) => void;
+  onParticipants?: (item: T) => void;
 }) {
   return (
     <div className="space-y-3">
@@ -794,6 +809,7 @@ function List<T extends { code: string }>({
           >
             <Edit3 size={17} />
           </button>
+        {onParticipants && <button type="button" onClick={() => onParticipants(item)} className="rounded-lg border border-white/10 p-2 text-zinc-300 hover:bg-white/10" title={`View participants for ${getTitle(item)}`} aria-label={`View participants for ${getTitle(item)}`}><UsersRound size={16} /></button>}
         {onDelete && <button type="button" onClick={() => onDelete(item)} className="rounded-lg border border-red-500/30 p-2 text-red-400 hover:bg-red-500 hover:text-white" aria-label={`Delete ${getTitle(item)}`}><Trash2 size={16} /></button>}</div></div>
       ))}
       {!items.length && (
