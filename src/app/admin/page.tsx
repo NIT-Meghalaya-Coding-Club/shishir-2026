@@ -106,17 +106,6 @@ const toInstant = (value: string) => {
   return Number.isNaN(date.getTime()) ? "" : date.toISOString();
 };
 
-const formatDateTime = (value: string) => {
-  if (!value) return "";
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "";
-  return new Intl.DateTimeFormat("en-IN", {
-    dateStyle: "medium",
-    timeStyle: "short",
-    timeZone: "Asia/Kolkata",
-  }).format(date);
-};
-
 function AdminSidebar({
   section,
   onSectionChange,
@@ -750,8 +739,8 @@ export default function AdminPage() {
               <List
                 items={events}
                 getTitle={(item) => item.eventNameId?.name || item.code}
-                getMeta={(item) =>
-                  `${item.categoryId?.name || "Uncategorised"} · ${formatDateTime(item.startsAt)}`
+                getGroup={(item) =>
+                  item.categoryId?.name || item.category || "Uncategorised"
                 }
                 onEdit={setEditingEvent}
                 onParticipants={setParticipantsEvent}
@@ -781,42 +770,80 @@ function List<T extends { code: string }>({
   items,
   getTitle,
   getMeta,
+  getGroup,
   onEdit, onDelete, onParticipants,
 }: {
   items: T[];
   getTitle: (item: T) => string;
-  getMeta: (item: T) => string;
+  getMeta?: (item: T) => string;
+  getGroup?: (item: T) => string;
   onEdit: (item: T) => void; onDelete?: (item: T) => void;
   onParticipants?: (item: T) => void;
 }) {
+  const renderRow = (item: T) => (
+    <div
+      key={item.code}
+      className="flex items-center gap-4 rounded-xl border border-white/10 bg-zinc-900 p-4"
+    >
+      <div className="min-w-0 flex-1">
+        <p className="font-semibold">{getTitle(item)}</p>
+        {getMeta && (
+          <p className="mt-1 text-sm text-zinc-400">{getMeta(item)}</p>
+        )}
+        <p className="mt-1 font-mono text-xs text-zinc-600">{item.code}</p>
+      </div>
+      <div className="flex items-center gap-2"><button
+        type="button"
+        onClick={() => onEdit(item)}
+        className="rounded-lg bg-white/10 p-2 text-zinc-300 hover:bg-amber-400 hover:text-zinc-950"
+        aria-label={`Edit ${getTitle(item)}`}
+      >
+        <Edit3 size={17} />
+      </button>
+    {onParticipants && <button type="button" onClick={() => onParticipants(item)} className="rounded-lg border border-white/10 p-2 text-zinc-300 hover:bg-white/10" title={`View participants for ${getTitle(item)}`} aria-label={`View participants for ${getTitle(item)}`}><UsersRound size={16} /></button>}
+    {onDelete && <button type="button" onClick={() => onDelete(item)} className="rounded-lg border border-red-500/30 p-2 text-red-400 hover:bg-red-500 hover:text-white" aria-label={`Delete ${getTitle(item)}`}><Trash2 size={16} /></button>}</div></div>
+  );
+  const empty = !items.length ? (
+    <p className="rounded-lg border border-dashed border-white/15 p-6 text-zinc-500">
+      Nothing to show.
+    </p>
+  ) : null;
+  if (getGroup) {
+    const groups = new Map<string, T[]>();
+    for (const item of items) {
+      const group = getGroup(item);
+      const bucket = groups.get(group);
+      if (bucket) bucket.push(item);
+      else groups.set(group, [item]);
+    }
+    const isUncategorised = (name: string) =>
+      name.trim().toLowerCase() === "uncategorised";
+    const ordered = [...groups.entries()].sort(([a], [b]) => {
+      if (isUncategorised(a) !== isUncategorised(b))
+        return isUncategorised(a) ? 1 : -1;
+      return a.localeCompare(b, undefined, { sensitivity: "base" });
+    });
+    return (
+      <div className="space-y-7">
+        {ordered.map(([group, groupItems]) => (
+          <div key={group} className="space-y-3">
+            <h3 className="flex items-center gap-2 text-base font-semibold text-amber-300">
+              {group}
+              <span className="rounded-full bg-white/10 px-2 py-0.5 text-xs font-normal text-zinc-300">
+                {groupItems.length}
+              </span>
+            </h3>
+            {groupItems.map(renderRow)}
+          </div>
+        ))}
+        {empty}
+      </div>
+    );
+  }
   return (
     <div className="space-y-3">
-      {items.map((item) => (
-        <div
-          key={item.code}
-          className="flex items-center gap-4 rounded-xl border border-white/10 bg-zinc-900 p-4"
-        >
-          <div className="min-w-0 flex-1">
-            <p className="font-semibold">{getTitle(item)}</p>
-            <p className="mt-1 text-sm text-zinc-400">{getMeta(item)}</p>
-            <p className="mt-1 font-mono text-xs text-zinc-600">{item.code}</p>
-          </div>
-          <div className="flex items-center gap-2"><button
-            type="button"
-            onClick={() => onEdit(item)}
-            className="rounded-lg bg-white/10 p-2 text-zinc-300 hover:bg-amber-400 hover:text-zinc-950"
-            aria-label={`Edit ${getTitle(item)}`}
-          >
-            <Edit3 size={17} />
-          </button>
-        {onParticipants && <button type="button" onClick={() => onParticipants(item)} className="rounded-lg border border-white/10 p-2 text-zinc-300 hover:bg-white/10" title={`View participants for ${getTitle(item)}`} aria-label={`View participants for ${getTitle(item)}`}><UsersRound size={16} /></button>}
-        {onDelete && <button type="button" onClick={() => onDelete(item)} className="rounded-lg border border-red-500/30 p-2 text-red-400 hover:bg-red-500 hover:text-white" aria-label={`Delete ${getTitle(item)}`}><Trash2 size={16} /></button>}</div></div>
-      ))}
-      {!items.length && (
-        <p className="rounded-lg border border-dashed border-white/15 p-6 text-zinc-500">
-          Nothing to show.
-        </p>
-      )}
+      {items.map(renderRow)}
+      {empty}
     </div>
   );
 }
