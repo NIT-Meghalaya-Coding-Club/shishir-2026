@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import ExcelJS from "exceljs";
 import { Download, Loader2, RefreshCw, Users, X } from "lucide-react";
 import { toast } from "react-toastify";
@@ -197,14 +197,51 @@ export default function EventParticipants({
         <p className="mt-6 flex items-center gap-2 text-sm text-zinc-500"><Users className="h-4 w-4" />No registrations yet.</p>
       ) : (
         <div className="mt-4 max-w-full overflow-x-auto">
-          <table className="w-full min-w-[680px] text-left text-sm">
+          <table className="w-full min-w-[880px] text-left text-sm">
             <thead className="border-b border-white/10 text-xs uppercase tracking-wide text-zinc-500">
-              <tr><th className="px-3 py-2">Leader</th><th className="px-3 py-2">Email</th><th className="px-3 py-2">Phone</th><th className="px-3 py-2">Members</th><th className="px-3 py-2">Group</th></tr>
+              <tr>
+                <th className="px-3 py-2">Sl No.</th>
+                <th className="px-3 py-2">Group</th>
+                <th className="px-3 py-2">Leader</th>
+                <th className="px-3 py-2">Email</th>
+                <th className="px-3 py-2">Phone</th>
+                <th className="px-3 py-2">Team Members</th>
+                <th className="px-3 py-2">Member Phone</th>
+              </tr>
             </thead>
             <tbody>
               {registrations.map((registration, index) => {
                 const leader = registration.leader || registration.teamData?.[0] || {};
-                return <tr key={`${registration.userId}-${index}`} className="border-b border-white/5 text-zinc-300"><td className="px-3 py-3">{leader.name || "N/A"}<span className="block text-xs text-zinc-500">{leader.collegeID || "N/A"}</span></td><td className="px-3 py-3">{registration.userId}</td><td className="px-3 py-3">{leader.phone || "N/A"}</td><td className="px-3 py-3">{registration.teamData?.length || 0}</td><td className="px-3 py-3">{registration.metadata?.groupName || "N/A"}</td></tr>;
+                const members = registration.teamData?.slice(1) || [];
+                const memberRows: (TeamMember | null)[] = members.length ? members : [null];
+                return (
+                  <Fragment key={`${registration.userId}-${index}`}>
+                    {memberRows.map((member, memberIndex) => (
+                      <tr key={memberIndex} className="border-b border-white/5 text-zinc-300">
+                        {memberIndex === 0 && (
+                          <>
+                            <td className="px-3 py-3 align-top" rowSpan={memberRows.length}>{index + 1}</td>
+                            <td className="px-3 py-3 align-top" rowSpan={memberRows.length}>{registration.metadata?.groupName || "N/A"}</td>
+                            <td className="px-3 py-3 align-top" rowSpan={memberRows.length}>{leader.name || "N/A"}<span className="block text-xs text-zinc-500">{formatRollNo(leader.collegeID)}</span></td>
+                            <td className="px-3 py-3 align-top" rowSpan={memberRows.length}>{registration.userId}</td>
+                            <td className="px-3 py-3 align-top" rowSpan={memberRows.length}>{leader.phone || "N/A"}</td>
+                          </>
+                        )}
+                        <td className="px-3 py-3 align-top">
+                          {member ? (
+                            <>
+                              {`${memberIndex + 1}. ${member.name || "N/A"}`}
+                              <span className="block text-xs text-zinc-500">{formatRollNo(member.collegeID)}</span>
+                            </>
+                          ) : (
+                            "—"
+                          )}
+                        </td>
+                        <td className="px-3 py-3 align-top">{member ? member.phone || "N/A" : "—"}</td>
+                      </tr>
+                    ))}
+                  </Fragment>
+                );
               })}
             </tbody>
           </table>
