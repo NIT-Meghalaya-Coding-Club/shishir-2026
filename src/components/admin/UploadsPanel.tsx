@@ -2,6 +2,7 @@
 
 import { ChevronLeft, ChevronRight, Search, Trash2, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import LoadingButton from "@/components/ui/LoadingButton";
 
 type UploadItem = {
   id: string;
@@ -118,7 +119,7 @@ export default function UploadsPanel() {
         <button type="button" aria-label="Close upload details" onClick={() => setSelected(null)} className="absolute right-4 top-4 rounded-lg p-2 hover:bg-white/10"><X size={20} /></button>
         <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_280px]">
           <div className="flex min-h-80 items-center justify-center rounded-lg bg-zinc-950 p-3">{selected.imageUrl ? <img src={selected.imageUrl} alt={`${selected.type} upload`} className="max-h-[65vh] max-w-full object-contain" /> : <span className="text-zinc-500">No image available</span>}</div>
-          <div className="space-y-4"><h2 className="text-2xl font-semibold capitalize">{selected.type} upload</h2><div><p className="font-medium">{selected.uploader.name}</p><p className="text-sm text-zinc-400">{selected.uploader.email || "Admin upload"}</p></div><dl className="space-y-3 text-sm"><div><dt className="text-zinc-500">Processed</dt><dd>{selected.isProcessed ? "Yes" : "No"}</dd></div><div><dt className="text-zinc-500">Size before</dt><dd>{bytes(selected.originalSize)}</dd></div><div><dt className="text-zinc-500">Size after</dt><dd>{bytes(selected.processedSize)}</dd></div><div><dt className="text-zinc-500">Created at (IST)</dt><dd>{indianDate(selected.createdAt)}</dd></div><div><dt className="text-zinc-500">Updated at (IST)</dt><dd>{indianDate(selected.updatedAt)}</dd></div></dl><button type="button" disabled={deleting} onClick={() => void deleteUpload(selected)} className="flex items-center gap-2 rounded-lg bg-red-500/15 px-4 py-2 text-sm font-medium text-red-300 hover:bg-red-500/25 disabled:opacity-50"><Trash2 size={16} />{deleting ? "Deleting..." : "Delete image and record"}</button></div>
+          <div className="space-y-4"><h2 className="text-2xl font-semibold capitalize">{selected.type} upload</h2><div><p className="font-medium">{selected.uploader.name}</p><p className="text-sm text-zinc-400">{selected.uploader.email || "Admin upload"}</p></div><dl className="space-y-3 text-sm"><div><dt className="text-zinc-500">Processed</dt><dd>{selected.isProcessed ? "Yes" : "No"}</dd></div><div><dt className="text-zinc-500">Size before</dt><dd>{bytes(selected.originalSize)}</dd></div><div><dt className="text-zinc-500">Size after</dt><dd>{bytes(selected.processedSize)}</dd></div><div><dt className="text-zinc-500">Created at (IST)</dt><dd>{indianDate(selected.createdAt)}</dd></div><div><dt className="text-zinc-500">Updated at (IST)</dt><dd>{indianDate(selected.updatedAt)}</dd></div></dl><LoadingButton type="button" variant="danger" size="sm" icon={Trash2} loading={deleting} onClick={() => void deleteUpload(selected)}>{deleting ? "Deleting..." : "Delete image and record"}</LoadingButton></div>
         </div>
       </section>
     </div>}

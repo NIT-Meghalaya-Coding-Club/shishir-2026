@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Save } from "lucide-react";
 import ImageCropper, { MAX_IMAGE_SIZE_MB } from "@/components/ImageCropper";
+import LoadingButton from "@/components/ui/LoadingButton";
 
 type SacPost = {
   _id: string;
@@ -25,6 +27,8 @@ export default function SacPostsPanel() {
   const [photoPostId, setPhotoPostId] = useState<string | null>(null);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [savingOrder, setSavingOrder] = useState(false);
   const photoInputRef = useRef<HTMLInputElement>(null);
 
   const clearPhotoInput = () => {
@@ -45,44 +49,51 @@ export default function SacPostsPanel() {
     setForm((current) => ({ ...current, [key]: value }));
   const save = async (event: React.FormEvent) => {
     event.preventDefault();
-    const response = await fetch(
-      editing ? `/api/admin/sac-posts/${editing}` : "/api/admin/sac-posts",
-      {
-        method: editing ? "PATCH" : "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      },
-    );
-    const data = await response.json();
-    if (!response.ok) {
-      setMessage(data.message || "Could not save SAC post");
-      return;
-    }
-    const postId = editing || data.post?._id;
-    if (photo && postId) {
-      const body = new FormData();
-      body.append("file", photo);
-      const uploadResponse = await fetch(
-        `/api/admin/sac-posts/${postId}/photo`,
-        { method: "POST", body },
+    setSaving(true);
+    try {
+      const response = await fetch(
+        editing ? `/api/admin/sac-posts/${editing}` : "/api/admin/sac-posts",
+        {
+          method: editing ? "PATCH" : "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(form),
+        },
       );
-      const uploadData = await uploadResponse.json();
-      if (!uploadResponse.ok) {
-        setMessage(uploadData.message || "Post saved, but photo upload failed");
-        setForm(empty);
-        setPhoto(null);
-        setEditing(null);
-        clearPhotoInput();
-        await load();
+      const data = await response.json();
+      if (!response.ok) {
+        setMessage(data.message || "Could not save SAC post");
         return;
       }
+      const postId = editing || data.post?._id;
+      if (photo && postId) {
+        const body = new FormData();
+        body.append("file", photo);
+        const uploadResponse = await fetch(
+          `/api/admin/sac-posts/${postId}/photo`,
+          { method: "POST", body },
+        );
+        const uploadData = await uploadResponse.json();
+        if (!uploadResponse.ok) {
+          setMessage(
+            uploadData.message || "Post saved, but photo upload failed",
+          );
+          setForm(empty);
+          setPhoto(null);
+          setEditing(null);
+          clearPhotoInput();
+          await load();
+          return;
+        }
+      }
+      setMessage("SAC post saved");
+      setForm(empty);
+      setPhoto(null);
+      setEditing(null);
+      clearPhotoInput();
+      await load();
+    } finally {
+      setSaving(false);
     }
-    setMessage("SAC post saved");
-    setForm(empty);
-    setPhoto(null);
-    setEditing(null);
-    clearPhotoInput();
-    await load();
   };
   const upload = async (id: string, file: File) => {
     const body = new FormData();
@@ -107,23 +118,28 @@ export default function SacPostsPanel() {
     });
   };
   const saveOrder = async () => {
-    const responses = await Promise.all(
-      posts.map((item, index) =>
-        fetch(`/api/admin/sac-posts/${item._id}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ order: index }),
-        }),
-      ),
-    );
-    if (responses.every((response) => response.ok)) {
-      setPosts((current) =>
-        current.map((item, index) => ({ ...item, order: index })),
+    setSavingOrder(true);
+    try {
+      const responses = await Promise.all(
+        posts.map((item, index) =>
+          fetch(`/api/admin/sac-posts/${item._id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ order: index }),
+          }),
+        ),
       );
-      setMessage("SAC post order saved");
-    } else {
-      setMessage("Could not save SAC post order");
-      await load();
+      if (responses.every((response) => response.ok)) {
+        setPosts((current) =>
+          current.map((item, index) => ({ ...item, order: index })),
+        );
+        setMessage("SAC post order saved");
+      } else {
+        setMessage("Could not save SAC post order");
+        await load();
+      }
+    } finally {
+      setSavingOrder(false);
     }
   };
   const remove = async (id: string) => {
@@ -181,12 +197,9 @@ export default function SacPostsPanel() {
           </span>
         </label>
         <div className="flex gap-3 md:col-span-2">
-          <button
-            className="rounded-lg bg-amber-400 px-5 py-3 font-semibold text-zinc-950"
-            type="submit"
-          >
+          <LoadingButton type="submit" icon={Save} loading={saving}>
             {editing ? "Update post" : "Add post"}
-          </button>
+          </LoadingButton>
           {editing && (
             <button
               type="button"
@@ -205,13 +218,13 @@ export default function SacPostsPanel() {
       </form>
       {message && <p className="text-sm text-zinc-300">{message}</p>}
       <div className="flex justify-end">
-        <button
+        <LoadingButton
           type="button"
-          className="rounded-lg bg-amber-400 px-5 py-3 font-semibold text-zinc-950"
+          loading={savingOrder}
           onClick={() => void saveOrder()}
         >
           Save order
-        </button>
+        </LoadingButton>
       </div>
       <div className="grid gap-4 md:grid-cols-2">
         {posts.map((item, index) => (

@@ -10,7 +10,6 @@ import {
   KeyRound,
   ListOrdered,
   LogOut,
-  Loader2,
   Plus,
   Save,
   ShieldCheck,
@@ -24,6 +23,7 @@ import SacPostsPanel from "@/components/admin/SacPostsPanel";
 import NameDropdown from "@/components/NameDropdown";
 import ImageCropper, { MAX_IMAGE_SIZE_MB } from "@/components/ImageCropper";
 import ValidationDialog from "@/components/ui/ValidationDialog";
+import LoadingButton from "@/components/ui/LoadingButton";
 
 type CommitteeName = { _id: string; name: string };
 type Person = { name?: string; email?: string; collegeID?: string };
@@ -220,6 +220,9 @@ export default function AdminPage() {
   const [editingEvent, setEditingEvent] = useState<EventItem | null>(null);
   const [creatingEvent, setCreatingEvent] = useState(false);
   const [creatingCommittee, setCreatingCommittee] = useState(false);
+  const [signingIn, setSigningIn] = useState(false);
+  const [savingSettings, setSavingSettings] = useState(false);
+  const [savingManaged, setSavingManaged] = useState(false);
 
   const loadSettings = async () => {
     const response = await fetch("/api/admin/settings");
@@ -270,41 +273,51 @@ export default function AdminPage() {
   }, [authenticated, section]);
   const login = async (event: FormEvent) => {
     event.preventDefault();
-    const response = await fetch("/api/admin/auth", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
-    if (!response.ok) {
-      setMessage("Invalid admin credentials");
-      return;
+    setSigningIn(true);
+    try {
+      const response = await fetch("/api/admin/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      if (!response.ok) {
+        setMessage("Invalid admin credentials");
+        return;
+      }
+      setPassword("");
+      await loadSettings();
+    } finally {
+      setSigningIn(false);
     }
-    setPassword("");
-    await loadSettings();
   };
   const saveSettings = async (event: FormEvent) => {
     event.preventDefault();
-    const response = await fetch("/api/admin/settings", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        eventCreatorEmails: eventCreators
-          .split(/[\n,]+/)
-          .map((v) => v.trim())
-          .filter(Boolean),
-        committeeHeadEmails: committeeHeads
-          .split(/[\n,]+/)
-          .map((v) => v.trim())
-          .filter(Boolean),
-        munDashboardEmails: munEmails
-          .split(/[\n,]+/)
-          .map((v) => v.trim())
-          .filter(Boolean),
-        committeeOrder,
-        scheduleDates,
-      }),
-    });
-    setMessage(response.ok ? "Settings saved" : "Could not save settings");
+    setSavingSettings(true);
+    try {
+      const response = await fetch("/api/admin/settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          eventCreatorEmails: eventCreators
+            .split(/[\n,]+/)
+            .map((v) => v.trim())
+            .filter(Boolean),
+          committeeHeadEmails: committeeHeads
+            .split(/[\n,]+/)
+            .map((v) => v.trim())
+            .filter(Boolean),
+          munDashboardEmails: munEmails
+            .split(/[\n,]+/)
+            .map((v) => v.trim())
+            .filter(Boolean),
+          committeeOrder,
+          scheduleDates,
+        }),
+      });
+      setMessage(response.ok ? "Settings saved" : "Could not save settings");
+    } finally {
+      setSavingSettings(false);
+    }
   };
   const logout = async () => {
     await fetch("/api/admin/auth", { method: "DELETE" });
@@ -321,103 +334,110 @@ export default function AdminPage() {
       return next;
     });
   const saveManaged = async (managed: ManagedItem) => {
-    const { kind, item } = managed;
-    let eventName = "";
-    let categoryName = "";
-    if (kind === "events") {
-      eventName = (item.name || item.eventNameId?.name || "").trim();
-      if (item.eventNameId?._id === "new") {
-        if (!eventName) {
-          toast.error("Enter a new event name");
-          return;
-        }
-        const eventNameResponse = await fetch("/api/event-names", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name: eventName }),
-        });
-        if (eventNameResponse.ok) {
-          eventName = (await eventNameResponse.json()).eventName.name;
-        } else if (
-          eventNameResponse.status !== 401 &&
-          eventNameResponse.status !== 403
-        ) {
-          const eventNameData = await eventNameResponse.json();
-          toast.error(eventNameData.message || "Could not create event name");
-          return;
-        }
-        // If this admin session cannot create event names itself, the event
-        // update route below creates the event name from the submitted name.
-      } else if (!eventName) {
-        toast.error("Select an event name");
-        return;
-      }
-      categoryName = (item.category || item.categoryId?.name || "").trim();
-      if (item.categoryId?._id === "new") {
-        if (!categoryName) {
-          toast.error("Enter a new category name");
-          return;
-        }
-        const categoryResponse = await fetch("/api/categories", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name: categoryName }),
-        });
-        if (categoryResponse.ok) {
-          categoryName = (await categoryResponse.json()).category.name;
-        } else if (
-          categoryResponse.status !== 401 &&
-          categoryResponse.status !== 403
-        ) {
-          const categoryData = await categoryResponse.json();
-          toast.error(categoryData.message || "Could not create category");
-          return;
-        }
-        // If this admin session cannot create categories itself, the event
-        // update route below creates the category from the submitted name.
-      } else if (!categoryName) {
-        toast.error("Select a category");
-        return;
-      }
-    }
-    const payload =
-      kind === "committees"
-        ? {
-            ...item,
-            name: item.committeeNameId?.name,
-            committeeHeadEmails:
-              item.committeeHeadEmails || peopleText(item.committeeHeads),
-            coordinatorEmails:
-              item.coordinatorEmails || peopleText(item.coordinators),
-            coCoordinatorEmails:
-              item.coCoordinatorEmails || peopleText(item.coCoordinators),
+    setSavingManaged(true);
+    try {
+      const { kind, item } = managed;
+      let eventName = "";
+      let categoryName = "";
+      if (kind === "events") {
+        eventName = (item.name || item.eventNameId?.name || "").trim();
+        if (item.eventNameId?._id === "new") {
+          if (!eventName) {
+            toast.error("Enter a new event name");
+            return;
           }
-        : {
-            ...item,
-            name: eventName,
-            category: categoryName,
-            eventHeadEmails:
-              item.eventHeadEmails || peopleText(item.eventHeads),
-            coordinatorEmails:
-              item.coordinatorEmails || peopleText(item.coordinators),
-            coCoordinatorEmails:
-              item.coCoordinatorEmails || peopleText(item.coCoordinators),
-            startsAt: toInstant(item.startsAt),
-            endsAt: toInstant(item.endsAt),
-          };
-    const response = await fetch(`/api/admin/${kind}/${item.code}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    const data = await response.json();
-    setMessage(
-      response.ok ? "Changes saved" : data.message || "Could not save changes",
-    );
-    if (response.ok) {
-      setEditingCommittee(null);
-      setEditingEvent(null);
-      await loadManaged();
+          const eventNameResponse = await fetch("/api/event-names", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name: eventName }),
+          });
+          if (eventNameResponse.ok) {
+            eventName = (await eventNameResponse.json()).eventName.name;
+          } else if (
+            eventNameResponse.status !== 401 &&
+            eventNameResponse.status !== 403
+          ) {
+            const eventNameData = await eventNameResponse.json();
+            toast.error(eventNameData.message || "Could not create event name");
+            return;
+          }
+          // If this admin session cannot create event names itself, the event
+          // update route below creates the event name from the submitted name.
+        } else if (!eventName) {
+          toast.error("Select an event name");
+          return;
+        }
+        categoryName = (item.category || item.categoryId?.name || "").trim();
+        if (item.categoryId?._id === "new") {
+          if (!categoryName) {
+            toast.error("Enter a new category name");
+            return;
+          }
+          const categoryResponse = await fetch("/api/categories", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name: categoryName }),
+          });
+          if (categoryResponse.ok) {
+            categoryName = (await categoryResponse.json()).category.name;
+          } else if (
+            categoryResponse.status !== 401 &&
+            categoryResponse.status !== 403
+          ) {
+            const categoryData = await categoryResponse.json();
+            toast.error(categoryData.message || "Could not create category");
+            return;
+          }
+          // If this admin session cannot create categories itself, the event
+          // update route below creates the category from the submitted name.
+        } else if (!categoryName) {
+          toast.error("Select a category");
+          return;
+        }
+      }
+      const payload =
+        kind === "committees"
+          ? {
+              ...item,
+              name: item.committeeNameId?.name,
+              committeeHeadEmails:
+                item.committeeHeadEmails || peopleText(item.committeeHeads),
+              coordinatorEmails:
+                item.coordinatorEmails || peopleText(item.coordinators),
+              coCoordinatorEmails:
+                item.coCoordinatorEmails || peopleText(item.coCoordinators),
+            }
+          : {
+              ...item,
+              name: eventName,
+              category: categoryName,
+              eventHeadEmails:
+                item.eventHeadEmails || peopleText(item.eventHeads),
+              coordinatorEmails:
+                item.coordinatorEmails || peopleText(item.coordinators),
+              coCoordinatorEmails:
+                item.coCoordinatorEmails || peopleText(item.coCoordinators),
+              startsAt: toInstant(item.startsAt),
+              endsAt: toInstant(item.endsAt),
+            };
+      const response = await fetch(`/api/admin/${kind}/${item.code}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await response.json();
+      setMessage(
+        response.ok
+          ? "Changes saved"
+          : data.message || "Could not save changes",
+      );
+      if (response.ok) {
+        setEditingCommittee(null);
+        setEditingEvent(null);
+        await loadManaged();
+      }
+    } finally {
+      setSavingManaged(false);
     }
   };
 
@@ -468,12 +488,9 @@ export default function AdminPage() {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          <button
-            className="w-full rounded-lg bg-amber-400 p-3 font-semibold text-zinc-950"
-            type="submit"
-          >
+          <LoadingButton type="submit" loading={signingIn} className="w-full">
             Sign in
-          </button>
+          </LoadingButton>
           {message && <p className="text-sm text-red-300">{message}</p>}
         </form>
       </main>
@@ -535,7 +552,7 @@ export default function AdminPage() {
               onChange={setCommitteeHeads}
             />
             <div className="md:col-span-2">
-              <SaveButton message={message} />
+              <SaveButton message={message} saving={savingSettings} />
             </div>
           </form>
         )}
@@ -546,7 +563,7 @@ export default function AdminPage() {
               value={munEmails}
               onChange={setMunEmails}
             />
-            <SaveButton message={message} />
+            <SaveButton message={message} saving={savingSettings} />
           </form>
         )}
         {section === "order" && (
@@ -595,7 +612,7 @@ export default function AdminPage() {
                 )
               );
             })}
-            <SaveButton message={message} />
+            <SaveButton message={message} saving={savingSettings} />
           </form>
         )}
         {section === "schedule" && (
@@ -621,7 +638,7 @@ export default function AdminPage() {
                 />
               </label>
             ))}
-            <SaveButton message={message} />
+            <SaveButton message={message} saving={savingSettings} />
           </form>
         )}
         {section === "committees" && (
@@ -629,17 +646,18 @@ export default function AdminPage() {
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold">Manage committees</h2>
               {!creatingCommittee && !editingCommittee && (
-                <button
+                <LoadingButton
                   type="button"
+                  size="sm"
+                  icon={Plus}
                   onClick={() => {
                     setCreatingCommittee(true);
                     setMessage("");
                     setEditingCommittee(null);
                   }}
-                  className="rounded-lg bg-amber-400 px-4 py-2 text-sm font-semibold text-zinc-950 hover:bg-amber-300"
                 >
-                  <Plus size={17} /> Create committee
-                </button>
+                  Create committee
+                </LoadingButton>
               )}
             </div>
             {creatingCommittee ? (
@@ -656,6 +674,7 @@ export default function AdminPage() {
                 item={editingCommittee}
                 onChange={setEditingCommittee}
                 onCancel={() => setEditingCommittee(null)}
+                saving={savingManaged}
                 onSave={() =>
                   saveManaged({ kind: "committees", item: editingCommittee })
                 }
@@ -678,17 +697,18 @@ export default function AdminPage() {
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold">Manage events</h2>
               {!creatingEvent && !editingEvent && (
-                <button
+                <LoadingButton
                   type="button"
+                  size="sm"
+                  icon={Plus}
                   onClick={() => {
                     setCreatingEvent(true);
                     setMessage("");
                     setEditingEvent(null);
                   }}
-                  className="rounded-lg bg-amber-400 px-4 py-2 text-sm font-semibold text-zinc-950 hover:bg-amber-300"
                 >
-                  <Plus size={17} /> Create event
-                </button>
+                  Create event
+                </LoadingButton>
               )}
             </div>
             {creatingEvent ? (
@@ -708,6 +728,7 @@ export default function AdminPage() {
                 eventNames={eventNames}
                 onChange={setEditingEvent}
                 onCancel={() => setEditingEvent(null)}
+                saving={savingManaged}
                 onSave={() =>
                   saveManaged({ kind: "events", item: editingEvent })
                 }
@@ -732,16 +753,12 @@ export default function AdminPage() {
   );
 }
 
-function SaveButton({ message }: { message: string }) {
+function SaveButton({ message, saving }: { message: string; saving: boolean }) {
   return (
     <div className="flex items-center gap-4">
-      <button
-        className="flex items-center gap-2 rounded-lg bg-amber-400 px-6 py-3 font-semibold text-zinc-950"
-        type="submit"
-      >
-        <Save size={17} />
+      <LoadingButton type="submit" icon={Save} loading={saving}>
         Save
-      </button>
+      </LoadingButton>
       {message && <p className="text-sm text-emerald-300">{message}</p>}
     </div>
   );
@@ -793,11 +810,13 @@ function CommitteeEditor({
   onChange,
   onCancel,
   onSave,
+  saving,
 }: {
   item: Committee;
   onChange: (item: Committee) => void;
   onCancel: () => void;
   onSave: () => void;
+  saving: boolean;
 }) {
   const update = (key: string, value: string) =>
     onChange({ ...item, [key]: value });
@@ -839,13 +858,14 @@ function CommitteeEditor({
         />
       </div>
       <div className="flex gap-3">
-        <button
+        <LoadingButton
           type="button"
+          icon={Save}
+          loading={saving}
           onClick={onSave}
-          className="rounded-lg bg-amber-400 px-5 py-3 font-semibold text-zinc-950"
         >
           Save changes
-        </button>
+        </LoadingButton>
         <button
           type="button"
           onClick={onCancel}
@@ -1004,18 +1024,9 @@ function CreateCommitteeEditor({
           </label>
 
           <div className="flex justify-end md:col-span-2">
-            <button
-              type="submit"
-              disabled={saving}
-              className="flex items-center gap-2 rounded-lg bg-amber-400 px-5 py-3 text-sm font-semibold text-zinc-950 hover:bg-amber-300 disabled:opacity-60"
-            >
-              {saving ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Save className="h-4 w-4" />
-              )}
+            <LoadingButton type="submit" icon={Save} loading={saving}>
               Create Committee
-            </button>
+            </LoadingButton>
           </div>
         </form>
       </div>
@@ -1030,6 +1041,7 @@ function EventEditor({
   onChange,
   onCancel,
   onSave,
+  saving,
 }: {
   item: EventItem;
   categories: CommitteeName[];
@@ -1037,6 +1049,7 @@ function EventEditor({
   onChange: (item: EventItem) => void;
   onCancel: () => void;
   onSave: () => void;
+  saving: boolean;
 }) {
   const [uploading, setUploading] = useState(false);
   const [uploadMessage, setUploadMessage] = useState("");
@@ -1244,14 +1257,15 @@ function EventEditor({
         />
       </div>
       <div className="flex gap-3">
-        <button
+        <LoadingButton
           type="button"
-          onClick={onSave}
+          icon={Save}
+          loading={saving}
           disabled={uploading}
-          className="rounded-lg bg-amber-400 px-5 py-3 font-semibold text-zinc-950 disabled:opacity-50"
+          onClick={onSave}
         >
           Save changes
-        </button>
+        </LoadingButton>
         <button
           type="button"
           onClick={onCancel}
@@ -1523,9 +1537,9 @@ function CreateEventEditor({ categories, eventNames, onCancel, onSuccess }: { ca
         </div>
 
         <div className="flex justify-end md:col-span-2">
-          <button type="submit" disabled={saving} className="flex items-center gap-2 rounded-lg bg-amber-400 px-5 py-3 text-sm font-semibold text-zinc-950 hover:bg-amber-300 disabled:opacity-60">
-            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Create Event
-          </button>
+          <LoadingButton type="submit" icon={Save} loading={saving}>
+            Create Event
+          </LoadingButton>
         </div>
       </form>
     </div>
