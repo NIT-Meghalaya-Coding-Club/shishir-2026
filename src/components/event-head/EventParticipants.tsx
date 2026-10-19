@@ -28,27 +28,65 @@ type EventParticipantsProps = {
   onClose: () => void;
 };
 
+const PARTICIPANT_HEADERS = [
+  "Sl No.",
+  "Group Name",
+  "Leader Name",
+  "Leader Roll No.",
+  "Leader Email",
+  "Leader Phone",
+  "Team Members",
+  "Team Member Roll No.",
+  "Team Member Phone",
+] as const;
+
+type ParticipantHeader = (typeof PARTICIPANT_HEADERS)[number];
+type ParticipantRow = Record<ParticipantHeader, string | number>;
+
+// These columns hold one value per team member row and are never merged.
+const MEMBER_ROW_HEADERS = new Set<ParticipantHeader>([
+  "Team Members",
+  "Team Member Roll No.",
+  "Team Member Phone",
+]);
+
+const formatRollNo = (collegeID?: string) =>
+  (collegeID || "N/A").toUpperCase();
+
 function getRows(registrations: Registration[]) {
-  return registrations.map((registration, index) => {
+  const rows: ParticipantRow[] = [];
+  const blocks: { startRow: number; span: number }[] = [];
+
+  registrations.forEach((registration, index) => {
     const leader = registration.leader || registration.teamData?.[0] || {};
     const members = registration.teamData?.slice(1) || [];
+    // One row per team member; teams with no extra members still take one row.
+    const span = members.length || 1;
+    // +1 for the header row created by worksheet.columns.
+    const startRow = rows.length + 2;
 
-    return {
-      "Sl No.": index + 1,
-      "Leader Name": leader.name || "N/A",
-      "Leader Roll No.": leader.collegeID || "N/A",
-      "Leader Email": registration.userId,
-      "Leader Phone": leader.phone || "N/A",
-      "Team Members": members
-        .map(
-          (member, memberIndex) =>
-            `${memberIndex + 1}. ${member.name || "N/A"} (${member.collegeID || "N/A"}, ${member.phone || "N/A"})`
-        )
-        .join(", "),
-      "Event Type": registration.metadata?.dynamicEventType || "N/A",
-      "Group Name": registration.metadata?.groupName || "N/A",
-    };
+    for (let memberIndex = 0; memberIndex < span; memberIndex += 1) {
+      const isFirstRow = memberIndex === 0;
+      const member = members[memberIndex];
+      rows.push({
+        "Sl No.": isFirstRow ? index + 1 : "",
+        "Leader Name": isFirstRow ? leader.name || "N/A" : "",
+        "Leader Roll No.": isFirstRow ? formatRollNo(leader.collegeID) : "",
+        "Leader Email": isFirstRow ? registration.userId : "",
+        "Leader Phone": isFirstRow ? leader.phone || "N/A" : "",
+        "Group Name": isFirstRow
+          ? registration.metadata?.groupName || "N/A"
+          : "",
+        "Team Members": member ? `${memberIndex + 1}. ${member.name || "N/A"}` : "",
+        "Team Member Roll No.": member ? formatRollNo(member.collegeID) : "",
+        "Team Member Phone": member ? member.phone || "N/A" : "",
+      });
+    }
+
+    blocks.push({ startRow, span });
   });
+
+  return { rows, blocks };
 }
 
 export default function EventParticipants({
@@ -87,15 +125,29 @@ export default function EventParticipants({
   const exportParticipants = async () => {
     try {
       setExporting(true);
-      const rows = getRows(registrations);
+      const { rows, blocks } = getRows(registrations);
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet("Participants");
-      worksheet.columns = Object.keys(rows[0] || {}).map((header) => ({
+      worksheet.columns = PARTICIPANT_HEADERS.map((header) => ({
         header,
         key: header,
         width: Math.max(header.length + 2, 15),
       }));
       worksheet.addRows(rows);
+
+      // Merge leader details vertically for teams that span multiple rows.
+      blocks.forEach(({ startRow, span }) => {
+        if (span < 2) return;
+        PARTICIPANT_HEADERS.forEach((header, columnIndex) => {
+          if (MEMBER_ROW_HEADERS.has(header)) return;
+          worksheet.mergeCells(
+            startRow,
+            columnIndex + 1,
+            startRow + span - 1,
+            columnIndex + 1
+          );
+        });
+      });
 
       const buffer = await workbook.xlsx.writeBuffer();
       const downloadUrl = URL.createObjectURL(
