@@ -7,6 +7,7 @@ import Event from "@/models/Event";
 import Registration from "@/models/Registration";
 import Upload from "@/models/Uploads";
 import { deletePosterImage, getPosterPublicUrl } from "@/lib/r2";
+import { parseISTDateTime } from "@/lib/ist";
 import {
   canCreateEvents,
   getCurrentUser,
@@ -79,10 +80,10 @@ function validateEventPayload(payload) {
     return `Missing required fields: ${missing.join(", ")}`;
   }
 
-  const startsAt = new Date(payload.startsAt);
-  const endsAt = new Date(payload.endsAt);
+  const startsAt = parseISTDateTime(payload.startsAt);
+  const endsAt = parseISTDateTime(payload.endsAt);
 
-  if (Number.isNaN(startsAt.getTime()) || Number.isNaN(endsAt.getTime())) {
+  if (!startsAt || !endsAt) {
     return "Start and end timings must be valid dates";
   }
 
@@ -190,6 +191,8 @@ export async function PATCH(req, { params }) {
     const eventType = String(payload.eventType || "").trim().toLowerCase();
     const minParticipants = Number(payload.minParticipants);
     const maxParticipants = Number(payload.maxParticipants);
+    const startsAt = parseISTDateTime(payload.startsAt);
+    const endsAt = parseISTDateTime(payload.endsAt);
 
     if (validationError) {
       return NextResponse.json(
@@ -266,8 +269,8 @@ export async function PATCH(req, { params }) {
     event.category = category.name;
     event.categoryId = category._id;
     event.location = payload.location;
-    event.startsAt = payload.startsAt;
-    event.endsAt = payload.endsAt;
+    event.startsAt = startsAt;
+    event.endsAt = endsAt;
     event.description = payload.description;
     event.eventType = eventType;
     event.minParticipants = minParticipants;

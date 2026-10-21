@@ -21,6 +21,7 @@ import {
 import Loading from "../components/Loading";
 import ImageCropper from "@/components/ImageCropper";
 import EditButton from "@/components/dashboard/EditButton";
+import { formatISTDate } from "@/lib/ist";
 
 const configuredProfileSizeMb = Number(process.env.NEXT_PUBLIC_PROFILE_MAX_SIZE_MB);
 const PROFILE_MAX_SIZE_MB = Number.isFinite(configuredProfileSizeMb) && configuredProfileSizeMb > 0
@@ -659,7 +660,7 @@ const ProfileCard = () => {
                       <div className="mt-3 grid gap-1 border-t border-[#3D5A80]/10 pt-3 text-sm text-[#293241] sm:grid-cols-2">
                         <p>
                           <span className="text-[#3D5A80]">When: </span>
-                          {new Date(event.startsAt).toLocaleDateString("en-GB", {
+                          {formatISTDate(event.startsAt, {
                             day: "2-digit",
                             month: "short",
                             year: "numeric",

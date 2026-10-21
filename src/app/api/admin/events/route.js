@@ -8,6 +8,7 @@ import EventName from "@/models/EventName";
 import Category from "@/models/Category";
 import Upload from "@/models/Uploads";
 import { resolveUsersByEmails } from "@/lib/eventAuth";
+import { parseISTDateTime } from "@/lib/ist";
 
 function unauthorized() {
   return NextResponse.json({ success: false, message: "Admin authentication required" }, { status: 401 });
@@ -84,11 +85,11 @@ export async function POST(req) {
     const missing = required.filter((field) => !String(payload[field] || "").trim());
     if (missing.length) return NextResponse.json({ success: false, message: `Missing required fields: ${missing.join(", ")}` }, { status: 400 });
 
-    const startsAt = new Date(payload.startsAt);
-    const endsAt = new Date(payload.endsAt);
+    const startsAt = parseISTDateTime(payload.startsAt);
+    const endsAt = parseISTDateTime(payload.endsAt);
     const minParticipants = Number(payload.minParticipants);
     const maxParticipants = Number(payload.maxParticipants);
-    if (Number.isNaN(startsAt.getTime()) || Number.isNaN(endsAt.getTime()) || endsAt <= startsAt) return NextResponse.json({ success: false, message: "End timing must be after start timing" }, { status: 400 });
+    if (!startsAt || !endsAt || endsAt <= startsAt) return NextResponse.json({ success: false, message: "End timing must be after start timing" }, { status: 400 });
     if (!Number.isInteger(minParticipants) || !Number.isInteger(maxParticipants) || minParticipants < 1 || maxParticipants < minParticipants) return NextResponse.json({ success: false, message: "Participant limits are invalid" }, { status: 400 });
     if (!["individual", "team", "performance"].includes(payload.eventType)) return NextResponse.json({ success: false, message: "Choose a valid participation type" }, { status: 400 });
 

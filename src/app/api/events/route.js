@@ -16,6 +16,7 @@ import {
   resolveUsersByEmails,
 } from "@/lib/eventAuth";
 import { getPosterPublicUrl } from "@/lib/r2";
+import { parseISTDateTime } from "@/lib/ist";
 
 function withEventName(event) {
   if (!event) return event;
@@ -110,10 +111,10 @@ function validateEventPayload(payload) {
     return `Missing required fields: ${missing.join(", ")}`;
   }
 
-  const startsAt = new Date(payload.startsAt);
-  const endsAt = new Date(payload.endsAt);
+  const startsAt = parseISTDateTime(payload.startsAt);
+  const endsAt = parseISTDateTime(payload.endsAt);
 
-  if (Number.isNaN(startsAt.getTime()) || Number.isNaN(endsAt.getTime())) {
+  if (!startsAt || !endsAt) {
     return "Start and end timings must be valid dates";
   }
 
@@ -237,6 +238,8 @@ export async function POST(req) {
     const payload = await req.json();
     const validationError = validateEventPayload(payload);
     const eventType = String(payload.eventType || "").trim().toLowerCase();
+    const startsAt = parseISTDateTime(payload.startsAt);
+    const endsAt = parseISTDateTime(payload.endsAt);
 
     if (validationError) {
       return NextResponse.json(
@@ -285,8 +288,8 @@ export async function POST(req) {
       category: category.name,
       categoryId: category._id,
       location: payload.location,
-      startsAt: payload.startsAt,
-      endsAt: payload.endsAt,
+      startsAt,
+      endsAt,
       description: payload.description,
       eventType,
       minParticipants: Number(payload.minParticipants),

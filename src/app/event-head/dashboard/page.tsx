@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { toast } from "react-toastify";
 import { EventPayloadSchema } from "@/lib/validation/eventSchema";
+import { formatISTDateTime, toISTInputValue, toISTInstant } from "@/lib/ist";
 import EventParticipants from "@/components/event-head/EventParticipants";
 import ImageCropper, { MAX_IMAGE_SIZE_MB } from "@/components/ImageCropper";
 import ValidationDialog from "@/components/ui/ValidationDialog";
@@ -99,16 +100,6 @@ const peopleLabels: Record<PeopleField, string> = {
   coordinators: "Coordinators",
   coCoordinators: "Co-coordinators",
 };
-
-function toDateTimeInputValue(value: string) {
-  if (!value) return "";
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "";
-
-  const offset = date.getTimezoneOffset();
-  const localDate = new Date(date.getTime() - offset * 60 * 1000);
-  return localDate.toISOString().slice(0, 16);
-}
 
 function getPersonCollegeIDs(people: Person[]) {
   return people.map((person) => person.collegeID).filter(Boolean);
@@ -273,8 +264,8 @@ export default function EventHeadDashboard() {
           qrCodeUrl: event.paymentRequired.qrCodeUrl || "",
         }
         : null,
-      startsAt: toDateTimeInputValue(event.startsAt),
-      endsAt: toDateTimeInputValue(event.endsAt),
+      startsAt: toISTInputValue(event.startsAt),
+      endsAt: toISTInputValue(event.endsAt),
       categoryId:
         getReferenceId(event.categoryId) ||
         categories.find(
@@ -484,6 +475,10 @@ export default function EventHeadDashboard() {
 
       const payload = {
         ...formData,
+        // The form edits IST wall-clock values; send UTC instants so the API
+        // never has to guess which timezone the browser was in.
+        startsAt: toISTInstant(formData.startsAt),
+        endsAt: toISTInstant(formData.endsAt),
         name: eventName,
         eventNameId,
         posterLink,
@@ -526,8 +521,8 @@ export default function EventHeadDashboard() {
       setEditingCode(savedEvent.code);
       setFormData({
         ...savedEvent,
-        startsAt: toDateTimeInputValue(savedEvent.startsAt),
-        endsAt: toDateTimeInputValue(savedEvent.endsAt),
+        startsAt: toISTInputValue(savedEvent.startsAt),
+        endsAt: toISTInputValue(savedEvent.endsAt),
       });
       setPosterFile(null);
       clearPosterInput();
@@ -665,7 +660,7 @@ export default function EventHeadDashboard() {
                   <p className="mt-3 flex items-center gap-2 text-sm text-zinc-300">
                     <CalendarClock className="h-4 w-4 text-zinc-500" />
                     {event.startsAt
-                      ? new Date(event.startsAt).toLocaleString()
+                      ? formatISTDateTime(event.startsAt)
                       : "Timing pending"}
                   </p>
                   <div className="mt-4 flex gap-2 border-t border-white/10 pt-3">
@@ -804,7 +799,7 @@ export default function EventHeadDashboard() {
                   />
                 </label>
                 <label className="space-y-2">
-                  <span className="text-sm text-zinc-300">Start Date and Time</span>
+                  <span className="text-sm text-zinc-300">Start Date and Time (IST)</span>
                   <input
                     required
                     type="datetime-local"
@@ -816,7 +811,7 @@ export default function EventHeadDashboard() {
                   />
                 </label>
                 <label className="space-y-2">
-                  <span className="text-sm text-zinc-300">End Date and Time</span>
+                  <span className="text-sm text-zinc-300">End Date and Time (IST)</span>
                   <input
                     required
                     type="datetime-local"

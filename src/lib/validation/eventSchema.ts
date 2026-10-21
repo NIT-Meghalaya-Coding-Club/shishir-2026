@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { parseISTDateTime } from "@/lib/ist";
 
 const httpUrl = z.string().trim().url("Enter a valid URL.").refine(
   (value) => /^https?:\/\//i.test(value),
@@ -26,15 +27,15 @@ export const EventPayloadSchema = z
     posterLink: z.string().trim(),
   })
   .superRefine((data, context) => {
-    const startsAt = new Date(data.startsAt);
-    const endsAt = new Date(data.endsAt);
-    if (Number.isNaN(startsAt.getTime())) {
+    const startsAt = parseISTDateTime(data.startsAt);
+    const endsAt = parseISTDateTime(data.endsAt);
+    if (!startsAt) {
       context.addIssue({ code: "custom", path: ["startsAt"], message: "Enter a valid start date and time." });
     }
-    if (Number.isNaN(endsAt.getTime())) {
+    if (!endsAt) {
       context.addIssue({ code: "custom", path: ["endsAt"], message: "Enter a valid end date and time." });
     }
-    if (!Number.isNaN(startsAt.getTime()) && !Number.isNaN(endsAt.getTime()) && endsAt <= startsAt) {
+    if (startsAt && endsAt && endsAt <= startsAt) {
       context.addIssue({ code: "custom", path: ["endsAt"], message: "End time must be after start time." });
     }
     if (data.maxParticipants < data.minParticipants) {

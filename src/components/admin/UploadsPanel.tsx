@@ -3,6 +3,7 @@
 import { ChevronLeft, ChevronRight, Search, Trash2, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import LoadingButton from "@/components/ui/LoadingButton";
+import { formatISTDateTime } from "@/lib/ist";
 
 type UploadItem = {
   id: string;
@@ -17,11 +18,10 @@ type UploadItem = {
   updatedAt: string;
 };
 
-const indianDate = (value: string) => new Intl.DateTimeFormat("en-IN", {
+const indianDate = (value: string) => formatISTDateTime(value, {
   dateStyle: "medium",
   timeStyle: "short",
-  timeZone: "Asia/Kolkata",
-}).format(new Date(value));
+});
 
 const bytes = (value: number) => {
   if (!value) return "—";

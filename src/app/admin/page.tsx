@@ -23,6 +23,7 @@ import SacPostsPanel from "@/components/admin/SacPostsPanel";
 import EventParticipants from "@/components/event-head/EventParticipants";
 import NameDropdown from "@/components/NameDropdown";
 import ImageCropper, { MAX_IMAGE_SIZE_MB } from "@/components/ImageCropper";
+import { toISTInputValue, toISTInstant } from "@/lib/ist";
 import ValidationDialog from "@/components/ui/ValidationDialog";
 import LoadingButton from "@/components/ui/LoadingButton";
 
@@ -83,28 +84,6 @@ const peopleText = (people: Person[] = []) =>
     .map((person) => person.email || "")
     .filter(Boolean)
     .join("\n");
-// Event times are stored as UTC instants but entered and displayed in IST
-// (Asia/Kolkata, fixed +05:30). Never rely on the server's ambient timezone.
-const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
-const DATE_TIME_LOCAL_PATTERN = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;
-
-// Stored instant (ISO string) -> value for a <input type="datetime-local"> in IST.
-const dateValue = (value: string) => {
-  if (!value) return "";
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "";
-  return new Date(date.getTime() + IST_OFFSET_MS).toISOString().slice(0, 16);
-};
-
-// <input type="datetime-local"> value (IST wall clock) -> UTC ISO string.
-const toInstant = (value: string) => {
-  if (!value) return "";
-  const iso = DATE_TIME_LOCAL_PATTERN.test(value)
-    ? `${value}:00+05:30`
-    : value;
-  const date = new Date(iso);
-  return Number.isNaN(date.getTime()) ? "" : date.toISOString();
-};
 
 function AdminSidebar({
   section,
@@ -410,8 +389,8 @@ export default function AdminPage() {
                 item.coordinatorEmails || peopleText(item.coordinators),
               coCoordinatorEmails:
                 item.coCoordinatorEmails || peopleText(item.coCoordinators),
-              startsAt: toInstant(item.startsAt),
-              endsAt: toInstant(item.endsAt),
+              startsAt: toISTInstant(item.startsAt),
+              endsAt: toISTInstant(item.endsAt),
             };
       const response = await fetch(`/api/admin/${kind}/${item.code}`, {
         method: "PATCH",
@@ -1226,20 +1205,20 @@ function EventEditor({
           )}
         </div>
         <label className="space-y-2">
-          <span>Starts at</span>
+          <span>Starts at (IST)</span>
           <input
             className={input}
             type="datetime-local"
-            value={dateValue(item.startsAt)}
+            value={toISTInputValue(item.startsAt)}
             onChange={(e) => update("startsAt", e.target.value)}
           />
         </label>
         <label className="space-y-2">
-          <span>Ends at</span>
+          <span>Ends at (IST)</span>
           <input
             className={input}
             type="datetime-local"
-            value={dateValue(item.endsAt)}
+            value={toISTInputValue(item.endsAt)}
             onChange={(e) => update("endsAt", e.target.value)}
           />
         </label>
@@ -1436,8 +1415,8 @@ function CreateEventEditor({ categories, eventNames, onCancel, onSuccess }: { ca
         category: categoryName,
         categoryId,
         location: formData.location.trim(),
-        startsAt: toInstant(formData.startsAt),
-        endsAt: toInstant(formData.endsAt),
+        startsAt: toISTInstant(formData.startsAt),
+        endsAt: toISTInstant(formData.endsAt),
         description: formData.description.trim(),
         eventType: formData.eventType,
         minParticipants: Number(formData.minParticipants),
@@ -1496,11 +1475,11 @@ function CreateEventEditor({ categories, eventNames, onCancel, onSuccess }: { ca
           <input required value={formData.location} onChange={(e) => update("location", e.target.value)} className={input} />
         </label>
         <label className="space-y-2">
-          <span className="text-sm font-medium text-zinc-300">Start Date and Time</span>
+          <span className="text-sm font-medium text-zinc-300">Start Date and Time (IST)</span>
           <input required type="datetime-local" value={formData.startsAt} onChange={(e) => update("startsAt", e.target.value)} className={input} />
         </label>
         <label className="space-y-2">
-          <span className="text-sm font-medium text-zinc-300">End Date and Time</span>
+          <span className="text-sm font-medium text-zinc-300">End Date and Time (IST)</span>
           <input required type="datetime-local" value={formData.endsAt} onChange={(e) => update("endsAt", e.target.value)} className={input} />
         </label>
         <label className="space-y-2 md:col-span-2">

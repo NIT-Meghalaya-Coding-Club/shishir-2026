@@ -2,16 +2,9 @@ import { NextResponse } from "next/server";
 import connectMongo from "@/lib/mongodb";
 import AppSettings from "@/models/AppSettings";
 import Event from "@/models/Event";
+import { formatISTTime, getISTDayRange } from "@/lib/ist";
 
 const DAY_KEYS = ["day1", "day2", "day3"];
-
-function formatTime(value) {
-  return new Intl.DateTimeFormat("en-IN", {
-    hour: "numeric",
-    minute: "2-digit",
-    timeZone: "Asia/Kolkata",
-  }).format(new Date(value));
-}
 
 export async function GET() {
   try {
@@ -23,10 +16,9 @@ export async function GET() {
     for (const dayKey of DAY_KEYS) {
       const date = scheduleDates[dayKey] || "";
       const groups = {};
-      if (date) {
-        const start = new Date(`${date}T00:00:00.000+05:30`);
-        const end = new Date(`${date}T23:59:59.999+05:30`);
-        const events = await Event.find({ startsAt: { $gte: start, $lte: end } })
+      const range = date ? getISTDayRange(date) : null;
+      if (range) {
+        const events = await Event.find({ startsAt: { $gte: range.start, $lte: range.end } })
           .populate("eventNameId", "name")
           .populate("categoryId", "name")
           .sort({ startsAt: 1 })
@@ -38,7 +30,7 @@ export async function GET() {
           groups[category].push({
             code: event.code,
             name: event.eventNameId?.name || event.name || event.code,
-            time: `${formatTime(event.startsAt)} - ${formatTime(event.endsAt)}`,
+            time: `${formatISTTime(event.startsAt)} - ${formatISTTime(event.endsAt)}`,
             place: event.location,
             description: event.description,
             category,
@@ -60,7 +52,7 @@ export async function GET() {
       allGroups[category].push({
         code: event.code,
         name: event.eventNameId?.name || event.name || event.code,
-        time: `${formatTime(event.startsAt)} - ${formatTime(event.endsAt)}`,
+        time: `${formatISTTime(event.startsAt)} - ${formatISTTime(event.endsAt)}`,
         place: event.location,
         description: event.description,
         category,

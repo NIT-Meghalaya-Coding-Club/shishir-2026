@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { CalendarDays, Clock, ExternalLink, MapPin, Phone, X } from "lucide-react";
+import { formatISTDate, formatISTTime } from "@/lib/ist";
 
 export type Person = {
   name: string;
@@ -28,21 +29,6 @@ export type EventRecord = {
 };
 
 const fallbackProfileImage = "/assets/profile-icon.svg";
-
-function formatEventDate(value: string) {
-  return new Intl.DateTimeFormat("en-IN", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  }).format(new Date(value));
-}
-
-function formatEventTime(value: string) {
-  return new Intl.DateTimeFormat("en-IN", {
-    hour: "numeric",
-    minute: "2-digit",
-  }).format(new Date(value));
-}
 
 function formatEventDuration(startsAt: string, endsAt: string) {
   const ms = new Date(endsAt).getTime() - new Date(startsAt).getTime();
@@ -179,7 +165,7 @@ export default function EventDetailsModal({ event, onClose }: { event: EventReco
             <div className="flex flex-wrap gap-2 text-sm">
               <span className="inline-flex items-center gap-2 rounded-full border border-[#EE6C4D]/30 bg-[#EE6C4D]/10 px-3 py-1.5 font-semibold text-[#293241]">
                 <CalendarDays className="shrink-0 text-[#EE6C4D]" size={16} />
-                {formatEventDate(event.startsAt)}
+                {formatISTDate(event.startsAt)}
               </span>
               <span className="inline-flex items-center gap-2 rounded-full border border-[#EE6C4D]/30 bg-[#EE6C4D]/10 px-3 py-1.5 font-semibold text-[#293241]">
                 <MapPin className="shrink-0 text-[#EE6C4D]" size={16} />
@@ -194,7 +180,7 @@ export default function EventDetailsModal({ event, onClose }: { event: EventReco
                 <div className="order-1 text-left sm:text-center">
                   <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#EE6C4D]">Start</p>
                   <p className="whitespace-nowrap text-lg font-bold text-[#293241] sm:text-base">
-                    {formatEventTime(event.startsAt)}
+                    {formatISTTime(event.startsAt)}
                   </p>
                 </div>
 
@@ -202,7 +188,7 @@ export default function EventDetailsModal({ event, onClose }: { event: EventReco
                 <div className="order-2 text-right sm:order-3 sm:text-center">
                   <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#EE6C4D]">End</p>
                   <p className="whitespace-nowrap text-lg font-bold text-[#293241] sm:text-base">
-                    {formatEventTime(event.endsAt)}
+                    {formatISTTime(event.endsAt)}
                   </p>
                 </div>
 
