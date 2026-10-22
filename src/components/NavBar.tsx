@@ -150,6 +150,21 @@ const NavBar: React.FC = () => {
 
   return (
     <>
+      {/* Backdrop overlay when mobile menu is open */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.5 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={closeMenu}
+            className="fixed inset-0 z-40 bg-black/25 backdrop-blur-sm"
+            aria-hidden="true"
+          />
+        )}
+      </AnimatePresence>
+
       {/* Hover trigger zone: reveals navbar when it's hidden and mouse hits top edge.
           Only mounted while hidden so it never blocks clicks on page content. */}
       {!isVisible && (
@@ -159,75 +174,75 @@ const NavBar: React.FC = () => {
           aria-hidden="true"
         />
       )}
-    <motion.nav
-      id="main-navbar"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => {
-        setIsHovered(false);
-        resetInactivityTimer();
-      }}
-      initial={{ opacity: 0, y: -50 }}
-      animate={{
-        opacity: isVisible ? 1 : 0,
-        y: isVisible ? 0 : -100,
-        pointerEvents: isVisible ? "auto" : "none",
-      }}
-      transition={{ duration: 0.35, ease: "easeInOut" }}
-      className="fixed top-3 left-3 right-3 sm:left-6 sm:right-6 lg:left-8 lg:right-8 z-50 mx-auto max-w-7xl rounded-full bg-gradient-to-b  from-white/10 via-white/[0.02] to-white/[0.05] backdrop-blur-sm  backdrop-saturate-200 backdrop-contrast-125 backdrop-brightness-105 border border-white/40 shadow-[0_8px_32px_0_rgba(0,0,0,0.1),inset_0_1px_2px_0_rgba(255,255,255,0.6),inset_0_-1px_1px_0_rgba(0,0,0,0.08)] transition-all duration-300"
-      ref={menuRef}
-    >
-      <div className="container mx-auto flex items-center justify-between px-3 py-2 sm:px-4 sm:py-2.5">
-        {/* Logo with onClick handler */}
-        <motion.div
-          whileHover={{ scale: 1.06 }}
-          whileTap={{ scale: 0.96 }}
-          className="flex items-center cursor-pointer"
-          onClick={navigateToHome}
-        >
-          <Image
-            src="/assets/logo.png"
-            alt="SHISHIR Crest Logo"
-            width={44}
-            height={44}
-            priority
-            className="h-10 w-10 sm:h-11 sm:w-11 object-contain drop-shadow-sm select-none"
-          />
-        </motion.div>
-
-        <div className="flex items-center gap-2.5 sm:gap-3">
-
-
-          {/* Menu Hamburger Button */}
-          <MenuToggle isOpen={isOpen} onClick={toggleMenu} />
-        </div>
-      </div>
-
-      {/* Menu dropdown with matching Pure Glassmorphism */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.ul
-            initial={{ opacity: 0, y: -15, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -15, scale: 0.98 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-            className="absolute right-3 sm:right-6 top-[70px] sm:top-18 w-56 rounded-2xl bg-white/20 backdrop-blur-2xl backdrop-saturate-200 border border-white/40 shadow-[0_20px_50px_rgba(0,0,0,0.25),inset_0_1px_2px_rgba(255,255,255,0.4)] p-4 transition-all duration-300"
+      <motion.nav
+        id="main-navbar"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => {
+          setIsHovered(false);
+          resetInactivityTimer();
+        }}
+        initial={{ opacity: 0, y: -50 }}
+        animate={{
+          opacity: isVisible ? 1 : 0,
+          y: isVisible ? 0 : -100,
+          pointerEvents: isVisible ? "auto" : "none",
+        }}
+        transition={{ duration: 0.35, ease: "easeInOut" }}
+        className="fixed top-3 left-3 right-3 sm:left-6 sm:right-6 lg:left-8 lg:right-8 z-50 mx-auto max-w-7xl rounded-full bg-gradient-to-b  from-white/10 via-white/[0.02] to-white/[0.05] backdrop-blur-sm  backdrop-saturate-200 backdrop-contrast-125 backdrop-brightness-105 border border-white/40 shadow-[0_8px_32px_0_rgba(0,0,0,0.1),inset_0_1px_2px_0_rgba(255,255,255,0.6),inset_0_-1px_1px_0_rgba(0,0,0,0.08)] transition-all duration-300"
+        ref={menuRef}
+      >
+        <div className="container mx-auto flex items-center justify-between px-3 py-2 sm:px-4 sm:py-2.5">
+          {/* Logo with onClick handler */}
+          <motion.div
+            whileHover={{ scale: 1.06 }}
+            whileTap={{ scale: 0.96 }}
+            className="flex items-center cursor-pointer"
+            onClick={navigateToHome}
           >
-            <NavBarItem to="/" text="Home" onClick={closeMenu} />
-            <NavBarItem to="/events" text="Events" onClick={closeMenu} />
-            <NavBarItem to="/schedule" text="Schedule" onClick={closeMenu} />
-            <NavBarItem to="/mun" text="MUN" onClick={closeMenu} />
-            <NavBarItem to="/sponsors" text="Sponsors" onClick={closeMenu} />
-            <NavBarItem to="/team" text="Team" onClick={closeMenu} />
-            {status === "unauthenticated" && (
-              <NavBarItem to="/register" text="Login" onClick={closeMenu} />
-            )}
-            {status === "authenticated" && (
-              <NavBarItem to="/dashboard" text="Dashboard" onClick={closeMenu} />
-            )}
-          </motion.ul>
-        )}
-      </AnimatePresence>
-    </motion.nav>
+            <Image
+              src="/assets/logo.png"
+              alt="SHISHIR Crest Logo"
+              width={44}
+              height={44}
+              priority
+              className="h-10 w-10 sm:h-11 sm:w-11 object-contain drop-shadow-sm select-none"
+            />
+          </motion.div>
+
+          <div className="flex items-center gap-2.5 sm:gap-3">
+
+
+            {/* Menu Hamburger Button */}
+            <MenuToggle isOpen={isOpen} onClick={toggleMenu} />
+          </div>
+        </div>
+
+        {/* Menu dropdown with matching Pure Glassmorphism */}
+        <AnimatePresence>
+          {isOpen && (
+            <motion.ul
+              initial={{ opacity: 0, y: -15, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -15, scale: 0.98 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="absolute right-3 sm:right-6 top-[70px] sm:top-18 w-56 rounded-2xl bg-white/70 backdrop-blur-2xl backdrop-saturate-200 border border-white/40 shadow-[0_20px_50px_rgba(0,0,0,0.25),inset_0_1px_2px_rgba(255,255,255,0.4)] p-4 transition-all duration-300"
+            >
+              <NavBarItem to="/" text="Home" onClick={closeMenu} />
+              <NavBarItem to="/events" text="Events" onClick={closeMenu} />
+              <NavBarItem to="/schedule" text="Schedule" onClick={closeMenu} />
+              <NavBarItem to="/mun" text="MUN" onClick={closeMenu} />
+              <NavBarItem to="/sponsors" text="Sponsors" onClick={closeMenu} />
+              <NavBarItem to="/team" text="Team" onClick={closeMenu} />
+              {status === "unauthenticated" && (
+                <NavBarItem to="/register" text="Login" onClick={closeMenu} />
+              )}
+              {status === "authenticated" && (
+                <NavBarItem to="/dashboard" text="Dashboard" onClick={closeMenu} />
+              )}
+            </motion.ul>
+          )}
+        </AnimatePresence>
+      </motion.nav>
     </>
   );
 };

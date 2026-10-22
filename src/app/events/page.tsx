@@ -1,20 +1,226 @@
 "use client";
-import React from "react";
+
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
-import Inav from "@/components/events/internal-nav";
-import { useEffect, useState } from "react";
-import EventDetailsModal, { type EventRecord } from "@/components/events/event-details-modal";
-import Head from "next/head";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { EffectCoverflow, Pagination, Navigation } from "swiper/modules";
+import { EffectCoverflow, Mousewheel } from "swiper/modules";
+import type { Swiper as SwiperType } from "swiper";
 import "swiper/css";
 import "swiper/css/effect-coverflow";
-import "swiper/css/pagination";
-import "swiper/css/navigation";
 
+import Inav from "@/components/events/internal-nav";
+import EventDetailsModal, {
+  type EventRecord,
+} from "@/components/events/event-details-modal";
 import PageHeading from "@/components/PageHeading";
-
 import Blossom from "@/components/Blossom";
+
+/* -------------------------------------------------------------------------- */
+/*  Carousel for one category                                                 */
+/* -------------------------------------------------------------------------- */
+
+function ChevronIcon({ direction }: { direction: "left" | "right" }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="h-5 w-5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      {direction === "left" ? (
+        <polyline points="15 18 9 12 15 6" />
+      ) : (
+        <polyline points="9 18 15 12 9 6" />
+      )}
+    </svg>
+  );
+}
+
+function CategoryCarousel({
+  events,
+  onView,
+}: {
+  events: EventRecord[];
+  onView: (event: EventRecord) => void;
+}) {
+  const total = events.length;
+  const startIndex = Math.floor((total - 1) / 2); // start in the middle so both sides look balanced
+  const [swiper, setSwiper] = useState<SwiperType | null>(null);
+  const [active, setActive] = useState(startIndex);
+  const showControls = total > 1;
+  const showDots = total <= 8;
+
+  return (
+    <div className="mx-auto w-full max-w-6xl">
+      <Swiper
+        effect="coverflow"
+        modules={[EffectCoverflow, Mousewheel]}
+        centeredSlides
+        slidesPerView="auto"
+        spaceBetween={16}
+        initialSlide={startIndex}
+        grabCursor={total > 1}
+        threshold={15}
+        noSwiping={true}
+        noSwipingClass="swiper-no-swiping"
+        mousewheel={{ forceToAxis: true, releaseOnEdges: true, sensitivity: 1 }}
+        watchSlidesProgress
+        coverflowEffect={{
+          rotate: 28,
+          stretch: 0,
+          depth: 140,
+          modifier: 1,
+          slideShadows: false,
+        }}
+        slideToClickedSlide
+        onClick={(s) => {
+          if (typeof s.clickedIndex === "number" && s.clickedIndex !== s.activeIndex) {
+            s.slideTo(s.clickedIndex);
+          }
+        }}
+        onSwiper={setSwiper}
+        onSlideChange={(s) => setActive(s.activeIndex)}
+        onActiveIndexChange={(s) => setActive(s.activeIndex)}
+        className="w-full !px-2 !py-8"
+      >
+        {events.map((event, index) => {
+          const isCurrent = index === active;
+          return (
+            <SwiperSlide
+              key={event._id || event.code}
+              onClick={() => {
+                if (swiper && swiper.activeIndex !== index) {
+                  swiper.slideTo(index);
+                }
+              }}
+              style={{ cursor: !isCurrent ? "pointer" : undefined }}
+              className={`!h-auto !w-[72vw] max-w-[320px] sm:max-w-[340px] md:max-w-[360px] transition-opacity duration-300 ${
+                isCurrent
+                  ? "opacity-100"
+                  : "swiper-no-swiping opacity-50 !cursor-pointer"
+              }`}
+            >
+              <div
+                style={{ cursor: !isCurrent ? "pointer" : undefined }}
+                className={`group pointer-events-none relative aspect-square [.swiper-slide-active_&]:pointer-events-auto w-full overflow-hidden rounded-xl rounded-tl-[20px] rounded-br-[20px] bg-[#EE6C4D] p-0.5 shadow-[0_12px_32px_-12px_rgba(41,50,65,0.6)] ${
+                  !isCurrent ? "!cursor-pointer" : ""
+                }`}
+              >
+              <div className="relative h-full w-full overflow-hidden rounded-[10px] rounded-tl-[18px] rounded-br-[18px] bg-gradient-to-br from-gray-900 to-black">
+                <Image
+                  src={event.posterLink}
+                  alt={event.name}
+                  fill
+                  sizes="(max-width: 640px) 72vw, 360px"
+                  quality={75}
+                  priority={index < 3}
+                  className="object-cover transition-transform duration-500 group-hover:scale-110"
+                  unoptimized
+                />
+
+                {/* Name + actions: compact responsive layout, shown only on active slide on touch screens */}
+                <div className="absolute inset-x-0 bottom-0 flex translate-y-full flex-col gap-1.5 sm:gap-2.5 bg-gradient-to-t from-black/95 via-black/75 to-transparent px-3 pb-3 pt-8 sm:px-4 sm:pb-4 sm:pt-14 transition-transform duration-500 group-hover:translate-y-0 group-focus-within:translate-y-0 [.swiper-slide-active_&]:[@media(hover:none)]:translate-y-0">
+                  <p className="line-clamp-1 sm:line-clamp-2 text-sm sm:text-base font-extrabold uppercase leading-tight tracking-wider text-white drop-shadow-sm md:text-xl">
+                    {event.name}
+                  </p>
+
+                  <div className="flex w-full items-center gap-2">
+                    <a
+                      href={`/register/${event.code}`}
+                      onClick={(e) => e.stopPropagation()}
+                      className="flex-1 rounded-full bg-[#EE6C4D] py-1.5 px-2.5 text-center text-xs sm:py-2 sm:text-sm font-extrabold uppercase tracking-wider text-slate-950 shadow-sm transition-all duration-200 hover:bg-[#ff7e5f] active:scale-95"
+                    >
+                      <span className="sm:hidden">Register</span>
+                      <span className="hidden sm:inline">Register Now</span>
+                    </a>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onView(event);
+                      }}
+                      className="flex-1 rounded-full border border-white/40 bg-white/20 py-1.5 px-2.5 text-center text-xs sm:py-2 sm:text-sm font-extrabold uppercase tracking-wider text-white shadow-sm backdrop-blur-md transition-all duration-200 hover:bg-white/30 active:scale-95"
+                    >
+                      <span className="sm:hidden">View</span>
+                      <span className="hidden sm:inline">View Event</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </SwiperSlide>
+          );
+        })}
+      </Swiper>
+
+      {/* Controls: always visible, below the slides, never covered by cards */}
+      {showControls && (
+        <div className="mt-2 flex items-center justify-center gap-4">
+          <button
+            type="button"
+            aria-label="Previous event"
+            onClick={() => swiper?.slidePrev()}
+            disabled={active === 0}
+            className="flex h-11 w-11 items-center justify-center rounded-full bg-[#293241] text-[#E0FBFC] shadow-md transition hover:bg-[#EE6C4D] disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-[#293241] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#EE6C4D]"
+          >
+            <ChevronIcon direction="left" />
+          </button>
+
+          {showDots ? (
+            <div className="flex items-center gap-2" role="tablist" aria-label="Choose event">
+              {events.map((event, i) => (
+                <button
+                  key={event._id || event.code}
+                  type="button"
+                  role="tab"
+                  aria-selected={i === active}
+                  aria-label={`Go to ${event.name}`}
+                  onClick={() => swiper?.slideTo(i)}
+                  className={`h-3 rounded-full transition-all duration-300 ${
+                    i === active
+                      ? "w-8 bg-[#EE6C4D]"
+                      : "w-3 bg-[#3D5A80]/40 hover:bg-[#3D5A80]"
+                  }`}
+                />
+              ))}
+            </div>
+          ) : (
+            <span className="min-w-[4.5rem] text-center text-sm font-bold tabular-nums text-[#293241]">
+              {active + 1} / {total}
+            </span>
+          )}
+
+          <button
+            type="button"
+            aria-label="Next event"
+            onClick={() => swiper?.slideNext()}
+            disabled={active === total - 1}
+            className="flex h-11 w-11 items-center justify-center rounded-full bg-[#293241] text-[#E0FBFC] shadow-md transition hover:bg-[#EE6C4D] disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-[#293241] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#EE6C4D]"
+          >
+            <ChevronIcon direction="right" />
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Page                                                                      */
+/* -------------------------------------------------------------------------- */
+
+function getCategoryRank(category?: string): number {
+  if (!category) return 3;
+  const lower = category.toLowerCase().trim();
+  if (lower.includes("dance")) return 0;
+  if (lower.includes("gaming") || /\bgames?\b/i.test(lower)) return 1;
+  if (lower.includes("music")) return 2;
+  return 3;
+}
 
 export default function Events() {
   const [events, setEvents] = useState<EventRecord[]>([]);
@@ -25,175 +231,118 @@ export default function Events() {
   useEffect(() => {
     async function fetchEvents() {
       try {
-
         const response = await fetch("/api/events");
         const data = await response.json();
 
         if (!response.ok || !data.success) {
           throw new Error(data.message || "Unable to load events");
         }
-
-        setEvents(data.events);
-
+        const loadedEvents: EventRecord[] = Array.isArray(data.events)
+          ? [...data.events].sort((a, b) => {
+              const rankA = getCategoryRank(a.category);
+              const rankB = getCategoryRank(b.category);
+              if (rankA !== rankB) return rankA - rankB;
+              return 0;
+            })
+          : [];
+        setEvents(loadedEvents);
       } catch (fetchError) {
-        setError(fetchError instanceof Error ? fetchError.message : "Unable to load events");
+        setError(
+          fetchError instanceof Error ? fetchError.message : "Unable to load events"
+        );
       } finally {
         setLoading(false);
       }
     }
-
     fetchEvents();
   }, []);
 
-  const eventCategories = Array.from(new Set(events.map((event) => event.category)));
+  // Group once instead of filtering on every render
+  const grouped = useMemo(() => {
+    const map = new Map<string, EventRecord[]>();
+    events.forEach((event) => {
+      const list = map.get(event.category) ?? [];
+      list.push(event);
+      map.set(event.category, list);
+    });
+    return map;
+  }, [events]);
+
+  const eventCategories = useMemo(
+    () =>
+      Array.from(grouped.keys()).sort((a, b) => {
+        const rankA = getCategoryRank(a);
+        const rankB = getCategoryRank(b);
+        if (rankA !== rankB) return rankA - rankB;
+        return a.localeCompare(b, undefined, { sensitivity: "base", numeric: true });
+      }),
+    [grouped]
+  );
 
   return (
     <>
-      <Head>
-        <link rel="preload" href="/img/pattern-floral.png" as="image" />
-      </Head>
       <div
-        className="relative flex flex-col items-center w-full h-auto min-h-screen overflow-x-hidden pb-16"
+        className="relative flex min-h-screen w-full flex-col items-center overflow-x-hidden pb-16"
         style={{
           backgroundImage: `url('/img/pattern-floral.png')`,
-          backgroundSize: '700px',
-          backgroundRepeat: 'repeat',
+          backgroundSize: "700px",
+          backgroundRepeat: "repeat",
         }}
       >
-        {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-[#E0FBFC]/80 pointer-events-none transition-colors duration-300" />
+        {/* Tint over the pattern */}
+        <div className="pointer-events-none absolute inset-0 bg-[#E0FBFC]/85" />
 
-        {/* Content container */}
         <div className="relative w-full">
-          {/* Header Section */}
           <PageHeading title="Events" />
 
           <Inav categories={eventCategories} />
 
-          {loading && <p className="text-center text-[#EE6C4D] text-xl">Loading events...</p>}
-          {!loading && error && <p className="text-center text-red-300 text-xl">{error}</p>}
+          {loading && (
+            <p className="py-10 text-center text-xl text-[#EE6C4D]">Loading events...</p>
+          )}
+          {!loading && error && (
+            <p className="py-10 text-center text-xl text-red-500">{error}</p>
+          )}
           {!loading && !error && eventCategories.length === 0 && (
-            <p className="text-center text-gray-300 text-xl">No events available.</p>
+            <p className="py-10 text-center text-xl text-[#3D5A80]">
+              No events available.
+            </p>
           )}
 
-          {!loading && !error && eventCategories.map((category) => (
-            <React.Fragment key={category}>
-              {/* Category Header */}
-              <div
+          {!loading &&
+            !error &&
+            eventCategories.map((category) => (
+              <section
+                key={category}
                 id={category.toLowerCase().replace(/ /g, "-")}
-                className="relative flex flex-col items-center justify-center mx-4 sm:mx-6 md:mx-8 lg:mx-10 my-12 sm:my-16"
+                className="scroll-mt-24 py-8 sm:py-12"
               >
-                {/* Soft, Elegant Glassmorphic Design */}
-                <div className="relative group flex items-center justify-center cursor-default rounded-full transition-all duration-300 hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[8px_8px_0px_#EE6C4D] hover:scale-[1.03]">
-
-                  {/* Soft Background Layer */}
-                  <div className="absolute inset-0 bg-[#E0FBFC]/70 backdrop-blur-md rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-transform duration-300" />
-
-                  {/* Border Layer */}
-                  <div className="absolute inset-0 border border-[#98C1D9]/60 rounded-full" />
-
-                  {/* Content */}
-                  <div className="relative px-4 sm:px-10 py-2 sm:py-4 flex items-center justify-center gap-2 sm:gap-4 z-10">
-                    <Blossom className="w-8 h-8 sm:w-10 sm:h-10 text-[#EE6C4D] animate-spin [animation-duration:3s]" />
-                    <h2
-                      className="text-xl sm:text-3xl md:text-4xl font-extrabold text-[#293241] uppercase tracking-widest whitespace-nowrap drop-shadow-sm"
-                    >
-                      {category.replace("_", " ")}
+                {/* Category heading */}
+                <div className="mx-4 mb-4 flex justify-center sm:mx-8">
+                  <div className="flex max-w-full items-center gap-2 rounded-full border border-[#98C1D9]/70 bg-[#E0FBFC]/80 px-4 py-2 shadow-sm backdrop-blur-md sm:gap-4 sm:px-8 sm:py-3">
+                    <Blossom className="h-6 w-6 shrink-0 animate-spin text-[#EE6C4D] [animation-duration:3s] sm:h-9 sm:w-9" />
+                    <h2 className="truncate text-lg font-extrabold uppercase tracking-widest text-[#293241] sm:text-3xl md:text-4xl">
+                      {category.replace(/_/g, " ")}
                     </h2>
-                    <Blossom className="w-8 h-8 sm:w-10 sm:h-10 text-[#EE6C4D] animate-spin [animation-duration:3s]" />
+                    <Blossom className="h-6 w-6 shrink-0 animate-spin text-[#EE6C4D] [animation-duration:3s] sm:h-9 sm:w-9" />
                   </div>
                 </div>
-              </div>
 
-              {/* Events Swiper */}
-              <div className="w-[90vw] mx-auto">
-                <Swiper
-                  effect={'coverflow'}
-                  grabCursor={true}
-                  centeredSlides={true}
-                  slidesPerView={'auto'}
-                  initialSlide={1}
-                  coverflowEffect={{
-                    rotate: 50,
-                    stretch: 0,
-                    depth: 100,
-                    modifier: 1,
-                    slideShadows: true,
-                  }}
-                  pagination={{ clickable: true }}
-                  navigation={events.filter((event) => event.category === category).length > 1}
-                  modules={[EffectCoverflow, Pagination, Navigation]}
-                  className="w-full pb-24 pt-12 !overflow-visible"
-                  style={{
-                    "--swiper-pagination-bottom": "0px",
-                    "--swiper-pagination-color": "#EE6C4D",
-                    "--swiper-pagination-bullet-inactive-color": "#3D5A80",
-                    "--swiper-navigation-color": "#EE6C4D",
-                    "--swiper-navigation-size": "28px",
-                  } as React.CSSProperties}
-                >
-                  {events
-                    .filter((event) => event.category === category)
-                    .map((event, index) => (
-                      <SwiperSlide
-                        key={event._id || event.code}
-                        className="!w-[280px] sm:!w-[340px] md:!w-[400px] aspect-square !overflow-visible"
-                      >
-                        <div className="w-full h-full rounded-xl shadow-2xl relative overflow-hidden group transform transition-all duration-500 hover:scale-105">
-                          {/* Decorative border */}
-                          <div className="absolute inset-0 bg-[#EE6C4D] animate-gradient-x rounded-tl-[20px] rounded-br-[20px]" />
-
-                          {/* Content container */}
-                          <div className="absolute inset-0.5 rounded-xl overflow-hidden bg-gradient-to-br from-gray-900 to-black rounded-tl-[18px] rounded-br-[18px]">
-                            {/* Image */}
-                            <Image
-                              src={event.posterLink}
-                              alt={event.name}
-                              fill
-                              style={{ objectFit: "cover" }}
-                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                              quality={75}
-                              priority={index < 4}
-                              className="transition-transform duration-500 group-hover:scale-110"
-                              unoptimized
-                            />
-
-                            {/* Event Name Overlay (Gradient) */}
-                            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/80 to-transparent pt-16 pb-5 px-5 transform transition-transform duration-500 translate-y-full group-hover:translate-y-0 rounded-b-xl flex flex-col gap-4">
-                              <p className="text-2xl sm:text-3xl font-extrabold text-white uppercase tracking-widest whitespace-nowrap drop-shadow-sm truncate">
-                                {event.name}
-                              </p>
-
-                              {/* Links */}
-                              <div className="flex flex-col gap-2.5">
-                                <a
-                                  href={`/register/${event.code}`}
-                                  className="w-full bg-[#EE6C4D]/90 hover:bg-[#EE6C4D] text-slate-900 font-extrabold uppercase tracking-widest drop-shadow-sm py-2.5 px-4 rounded-full text-center backdrop-blur-sm shadow-sm transition-all duration-300 hover:shadow-md"
-                                >
-                                  Register Now
-                                </a>
-
-                                <button
-                                  type="button"
-                                  onClick={() => setSelectedEvent(event)}
-                                  className="w-full bg-white/20 hover:bg-white/30 text-white border border-white/30 font-extrabold uppercase tracking-widest drop-shadow-sm py-2.5 px-4 rounded-full text-center backdrop-blur-sm shadow-sm transition-all duration-300 hover:shadow-md"
-                                >
-                                  View Event
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </SwiperSlide>
-                    ))}
-                </Swiper>
-              </div>
-            </React.Fragment>
-          ))}
+                <CategoryCarousel
+                  events={grouped.get(category) ?? []}
+                  onView={setSelectedEvent}
+                />
+              </section>
+            ))}
         </div>
-      </div >
-      {selectedEvent && <EventDetailsModal event={selectedEvent} onClose={() => setSelectedEvent(null)} />
-      }
+      </div>
+
+      {selectedEvent && (
+        <EventDetailsModal
+          event={selectedEvent}
+          onClose={() => setSelectedEvent(null)}
+        />
+      )}
     </>
   );
 }

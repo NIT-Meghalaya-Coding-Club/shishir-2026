@@ -10,24 +10,24 @@ import Blossom from "../Blossom";
 const artists = [
   {
     id: 1,
-    name: "Pandit Satish Vyas",
-    genre: "Hindustani Classical",
-    image: "/artists/pandit.webp",
-    color: "#FF5E5B",
+    name: "Anurag Helder",
+    genre: "Cultural",
+    image: "/artists/artist_AHP.webp",
+    color: "#544133",
   },
   {
     id: 2,
-    name: "Tushar Joshi",
-    genre: "Bollywood",
-    image: "/artists/tushar_joshi.webp",
-    color: "#22BABB",
+    name: "Waves in Town",
+    genre: "Rock",
+    image: "/artists/artist_WIT.webp",
+    color: "#1A9992",
   },
   {
     id: 3,
-    name: "Demo Artist",
-    genre: "Coming Soon",
-    image: "/artists/tushar_joshi.webp",
-    color: "#7C3AED",
+    name: "The 9Teen",
+    genre: "Pop",
+    image: "/artists/artist_9teen.webp",
+    color: "#A1D477",
   },
 ];
 
@@ -169,7 +169,7 @@ const FeaturedArtists = () => {
             <motion.div
               key={artist.id}
               data-artist-card
-              className="relative rounded-xl overflow-hidden cursor-pointer group w-full aspect-square will-change-transform"
+              className="relative rounded-xl overflow-hidden cursor-pointer group w-full aspect-square will-change-transform shadow-lg hover:shadow-2xl transition-shadow duration-300"
               onClick={() =>
                 setActiveArtist(activeArtist === artist.id ? null : artist.id)
               }
