@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { EffectCoverflow, Mousewheel } from "swiper/modules";
@@ -14,6 +14,7 @@ import EventDetailsModal, {
 } from "@/components/events/event-details-modal";
 import PageHeading from "@/components/PageHeading";
 import Blossom from "@/components/Blossom";
+import PageLoader from "@/components/ui/page-loader";
 
 /* -------------------------------------------------------------------------- */
 /*  Carousel for one category                                                 */
@@ -298,7 +299,7 @@ export default function Events() {
           <Inav categories={eventCategories} />
 
           {loading && (
-            <p className="py-10 text-center text-xl text-[#EE6C4D]">Loading events...</p>
+            <PageLoader active />
           )}
           {!loading && error && (
             <p className="py-10 text-center text-xl text-red-500">{error}</p>

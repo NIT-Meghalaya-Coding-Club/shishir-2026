@@ -68,7 +68,16 @@ export function usePageRouter(): AppRouter {
   }, [router]);
 }
 
-export default function PageLoader() {
+type PageLoaderProps = {
+  /**
+   * Keep the overlay visible regardless of navigation state. Use this for
+   * page-level data loading (e.g. `active={loading}`); the global instance
+   * rendered in ClientProviders omits it and follows route changes instead.
+   */
+  active?: boolean;
+};
+
+function NavigationPageLoader() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [visible, setVisible] = useState(false);
@@ -162,33 +171,60 @@ export default function PageLoader() {
 
   return (
     <>
-      <style>{`
-        @keyframes page-loader-in {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        .page-loader-in { animation: page-loader-in .18s ease-out both; }
-        @media (prefers-reduced-motion: reduce) {
-          .page-loader-in { animation: none; }
-        }
-      `}</style>
-
-      {visible && (
-        <div
-          role="status"
-          aria-live="polite"
-          className="page-loader-in fixed inset-0 z-[100] flex flex-col items-center justify-center gap-5 bg-[#E0FBFC]/75 backdrop-blur-sm"
-        >
-          <Blossom
-            className="h-14 w-14 text-[#EE6C4D] drop-shadow-[0_6px_16px_rgba(238,108,77,0.35)] motion-safe:animate-spin"
-            style={{ animationDuration: "3s" }}
-          />
-
-          <p className="font-serif text-xs font-bold uppercase tracking-[0.35em] text-[#3D5A80]">
-            Loading
-          </p>
-        </div>
-      )}
+      <PageLoaderStyles />
+      {visible && <PageLoaderOverlay />}
     </>
   );
+}
+
+function PageLoaderStyles() {
+  return (
+    <style>{`
+      @keyframes page-loader-in {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      .page-loader-in { animation: page-loader-in .18s ease-out both; }
+      @media (prefers-reduced-motion: reduce) {
+        .page-loader-in { animation: none; }
+      }
+    `}</style>
+  );
+}
+
+function PageLoaderOverlay() {
+  return (
+    <div
+      role="status"
+      aria-live="polite"
+      className="page-loader-in fixed inset-0 z-[100] flex flex-col items-center justify-center gap-5 bg-[#E0FBFC]/75 backdrop-blur-sm"
+    >
+      <Blossom
+        className="h-14 w-14 text-[#EE6C4D] drop-shadow-[0_6px_16px_rgba(238,108,77,0.35)] motion-safe:animate-spin"
+        style={{ animationDuration: "3s" }}
+      />
+
+      <p className="font-serif text-xs font-bold uppercase tracking-[0.35em] text-[#3D5A80]">
+        Loading
+      </p>
+    </div>
+  );
+}
+
+/**
+ * With `active`, render a static overlay and skip the navigation hooks
+ * (including `useSearchParams`), so data-loading pages don't need a
+ * Suspense boundary.
+ */
+export default function PageLoader({ active = false }: PageLoaderProps) {
+  if (active) {
+    return (
+      <>
+        <PageLoaderStyles />
+        <PageLoaderOverlay />
+      </>
+    );
+  }
+
+  return <NavigationPageLoader />;
 }
