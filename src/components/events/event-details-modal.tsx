@@ -26,6 +26,7 @@ export type EventRecord = {
   eventHeads: Person[];
   coordinators: Person[];
   coCoordinators: Person[];
+  stopAcceptingParticipation?: boolean;
 };
 
 const fallbackProfileImage = "/assets/profile-icon.svg";
@@ -226,12 +227,20 @@ export default function EventDetailsModal({ event, onClose }: { event: EventReco
               View Rulebook
             </a>
 
-            <a
-              href={`/register/${event.code}`}
-              className="flex min-h-14 flex-1 items-center justify-center rounded-full bg-[#EE6C4D] px-6 py-3 text-base font-bold uppercase tracking-wide text-[#E0FBFC] transition-all hover:bg-[#EE6C4D]/90 hover:shadow-lg hover:shadow-[#EE6C4D]/25 active:scale-[0.98] sm:min-h-12 sm:text-sm"
-            >
-              Register Now
-            </a>
+            {event.stopAcceptingParticipation ? (
+              <span
+                className="flex min-h-14 flex-1 items-center justify-center rounded-full bg-zinc-400/20 px-6 py-3 text-base font-bold uppercase tracking-wide text-zinc-500 cursor-not-allowed border border-zinc-400/30 sm:min-h-12 sm:text-sm"
+              >
+                Participation Closed
+              </span>
+            ) : (
+              <a
+                href={`/register/${event.code}`}
+                className="flex min-h-14 flex-1 items-center justify-center rounded-full bg-[#EE6C4D] px-6 py-3 text-base font-bold uppercase tracking-wide text-[#E0FBFC] transition-all hover:bg-[#EE6C4D]/90 hover:shadow-lg hover:shadow-[#EE6C4D]/25 active:scale-[0.98] sm:min-h-12 sm:text-sm"
+              >
+                Register Now
+              </a>
+            )}
           </div>
 
           {/* People */}

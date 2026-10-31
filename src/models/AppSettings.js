@@ -12,6 +12,10 @@ const AppSettingsSchema = new mongoose.Schema(
       day2: { type: String, default: "" },
       day3: { type: String, default: "" },
     },
+    stopAcceptingParticipationSiteWide: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

@@ -8,6 +8,7 @@ import EventName from "@/models/EventName";
 import Category from "@/models/Category";
 import Upload from "@/models/Uploads";
 import { resolveUsersByEmails } from "@/lib/eventAuth";
+import { getAccessSettings } from "@/lib/accessSettings";
 import { parseISTDateTime } from "@/lib/ist";
 
 function unauthorized() {
@@ -65,15 +66,28 @@ async function findExistingEventMessage(eventName) {
 export async function GET() {
   if (!(await isAdminRequest())) return unauthorized();
   await connectMongo();
-  const events = await Event.find()
-    .populate("eventNameId", "name")
-    .populate("categoryId", "name")
-    .populate("eventHeads", "name email collegeID")
-    .populate("coordinators", "name email collegeID")
-    .populate("coCoordinators", "name email collegeID")
-    .sort({ startsAt: 1 })
-    .lean();
-  return NextResponse.json({ success: true, events });
+  const [events, settings] = await Promise.all([
+    Event.find()
+      .populate("eventNameId", "name")
+      .populate("categoryId", "name")
+      .populate("eventHeads", "name email collegeID")
+      .populate("coordinators", "name email collegeID")
+      .populate("coCoordinators", "name email collegeID")
+      .sort({ startsAt: 1 })
+      .lean(),
+    getAccessSettings(),
+  ]);
+
+  const mappedEvents = events.map((e) => ({
+    ...e,
+    stopAcceptingParticipation: Boolean(e.stopAcceptingParticipation),
+  }));
+
+  return NextResponse.json({
+    success: true,
+    events: mappedEvents,
+    stopAcceptingParticipationSiteWide: Boolean(settings?.stopAcceptingParticipationSiteWide),
+  });
 }
 
 export async function POST(req) {
@@ -123,6 +137,7 @@ export async function POST(req) {
       minParticipants,
       maxParticipants,
       allowPerformanceTypes: Boolean(payload.allowPerformanceTypes),
+      stopAcceptingParticipation: Boolean(payload.stopAcceptingParticipation),
       paymentRequired: payload.paymentRequired?.amount || payload.paymentRequired?.qrCodeUrl ? payload.paymentRequired : undefined,
       rulebookLink: payload.rulebookLink.trim(),
       posterLink: payload.posterLink.trim(),

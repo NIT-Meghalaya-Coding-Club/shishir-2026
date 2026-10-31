@@ -17,6 +17,7 @@ import {
   resolveUsersByCollegeIDs,
   resolveUsersByEmails,
 } from "@/lib/eventAuth";
+import { getAccessSettings } from "@/lib/accessSettings";
 
 function normalizeCode(code) {
   return String(code || "").trim().toLowerCase();
@@ -134,13 +135,16 @@ export async function GET(req, { params }) {
     }
 
     const [eventWithPeople] = await hydrateEventPeople(event);
+    const settings = await getAccessSettings();
 
     return NextResponse.json({
       success: true,
       event: {
         ...withCategoryName(withEventName(eventWithPeople)),
         posterLink: getPosterPublicUrl(eventWithPeople.posterLink),
+        stopAcceptingParticipation: Boolean(eventWithPeople.stopAcceptingParticipation),
       },
+      stopAcceptingParticipationSiteWide: Boolean(settings?.stopAcceptingParticipationSiteWide),
     }, { status: 200 });
   } catch (error) {
     console.error("Fetch event error:", error);
@@ -187,6 +191,29 @@ export async function PATCH(req, { params }) {
     }
 
     const payload = await req.json();
+
+    if (payload.onlyToggleParticipation && typeof payload.stopAcceptingParticipation === "boolean") {
+      event.stopAcceptingParticipation = payload.stopAcceptingParticipation;
+      await event.save();
+      const populatedEvent = await Event.findById(event._id)
+        .populate("eventNameId", "name")
+        .populate("categoryId", "name")
+        .populate("eventHeads", "name email phone collegeID image dept yearOfStudy")
+        .populate("coordinators", "name email phone collegeID image dept yearOfStudy")
+        .populate("coCoordinators", "name email phone collegeID image dept yearOfStudy")
+        .lean();
+
+      return NextResponse.json({
+        success: true,
+        event: {
+          ...withCategoryName(withEventName(populatedEvent)),
+          posterLink: getPosterPublicUrl(populatedEvent.posterLink),
+          stopAcceptingParticipation: Boolean(populatedEvent.stopAcceptingParticipation),
+        },
+        message: event.stopAcceptingParticipation ? "Participation stopped" : "Accepting participation",
+      }, { status: 200 });
+    }
+
     const validationError = validateEventPayload(payload);
     const eventType = String(payload.eventType || "").trim().toLowerCase();
     const minParticipants = Number(payload.minParticipants);
@@ -276,6 +303,9 @@ export async function PATCH(req, { params }) {
     event.minParticipants = minParticipants;
     event.maxParticipants = maxParticipants;
     event.allowPerformanceTypes = Boolean(payload.allowPerformanceTypes);
+    if (typeof payload.stopAcceptingParticipation === "boolean") {
+      event.stopAcceptingParticipation = payload.stopAcceptingParticipation;
+    }
     event.paymentRequired = payload.paymentRequired || undefined;
     event.rulebookLink = payload.rulebookLink;
     const oldPosterLink = event.posterLink;
@@ -316,6 +346,7 @@ export async function PATCH(req, { params }) {
       event: {
         ...withCategoryName(withEventName(populatedEvent)),
         posterLink: getPosterPublicUrl(populatedEvent.posterLink),
+        stopAcceptingParticipation: Boolean(populatedEvent.stopAcceptingParticipation),
       },
     }, { status: 200 });
   } catch (error) {

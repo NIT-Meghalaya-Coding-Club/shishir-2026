@@ -26,6 +26,17 @@ export async function PATCH(req, { params }) {
     const event = await Event.findOne({ code: String((await params).code).trim().toLowerCase() });
     if (!event) return NextResponse.json({ success: false, message: "Event not found" }, { status: 404 });
     const payload = await req.json();
+
+    if (payload.onlyToggleParticipation && typeof payload.stopAcceptingParticipation === "boolean") {
+      event.stopAcceptingParticipation = payload.stopAcceptingParticipation;
+      await event.save();
+      return NextResponse.json({
+        success: true,
+        stopAcceptingParticipation: event.stopAcceptingParticipation,
+        message: event.stopAcceptingParticipation ? "Participation stopped" : "Accepting participation",
+      });
+    }
+
     const required = ["name", "code", "category", "location", "startsAt", "endsAt", "description", "rulebookLink", "posterLink"];
     const missing = required.filter((field) => !String(payload[field] || "").trim());
     if (missing.length) return NextResponse.json({ success: false, message: `Missing required fields: ${missing.join(", ")}` }, { status: 400 });
@@ -45,7 +56,26 @@ export async function PATCH(req, { params }) {
     const coordinators = await resolveUsersByEmails(normalizeEmails(payload.coordinatorEmails), "coordinators");
     const coCoordinators = await resolveUsersByEmails(normalizeEmails(payload.coCoordinatorEmails), "co-coordinators");
     const oldPosterLink = event.posterLink;
-    Object.assign(event, { code, eventNameId: eventName._id, categoryId: category._id, location: payload.location.trim(), startsAt, endsAt, description: payload.description.trim(), eventType: payload.eventType, minParticipants, maxParticipants, allowPerformanceTypes: Boolean(payload.allowPerformanceTypes), paymentRequired: payload.paymentRequired?.amount || payload.paymentRequired?.qrCodeUrl ? payload.paymentRequired : undefined, rulebookLink: payload.rulebookLink.trim(), posterLink: payload.posterLink.trim(), eventHeads: heads.map((user) => user._id), coordinators: coordinators.map((user) => user._id), coCoordinators: coCoordinators.map((user) => user._id) });
+    Object.assign(event, {
+      code,
+      eventNameId: eventName._id,
+      categoryId: category._id,
+      location: payload.location.trim(),
+      startsAt,
+      endsAt,
+      description: payload.description.trim(),
+      eventType: payload.eventType,
+      minParticipants,
+      maxParticipants,
+      allowPerformanceTypes: Boolean(payload.allowPerformanceTypes),
+      stopAcceptingParticipation: typeof payload.stopAcceptingParticipation === "boolean" ? payload.stopAcceptingParticipation : Boolean(event.stopAcceptingParticipation),
+      paymentRequired: payload.paymentRequired?.amount || payload.paymentRequired?.qrCodeUrl ? payload.paymentRequired : undefined,
+      rulebookLink: payload.rulebookLink.trim(),
+      posterLink: payload.posterLink.trim(),
+      eventHeads: heads.map((user) => user._id),
+      coordinators: coordinators.map((user) => user._id),
+      coCoordinators: coCoordinators.map((user) => user._id),
+    });
     await event.save();
     if (oldPosterLink !== event.posterLink) {
       await deletePosterImage(oldPosterLink);

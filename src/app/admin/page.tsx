@@ -26,6 +26,7 @@ import ImageCropper, { MAX_IMAGE_SIZE_MB } from "@/components/ImageCropper";
 import { toISTInputValue, toISTInstant } from "@/lib/ist";
 import ValidationDialog from "@/components/ui/ValidationDialog";
 import LoadingButton from "@/components/ui/LoadingButton";
+import ParticipationToggle, { ParticipationBadge } from "@/components/ui/ParticipationToggle";
 
 type CommitteeName = { _id: string; name: string };
 type Person = { name?: string; email?: string; collegeID?: string };
@@ -51,6 +52,7 @@ type EventItem = {
   minParticipants: number;
   maxParticipants: number;
   allowPerformanceTypes?: boolean;
+  stopAcceptingParticipation?: boolean;
   paymentRequired?: { amount?: number; qrCodeUrl?: string };
   rulebookLink: string;
   posterLink: string;
@@ -195,6 +197,9 @@ export default function AdminPage() {
   const [signingIn, setSigningIn] = useState(false);
   const [savingSettings, setSavingSettings] = useState(false);
   const [savingManaged, setSavingManaged] = useState(false);
+  const [siteWideParticipationStopped, setSiteWideParticipationStopped] = useState(false);
+  const [togglingSiteWide, setTogglingSiteWide] = useState(false);
+  const [togglingEventCode, setTogglingEventCode] = useState<string | null>(null);
 
   const loadSettings = async () => {
     const response = await fetch("/api/admin/settings");
@@ -219,6 +224,7 @@ export default function AdminPage() {
       ...configured,
       ...ids.filter((id: string) => !configured.includes(id)),
     ]);
+    setSiteWideParticipationStopped(Boolean(settings.stopAcceptingParticipationSiteWide));
     setAuthenticated(true);
   };
   const loadManaged = async () => {
@@ -230,11 +236,89 @@ export default function AdminPage() {
     ]);
     if (committeeResponse.ok)
       setCommittees((await committeeResponse.json()).committees);
-    if (eventResponse.ok) setEvents((await eventResponse.json()).events);
+    if (eventResponse.ok) {
+      const eventData = await eventResponse.json();
+      setEvents(eventData.events);
+      if (typeof eventData.stopAcceptingParticipationSiteWide === "boolean") {
+        setSiteWideParticipationStopped(eventData.stopAcceptingParticipationSiteWide);
+      }
+    }
     if (categoriesResponse.ok)
       setCategories((await categoriesResponse.json()).categories);
     if (eventNamesResponse.ok)
       setEventNames((await eventNamesResponse.json()).eventNames);
+  };
+
+  const toggleSiteWideParticipation = async () => {
+    const nextVal = !siteWideParticipationStopped;
+    setTogglingSiteWide(true);
+    setSiteWideParticipationStopped(nextVal);
+
+    try {
+      const res = await fetch("/api/admin/settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ stopAcceptingParticipationSiteWide: nextVal }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setSiteWideParticipationStopped(!nextVal);
+        toast.error(data?.message || "Failed to update site-wide participation");
+      } else {
+        if (nextVal) {
+          toast.warning("Site-wide participation STOPPED for all events");
+        } else {
+          toast.success("Site-wide participation ENABLED");
+        }
+      }
+    } catch {
+      setSiteWideParticipationStopped(!nextVal);
+      toast.error("Failed to update site-wide participation");
+    } finally {
+      setTogglingSiteWide(false);
+    }
+  };
+
+  const toggleEventParticipation = async (item: EventItem) => {
+    const nextVal = !item.stopAcceptingParticipation;
+    setTogglingEventCode(item.code);
+    setEvents((prev) =>
+      prev.map((e) => (e.code === item.code ? { ...e, stopAcceptingParticipation: nextVal } : e))
+    );
+    if (editingEvent && editingEvent.code === item.code) {
+      setEditingEvent({ ...editingEvent, stopAcceptingParticipation: nextVal });
+    }
+
+    try {
+      const res = await fetch(`/api/admin/events/${item.code}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ stopAcceptingParticipation: nextVal, onlyToggleParticipation: true }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setEvents((prev) =>
+          prev.map((e) => (e.code === item.code ? { ...e, stopAcceptingParticipation: !nextVal } : e))
+        );
+        if (editingEvent && editingEvent.code === item.code) {
+          setEditingEvent({ ...editingEvent, stopAcceptingParticipation: !nextVal });
+        }
+        toast.error(data?.message || "Failed to update event participation");
+      } else {
+        toast.success(
+          nextVal
+            ? `Participation stopped for ${item.eventNameId?.name || item.code}`
+            : `Accepting participation for ${item.eventNameId?.name || item.code}`
+        );
+      }
+    } catch {
+      setEvents((prev) =>
+        prev.map((e) => (e.code === item.code ? { ...e, stopAcceptingParticipation: !nextVal } : e))
+      );
+      toast.error("Failed to update event participation");
+    } finally {
+      setTogglingEventCode(null);
+    }
   };
   useEffect(() => {
     loadSettings().finally(() => setLoading(false));
@@ -513,21 +597,43 @@ export default function AdminPage() {
           </p>
         </header>
         {section === "access" && (
-          <form onSubmit={saveSettings} className="grid gap-6 md:grid-cols-2">
-            <PeopleField
-              label="Event creator"
-              value={eventCreators}
-              onChange={setEventCreators}
+          <div className="space-y-6">
+            <ParticipationToggle
+              variant="card"
+              title="Site-wide Participation"
+              stopped={siteWideParticipationStopped}
+              disabled={togglingSiteWide}
+              onToggle={toggleSiteWideParticipation}
+              stoppedLabel="Stopped site-wide"
+              acceptingLabel="Accepting site-wide"
+              description={
+                siteWideParticipationStopped
+                  ? "Admin has stopped participation for all events. Event heads see a notice on their dashboard."
+                  : "Participation is open site-wide. Individual event controls apply."
+              }
+              className={
+                siteWideParticipationStopped
+                  ? "border-red-500/50 bg-red-950/30"
+                  : "border-white/10 bg-zinc-900/90"
+              }
             />
-            <PeopleField
-              label="Committee head"
-              value={committeeHeads}
-              onChange={setCommitteeHeads}
-            />
-            <div className="md:col-span-2">
-              <SaveButton message={message} saving={savingSettings} />
-            </div>
-          </form>
+
+            <form onSubmit={saveSettings} className="grid gap-6 md:grid-cols-2">
+              <PeopleField
+                label="Event creator"
+                value={eventCreators}
+                onChange={setEventCreators}
+              />
+              <PeopleField
+                label="Committee head"
+                value={committeeHeads}
+                onChange={setCommitteeHeads}
+              />
+              <div className="md:col-span-2">
+                <SaveButton message={message} saving={savingSettings} />
+              </div>
+            </form>
+          </div>
         )}
         {section === "mun" && (
           <form onSubmit={saveSettings} className="max-w-2xl space-y-5">
@@ -666,66 +772,91 @@ export default function AdminPage() {
           </div>
         )}
         {section === "events" && (
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold">Manage events</h2>
-              {!creatingEvent && !editingEvent && !participantsEvent && (
-                <LoadingButton
-                  type="button"
-                  size="sm"
-                  icon={Plus}
-                  onClick={() => {
-                    setCreatingEvent(true);
-                    setMessage("");
-                    setEditingEvent(null);
+          <div className="space-y-6">
+            <ParticipationToggle
+              variant="card"
+              title="Site-wide Participation"
+              stopped={siteWideParticipationStopped}
+              disabled={togglingSiteWide}
+              onToggle={toggleSiteWideParticipation}
+              stoppedLabel="Stopped site-wide"
+              acceptingLabel="Accepting site-wide"
+              description={
+                siteWideParticipationStopped
+                  ? "Admin has stopped participation for all events. Event heads see a notice on their dashboard."
+                  : "Participation is open site-wide. Individual event controls apply."
+              }
+              className={
+                siteWideParticipationStopped
+                  ? "border-red-500/50 bg-red-950/30"
+                  : "border-white/10 bg-zinc-900/90"
+              }
+            />
+
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-semibold">Manage events</h2>
+                {!creatingEvent && !editingEvent && !participantsEvent && (
+                  <LoadingButton
+                    type="button"
+                    size="sm"
+                    icon={Plus}
+                    onClick={() => {
+                      setCreatingEvent(true);
+                      setMessage("");
+                      setEditingEvent(null);
+                    }}
+                  >
+                    Create event
+                  </LoadingButton>
+                )}
+              </div>
+              {creatingEvent ? (
+                <CreateEventEditor
+                  categories={categories}
+                  eventNames={eventNames}
+                  onCancel={() => setCreatingEvent(false)}
+                  onSuccess={() => {
+                    setCreatingEvent(false);
+                    loadManaged();
                   }}
-                >
-                  Create event
-                </LoadingButton>
+                />
+              ) : editingEvent ? (
+                <EventEditor
+                  item={editingEvent}
+                  categories={categories}
+                  eventNames={eventNames}
+                  onChange={setEditingEvent}
+                  onCancel={() => setEditingEvent(null)}
+                  saving={savingManaged}
+                  onSave={() =>
+                    saveManaged({ kind: "events", item: editingEvent })
+                  }
+                />
+              ) : participantsEvent ? (
+                <EventParticipants
+                  eventCode={participantsEvent.code}
+                  eventName={
+                    participantsEvent.eventNameId?.name || participantsEvent.code
+                  }
+                  onClose={() => setParticipantsEvent(null)}
+                />
+              ) : (
+                <List
+                  items={events}
+                  getTitle={(item) => item.eventNameId?.name || item.code}
+                  getGroup={(item) =>
+                    item.categoryId?.name || item.category || "Uncategorised"
+                  }
+                  onEdit={setEditingEvent}
+                  onParticipants={setParticipantsEvent}
+                  onDelete={deleteEvent}
+                  onToggleParticipation={toggleEventParticipation}
+                  getParticipationStatus={(item) => Boolean(item.stopAcceptingParticipation)}
+                  togglingCode={togglingEventCode}
+                />
               )}
             </div>
-            {creatingEvent ? (
-              <CreateEventEditor
-                categories={categories}
-                eventNames={eventNames}
-                onCancel={() => setCreatingEvent(false)}
-                onSuccess={() => {
-                  setCreatingEvent(false);
-                  loadManaged();
-                }}
-              />
-            ) : editingEvent ? (
-              <EventEditor
-                item={editingEvent}
-                categories={categories}
-                eventNames={eventNames}
-                onChange={setEditingEvent}
-                onCancel={() => setEditingEvent(null)}
-                saving={savingManaged}
-                onSave={() =>
-                  saveManaged({ kind: "events", item: editingEvent })
-                }
-              />
-            ) : participantsEvent ? (
-              <EventParticipants
-                eventCode={participantsEvent.code}
-                eventName={
-                  participantsEvent.eventNameId?.name || participantsEvent.code
-                }
-                onClose={() => setParticipantsEvent(null)}
-              />
-            ) : (
-              <List
-                items={events}
-                getTitle={(item) => item.eventNameId?.name || item.code}
-                getGroup={(item) =>
-                  item.categoryId?.name || item.category || "Uncategorised"
-                }
-                onEdit={setEditingEvent}
-                onParticipants={setParticipantsEvent}
-                onDelete={deleteEvent}
-              />
-            )}
           </div>
         )}
         {section === "uploads" && <UploadsPanel />}
@@ -751,6 +882,9 @@ function List<T extends { code: string }>({
   getMeta,
   getGroup,
   onEdit, onDelete, onParticipants,
+  onToggleParticipation,
+  getParticipationStatus,
+  togglingCode,
 }: {
   items: T[];
   getTitle: (item: T) => string;
@@ -758,30 +892,77 @@ function List<T extends { code: string }>({
   getGroup?: (item: T) => string;
   onEdit: (item: T) => void; onDelete?: (item: T) => void;
   onParticipants?: (item: T) => void;
+  onToggleParticipation?: (item: T) => void;
+  getParticipationStatus?: (item: T) => boolean;
+  togglingCode?: string | null;
 }) {
-  const renderRow = (item: T) => (
-    <div
-      key={item.code}
-      className="flex items-center gap-4 rounded-xl border border-white/10 bg-zinc-900 p-4"
-    >
-      <div className="min-w-0 flex-1">
-        <p className="font-semibold">{getTitle(item)}</p>
-        {getMeta && (
-          <p className="mt-1 text-sm text-zinc-400">{getMeta(item)}</p>
-        )}
-        <p className="mt-1 font-mono text-xs text-zinc-600">{item.code}</p>
-      </div>
-      <div className="flex items-center gap-2"><button
-        type="button"
-        onClick={() => onEdit(item)}
-        className="rounded-lg bg-white/10 p-2 text-zinc-300 hover:bg-amber-400 hover:text-zinc-950"
-        aria-label={`Edit ${getTitle(item)}`}
+  const renderRow = (item: T) => {
+    const isStopped = getParticipationStatus ? getParticipationStatus(item) : false;
+    const isToggling = togglingCode === item.code;
+
+    return (
+      <div
+        key={item.code}
+        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border border-white/10 bg-zinc-900 p-4"
       >
-        <Edit3 size={17} />
-      </button>
-    {onParticipants && <button type="button" onClick={() => onParticipants(item)} className="rounded-lg border border-white/10 p-2 text-zinc-300 hover:bg-white/10" title={`View participants for ${getTitle(item)}`} aria-label={`View participants for ${getTitle(item)}`}><UsersRound size={16} /></button>}
-    {onDelete && <button type="button" onClick={() => onDelete(item)} className="rounded-lg border border-red-500/30 p-2 text-red-400 hover:bg-red-500 hover:text-white" aria-label={`Delete ${getTitle(item)}`}><Trash2 size={16} /></button>}</div></div>
-  );
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <p className="font-semibold text-white">{getTitle(item)}</p>
+            {getParticipationStatus && (
+              <ParticipationBadge stopped={isStopped} />
+            )}
+          </div>
+          {getMeta && (
+            <p className="mt-1 text-sm text-zinc-400">{getMeta(item)}</p>
+          )}
+          <p className="mt-1 font-mono text-xs text-zinc-600">{item.code}</p>
+        </div>
+        <div className="flex items-center gap-2 flex-wrap">
+          {onToggleParticipation && (
+            <div className="border-r border-white/10 pr-3 mr-1">
+              <ParticipationToggle
+                variant="inline"
+                stopped={isStopped}
+                disabled={isToggling}
+                onToggle={() => onToggleParticipation(item)}
+                showBadge={false}
+                size="md"
+              />
+            </div>
+          )}
+          <button
+            type="button"
+            onClick={() => onEdit(item)}
+            className="rounded-lg bg-white/10 p-2 text-zinc-300 hover:bg-amber-400 hover:text-zinc-950"
+            aria-label={`Edit ${getTitle(item)}`}
+          >
+            <Edit3 size={17} />
+          </button>
+          {onParticipants && (
+            <button
+              type="button"
+              onClick={() => onParticipants(item)}
+              className="rounded-lg border border-white/10 p-2 text-zinc-300 hover:bg-white/10"
+              title={`View participants for ${getTitle(item)}`}
+              aria-label={`View participants for ${getTitle(item)}`}
+            >
+              <UsersRound size={16} />
+            </button>
+          )}
+          {onDelete && (
+            <button
+              type="button"
+              onClick={() => onDelete(item)}
+              className="rounded-lg border border-red-500/30 p-2 text-red-400 hover:bg-red-500 hover:text-white"
+              aria-label={`Delete ${getTitle(item)}`}
+            >
+              <Trash2 size={16} />
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  };;
   const empty = !items.length ? (
     <p className="rounded-lg border border-dashed border-white/15 p-6 text-zinc-500">
       Nothing to show.
@@ -1262,6 +1443,13 @@ function EventEditor({
             onChange={(e) => update("description", e.target.value)}
           />
         </label>
+        <ParticipationToggle
+          variant="card"
+          stopped={Boolean(item.stopAcceptingParticipation)}
+          onToggle={(next) => update("stopAcceptingParticipation", next)}
+          description="When toggled ON, participants cannot register for this event. Event heads can also toggle this in their dashboard."
+          className="md:col-span-2"
+        />
         <PeopleField
           label="Event head"
           value={item.eventHeadEmails ?? peopleText(item.eventHeads)}
@@ -1315,6 +1503,7 @@ function CreateEventEditor({ categories, eventNames, onCancel, onSuccess }: { ca
     minParticipants: number;
     maxParticipants: number;
     allowPerformanceTypes: boolean;
+    stopAcceptingParticipation: boolean;
     paymentRequired: { amount: number; qrCodeUrl: string } | null;
     posterLink: string;
     posterFile: File | null;
@@ -1337,6 +1526,7 @@ function CreateEventEditor({ categories, eventNames, onCancel, onSuccess }: { ca
     minParticipants: 1,
     maxParticipants: 1,
     allowPerformanceTypes: false,
+    stopAcceptingParticipation: false,
     paymentRequired: null,
     posterLink: "",
     posterFile: null,
@@ -1422,6 +1612,7 @@ function CreateEventEditor({ categories, eventNames, onCancel, onSuccess }: { ca
         minParticipants: Number(formData.minParticipants),
         maxParticipants: Number(formData.maxParticipants),
         allowPerformanceTypes: formData.allowPerformanceTypes,
+        stopAcceptingParticipation: Boolean(formData.stopAcceptingParticipation),
         paymentRequired: formData.paymentRequired,
         rulebookLink: formData.rulebookLink.trim(),
         posterLink: posterLink.trim(),
@@ -1523,6 +1714,12 @@ function CreateEventEditor({ categories, eventNames, onCancel, onSuccess }: { ca
             <input type="checkbox" checked={formData.allowPerformanceTypes} onChange={(e) => update("allowPerformanceTypes", e.target.checked)} className="h-4 w-4 accent-amber-400" />
             Let participants choose solo, duo, trio, or group
           </label>
+          <ParticipationToggle
+            variant="card"
+            stopped={Boolean(formData.stopAcceptingParticipation)}
+            onToggle={(next) => update("stopAcceptingParticipation", next)}
+            description="Immediately block participant registrations for this new event upon creation."
+          />
           <label className="flex items-center gap-3 text-sm text-zinc-300">
             <input type="checkbox" checked={Boolean(formData.paymentRequired)} onChange={(e) => update("paymentRequired", e.target.checked ? { amount: 0, qrCodeUrl: "" } : null)} className="h-4 w-4 accent-amber-400" />
             Require payment during registration

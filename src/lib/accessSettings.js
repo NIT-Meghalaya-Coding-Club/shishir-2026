@@ -40,24 +40,39 @@ export async function getAccessSettings() {
         munDashboardEmails: envEmails("MUN_DASHBOARD_EMAILS"),
         committeeOrder: [],
         scheduleDates: { day1: "", day2: "", day3: "" },
+        stopAcceptingParticipationSiteWide: false,
       },
     },
     { new: true, upsert: true, setDefaultsOnInsert: true }
   ).lean();
 }
 
-export async function updateAccessSettings({ eventCreatorEmails, committeeHeadEmails, munDashboardEmails, committeeOrder, scheduleDates }) {
+export async function updateAccessSettings(updates = {}) {
   await connectMongo();
+  const setObj = {};
+  if (updates.eventCreatorEmails !== undefined) {
+    setObj.eventCreatorEmails = normalizeEmails(updates.eventCreatorEmails);
+  }
+  if (updates.committeeHeadEmails !== undefined) {
+    setObj.committeeHeadEmails = normalizeEmails(updates.committeeHeadEmails);
+  }
+  if (updates.munDashboardEmails !== undefined) {
+    setObj.munDashboardEmails = normalizeEmails(updates.munDashboardEmails);
+  }
+  if (updates.committeeOrder !== undefined) {
+    setObj.committeeOrder = normalizeCommitteeOrder(updates.committeeOrder);
+  }
+  if (updates.scheduleDates !== undefined) {
+    setObj.scheduleDates = normalizeScheduleDates(updates.scheduleDates);
+  }
+  if (updates.stopAcceptingParticipationSiteWide !== undefined) {
+    setObj.stopAcceptingParticipationSiteWide = Boolean(updates.stopAcceptingParticipationSiteWide);
+  }
+
   return AppSettings.findOneAndUpdate(
     { key: "access-control" },
     {
-      $set: {
-        eventCreatorEmails: normalizeEmails(eventCreatorEmails),
-        committeeHeadEmails: normalizeEmails(committeeHeadEmails),
-        munDashboardEmails: normalizeEmails(munDashboardEmails),
-        committeeOrder: normalizeCommitteeOrder(committeeOrder),
-        scheduleDates: normalizeScheduleDates(scheduleDates),
-      },
+      $set: setObj,
     },
     { new: true, upsert: true, setDefaultsOnInsert: true }
   ).lean();

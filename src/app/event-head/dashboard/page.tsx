@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { signIn, useSession } from "next-auth/react";
 import {
+  AlertTriangle,
   CalendarClock,
   Edit3,
   Link as LinkIcon,
@@ -22,6 +23,7 @@ import EventParticipants from "@/components/event-head/EventParticipants";
 import ImageCropper, { MAX_IMAGE_SIZE_MB } from "@/components/ImageCropper";
 import ValidationDialog from "@/components/ui/ValidationDialog";
 import NameDropdown from "@/components/NameDropdown";
+import ParticipationToggle, { ParticipationBadge } from "@/components/ui/ParticipationToggle";
 
 type Person = {
   _id?: string;
@@ -50,6 +52,7 @@ type EventRecord = {
   minParticipants: number;
   maxParticipants: number;
   allowPerformanceTypes: boolean;
+  stopAcceptingParticipation?: boolean;
   paymentRequired: { amount: number; qrCodeUrl: string } | null;
   rulebookLink: string;
   posterLink: string;
@@ -87,6 +90,7 @@ const emptyEvent: EventRecord = {
   minParticipants: 1,
   maxParticipants: 1,
   allowPerformanceTypes: false,
+  stopAcceptingParticipation: false,
   paymentRequired: null,
   rulebookLink: "",
   posterLink: "",
@@ -143,6 +147,8 @@ export default function EventHeadDashboard() {
   };
 
   const [canCreate, setCanCreate] = useState(false);
+  const [siteWideParticipationStopped, setSiteWideParticipationStopped] = useState(false);
+  const [togglingParticipationCode, setTogglingParticipationCode] = useState<string | null>(null);
   const isEditing = Boolean(editingCode);
 
   const currentUserIsInStaff = useMemo(() => {
@@ -194,6 +200,7 @@ export default function EventHeadDashboard() {
           const eventsData = await eventsResponse.json();
           setEvents(eventsData.events || []);
           setCanCreate(Boolean(eventsData.canCreateEvents));
+          setSiteWideParticipationStopped(Boolean(eventsData.stopAcceptingParticipationSiteWide));
         } else {
           toast.error("Could not load your events");
         }
@@ -249,11 +256,52 @@ export default function EventHeadDashboard() {
     });
   };
 
+  const toggleEventParticipation = async (code: string, stopAccepting: boolean) => {
+    setTogglingParticipationCode(code);
+    setEvents((prev) =>
+      prev.map((e) => (e.code === code ? { ...e, stopAcceptingParticipation: stopAccepting } : e))
+    );
+    if (editingCode === code) {
+      setFormData((prev) => ({ ...prev, stopAcceptingParticipation: stopAccepting }));
+    }
+
+    try {
+      const res = await fetch(`/api/events/${encodeURIComponent(code)}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ stopAcceptingParticipation: stopAccepting, onlyToggleParticipation: true }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setEvents((prev) =>
+          prev.map((e) => (e.code === code ? { ...e, stopAcceptingParticipation: !stopAccepting } : e))
+        );
+        if (editingCode === code) {
+          setFormData((prev) => ({ ...prev, stopAcceptingParticipation: !stopAccepting }));
+        }
+        toast.error(data?.message || "Failed to update participation status");
+      } else {
+        toast.success(stopAccepting ? "Participation stopped for this event" : "Accepting participation for this event");
+      }
+    } catch {
+      setEvents((prev) =>
+        prev.map((e) => (e.code === code ? { ...e, stopAcceptingParticipation: !stopAccepting } : e))
+      );
+      if (editingCode === code) {
+        setFormData((prev) => ({ ...prev, stopAcceptingParticipation: !stopAccepting }));
+      }
+      toast.error("Failed to update participation status");
+    } finally {
+      setTogglingParticipationCode(null);
+    }
+  };
+
   const editEvent = (event: EventRecord) => {
     setParticipantsCode("");
     setEditingCode(event.code);
     setFormData({
       ...event,
+      stopAcceptingParticipation: Boolean(event.stopAcceptingParticipation),
       eventType: event.eventType || "individual",
       minParticipants: event.minParticipants || 1,
       maxParticipants: event.maxParticipants || event.minParticipants || 1,
@@ -488,6 +536,7 @@ export default function EventHeadDashboard() {
         eventType: formData.eventType || "individual",
         minParticipants: Number(formData.minParticipants) || 1,
         maxParticipants: Number(formData.maxParticipants) || 1,
+        stopAcceptingParticipation: Boolean(formData.stopAcceptingParticipation),
         eventHeadCollegeIDs: getPersonCollegeIDs(formData.eventHeads),
         coordinatorCollegeIDs: getPersonCollegeIDs(formData.coordinators),
         coCoordinatorCollegeIDs: getPersonCollegeIDs(formData.coCoordinators),
@@ -611,79 +660,104 @@ export default function EventHeadDashboard() {
         onClose={() => setValidationMessage("")}
       />
       <main className="min-h-screen bg-zinc-950 px-4 py-24 text-white sm:px-6">
-        <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[320px_1fr]">
-          <aside className="space-y-4">
-            <div className="flex items-center justify-between">
+        <div className="mx-auto max-w-7xl">
+          {siteWideParticipationStopped && (
+            <div className="mb-6 flex items-start gap-3 rounded-xl border border-red-500/50 bg-red-950/40 p-4 text-red-200 shadow-lg">
+              <AlertTriangle className="h-5 w-5 shrink-0 text-red-400 mt-0.5" />
               <div>
-                <h1 className="text-2xl font-semibold text-amber-300">
-                  Event Dashboard
-                </h1>
-                <p className="mt-1 text-sm text-zinc-400">
-                  {currentUser?.name || session?.user?.email}
+                <p className="font-semibold text-red-100">Site-wide Participation Notice</p>
+                <p className="mt-0.5 text-sm text-red-300">
+                  The admin has stopped participation for all events. If this is a mistake, please contact the admin.
                 </p>
               </div>
-              {canCreate && (
-                <button
-                  type="button"
-                  onClick={resetForm}
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-amber-400 text-zinc-950 hover:bg-amber-300"
-                  title="Create event"
-                >
-                  <Plus className="h-5 w-5" />
-                </button>
-              )}
             </div>
-
-            <div className="space-y-3">
-              {events.length === 0 && (
-                <p className="border border-white/10 bg-white/[0.04] p-4 text-sm text-zinc-300">
-                  No events assigned to you yet.
-                </p>
-              )}
-              {events.map((event) => (
-                <div
-                  key={event.code}
-                  className={`w-full rounded-md border p-4 text-left transition ${editingCode === event.code
-                      ? "border-amber-400 bg-amber-400/10"
-                      : "border-white/10 bg-white/[0.04] hover:border-white/30"
-                    }`}
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <h2 className="font-semibold text-white">{event.name}</h2>
-                      <p className="mt-1 text-xs uppercase tracking-wide text-zinc-400">
-                        {event.code}
-                      </p>
-                    </div>
-                    <Edit3 className="h-4 w-4 text-amber-300" />
-                  </div>
-                  <p className="mt-3 flex items-center gap-2 text-sm text-zinc-300">
-                    <CalendarClock className="h-4 w-4 text-zinc-500" />
-                    {event.startsAt
-                      ? formatISTDateTime(event.startsAt)
-                      : "Timing pending"}
+          )}
+          <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
+            <aside className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h1 className="text-2xl font-semibold text-amber-300">
+                    Event Dashboard
+                  </h1>
+                  <p className="mt-1 text-sm text-zinc-400">
+                    {currentUser?.name || session?.user?.email}
                   </p>
-                  <div className="mt-4 flex gap-2 border-t border-white/10 pt-3">
-                    <button type="button" onClick={() => editEvent(event)} className="inline-flex flex-1 items-center justify-center gap-2 rounded-md bg-amber-400 px-3 py-2 text-sm font-semibold text-zinc-950 hover:bg-amber-300">
-                      <Edit3 className="h-4 w-4" /> Edit
-                    </button>
-                    <button type="button" onClick={() => { setParticipantsCode(event.code); setEditingCode(""); }} className="inline-flex flex-1 items-center justify-center gap-2 rounded-md border border-white/10 px-3 py-2 text-sm text-zinc-200 hover:bg-white/10">
-                      <Users className="h-4 w-4" /> Participants
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => deleteEvent(event.code)}
-                      disabled={saving}
-                      className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-red-500/30 text-red-300 hover:border-red-400 hover:bg-red-500/20 disabled:opacity-50 transition"
-                      title="Delete event"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
                 </div>
-              ))}
-            </div>
-          </aside>
+                {canCreate && (
+                  <button
+                    type="button"
+                    onClick={resetForm}
+                    className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-amber-400 text-zinc-950 hover:bg-amber-300"
+                    title="Create event"
+                  >
+                    <Plus className="h-5 w-5" />
+                  </button>
+                )}
+              </div>
+
+              <div className="space-y-3">
+                {events.length === 0 && (
+                  <p className="border border-white/10 bg-white/[0.04] p-4 text-sm text-zinc-300">
+                    No events assigned to you yet.
+                  </p>
+                )}
+                {events.map((event) => (
+                  <div
+                    key={event.code}
+                    className={`w-full rounded-md border p-4 text-left transition ${editingCode === event.code
+                        ? "border-amber-400 bg-amber-400/10"
+                        : "border-white/10 bg-white/[0.04] hover:border-white/30"
+                      }`}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <h2 className="font-semibold text-white">{event.name}</h2>
+                        <p className="mt-1 text-xs uppercase tracking-wide text-zinc-400">
+                          {event.code}
+                        </p>
+                      </div>
+                      <Edit3 className="h-4 w-4 text-amber-300" />
+                    </div>
+                    <p className="mt-3 flex items-center gap-2 text-sm text-zinc-300">
+                      <CalendarClock className="h-4 w-4 text-zinc-500" />
+                      {event.startsAt
+                        ? formatISTDateTime(event.startsAt)
+                        : "Timing pending"}
+                    </p>
+                    <div className="mt-3 flex items-center justify-between border-t border-white/10 pt-2.5">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-xs text-zinc-400">Participation:</span>
+                        <ParticipationBadge stopped={Boolean(event.stopAcceptingParticipation)} />
+                      </div>
+                      <ParticipationToggle
+                        variant="switch"
+                        size="sm"
+                        stopped={Boolean(event.stopAcceptingParticipation)}
+                        disabled={togglingParticipationCode === event.code}
+                        onToggle={() => toggleEventParticipation(event.code, !event.stopAcceptingParticipation)}
+                      />
+                    </div>
+                    <div className="mt-3 flex gap-2 border-t border-white/10 pt-3">
+                      <button type="button" onClick={() => editEvent(event)} className="inline-flex flex-1 items-center justify-center gap-2 rounded-md bg-amber-400 px-3 py-2 text-sm font-semibold text-zinc-950 hover:bg-amber-300">
+                        <Edit3 className="h-4 w-4" /> Edit
+                      </button>
+                      <button type="button" onClick={() => { setParticipantsCode(event.code); setEditingCode(""); }} className="inline-flex flex-1 items-center justify-center gap-2 rounded-md border border-white/10 px-3 py-2 text-sm text-zinc-200 hover:bg-white/10">
+                        <Users className="h-4 w-4" /> Participants
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => deleteEvent(event.code)}
+                        disabled={saving}
+                        className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-red-500/30 text-red-300 hover:border-red-400 hover:bg-red-500/20 disabled:opacity-50 transition"
+                        title="Delete event"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </aside>
 
           {participantsCode ? (
             <EventParticipants
@@ -715,7 +789,24 @@ export default function EventHeadDashboard() {
                     Only event heads and coordinators can update these details.
                   </p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
+                  {isEditing && (
+                    <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-zinc-900/80 px-3 py-1.5">
+                      <span className="text-xs text-zinc-300">Stop Participation:</span>
+                      <ParticipationToggle
+                        variant="switch"
+                        size="sm"
+                        stopped={Boolean(formData.stopAcceptingParticipation)}
+                        disabled={togglingParticipationCode === editingCode}
+                        onToggle={(next) => {
+                          setFormData((prev) => ({ ...prev, stopAcceptingParticipation: next }));
+                          if (editingCode) {
+                            toggleEventParticipation(editingCode, next);
+                          }
+                        }}
+                      />
+                    </div>
+                  )}
                   {isEditing && (
                     <button
                       type="button"
@@ -895,6 +986,18 @@ export default function EventHeadDashboard() {
                     These settings control the registration form for this event.
                   </p>
                 </div>
+                <ParticipationToggle
+                  variant="card"
+                  stopped={Boolean(formData.stopAcceptingParticipation)}
+                  disabled={Boolean(isEditing && editingCode && togglingParticipationCode === editingCode)}
+                  onToggle={(next) => {
+                    setFormData((prev) => ({ ...prev, stopAcceptingParticipation: next }));
+                    if (isEditing && editingCode) {
+                      toggleEventParticipation(editingCode, next);
+                    }
+                  }}
+                  description="Toggle ON to immediately stop accepting participant registrations for this event. You can toggle this on or off at any time."
+                />
                 <div className="grid gap-4 md:grid-cols-3">
                   <label className="space-y-2">
                     <span className="text-sm text-zinc-300">Participation Type</span>
@@ -1104,6 +1207,7 @@ export default function EventHeadDashboard() {
               </section>
             </form>
           )}
+        </div>
         </div>
       </main>
       {posterToCrop && (

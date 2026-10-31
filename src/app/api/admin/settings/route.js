@@ -21,6 +21,7 @@ export async function GET() {
       committeeOrder: (settings.committeeOrder || []).map(String),
       committeeNames,
       scheduleDates: settings.scheduleDates || { day1: "", day2: "", day3: "" },
+      stopAcceptingParticipationSiteWide: Boolean(settings.stopAcceptingParticipationSiteWide),
     },
   });
 }
@@ -30,18 +31,33 @@ export async function PATCH(req) {
 
   try {
     const payload = await req.json();
-    const committeeOrder = normalizeCommitteeOrder(payload.committeeOrder);
-    const committeeNameCount = await CommitteeName.countDocuments({ _id: { $in: committeeOrder } });
-    if (committeeNameCount !== committeeOrder.length) {
-      return NextResponse.json({ success: false, message: "Committee order contains an unknown committee" }, { status: 400 });
+    const updates = {};
+
+    if (payload.eventCreatorEmails !== undefined) {
+      updates.eventCreatorEmails = payload.eventCreatorEmails;
     }
-    const settings = await updateAccessSettings({
-      eventCreatorEmails: normalizeEmails(payload.eventCreatorEmails),
-      committeeHeadEmails: normalizeEmails(payload.committeeHeadEmails),
-      munDashboardEmails: normalizeEmails(payload.munDashboardEmails),
-      committeeOrder,
-      scheduleDates: normalizeScheduleDates(payload.scheduleDates),
-    });
+    if (payload.committeeHeadEmails !== undefined) {
+      updates.committeeHeadEmails = payload.committeeHeadEmails;
+    }
+    if (payload.munDashboardEmails !== undefined) {
+      updates.munDashboardEmails = payload.munDashboardEmails;
+    }
+    if (payload.scheduleDates !== undefined) {
+      updates.scheduleDates = payload.scheduleDates;
+    }
+    if (payload.stopAcceptingParticipationSiteWide !== undefined) {
+      updates.stopAcceptingParticipationSiteWide = payload.stopAcceptingParticipationSiteWide;
+    }
+    if (payload.committeeOrder !== undefined) {
+      const committeeOrder = normalizeCommitteeOrder(payload.committeeOrder);
+      const committeeNameCount = await CommitteeName.countDocuments({ _id: { $in: committeeOrder } });
+      if (committeeNameCount !== committeeOrder.length) {
+        return NextResponse.json({ success: false, message: "Committee order contains an unknown committee" }, { status: 400 });
+      }
+      updates.committeeOrder = committeeOrder;
+    }
+
+    const settings = await updateAccessSettings(updates);
 
     return NextResponse.json({
       success: true,
@@ -51,6 +67,7 @@ export async function PATCH(req) {
         munDashboardEmails: settings.munDashboardEmails || [],
         committeeOrder: (settings.committeeOrder || []).map(String),
         scheduleDates: settings.scheduleDates || { day1: "", day2: "", day3: "" },
+        stopAcceptingParticipationSiteWide: Boolean(settings.stopAcceptingParticipationSiteWide),
       },
     });
   } catch (error) {

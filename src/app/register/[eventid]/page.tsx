@@ -34,11 +34,13 @@ export default function EventPage() {
     min: 1,
     max: 1,
     allowPerformanceTypes: false,
+    stopAcceptingParticipation: false,
     paymentRequired: undefined as { amount: number; qrCodeUrl: string } | undefined,
     eventHeads: [] as Array<{ name?: string; phone?: string }>,
     coordinators: [] as Array<{ name?: string; phone?: string }>,
     coCoordinators: [] as Array<{ name?: string; phone?: string }>,
   });
+  const [siteWideParticipationStopped, setSiteWideParticipationStopped] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -51,12 +53,14 @@ export default function EventPage() {
 
         if (response.ok && data.success && data.event) {
           const createdEvent = data.event;
+          setSiteWideParticipationStopped(Boolean(data.stopAcceptingParticipationSiteWide));
           setEvent({
             code: createdEvent.code,
             name: createdEvent.name,
             image: createdEvent.posterLink,
             eventType: createdEvent.eventType || "individual",
             allowPerformanceTypes: createdEvent.allowPerformanceTypes || false,
+            stopAcceptingParticipation: Boolean(createdEvent.stopAcceptingParticipation),
             rulebook: createdEvent.rulebookLink,
             min: Math.max(1, Number(createdEvent.minParticipants) || 1),
             max: Math.max(1, Number(createdEvent.maxParticipants) || 1),
@@ -202,24 +206,43 @@ export default function EventPage() {
                 className="w-full bg-[#E0FBFC]/60 backdrop-blur-xl p-6 sm:p-10 pb-10 sm:pb-12 rounded-3xl shadow-lg border border-[#98C1D9]/60"
               >
                 <h2 className="text-2xl font-extrabold uppercase tracking-widest text-center text-[#293241] mb-8 pb-4 border-b border-[#98C1D9]/80">
-                  Registration Form
+                  {siteWideParticipationStopped || event.stopAcceptingParticipation ? "Notice" : "Registration Form"}
                 </h2>
-                <DynamicForm
-                  eventId={event?.code}
-                  eventName={event?.name}
-                  min={event?.min}
-                  max={event?.max}
-                  eventType={
-                    event?.eventType as
-                    | "individual"
-                    | "team"
-                    | "performance"
-                    | undefined
-                  }
-                  allowPerformanceTypes={event?.allowPerformanceTypes}
-                  eventCode={event?.code}
-                  paymentRequired={event?.paymentRequired}
-                />
+                {siteWideParticipationStopped || event.stopAcceptingParticipation ? (
+                  <div className="rounded-2xl border border-red-500/40 bg-red-500/10 p-6 sm:p-8 text-center shadow-inner">
+                    <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-500/20 text-red-500">
+                      <Info className="h-8 w-8" />
+                    </div>
+                    <h3 className="text-xl font-bold uppercase tracking-wider text-[#293241]">
+                      Participation Closed
+                    </h3>
+                    <p className="mt-2 text-base text-[#3D5A80]">
+                      {siteWideParticipationStopped
+                        ? "Participation has been stopped site-wide by the administrator. Registrations are currently closed for all events."
+                        : "Participation for this event is currently stopped."}
+                    </p>
+                    <p className="mt-4 text-xs text-zinc-500">
+                      If you have questions or believe this is an error, please reach out to the event organizers or administrator.
+                    </p>
+                  </div>
+                ) : (
+                  <DynamicForm
+                    eventId={event?.code}
+                    eventName={event?.name}
+                    min={event?.min}
+                    max={event?.max}
+                    eventType={
+                      event?.eventType as
+                      | "individual"
+                      | "team"
+                      | "performance"
+                      | undefined
+                    }
+                    allowPerformanceTypes={event?.allowPerformanceTypes}
+                    eventCode={event?.code}
+                    paymentRequired={event?.paymentRequired}
+                  />
+                )}
               </motion.div>
             </div>
 

@@ -19,6 +19,7 @@ export const EventPayloadSchema = z
     minParticipants: z.number().int().min(1, "Minimum participants must be at least 1."),
     maxParticipants: z.number().int().min(1, "Maximum participants must be at least 1."),
     allowPerformanceTypes: z.boolean(),
+    stopAcceptingParticipation: z.boolean().optional(),
     paymentRequired: z.object({
       amount: z.number().finite().min(0, "Payment amount cannot be negative."),
       qrCodeUrl: z.string().trim().refine((value) => !value || /^https?:\/\//i.test(value), "Payment QR URL must start with http:// or https://."),

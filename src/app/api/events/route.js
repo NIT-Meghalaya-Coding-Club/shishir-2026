@@ -15,6 +15,7 @@ import {
   resolveUsersByCollegeIDs,
   resolveUsersByEmails,
 } from "@/lib/eventAuth";
+import { getAccessSettings } from "@/lib/accessSettings";
 import { getPosterPublicUrl } from "@/lib/r2";
 import { parseISTDateTime } from "@/lib/ist";
 
@@ -187,15 +188,23 @@ export async function GET(req) {
       .sort({ startsAt: 1 })
       .lean();
 
+    const settings = await getAccessSettings();
+
     const eventsWithPeople = (await hydrateEventPeople(events)).map((event) => ({
       ...event,
       name: event.eventNameId?.name || event.name || "",
       category: event.categoryId?.name || event.category || "",
       posterLink: getPosterPublicUrl(event.posterLink),
+      stopAcceptingParticipation: Boolean(event.stopAcceptingParticipation),
     }));
 
     return NextResponse.json(
-      { success: true, events: eventsWithPeople, canCreateEvents: user ? await canCreateEvents(user) : false },
+      {
+        success: true,
+        events: eventsWithPeople,
+        canCreateEvents: user ? await canCreateEvents(user) : false,
+        stopAcceptingParticipationSiteWide: Boolean(settings?.stopAcceptingParticipationSiteWide),
+      },
       { status: 200 }
     );
   } catch (error) {
@@ -295,6 +304,7 @@ export async function POST(req) {
       minParticipants: Number(payload.minParticipants),
       maxParticipants: Number(payload.maxParticipants),
       allowPerformanceTypes: Boolean(payload.allowPerformanceTypes),
+      stopAcceptingParticipation: Boolean(payload.stopAcceptingParticipation),
       paymentRequired: payload.paymentRequired || undefined,
       rulebookLink: payload.rulebookLink,
       posterLink: payload.posterLink,
@@ -336,6 +346,7 @@ export async function POST(req) {
       event: {
         ...withCategoryName(withEventName(event)),
         posterLink: getPosterPublicUrl(event.posterLink),
+        stopAcceptingParticipation: Boolean(event.stopAcceptingParticipation),
       },
     }, { status: 201 });
   } catch (error) {

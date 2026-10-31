@@ -1,6 +1,8 @@
 import connectMongo from "@/lib/mongodb";
 import Registration from "@/models/Registration";
 import User from "@/models/User";
+import Event from "@/models/Event";
+import { getAccessSettings } from "@/lib/accessSettings";
 import { getCurrentUser } from "@/lib/eventAuth";
 import mongoose from "mongoose";
 
@@ -88,6 +90,36 @@ export async function POST(req) {
 
     const { eventId, teamData, metadata } = await req.json();
 
+    const settings = await getAccessSettings();
+    if (settings?.stopAcceptingParticipationSiteWide) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          message: "The admin has stopped participation for all events. Registrations are currently closed.",
+        }),
+        { status: 403 }
+      );
+    }
+
+    if (eventId) {
+      const event = await Event.findOne({
+        $or: [
+          { code: String(eventId).trim().toLowerCase() },
+          ...(mongoose.Types.ObjectId.isValid(eventId) ? [{ _id: eventId }] : []),
+        ],
+      }).lean();
+
+      if (event?.stopAcceptingParticipation) {
+        return new Response(
+          JSON.stringify({
+            success: false,
+            message: "Participation for this event is currently stopped.",
+          }),
+          { status: 403 }
+        );
+      }
+    }
+
     // Basic validation for required fields
     if (!eventId || !Array.isArray(teamData) || teamData.length === 0) {
       return new Response(
@@ -169,6 +201,25 @@ export async function PATCH(req) {
     }
 
     await connectMongo();
+
+    const settings = await getAccessSettings();
+    if (settings?.stopAcceptingParticipationSiteWide) {
+      return Response.json({ success: false, message: "The admin has stopped participation for all events. Registrations are currently closed." }, { status: 403 });
+    }
+
+    if (eventId) {
+      const event = await Event.findOne({
+        $or: [
+          { code: String(eventId).trim().toLowerCase() },
+          ...(mongoose.Types.ObjectId.isValid(eventId) ? [{ _id: eventId }] : []),
+        ],
+      }).lean();
+
+      if (event?.stopAcceptingParticipation) {
+        return Response.json({ success: false, message: "Participation for this event is currently stopped." }, { status: 403 });
+      }
+    }
+
     const registrationPayload = await getRegistrationPayload({ teamData, metadata }, session.user.email);
     if (registrationPayload.error) {
       return Response.json({ success: false, message: registrationPayload.error }, { status: 400 });

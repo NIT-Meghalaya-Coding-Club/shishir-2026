@@ -72,6 +72,10 @@ const EventSchema = new mongoose.Schema(
       amount: { type: Number, min: 0 },
       qrCodeUrl: { type: String, trim: true },
     },
+    stopAcceptingParticipation: {
+      type: Boolean,
+      default: false,
+    },
     rulebookLink: {
       type: String,
       required: true,
